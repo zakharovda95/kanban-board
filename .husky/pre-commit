@@ -1,0 +1,1 @@
+npm run type:check && npm run code:lint && npm run code:format
