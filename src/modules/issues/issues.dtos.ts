@@ -1,4 +1,4 @@
-export class NewBoardDto {
+export class CreateIssueDto {
   title: string;
   description: string;
 }

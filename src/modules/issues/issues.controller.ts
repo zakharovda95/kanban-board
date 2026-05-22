@@ -1,10 +1,13 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
 import { sleep } from '@/libs/utils/sleep.utils';
-import { NewIssueDto } from '@/modules/issues/dtos/new-issue.dto';
+import { CreateIssueDto } from '@/modules/issues/issues.dtos';
+import { IssuesService } from '@/modules/issues/issues.service';
 
 @Controller('issues')
 export class IssuesController {
+  constructor(private issuesService: IssuesService) {}
+
   /** Метод не нужен тк колонки и задачи приходят вместе с доской (реализован как системный метод). **/
   @Get()
   public async getIssues(): Promise<string> {
@@ -14,7 +17,7 @@ export class IssuesController {
 
   /** Создание новой задачи. **/
   @Post()
-  public async createIssue(@Body() body: NewIssueDto): Promise<string> {
+  public async createIssue(@Body() body: CreateIssueDto): Promise<string> {
     await sleep();
     return `New issue was created! ${JSON.stringify(body)}`;
   }

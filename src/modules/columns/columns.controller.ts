@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 
 import { sleep } from '@/libs/utils/sleep.utils';
-import { NewColumnDto } from '@/modules/columns/dtos/new-column.dto';
+import { ColumnsService } from '@/modules/columns/columns.service';
 
 @Controller('columns')
 export class ColumnsController {
+  constructor(private columnsService: ColumnsService) {}
+
   /** Метод не нужен тк колонки и задачи приходят вместе с доской (реализован как системный метод). **/
   @Get()
   public async getColumns(): Promise<string> {
@@ -14,9 +16,9 @@ export class ColumnsController {
 
   /** Добавить новую колонку на доску. **/
   @Post()
-  public async createColumn(@Body() body: NewColumnDto): Promise<string> {
+  public async createColumn(): Promise<string> {
     await sleep();
-    return `New column was created! ${JSON.stringify(body)}`;
+    return `New column was created!`;
   }
 
   /** Метод не нужен тк колонки и задачи приходят вместе с доской (реализован как системный метод). **/
