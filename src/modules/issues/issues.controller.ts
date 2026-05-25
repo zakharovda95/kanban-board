@@ -1,31 +1,36 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Put } from '@nestjs/common';
 
-import { sleep } from '@/libs/utils/sleep.utils';
 import { IssuesService } from '@/modules/issues/issues.service';
-import { CreateIssueDto } from '@/modules/issues/libs/issues.dtos';
+import { CreateIssueDto, PatchIssueDto, UpdateIssueDto } from '@/modules/issues/libs/issues.dtos';
 
 @Controller('issues')
 export class IssuesController {
   constructor(private issuesService: IssuesService) {}
 
-  /** Метод не нужен тк колонки и задачи приходят вместе с доской (реализован как системный метод). **/
-  @Get()
-  public async getIssues(): Promise<string> {
-    await sleep();
-    return 'Get all issues!';
-  }
-
-  /** Создание новой задачи. **/
   @Post()
   public async createIssue(@Body() body: CreateIssueDto): Promise<string> {
-    await sleep();
-    return `New issue was created! ${JSON.stringify(body)}`;
+    return await this.issuesService.createIssue(body);
   }
 
-  /** Просмотр детальной задачи. **/
-  @Get(':id')
-  public async getIssueById(@Param('id') issueId: number): Promise<string> {
-    await sleep();
-    return `Get issue with id ${issueId}!`;
+  @Get(':issueId')
+  public async getIssueById(@Param('issueId') issueId: number): Promise<string> {
+    return this.issuesService.getIssueById(issueId);
+  }
+
+  @Put(':issueId')
+  public async updateIssueById(
+    @Param('issueId') issueId: number,
+    @Body() body: UpdateIssueDto,
+  ): Promise<string> {
+    return await this.issuesService.updateIssueById(issueId, body);
+  }
+
+  /** Переместить задачу в другую колонку. **/
+  @Patch(':issueId')
+  public async patchIssueById(
+    @Param('issueId') issueId: number,
+    @Body() body: PatchIssueDto,
+  ): Promise<string> {
+    return await this.issuesService.patchIssueById(issueId, body);
   }
 }

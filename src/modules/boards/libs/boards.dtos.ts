@@ -1,8 +1,6 @@
-import type { TUpdateBoard } from '@/modules/boards/libs/boards.types';
+import type { TPatchBoard } from '@/modules/boards/libs/boards.types';
 
-export class UpdateBoardDto implements TUpdateBoard {
+export class PatchBoardDto implements TPatchBoard {
   title?: string;
   description?: string | null;
-  limit?: number | null;
-  order?: number;
 }

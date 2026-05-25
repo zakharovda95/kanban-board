@@ -2,6 +2,9 @@ export type TIssue = {
   id: number;
   title: string;
   description: string;
-  order: number;
-  isArchived: boolean;
+  columnId: number;
 };
+
+export type TCreateIssue = Pick<TIssue, 'title' | 'description' | 'columnId'>;
+export type TUpdateIssue = Pick<TIssue, 'title' | 'description'>;
+export type TPatchIssue = Pick<TIssue, 'columnId'>;
