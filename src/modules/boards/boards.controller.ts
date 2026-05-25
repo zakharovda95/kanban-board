@@ -1,69 +1,52 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 
-import { sleep } from '@/libs/utils/sleep.utils';
 import { BoardsService } from '@/modules/boards/boards.service';
-import type { TUpdateBoard } from '@/modules/boards/boards.types';
+import { UpdateBoardDto } from '@/modules/boards/libs/boards.dtos';
 
 @Controller('boards')
 export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
-  /** Получить список досок (для меню выбора доски, только id, название и описание). **/
   @Get()
   public async getBoards(): Promise<string> {
-    await sleep();
-    return 'Get all boards!';
+    return await this.boardsService.getBoards();
   }
 
-  /** Создать новую доску (пока нет юзеров - нельзя создавать). **/
   @Post()
   public async createBoard(): Promise<string> {
-    await sleep();
-    return `New board was created!`;
+    return await this.boardsService.createBoard();
   }
 
-  /** Получить конкретную доску (после клика на выбор доски, или первую в списке, пока что просто единственная доска). **/
   @Get(':boardId')
   public async getBoardById(@Param('boardId') boardId: number): Promise<string> {
-    await sleep();
-    return `Get board with id ${boardId}!`;
+    return await this.boardsService.getBoardById(boardId);
   }
 
-  /** Архивировать доску и все карточки. **/
   @Post(':boardId/archive')
   public async archiveBoardById(@Param('boardId') boardId: number): Promise<string> {
-    await sleep();
-    return `Board with id ${boardId} was archived!`;
+    return await this.boardsService.archiveBoardById(boardId);
   }
 
-  /** Восстановить доску и все карточки до состояния на момент архивации. **/
   @Post(':boardId/restore')
   public async restoreBoardById(@Param('boardId') boardId: number): Promise<string> {
-    await sleep();
-    return `Board with id ${boardId} was archived!`;
+    return await this.boardsService.restoreBoardById(boardId);
   }
 
-  /** Задать название, описание, установить лимит колонок. **/
   @Patch(':boardId')
   public async updateBoardById(
     @Param('boardId') boardId: number,
-    @Body() body: TUpdateBoard,
+    @Body() body: UpdateBoardDto,
   ): Promise<string> {
-    await sleep();
-    return `Board with id ${boardId} was updated with data ${JSON.stringify(body)}!`;
+    return await this.boardsService.updateBoardById(boardId, body);
   }
 
-  /** Очистить доску (удалить все карточки). **/
   @Delete(':boardId/issues')
   public async clearBoardById(@Param('boardId') boardId: number): Promise<string> {
-    await sleep();
-    return `Board with id ${boardId} was cleared!`;
+    return await this.boardsService.clearBoardById(boardId);
   }
 
-  /** Удалить безвозвратно (на данный момент, позже сделать софтовое удаление) доску (включая все карточки). **/
   @Delete(':boardId')
   public async deleteBoardById(@Param('boardId') boardId: number): Promise<string> {
-    await sleep();
-    return `Board with id ${boardId} was deleted!`;
+    return await this.boardsService.deleteBoardById(boardId);
   }
 }

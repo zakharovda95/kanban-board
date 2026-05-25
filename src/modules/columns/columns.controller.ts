@@ -1,30 +1,47 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 
-import { sleep } from '@/libs/utils/sleep.utils';
 import { ColumnsService } from '@/modules/columns/columns.service';
+import { UpdateColumnDto } from '@/modules/columns/libs/columns.dtos';
 
 @Controller('columns')
 export class ColumnsController {
   constructor(private columnsService: ColumnsService) {}
 
-  /** Метод не нужен тк колонки и задачи приходят вместе с доской (реализован как системный метод). **/
   @Get()
   public async getColumns(): Promise<string> {
-    await sleep();
-    return 'Get All Columns!';
+    return await this.columnsService.getColumns();
   }
 
-  /** Добавить новую колонку на доску. **/
   @Post()
   public async createColumn(): Promise<string> {
-    await sleep();
-    return `New column was created!`;
+    return await this.columnsService.createColumn();
   }
 
-  /** Метод не нужен тк колонки и задачи приходят вместе с доской (реализован как системный метод). **/
   @Get(':id')
   public async getColumnById(@Param('id') columnId: number): Promise<string> {
-    await sleep();
-    return `Get column with id ${columnId}!`;
+    return this.columnsService.getColumnById(columnId);
+  }
+
+  @Post(':columnId/archive')
+  public async archiveColumnById(@Param('columnId') columnId: number): Promise<string> {
+    return this.columnsService.archiveColumnById(columnId);
+  }
+
+  @Patch(':columnId')
+  public async updateColumnById(
+    @Param('columnId') columnId: number,
+    @Body() body: UpdateColumnDto,
+  ): Promise<string> {
+    return this.columnsService.updateColumnById(columnId, body);
+  }
+
+  @Delete(':columnId/issues')
+  public async clearColumnById(@Param('columnId') columnId: number): Promise<string> {
+    return this.columnsService.clearColumnById(columnId);
+  }
+
+  @Delete(':columnId')
+  public async deleteColumnById(@Param('columnId') columnId: number): Promise<string> {
+    return this.columnsService.deleteColumnById(columnId);
   }
 }

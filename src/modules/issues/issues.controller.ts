@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
 import { sleep } from '@/libs/utils/sleep.utils';
-import { CreateIssueDto } from '@/modules/issues/issues.dtos';
 import { IssuesService } from '@/modules/issues/issues.service';
+import { CreateIssueDto } from '@/modules/issues/libs/issues.dtos';
 
 @Controller('issues')
 export class IssuesController {
