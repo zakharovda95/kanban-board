@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 
 import { IssuesService } from '@/modules/issues/issues.service';
-import { CreateIssueDto, PatchIssueDto, UpdateIssueDto } from '@/modules/issues/libs/issues.dtos';
+import { CreateIssueDto, MoveIssueDto, UpdateIssueDto } from '@/modules/issues/libs/issues.dtos';
 
 @Controller('issues')
 export class IssuesController {
@@ -12,25 +12,29 @@ export class IssuesController {
     return await this.issuesService.createIssue(body);
   }
 
+  @Post(':issueId/move')
+  public async moveIssue(
+    @Param('issueId') issueId: number,
+    @Body() body: MoveIssueDto,
+  ): Promise<string> {
+    return await this.issuesService.moveIssue(issueId, body);
+  }
+
   @Get(':issueId')
   public async getIssueById(@Param('issueId') issueId: number): Promise<string> {
     return this.issuesService.getIssueById(issueId);
   }
 
   @Put(':issueId')
-  public async updateIssueById(
+  public async updateIssue(
     @Param('issueId') issueId: number,
     @Body() body: UpdateIssueDto,
   ): Promise<string> {
-    return await this.issuesService.updateIssueById(issueId, body);
+    return await this.issuesService.updateIssue(issueId, body);
   }
 
-  /** Переместить задачу в другую колонку. **/
-  @Patch(':issueId')
-  public async patchIssueById(
-    @Param('issueId') issueId: number,
-    @Body() body: PatchIssueDto,
-  ): Promise<string> {
-    return await this.issuesService.patchIssueById(issueId, body);
+  @Delete(':issueId')
+  public async deleteIssue(@Param('issueId') issueId: number): Promise<string> {
+    return await this.issuesService.deleteIssue(issueId);
   }
 }

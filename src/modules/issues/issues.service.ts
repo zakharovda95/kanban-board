@@ -1,7 +1,7 @@
-import { Injectable, Put } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { sleep } from '@/libs/utils/sleep.utils';
-import type { TCreateIssue, TPatchIssue, TUpdateIssue } from '@/modules/issues/libs/issues.types';
+import type { TCreateIssue, TMoveIssue, TUpdateIssue } from '@/modules/issues/libs/issues.types';
 
 @Injectable()
 export class IssuesService {
@@ -15,15 +15,18 @@ export class IssuesService {
     return `Get issue with id ${issueId}!`;
   }
 
-  @Put(':issueId')
-  public async updateIssueById(issueId: number, body: TUpdateIssue): Promise<string> {
+  public async updateIssue(issueId: number, body: TUpdateIssue): Promise<string> {
     await sleep();
     return `Issue with id ${issueId} was updated with data ${JSON.stringify(body)}!`;
   }
 
-  /** Переместить задачу в другую колонку. **/
-  public async patchIssueById(issueId: number, body: TPatchIssue): Promise<string> {
+  public async deleteIssue(issueId: number): Promise<string> {
     await sleep();
-    return `Issue with id ${issueId} was updated with data ${JSON.stringify(body)}!`;
+    return `Issue with id ${issueId} was deleted!`;
+  }
+
+  public async moveIssue(issueId: number, body: TMoveIssue): Promise<string> {
+    await sleep();
+    return `Issue with id ${issueId} was moved with data ${JSON.stringify(body)}!`;
   }
 }

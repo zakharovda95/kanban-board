@@ -10,7 +10,7 @@ export class BoardsService {
     return `Get board with id ${boardId}!`;
   }
 
-  public async patchBoardById(boardId: number, body: TPatchBoard): Promise<string> {
+  public async patchBoard(boardId: number, body: TPatchBoard): Promise<string> {
     await sleep();
     return `Board with id ${boardId} was updated with data ${JSON.stringify(body)}!`;
   }

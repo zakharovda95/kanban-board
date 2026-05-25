@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { sleep } from '@/libs/utils/sleep.utils';
-import type { TPatchColumn } from '@/modules/columns/libs/columns.types';
+import type { TMoveColumn, TPatchColumn } from '@/modules/columns/libs/columns.types';
 
 @Injectable()
 export class ColumnsService {
@@ -10,12 +10,17 @@ export class ColumnsService {
     return `New column was created!`;
   }
 
-  public async patchColumnById(columnId: number, body: TPatchColumn): Promise<string> {
+  public async moveColumn(columnId: number, body: TMoveColumn): Promise<string> {
+    await sleep();
+    return `Column with id ${columnId} was moved! with data ${JSON.stringify(body)}`;
+  }
+
+  public async patchColumn(columnId: number, body: TPatchColumn): Promise<string> {
     await sleep();
     return `Column with id ${columnId} was updated with data ${JSON.stringify(body)}!`;
   }
 
-  public async deleteColumnById(columnId: number): Promise<string> {
+  public async deleteColumn(columnId: number): Promise<string> {
     await sleep();
     return `Column with id ${columnId} was deleted!`;
   }

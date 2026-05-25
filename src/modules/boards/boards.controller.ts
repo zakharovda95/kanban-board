@@ -13,10 +13,10 @@ export class BoardsController {
   }
 
   @Patch(':boardId')
-  public async patchBoardById(
+  public async patchBoard(
     @Param('boardId') boardId: number,
     @Body() body: PatchBoardDto,
   ): Promise<string> {
-    return await this.boardsService.patchBoardById(boardId, body);
+    return await this.boardsService.patchBoard(boardId, body);
   }
 }

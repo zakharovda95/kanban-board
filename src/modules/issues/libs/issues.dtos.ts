@@ -1,4 +1,4 @@
-import type { TCreateIssue, TPatchIssue, TUpdateIssue } from '@/modules/issues/libs/issues.types';
+import type { TCreateIssue, TMoveIssue, TUpdateIssue } from '@/modules/issues/libs/issues.types';
 
 export class CreateIssueDto implements TCreateIssue {
   title: string;
@@ -11,6 +11,8 @@ export class UpdateIssueDto implements TUpdateIssue {
   description: string;
 }
 
-export class PatchIssueDto implements TPatchIssue {
-  columnId: number;
+export class MoveIssueDto implements TMoveIssue {
+  columnId?: number;
+  nextIssueId?: number;
+  previousIssueId?: number;
 }
