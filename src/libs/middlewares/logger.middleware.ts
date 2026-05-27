@@ -1,6 +1,9 @@
 import type { NextFunction, Request, Response } from 'express';
 
-export default function loggerMiddleware(_: Request, __: Response, next: NextFunction): void {
-  //TODO: реализовать логгер.
-  next();
+export default function loggerMiddleware(
+  _request: Request,
+  _response: Response,
+  _next: NextFunction,
+): void {
+  //TODO: реализовать логгер.;
 }

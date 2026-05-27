@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 
 import { IssuesService } from '@/modules/issues/issues.service';
 import { CreateIssueDto, MoveIssueDto, UpdateIssueDto } from '@/modules/issues/libs/issues.dtos';
@@ -14,27 +14,27 @@ export class IssuesController {
 
   @Post(':issueId/move')
   public async moveIssue(
-    @Param('issueId') issueId: number,
+    @Param('issueId', ParseIntPipe) issueId: number,
     @Body() body: MoveIssueDto,
   ): Promise<string> {
     return await this.issuesService.moveIssue(issueId, body);
   }
 
   @Get(':issueId')
-  public async getIssueById(@Param('issueId') issueId: number): Promise<string> {
+  public async getIssueById(@Param('issueId', ParseIntPipe) issueId: number): Promise<string> {
     return this.issuesService.getIssueById(issueId);
   }
 
   @Put(':issueId')
   public async updateIssue(
-    @Param('issueId') issueId: number,
+    @Param('issueId', ParseIntPipe) issueId: number,
     @Body() body: UpdateIssueDto,
   ): Promise<string> {
     return await this.issuesService.updateIssue(issueId, body);
   }
 
   @Delete(':issueId')
-  public async deleteIssue(@Param('issueId') issueId: number): Promise<string> {
+  public async deleteIssue(@Param('issueId', ParseIntPipe) issueId: number): Promise<string> {
     return await this.issuesService.deleteIssue(issueId);
   }
 }
