@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 
 import { ColumnsService } from '@/modules/columns/columns.service';
-import { MoveColumnDto, PatchColumnDto } from '@/modules/columns/libs/columns.dtos';
+import { MoveColumnDto } from '@/modules/columns/libs/dtos/move-column.dto';
+import { PatchColumnDto } from '@/modules/columns/libs/dtos/patch-column.dto';
 
 @Controller('columns')
 export class ColumnsController {

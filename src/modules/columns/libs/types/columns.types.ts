@@ -1,4 +1,4 @@
-import type { TIssue } from '@/modules/issues/libs/issues.types';
+import type { TIssue } from '@/modules/issues/libs/types/issues.types';
 
 export type TColumn = {
   id: number;

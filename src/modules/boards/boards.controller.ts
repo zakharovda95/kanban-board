@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch } from '@nestjs/common';
 
 import { BoardsService } from '@/modules/boards/boards.service';
-import { PatchBoardDto } from '@/modules/boards/libs/boards.dtos';
+import { PatchBoardDto } from '@/modules/boards/libs/dtos/patch-board.dto';
 
 @Controller('boards')
 export class BoardsController {

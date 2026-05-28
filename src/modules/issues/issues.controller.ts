@@ -1,7 +1,9 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 
 import { IssuesService } from '@/modules/issues/issues.service';
-import { CreateIssueDto, MoveIssueDto, UpdateIssueDto } from '@/modules/issues/libs/issues.dtos';
+import { CreateIssueDto } from '@/modules/issues/libs/dtos/create-issue.dto';
+import { MoveIssueDto } from '@/modules/issues/libs/dtos/move-issue.dto';
+import { UpdateIssueDto } from '@/modules/issues/libs/dtos/update-issue.dto';
 
 @Controller('issues')
 export class IssuesController {

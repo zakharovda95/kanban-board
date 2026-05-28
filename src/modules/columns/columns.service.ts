@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { sleep } from '@/libs/utils/sleep.utils';
-import type { TMoveColumn, TPatchColumn } from '@/modules/columns/libs/columns.types';
+import type { TMoveColumn, TPatchColumn } from '@/modules/columns/libs/types/columns.types';
 
 @Injectable()
 export class ColumnsService {

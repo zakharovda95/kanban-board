@@ -1,4 +1,4 @@
-import type { TColumn } from '@/modules/columns/libs/columns.types';
+import type { TColumn } from '@/modules/columns/libs/types/columns.types';
 
 export type TBoard = {
   id: number;

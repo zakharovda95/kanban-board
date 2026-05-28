@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
 import { sleep } from '@/libs/utils/sleep.utils';
-import type { TCreateIssue, TMoveIssue, TUpdateIssue } from '@/modules/issues/libs/issues.types';
+import type {
+  TCreateIssue,
+  TMoveIssue,
+  TUpdateIssue,
+} from '@/modules/issues/libs/types/issues.types';
 
 @Injectable()
 export class IssuesService {

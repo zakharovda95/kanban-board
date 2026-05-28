@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { sleep } from '@/libs/utils/sleep.utils';
-import type { TPatchBoard } from '@/modules/boards/libs/boards.types';
+import type { TPatchBoard } from '@/modules/boards/libs/types/boards.types';
 
 @Injectable()
 export class BoardsService {
