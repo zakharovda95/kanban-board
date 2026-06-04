@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { DatabaseModule } from '@/infrastructure/database/database.module';
 
 @Module({
-  imports: [TypeOrmModule.forRootAsync({})],
+  imports: [DatabaseModule],
+  exports: [DatabaseModule],
 })
 export class InfrastructureModule {}

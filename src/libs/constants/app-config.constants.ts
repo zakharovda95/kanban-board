@@ -28,16 +28,16 @@ export const appConfigSchema = z.object({
 export const APP_CONFIG_OPTIONS: ConfigModuleOptions = {
   envFilePath: `.env.${process.env.NODE_ENV}`,
   isGlobal: true,
-  // игнорит .env.* файлы (переменные не попадут в configService.get())
-  ignoreEnvFile: false,
-  // игнорит process.env (переменные не попадут в configService.get())
-  skipProcessEnv: false,
-  validationOptions: {
-    allowUnknown: false,
-  },
+  ignoreEnvFile: false, // игнорит .env.* файлы (переменные не попадут в configService.get())
+  skipProcessEnv: false, // игнорит process.env (переменные не попадут в configService.get())
+  cache: true,
   validate: (envConfig: Record<string, unknown>): z.infer<typeof appConfigSchema> => {
     const result = appConfigSchema.safeParse(envConfig);
     if (!result.success) throw new Error(result.error.message);
     return result.data;
+  },
+  validationOptions: {
+    allowUnknown: false,
+    abortEarly: false, // прервать (и отобразить) только первую ошибку валидации
   },
 };

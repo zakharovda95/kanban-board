@@ -5,6 +5,7 @@ export type TColumn = {
   title: string;
   description: string | null;
   order: number;
+  color: string;
   issues: TIssue[];
 };
 

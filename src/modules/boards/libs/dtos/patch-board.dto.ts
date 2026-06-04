@@ -7,12 +7,12 @@ export class PatchBoardDto implements TPatchBoard {
   @ValidateIfDefined()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(24)
+  @MaxLength(64)
   title?: string;
 
   @ValidateIfDefined()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(64)
+  @MaxLength(128)
   description?: string | null;
 }
