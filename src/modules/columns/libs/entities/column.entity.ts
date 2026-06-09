@@ -8,8 +8,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { CreatedUpdatedDeletedAtEntity } from '@/infrastructure/database/libs/entities/created-updated-deleted-at.entity';
 import { DEFAULT_TITLE, DEFAULT_TITLE_LENGTH } from '@/libs/constants/shared.constants';
+import { CreatedUpdatedDeletedAtEntity } from '@/libs/entities/created-updated-deleted-at.entity';
 import { BoardEntity } from '@/modules/boards/libs/entities/board.entity';
 import { IssueEntity } from '@/modules/issues/libs/entities/issue.entity';
 
@@ -29,6 +29,9 @@ export class ColumnEntity {
 
   @Column('varchar')
   color: string;
+
+  @Column()
+  order: number;
 
   @Index()
   @Column()

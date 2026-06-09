@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { CreatedUpdatedDeletedAtEntity } from '@/infrastructure/database/libs/entities/created-updated-deleted-at.entity';
 import { DEFAULT_TITLE, DEFAULT_TITLE_LENGTH } from '@/libs/constants/shared.constants';
+import { CreatedUpdatedDeletedAtEntity } from '@/libs/entities/created-updated-deleted-at.entity';
 import { ColumnEntity } from '@/modules/columns/libs/entities/column.entity';
 
 @Entity('boards')
@@ -18,6 +18,6 @@ export class BoardEntity {
   @Column({ type: 'varchar', nullable: true })
   description: string | null;
 
-  @OneToMany(() => ColumnEntity, entity => entity.board)
+  @OneToMany(() => ColumnEntity, entity => entity.board, { cascade: ['insert'] })
   columns: ColumnEntity[];
 }

@@ -1,8 +1,11 @@
 export type TIssue = {
-  id: number;
+  issueId: number;
+  createdAt: Date;
+  updatedAt: Date;
   title: string;
   description: string | null;
   columnId: number;
+  order: number;
 };
 
 export type TCreateIssue = Pick<TIssue, 'title' | 'description' | 'columnId'>;

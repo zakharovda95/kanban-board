@@ -6,9 +6,7 @@ import { ENodeEnv } from '@/libs/enums/app.enums';
 
 @Injectable()
 export class DatabaseConfigService implements TypeOrmOptionsFactory {
-  constructor(private configService: ConfigService) {
-    console.log(123123);
-  }
+  constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     const nodeEnv = this.configService.get<ENodeEnv>('NODE_ENV');
@@ -24,7 +22,7 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
       synchronize: nodeEnv !== ENodeEnv.PRODUCTION,
       autoLoadEntities: true,
       entityPrefix: undefined,
-      // dropSchema: true,
+      //dropSchema: true,
     };
   }
 }
