@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-import type { TMapper } from '@/libs/types/mapper.types';
 import { ColumnEntity } from '@/modules/columns/libs/entities/column.entity';
 import type { TColumn } from '@/modules/columns/libs/types/columns.types';
 import { IssuesMapper } from '@/modules/issues/issues.mapper';
 
 @Injectable()
-export class ColumnsMapper implements TMapper<ColumnEntity, TColumn> {
+export class ColumnsMapper {
   constructor(private issuesMapper: IssuesMapper) {}
 
   public toModel(entity: ColumnEntity): TColumn;

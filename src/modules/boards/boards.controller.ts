@@ -1,23 +1,38 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 
 import { AtLeastOneFieldRequiredPipe } from '@/libs/pipes/at-least-one-field-required.pipe';
 import type { TSuccessResponse } from '@/libs/types/response.types';
 import { BoardsService } from '@/modules/boards/boards.service';
+import { MoveBoardDto } from '@/modules/boards/libs/dtos/move-board.dto';
 import { PatchBoardDto } from '@/modules/boards/libs/dtos/patch-board.dto';
-import type { TBoard, TCreateBoardResponse } from '@/modules/boards/libs/types/boards.types';
+import { MoveBoardPipe } from '@/modules/boards/libs/pipes/move-board.pipe';
+import type {
+  TBoard,
+  TBoardBase,
+  TCreateBoardResponse,
+} from '@/modules/boards/libs/types/boards.types';
 
 @Controller('boards')
 export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
   @Get()
-  public async getBoards(): Promise<TBoard[]> {
+  public async getBoards(): Promise<TBoardBase[]> {
     return await this.boardsService.getBoards();
   }
 
   @Post()
   public async createBoard(): Promise<TCreateBoardResponse> {
     return await this.boardsService.createBoard();
+  }
+
+  @Post(':boardId/move')
+  public async moveBoard(
+    @Param('boardId', ParseIntPipe) boardId: number,
+    @Body(new AtLeastOneFieldRequiredPipe(['previousBoardId', 'nextBoardId']), MoveBoardPipe)
+    body: MoveBoardDto,
+  ): Promise<TSuccessResponse> {
+    return await this.boardsService.moveBoard(boardId, body);
   }
 
   @Get(':boardId')
@@ -31,5 +46,12 @@ export class BoardsController {
     @Body(new AtLeastOneFieldRequiredPipe(['title', 'description'])) body: PatchBoardDto,
   ): Promise<TSuccessResponse> {
     return await this.boardsService.patchBoard(boardId, body);
+  }
+
+  @Delete(':boardId')
+  public async deleteBoard(
+    @Param('boardId', ParseIntPipe) boardId: number,
+  ): Promise<TSuccessResponse> {
+    return await this.boardsService.deleteBoard(boardId);
   }
 }

@@ -1,13 +1,22 @@
 import type { TSuccessResponse } from '@/libs/types/response.types';
 import type { TColumn } from '@/modules/columns/libs/types/columns.types';
 
-export type TBoard = {
+export type TBoardBase = {
   boardId: number;
   title: string;
+  order: number;
   description: string | null;
+};
+
+export type TBoard = TBoardBase & {
   columns: TColumn[];
 };
 
 export type TCreateBoardResponse = TSuccessResponse<Pick<TBoard, 'boardId'>>;
 
 export type TPatchBoard = Partial<Pick<TBoard, 'title' | 'description'>>;
+
+export type TMoveBoard = {
+  previousBoardId?: number | null;
+  nextBoardId?: number | null;
+};

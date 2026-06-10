@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import type { TMapper } from '@/libs/types/mapper.types';
 import { IssueEntity } from '@/modules/issues/libs/entities/issue.entity';
 import type { TIssue } from '@/modules/issues/libs/types/issues.types';
 
 @Injectable()
-export class IssuesMapper implements TMapper<IssueEntity, TIssue> {
+export class IssuesMapper {
   public toModel(entity: IssueEntity): TIssue;
   public toModel(entity: IssueEntity[]): TIssue[];
   public toModel(entity: IssueEntity | IssueEntity[]): TIssue | TIssue[] {

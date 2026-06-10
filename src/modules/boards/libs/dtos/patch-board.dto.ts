@@ -1,6 +1,9 @@
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-import { ValidateIfDefined } from '@/libs/decorators/validation.decorators';
+import {
+  ValidateIfDefined,
+  ValidateIfDefinedAndNotNull,
+} from '@/libs/decorators/validation.decorators';
 import type { TPatchBoard } from '@/modules/boards/libs/types/boards.types';
 
 export class PatchBoardDto implements TPatchBoard {
@@ -10,9 +13,8 @@ export class PatchBoardDto implements TPatchBoard {
   @MaxLength(64)
   title?: string;
 
-  @ValidateIfDefined()
+  @ValidateIfDefinedAndNotNull()
   @IsString()
-  @IsNotEmpty()
   @MaxLength(128)
   description?: string | null;
 }

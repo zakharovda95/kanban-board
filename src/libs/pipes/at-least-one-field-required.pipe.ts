@@ -1,14 +1,7 @@
-import {
-  ArgumentMetadata,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  PipeTransform,
-} from '@nestjs/common';
+import { ArgumentMetadata, HttpException, HttpStatus, PipeTransform } from '@nestjs/common';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 
-@Injectable()
 export class AtLeastOneFieldRequiredPipe<T> implements PipeTransform {
   constructor(private fields: Array<keyof T>) {}
 

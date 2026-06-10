@@ -30,7 +30,7 @@ export class ColumnEntity {
   @Column('varchar')
   color: string;
 
-  @Column()
+  @Column({ type: 'int', unique: true })
   order: number;
 
   @Index()
