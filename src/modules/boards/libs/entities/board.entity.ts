@@ -19,7 +19,7 @@ export class BoardEntity {
   @Column({ type: 'varchar', nullable: true })
   description: string | null;
 
-  @Column({ type: 'int', unique: true })
+  @Column()
   order: number;
 
   @OneToMany(() => ColumnEntity, entity => entity.board, { cascade: ['insert'] })

@@ -4,7 +4,12 @@ import { DataSource } from 'typeorm';
 import { ORDER_STEP } from '@/libs/constants/order.constants';
 import { DEFAULT_TITLE } from '@/libs/constants/shared.constants';
 import { TSuccessResponse } from '@/libs/types/response.types';
-import { calculateIntermediateOrder, needResetOrders } from '@/libs/utils/order.utils';
+import { isDefined } from '@/libs/utils/check.utils';
+import {
+  calculateIntermediateOrder,
+  calculateNextOrder,
+  needResetOrders,
+} from '@/libs/utils/order.utils';
 import { getSuccessResponse, getSuccessResponseWithData } from '@/libs/utils/response.utils';
 import { BoardsMapper } from '@/modules/boards/boards.mapper';
 import { BOARDS_EXCEPTION_MESSAGES } from '@/modules/boards/libs/constants/boards-exception.constants';
@@ -54,8 +59,8 @@ export class BoardsService {
     const { boardId } = await manager.save(BoardEntity, {
       title: DEFAULT_TITLE,
       description: null,
-      order: boardsCount === 0 ? 1000 : (boardsCount + 1) * ORDER_STEP,
-      columns: [...DEFAULT_COLUMNS],
+      order: boardsCount === 0 ? 1000 : calculateNextOrder(boardsCount),
+      columns: [...structuredClone(DEFAULT_COLUMNS)],
     });
     if (!boardId)
       throw new InternalServerErrorException(BOARDS_EXCEPTION_MESSAGES.errorCreatingBoard);
@@ -84,40 +89,59 @@ export class BoardsService {
       });
 
       const targetBoardEntity = boardEntities.find(entity => entity.boardId === boardId);
+      if (!targetBoardEntity) throw new NotFoundException(BOARDS_EXCEPTION_MESSAGES.boardNotFound);
 
       // убираем перемещаемую доску элемент, чтобы не учитывать его при нормализации order и поиске соседей.
       const boardEntitiesWithoutTarget = boardEntities.filter(entity => entity.boardId !== boardId);
+      if (!boardEntitiesWithoutTarget.length)
+        throw new InternalServerErrorException(BOARDS_EXCEPTION_MESSAGES.boardCanNotBeMoved);
 
-      if (previousBoardId) {
-        const previousBoardEntityIndex = boardEntitiesWithoutTarget.findIndex(
-          ({ boardId }) => boardId === previousBoardId,
-        );
-        const nextBoardEntityIndex = previousBoardEntityIndex + 1;
+      // Если передан previousBoardId.
+      if (isDefined(previousBoardId)) {
+        if (previousBoardId) {
+          const previousBoardEntityIndex = boardEntitiesWithoutTarget.findIndex(
+            ({ boardId }) => boardId === previousBoardId,
+          );
+          const nextBoardEntityIndex = previousBoardEntityIndex + 1;
 
-        const previousBoardEntity = boardEntitiesWithoutTarget[previousBoardEntityIndex];
-        const nextBoardEntity = boardEntitiesWithoutTarget[nextBoardEntityIndex];
+          const previousBoardEntity = boardEntitiesWithoutTarget[previousBoardEntityIndex];
+          const nextBoardEntity = boardEntitiesWithoutTarget[nextBoardEntityIndex];
 
-        if (!targetBoardEntity || !previousBoardEntity)
-          throw new NotFoundException(BOARDS_EXCEPTION_MESSAGES.boardNotFound);
+          if (!previousBoardEntity)
+            throw new InternalServerErrorException(BOARDS_EXCEPTION_MESSAGES.errorMovingBoard);
 
-        // если нет next, значит перемещаемая доска помещается в конец (к order последнего элемента в списке прибавляем 1000).
-        if (!nextBoardEntity) {
-          targetBoardEntity.order = previousBoardEntity.order + ORDER_STEP;
-          await transactionalManager.save(BoardEntity, targetBoardEntity);
+          // если нет next, значит перемещаемая доска помещается в конец (к order последнего элемента в списке прибавляем 1000).
+          if (!nextBoardEntity) {
+            targetBoardEntity.order = previousBoardEntity.order + ORDER_STEP;
+            await transactionalManager.save(BoardEntity, targetBoardEntity);
+            return getSuccessResponse();
+          }
+
+          // Если между order previous и next значение <= 1 - нормализуем порядок всех досок кроме перемещаемой.
+          if (needResetOrders(previousBoardEntity.order, nextBoardEntity.order)) {
+            boardEntitiesWithoutTarget.forEach((entity, index) => {
+              entity.order = calculateNextOrder(index);
+            });
+          }
+
+          targetBoardEntity.order = calculateIntermediateOrder(
+            previousBoardEntity.order,
+            nextBoardEntity.order,
+          );
+
+          await transactionalManager.save(BoardEntity, boardEntities);
           return getSuccessResponse();
         }
 
-        // Если между previous и next не осталось места - нормализуем порядок всех досок кроме перемещаемой.
-        if (needResetOrders(previousBoardEntity.order, nextBoardEntity.order)) {
+        // previousBoardId === null - помещаем перемещаемую доску первой.
+        const firstBoardEntity = boardEntitiesWithoutTarget[0];
+        if (needResetOrders(0, firstBoardEntity.order)) {
           boardEntitiesWithoutTarget.forEach((entity, index) => {
-            entity.order = (index + 1) * ORDER_STEP;
+            entity.order = calculateNextOrder(index);
           });
         }
 
-        targetBoardEntity.order = calculateIntermediateOrder(
-          previousBoardEntity.order,
-          nextBoardEntity.order,
-        );
+        targetBoardEntity.order = calculateIntermediateOrder(0, firstBoardEntity.order);
 
         await transactionalManager.save(BoardEntity, boardEntities);
         return getSuccessResponse();
