@@ -1,11 +1,21 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
 
 import { AtLeastOneFieldRequiredPipe } from '@/libs/pipes/at-least-one-field-required.pipe';
 import type { TSuccessResponse } from '@/libs/types/response.types';
 import { BoardsService } from '@/modules/boards/boards.service';
 import { MoveBoardDto } from '@/modules/boards/libs/dtos/move-board.dto';
 import { PatchBoardDto } from '@/modules/boards/libs/dtos/patch-board.dto';
-import { MoveBoardPipe } from '@/modules/boards/libs/pipes/move-board.pipe';
 import type {
   TBoard,
   TBoardBase,
@@ -27,9 +37,10 @@ export class BoardsController {
   }
 
   @Post(':boardId/move')
+  @HttpCode(HttpStatus.OK)
   public async moveBoard(
     @Param('boardId', ParseIntPipe) boardId: number,
-    @Body(new AtLeastOneFieldRequiredPipe(['previousBoardId', 'nextBoardId']), MoveBoardPipe)
+    @Body(new AtLeastOneFieldRequiredPipe(['previousBoardId', 'nextBoardId']))
     body: MoveBoardDto,
   ): Promise<TSuccessResponse> {
     return await this.boardsService.moveBoard(boardId, body);
