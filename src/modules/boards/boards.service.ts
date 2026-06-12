@@ -8,7 +8,6 @@ import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { ORDER_STEP } from '@/libs/constants/order.constants';
-import { DEFAULT_TITLE } from '@/libs/constants/shared.constants';
 import type { TSuccessResponse } from '@/libs/types/response.types';
 import { isDefined } from '@/libs/utils/check.utils';
 import {
@@ -22,6 +21,7 @@ import { BoardEntity } from '@/modules/boards/libs/entities/board.entity';
 import type {
   TBoard,
   TBoardBase,
+  TCreateBoard,
   TCreateBoardResponse,
   TMoveBoard,
   TPatchBoard,
@@ -58,14 +58,16 @@ export class BoardsService {
     return this.boardsMapper.toModel(board, { withRelations: true });
   }
 
-  public async createBoard(): Promise<TCreateBoardResponse> {
+  public async createBoard(body: TCreateBoard): Promise<TCreateBoardResponse> {
+    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+
     const { manager } = this.dataSource;
 
     const boardsCount = await manager.count(BoardEntity);
 
     const { boardId } = await manager.save(BoardEntity, {
-      title: DEFAULT_TITLE,
-      description: null,
+      title: body.title,
+      description: body.description,
       order: boardsCount === 0 ? 1000 : calculateOrderByIndex(boardsCount),
       columns: [...structuredClone(DEFAULT_COLUMNS)],
     });

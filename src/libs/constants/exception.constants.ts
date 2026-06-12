@@ -8,4 +8,5 @@ export const EXCEPTION_MESSAGES = {
   moveFailed: 'Не удалось переместить',
   moveNotAllowed: 'Перемещение недоступно',
   requestBodyNotFound: 'Данные запроса не найдены',
+  paramsNotFound: 'Не переданы параметры',
 };

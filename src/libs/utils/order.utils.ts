@@ -1,3 +1,4 @@
+import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { ORDER_STEP } from '@/libs/constants/order.constants';
 import { isNull } from '@/libs/utils/check.utils';
 
@@ -6,11 +7,15 @@ export function calculateOrderByIndex(index: number): number {
 }
 
 export function calculateIntermediateOrder(previousOrder: number, nextOrder: number): number {
-  if (isNull(previousOrder) || isNull(nextOrder)) throw new Error('Не переданы значения');
+  if (isNull(previousOrder) || isNull(nextOrder))
+    throw new Error(EXCEPTION_MESSAGES.paramsNotFound);
+
   return Math.floor((previousOrder + nextOrder) / 2);
 }
 
 export function needResetOrders(previousOrder: number, nextOrder: number): boolean {
-  if (isNull(previousOrder) || isNull(nextOrder)) throw new Error('Не переданы значения');
+  if (isNull(previousOrder) || isNull(nextOrder))
+    throw new Error(EXCEPTION_MESSAGES.paramsNotFound);
+
   return nextOrder - previousOrder <= 1;
 }

@@ -12,9 +12,10 @@ export type TBoard = TBoardBase & {
   columns: TColumn[];
 };
 
+export type TCreateBoard = Pick<TBoardBase, 'title'> & Partial<Pick<TBoardBase, 'description'>>;
 export type TCreateBoardResponse = TSuccessResponse<Pick<TBoard, 'boardId'>>;
 
-export type TPatchBoard = Partial<Pick<TBoard, 'title' | 'description'>>;
+export type TPatchBoard = Partial<Pick<TBoardBase, 'title' | 'description'>>;
 
 export type TMoveBoard = {
   previousBoardId?: number | null;

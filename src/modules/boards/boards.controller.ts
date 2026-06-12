@@ -14,6 +14,7 @@ import {
 import { AtLeastOneFieldRequiredPipe } from '@/libs/pipes/at-least-one-field-required.pipe';
 import type { TSuccessResponse } from '@/libs/types/response.types';
 import { BoardsService } from '@/modules/boards/boards.service';
+import { CreateBoardDto } from '@/modules/boards/libs/dtos/create-board.dto';
 import { MoveBoardDto } from '@/modules/boards/libs/dtos/move-board.dto';
 import { PatchBoardDto } from '@/modules/boards/libs/dtos/patch-board.dto';
 import type {
@@ -32,8 +33,8 @@ export class BoardsController {
   }
 
   @Post()
-  public async createBoard(): Promise<TCreateBoardResponse> {
-    return await this.boardsService.createBoard();
+  public async createBoard(@Body() body: CreateBoardDto): Promise<TCreateBoardResponse> {
+    return await this.boardsService.createBoard(body);
   }
 
   @Post(':boardId/move')

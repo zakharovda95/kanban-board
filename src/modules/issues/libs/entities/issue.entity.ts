@@ -1,6 +1,5 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { DEFAULT_TITLE_LENGTH } from '@/libs/constants/shared.constants';
 import { CreatedUpdatedDeletedAtEntity } from '@/libs/entities/created-updated-deleted-at.entity';
 import { ColumnEntity } from '@/modules/columns/libs/entities/column.entity';
 
@@ -12,7 +11,7 @@ export class IssueEntity {
   @Column(() => CreatedUpdatedDeletedAtEntity, { prefix: false })
   createdUpdatedDeletedAt: CreatedUpdatedDeletedAtEntity;
 
-  @Column({ type: 'varchar', length: DEFAULT_TITLE_LENGTH })
+  @Column({ type: 'varchar', length: 128 })
   title: string;
 
   @Column({ type: 'text', nullable: true })
