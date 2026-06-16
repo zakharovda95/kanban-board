@@ -1,27 +1,82 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
+import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
+import type { TSuccessResponse } from '@/libs/types/response.types';
+import { objectHasValues } from '@/libs/utils/check.utils';
+import { getRandomHexColor } from '@/libs/utils/color.utils';
+import { calculateOrderByIndex } from '@/libs/utils/order.utils';
+import { getSuccessResponse, getSuccessResponseWithData } from '@/libs/utils/response.utils';
 import { sleep } from '@/libs/utils/sleep.utils';
-import type { TMoveColumn, TPatchColumn } from '@/modules/columns/libs/types/columns.types';
+import { ColumnEntity } from '@/modules/columns/libs/entities/column.entity';
+import type {
+  TCreateColumn,
+  TCreateColumnResponse,
+  TMoveColumn,
+  TPatchColumn,
+} from '@/modules/columns/libs/types/columns.types';
 
 @Injectable()
 export class ColumnsService {
-  public async createColumn(): Promise<string> {
-    await sleep();
-    return `New column was created!`;
+  constructor(private dataSource: DataSource) {}
+
+  public async createColumn(body: TCreateColumn): Promise<TCreateColumnResponse> {
+    if (!body || !objectHasValues(body))
+      throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+
+    const { manager } = this.dataSource;
+
+    const columnsCount = await manager.count(ColumnEntity, { where: { boardId: body.boardId } });
+
+    const { columnId } = await manager.save(ColumnEntity, {
+      title: body.title,
+      description: body?.description ?? null,
+      color: body.color || getRandomHexColor(),
+      order: calculateOrderByIndex(columnsCount),
+      boardId: body.boardId,
+    });
+
+    if (!columnId) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
+    return getSuccessResponseWithData({ columnId });
   }
 
-  public async moveColumn(columnId: number, body: TMoveColumn): Promise<string> {
+  public async moveColumn(columnId: number, body: TMoveColumn): Promise<TSuccessResponse> {
+    if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+    if (!body || !objectHasValues(body))
+      throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+
     await sleep();
-    return `Column with id ${columnId} was moved! with data ${JSON.stringify(body)}`;
+    return getSuccessResponse();
   }
 
-  public async patchColumn(columnId: number, body: TPatchColumn): Promise<string> {
-    await sleep();
-    return `Column with id ${columnId} was updated with data ${JSON.stringify(body)}!`;
+  public async patchColumn(columnId: number, body: TPatchColumn): Promise<TSuccessResponse> {
+    if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+    if (!body || !objectHasValues(body))
+      throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+
+    const { manager } = this.dataSource;
+
+    const column = await manager.findOne(ColumnEntity, { where: { columnId } });
+    if (!column) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+
+    await manager.save(Object.assign(column, body));
+    return getSuccessResponse();
   }
 
-  public async deleteColumn(columnId: number): Promise<string> {
-    await sleep();
-    return `Column with id ${columnId} was deleted!`;
+  public async deleteColumn(columnId: number): Promise<TSuccessResponse> {
+    if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+
+    const { manager } = this.dataSource;
+
+    const { affected } = await manager.delete(ColumnEntity, { columnId });
+    if (!affected || affected <= 0)
+      throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
+
+    return getSuccessResponse();
   }
 }

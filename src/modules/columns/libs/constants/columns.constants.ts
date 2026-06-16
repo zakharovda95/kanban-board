@@ -1,29 +1,23 @@
-import { getRandomRgba } from '@/libs/utils/color.utils';
+import { getRandomHexColor } from '@/libs/utils/color.utils';
 import type { TNewColumn } from '@/modules/columns/libs/types/columns.types';
-
-export const DEFAULT_COLUMN_TITLE = {
-  ready: 'К выполнению',
-  inProgress: 'В работе',
-  done: 'Выполнено',
-};
 
 export const DEFAULT_COLUMNS: TNewColumn[] = [
   {
-    title: DEFAULT_COLUMN_TITLE.ready,
+    title: 'К выполнению',
     description: null,
-    order: 1,
-    color: getRandomRgba(0.7),
+    order: 1000,
+    color: getRandomHexColor(),
   },
   {
-    title: DEFAULT_COLUMN_TITLE.inProgress,
+    title: 'В работе',
     description: null,
-    order: 2,
-    color: getRandomRgba(0.7),
+    order: 2000,
+    color: getRandomHexColor(),
   },
   {
-    title: DEFAULT_COLUMN_TITLE.done,
+    title: 'Выполнено',
     description: null,
-    order: 3,
-    color: getRandomRgba(0.7),
+    order: 3000,
+    color: getRandomHexColor(),
   },
 ];

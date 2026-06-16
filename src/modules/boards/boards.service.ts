@@ -9,7 +9,7 @@ import { DataSource } from 'typeorm';
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { ORDER_STEP } from '@/libs/constants/order.constants';
 import type { TSuccessResponse } from '@/libs/types/response.types';
-import { isDefined } from '@/libs/utils/check.utils';
+import { isDefined, objectHasValues } from '@/libs/utils/check.utils';
 import {
   calculateIntermediateOrder,
   calculateOrderByIndex,
@@ -59,7 +59,8 @@ export class BoardsService {
   }
 
   public async createBoard(body: TCreateBoard): Promise<TCreateBoardResponse> {
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+    if (!body || !objectHasValues(body))
+      throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
 
@@ -68,7 +69,7 @@ export class BoardsService {
     const { boardId } = await manager.save(BoardEntity, {
       title: body.title,
       description: body.description,
-      order: boardsCount === 0 ? 1000 : calculateOrderByIndex(boardsCount),
+      order: calculateOrderByIndex(boardsCount),
       columns: [...structuredClone(DEFAULT_COLUMNS)],
     });
     if (!boardId) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
@@ -78,7 +79,8 @@ export class BoardsService {
 
   public async patchBoard(boardId: number, body: TPatchBoard): Promise<TSuccessResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+    if (!body || !objectHasValues(body))
+      throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
 
@@ -94,12 +96,16 @@ export class BoardsService {
     // TODO: Добавить проверку чтобы было нельзя переместить доску на ту же позицию, на которой она была.
     // TODO: Подумать в сторону отдельного сервиса для перемещения OrderService / MoveService.
 
-    const { manager } = this.dataSource;
+    if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+    if (!body || !objectHasValues(body))
+      throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+
     const { previousBoardId, nextBoardId } = body;
 
-    if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (isDefined(previousBoardId) && isDefined(nextBoardId))
       throw new BadRequestException(EXCEPTION_MESSAGES.onlyOneIdShouldBeSpecified);
+
+    const { manager } = this.dataSource;
 
     return await manager.transaction(async transactionalManager => {
       const boards = await transactionalManager.find(BoardEntity, {

@@ -13,7 +13,7 @@ export type TBoard = TBoardBase & {
 };
 
 export type TCreateBoard = Pick<TBoardBase, 'title'> & Partial<Pick<TBoardBase, 'description'>>;
-export type TCreateBoardResponse = TSuccessResponse<Pick<TBoard, 'boardId'>>;
+export type TCreateBoardResponse = TSuccessResponse<Pick<TBoardBase, 'boardId'>>;
 
 export type TPatchBoard = Partial<Pick<TBoardBase, 'title' | 'description'>>;
 
