@@ -98,105 +98,90 @@ export class BoardService {
         order: { order: 'ASC' },
       });
 
-      const targetBoard = boards.find(({ id }) => id === boardId);
+      const [targetBoard, boardsWithoutTarget] = MoveUtility.separateTarget<BoardEntity>(
+        boards,
+        boardId,
+      );
       if (!targetBoard) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
-
-      // убираем перемещаемую доску элемент, чтобы не учитывать его при нормализации order и поиске соседей.
-      const boardsWithoutTarget = boards.filter(({ id }) => id !== boardId);
       if (!boardsWithoutTarget.length) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
-
-      /** Получить соседние доски, между которыми будет помещена перемещаемая доска. **/
-      const getAdjacentBoards = (
-        searchableId: number,
-        direction: 'previous' | 'next',
-      ): [BoardEntity | undefined, BoardEntity | undefined] => {
-        const searchableBoardIndex = boardsWithoutTarget.findIndex(({ id }) => id === searchableId);
-
-        const adjacentBoardIndex =
-          direction === 'previous' ? searchableBoardIndex + 1 : searchableBoardIndex - 1;
-
-        const searchableBoard = boardsWithoutTarget[searchableBoardIndex];
-        const adjacentBoard = boardsWithoutTarget[adjacentBoardIndex];
-
-        return [searchableBoard, adjacentBoard];
-      };
-
-      /** Установить стандартные значения order для всех досок, кроме перемещаемой.  **/
-      const resetOrders = (): void => {
-        boardsWithoutTarget.forEach((entity, index) => {
-          entity.order = MoveUtility.calculateOrderByIndex(index);
-        });
-      };
-
-      /** Присвоить вычисленное значение order для перемещаемой доски и сохранить изменения.  **/
-      const setTargetOrderAndSave = async (order: number): Promise<void> => {
-        targetBoard.order = order;
-        await transactionalManager.save(BoardEntity, boards);
-      };
 
       const { previousId, nextId } = body;
 
-      // Если передан previousId.
-      if (isDefined(previousId)) {
-        if (previousId) {
-          const [previousBoard, nextBoard] = getAdjacentBoards(previousId, 'previous');
-          if (!previousBoard) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
+      if (isDefined(previousId) && previousId) {
+        const [previousBoard, nextBoard] = MoveUtility.getAdjacent<BoardEntity>(
+          boardsWithoutTarget,
+          previousId,
+          'previous',
+        );
+        if (!previousBoard) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
 
-          // если нет next, значит перемещаемая доска помещается в конец (к order последнего элемента в списке прибавляем 1000).
-          if (!nextBoard) {
-            await setTargetOrderAndSave(previousBoard.order + ORDER_STEP);
-            return getSuccessResponse();
-          }
-
-          // Если между previous и next значение order <= 1 - нормализуем порядок всех досок кроме перемещаемой.
-          if (MoveUtility.needResetOrders(previousBoard.order, nextBoard.order)) {
-            resetOrders();
-          }
-
-          await setTargetOrderAndSave(
-            MoveUtility.calculateIntermediateOrder(previousBoard.order, nextBoard.order),
-          );
-
+        // если нет next, значит перемещаемая доска помещается в конец (к order последнего элемента в списке прибавляем 1000).
+        if (!nextBoard) {
+          targetBoard.order = previousBoard.order + ORDER_STEP;
+          await transactionalManager.save(BoardEntity, boards);
           return getSuccessResponse();
         }
 
-        // previousBoardId === null - помещаем перемещаемую доску первой.
-        const firstBoard = boardsWithoutTarget[0];
-        if (MoveUtility.needResetOrders(0, firstBoard.order)) {
-          resetOrders();
+        // Если между previous и next значение order <= 1 - нормализуем порядок всех досок кроме перемещаемой.
+        if (MoveUtility.needResetOrders(previousBoard.order, nextBoard.order)) {
+          MoveUtility.resetOrders<BoardEntity>(boardsWithoutTarget);
         }
 
-        await setTargetOrderAndSave(MoveUtility.calculateIntermediateOrder(0, firstBoard.order));
+        targetBoard.order = MoveUtility.calculateIntermediateOrder(
+          previousBoard.order,
+          nextBoard.order,
+        );
+        await transactionalManager.save(BoardEntity, boards);
         return getSuccessResponse();
       }
 
-      // Если передан nextId.
-      if (isDefined(nextId)) {
-        if (nextId) {
-          const [nextBoard, previousBoard] = getAdjacentBoards(nextId, 'next');
-          if (!nextBoard) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
+      // если previousId === null
+      if (isDefined(previousId) && !previousId) {
+        // previousId === null - помещаем перемещаемую доску первой.
+        const firstBoard = boardsWithoutTarget[0];
 
-          // если нет previous, значит перемещаемая доска помещается в начало.
-          if (!previousBoard) {
-            await setTargetOrderAndSave(MoveUtility.calculateIntermediateOrder(0, nextBoard.order));
+        if (MoveUtility.needResetOrders(0, firstBoard.order)) {
+          MoveUtility.resetOrders<BoardEntity>(boardsWithoutTarget);
+        }
 
-            return getSuccessResponse();
-          }
+        targetBoard.order = MoveUtility.calculateIntermediateOrder(0, firstBoard.order);
+        await transactionalManager.save(BoardEntity, boards);
+        return getSuccessResponse();
+      }
 
-          // Если между previous и next значение order <= 1 - нормализуем порядок всех досок кроме перемещаемой.
-          if (MoveUtility.needResetOrders(previousBoard.order, nextBoard.order)) {
-            resetOrders();
-          }
+      if (isDefined(nextId) && nextId) {
+        const [nextBoard, previousBoard] = MoveUtility.getAdjacent<BoardEntity>(
+          boardsWithoutTarget,
+          nextId,
+          'next',
+        );
+        if (!nextBoard) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
 
-          await setTargetOrderAndSave(
-            MoveUtility.calculateIntermediateOrder(previousBoard.order, nextBoard.order),
-          );
+        // если нет previous, значит перемещаемая доска помещается в начало.
+        if (!previousBoard) {
+          targetBoard.order = MoveUtility.calculateIntermediateOrder(0, nextBoard.order);
+          await transactionalManager.save(BoardEntity, boards);
           return getSuccessResponse();
         }
 
+        // Если между previous и next значение order <= 1 - нормализуем порядок всех досок кроме перемещаемой.
+        if (MoveUtility.needResetOrders(previousBoard.order, nextBoard.order)) {
+          MoveUtility.resetOrders<BoardEntity>(boardsWithoutTarget);
+        }
+
+        targetBoard.order = MoveUtility.calculateIntermediateOrder(
+          previousBoard.order,
+          nextBoard.order,
+        );
+        await transactionalManager.save(BoardEntity, boards);
+        return getSuccessResponse();
+      }
+
+      if (isDefined(nextId) && !nextId) {
         // если nextBoardId == null - помещаем перемещаемую доску последней.
         const lastBoard = boardsWithoutTarget[boardsWithoutTarget.length - 1];
-        await setTargetOrderAndSave(lastBoard.order + ORDER_STEP);
+        targetBoard.order = lastBoard.order + ORDER_STEP;
+        await transactionalManager.save(BoardEntity, boards);
         return getSuccessResponse();
       }
 
