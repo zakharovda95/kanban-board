@@ -8,14 +8,8 @@ import { cloneDeep } from 'lodash';
 import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import { ORDER_STEP } from '@/libs/constants/order.constants';
 import type { TSuccessResponse } from '@/libs/types/response.types';
 import { isDefined } from '@/libs/utils/check.utils';
-import {
-  calculateIntermediateOrder,
-  calculateOrderByIndex,
-  needResetOrders,
-} from '@/libs/utils/order.utils';
 import { getSuccessResponse, getSuccessResponseWithData } from '@/libs/utils/response.utils';
 import { BoardMapper } from '@/modules/board/board.mapper';
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
@@ -24,10 +18,12 @@ import type {
   TBoardBase,
   TCreateBoard,
   TCreateBoardResponse,
-  TMoveBoard,
   TPatchBoard,
 } from '@/modules/board/libs/types/board.types';
 import { DEFAULT_COLUMNS } from '@/modules/column/libs/constants/column.constants';
+import { ORDER_STEP } from '@/modules/libs/constants/move.constants';
+import { TMoveParameters } from '@/modules/libs/types/move.types';
+import { MoveUtility } from '@/modules/libs/utilities/move.utility';
 
 @Injectable()
 export class BoardService {
@@ -69,7 +65,7 @@ export class BoardService {
     const { id } = await manager.save(BoardEntity, {
       title: body.title,
       description: body.description ?? null,
-      order: calculateOrderByIndex(boardsCount),
+      order: MoveUtility.calculateOrderByIndex(boardsCount),
       columns: cloneDeep(DEFAULT_COLUMNS),
     });
     if (!id) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
@@ -91,14 +87,9 @@ export class BoardService {
     return getSuccessResponse();
   }
 
-  public async moveBoard(boardId: number, body: TMoveBoard): Promise<TSuccessResponse> {
+  public async moveBoard(boardId: number, body: TMoveParameters): Promise<TSuccessResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
-
-    const { previousBoardId, nextBoardId } = body;
-
-    if (isDefined(previousBoardId) && isDefined(nextBoardId))
-      throw new BadRequestException(EXCEPTION_MESSAGES.onlyOneIdShouldBeSpecified);
 
     const { manager } = this.dataSource;
 
@@ -133,7 +124,7 @@ export class BoardService {
       /** Установить стандартные значения order для всех досок, кроме перемещаемой.  **/
       const resetOrders = (): void => {
         boardsWithoutTarget.forEach((entity, index) => {
-          entity.order = calculateOrderByIndex(index);
+          entity.order = MoveUtility.calculateOrderByIndex(index);
         });
       };
 
@@ -143,9 +134,12 @@ export class BoardService {
         await transactionalManager.save(BoardEntity, boards);
       };
 
-      if (isDefined(previousBoardId)) {
-        if (previousBoardId) {
-          const [previousBoard, nextBoard] = getAdjacentBoards(previousBoardId, 'previous');
+      const { previousId, nextId } = body;
+
+      // Если передан previousId.
+      if (isDefined(previousId)) {
+        if (previousId) {
+          const [previousBoard, nextBoard] = getAdjacentBoards(previousId, 'previous');
           if (!previousBoard) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
 
           // если нет next, значит перемещаемая доска помещается в конец (к order последнего элемента в списке прибавляем 1000).
@@ -155,39 +149,47 @@ export class BoardService {
           }
 
           // Если между previous и next значение order <= 1 - нормализуем порядок всех досок кроме перемещаемой.
-          if (needResetOrders(previousBoard.order, nextBoard.order)) resetOrders();
+          if (MoveUtility.needResetOrders(previousBoard.order, nextBoard.order)) {
+            resetOrders();
+          }
 
           await setTargetOrderAndSave(
-            calculateIntermediateOrder(previousBoard.order, nextBoard.order),
+            MoveUtility.calculateIntermediateOrder(previousBoard.order, nextBoard.order),
           );
+
           return getSuccessResponse();
         }
 
         // previousBoardId === null - помещаем перемещаемую доску первой.
         const firstBoard = boardsWithoutTarget[0];
-        if (needResetOrders(0, firstBoard.order)) resetOrders();
+        if (MoveUtility.needResetOrders(0, firstBoard.order)) {
+          resetOrders();
+        }
 
-        await setTargetOrderAndSave(calculateIntermediateOrder(0, firstBoard.order));
+        await setTargetOrderAndSave(MoveUtility.calculateIntermediateOrder(0, firstBoard.order));
         return getSuccessResponse();
       }
 
-      // Если передан nextBoardId.
-      if (isDefined(nextBoardId)) {
-        if (nextBoardId) {
-          const [nextBoard, previousBoard] = getAdjacentBoards(nextBoardId, 'next');
+      // Если передан nextId.
+      if (isDefined(nextId)) {
+        if (nextId) {
+          const [nextBoard, previousBoard] = getAdjacentBoards(nextId, 'next');
           if (!nextBoard) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
 
           // если нет previous, значит перемещаемая доска помещается в начало.
           if (!previousBoard) {
-            await setTargetOrderAndSave(calculateIntermediateOrder(0, nextBoard.order));
+            await setTargetOrderAndSave(MoveUtility.calculateIntermediateOrder(0, nextBoard.order));
+
             return getSuccessResponse();
           }
 
           // Если между previous и next значение order <= 1 - нормализуем порядок всех досок кроме перемещаемой.
-          if (needResetOrders(previousBoard.order, nextBoard.order)) resetOrders();
+          if (MoveUtility.needResetOrders(previousBoard.order, nextBoard.order)) {
+            resetOrders();
+          }
 
           await setTargetOrderAndSave(
-            calculateIntermediateOrder(previousBoard.order, nextBoard.order),
+            MoveUtility.calculateIntermediateOrder(previousBoard.order, nextBoard.order),
           );
           return getSuccessResponse();
         }

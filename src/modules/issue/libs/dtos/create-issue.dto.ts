@@ -1,7 +1,7 @@
 import { IsInt, IsNotEmpty, IsPositive, IsString, MaxLength } from 'class-validator';
 
-import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 import type { TCreateIssue } from '@/modules/issue/libs/types/issue.types';
+import { ValidateIfDefinedAndNotNull } from '@/modules/libs/decorators/validation.decorators';
 
 export class CreateIssueDto implements TCreateIssue {
   @IsString()

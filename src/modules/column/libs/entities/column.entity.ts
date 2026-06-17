@@ -2,10 +2,10 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm
 
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
 import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
-import { OrderedEntity } from '@/modules/shared/libs/entities/ordered.entity';
+import { MovableEntity } from '@/modules/libs/entities/movable.entity';
 
 @Entity('columns')
-export class ColumnEntity extends OrderedEntity {
+export class ColumnEntity extends MovableEntity {
   @Column({ type: 'varchar', length: 128 })
   title: string;
 

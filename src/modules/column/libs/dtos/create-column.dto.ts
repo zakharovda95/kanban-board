@@ -1,7 +1,7 @@
 import { IsHexColor, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 import { TCreateColumn } from '@/modules/column/libs/types/column.types';
+import { ValidateIfDefinedAndNotNull } from '@/modules/libs/decorators/validation.decorators';
 
 export class CreateColumnDto implements TCreateColumn {
   @IsString()

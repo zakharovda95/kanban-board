@@ -13,8 +13,9 @@ import {
 
 import { IssueService } from '@/modules/issue/issue.service';
 import { CreateIssueDto } from '@/modules/issue/libs/dtos/create-issue.dto';
-import { MoveIssueDto } from '@/modules/issue/libs/dtos/move-issue.dto';
 import { UpdateIssueDto } from '@/modules/issue/libs/dtos/update-issue.dto';
+import { MoveDto } from '@/modules/libs/dto/move.dto';
+import { MovePipe } from '@/modules/libs/pipes/move.pipe';
 
 @Controller()
 export class IssueController {
@@ -32,7 +33,7 @@ export class IssueController {
   @HttpCode(HttpStatus.OK)
   public async moveIssue(
     @Param('issueId', ParseIntPipe) issueId: number,
-    @Body() body: MoveIssueDto,
+    @Body(MovePipe) body: MoveDto,
   ): Promise<string> {
     return await this.issueService.moveIssue(issueId, body);
   }

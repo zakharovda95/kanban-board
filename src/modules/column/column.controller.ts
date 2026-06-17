@@ -13,9 +13,11 @@ import {
 import type { TSuccessResponse } from '@/libs/types/response.types';
 import { ColumnService } from '@/modules/column/column.service';
 import { CreateColumnDto } from '@/modules/column/libs/dtos/create-column.dto';
-import { MoveColumnDto } from '@/modules/column/libs/dtos/move-column.dto';
 import { PatchColumnDto } from '@/modules/column/libs/dtos/patch-column.dto';
 import type { TCreateColumnResponse } from '@/modules/column/libs/types/column.types';
+import { MoveDto } from '@/modules/libs/dto/move.dto';
+import { MovePipe } from '@/modules/libs/pipes/move.pipe';
+import { RequireAnyPipe } from '@/modules/libs/pipes/require-any.pipe';
 
 @Controller()
 export class ColumnController {
@@ -33,7 +35,7 @@ export class ColumnController {
   @HttpCode(HttpStatus.OK)
   public async moveColumn(
     @Param('columnId', ParseIntPipe) columnId: number,
-    @Body() body: MoveColumnDto,
+    @Body(MovePipe) body: MoveDto,
   ): Promise<TSuccessResponse> {
     return await this.columnService.moveColumn(columnId, body);
   }
@@ -41,7 +43,7 @@ export class ColumnController {
   @Patch('columns/:columnId')
   public async patchColumn(
     @Param('columnId', ParseIntPipe) columnId: number,
-    @Body() body: PatchColumnDto,
+    @Body(new RequireAnyPipe(['title', 'description', 'color'])) body: PatchColumnDto,
   ): Promise<TSuccessResponse> {
     return this.columnService.patchColumn(columnId, body);
   }

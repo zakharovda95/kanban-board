@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { sleep } from '@/libs/utils/sleep.utils';
-import type {
-  TCreateIssue,
-  TMoveIssue,
-  TUpdateIssue,
-} from '@/modules/issue/libs/types/issue.types';
+import type { TCreateIssue, TUpdateIssue } from '@/modules/issue/libs/types/issue.types';
+import { TMoveParameters } from '@/modules/libs/types/move.types';
 
 @Injectable()
 export class IssueService {
@@ -29,7 +26,7 @@ export class IssueService {
     return `Issue with id ${issueId} was deleted!`;
   }
 
-  public async moveIssue(issueId: number, body: TMoveIssue): Promise<string> {
+  public async moveIssue(issueId: number, body: TMoveParameters): Promise<string> {
     await sleep();
     return `Issue with id ${issueId} was moved with data ${JSON.stringify(body)}!`;
   }

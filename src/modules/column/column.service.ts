@@ -8,17 +8,17 @@ import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import type { TSuccessResponse } from '@/libs/types/response.types';
-import { getRandomHexColor } from '@/libs/utils/color.utils';
-import { calculateOrderByIndex } from '@/libs/utils/order.utils';
 import { getSuccessResponse, getSuccessResponseWithData } from '@/libs/utils/response.utils';
 import { sleep } from '@/libs/utils/sleep.utils';
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
 import type {
   TCreateColumn,
   TCreateColumnResponse,
-  TMoveColumn,
   TPatchColumn,
 } from '@/modules/column/libs/types/column.types';
+import { TMoveParameters } from '@/modules/libs/types/move.types';
+import { ColorUtility } from '@/modules/libs/utilities/color.utility';
+import { MoveUtility } from '@/modules/libs/utilities/move.utility';
 
 @Injectable()
 export class ColumnService {
@@ -34,8 +34,8 @@ export class ColumnService {
     const { id } = await manager.save(ColumnEntity, {
       title: body.title,
       description: body?.description ?? null,
-      color: body.color || getRandomHexColor(),
-      order: calculateOrderByIndex(columnsCount),
+      color: body.color || ColorUtility.getRandomHexColor(),
+      order: MoveUtility.calculateOrderByIndex(columnsCount),
       boardId: boardId,
     });
     if (!id) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
@@ -43,7 +43,7 @@ export class ColumnService {
     return getSuccessResponseWithData({ id });
   }
 
-  public async moveColumn(columnId: number, body: TMoveColumn): Promise<TSuccessResponse> {
+  public async moveColumn(columnId: number, body: TMoveParameters): Promise<TSuccessResponse> {
     if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 

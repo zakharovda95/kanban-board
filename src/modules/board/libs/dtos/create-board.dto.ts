@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 import type { TCreateBoard } from '@/modules/board/libs/types/board.types';
+import { ValidateIfDefinedAndNotNull } from '@/modules/libs/decorators/validation.decorators';
 
 export class CreateBoardDto implements TCreateBoard {
   @IsString()

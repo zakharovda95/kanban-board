@@ -16,8 +16,3 @@ export type TCreateBoard = Pick<TBoardBase, 'title'> & Partial<Pick<TBoardBase, 
 export type TCreateBoardResponse = TSuccessResponse<Pick<TBoardBase, 'id'>>;
 
 export type TPatchBoard = Partial<Pick<TBoardBase, 'title' | 'description'>>;
-
-export type TMoveBoard = {
-  previousBoardId?: number | null;
-  nextBoardId?: number | null;
-};
