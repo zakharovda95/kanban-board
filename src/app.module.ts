@@ -3,17 +3,17 @@ import { ConfigModule } from '@nestjs/config';
 
 import { InfrastructureModule } from '@/infrastructure/infrastructure.module';
 import { APP_CONFIG_OPTIONS } from '@/libs/constants/app-config.constants';
-import { BoardsModule } from '@/modules/boards/boards.module';
-import { ColumnsModule } from '@/modules/columns/columns.module';
-import { IssuesModule } from '@/modules/issues/issues.module';
+import { BoardModule } from '@/modules/board/board.module';
+import { ColumnModule } from '@/modules/column/column.module';
+import { IssueModule } from '@/modules/issue/issue.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(APP_CONFIG_OPTIONS),
     InfrastructureModule,
-    BoardsModule,
-    ColumnsModule,
-    IssuesModule,
+    BoardModule,
+    ColumnModule,
+    IssueModule,
   ],
 })
 export class AppModule {}
