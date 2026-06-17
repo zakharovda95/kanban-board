@@ -17,16 +17,19 @@ import { MoveColumnDto } from '@/modules/column/libs/dtos/move-column.dto';
 import { PatchColumnDto } from '@/modules/column/libs/dtos/patch-column.dto';
 import type { TCreateColumnResponse } from '@/modules/column/libs/types/column.types';
 
-@Controller('columns')
+@Controller()
 export class ColumnController {
   constructor(private columnService: ColumnService) {}
 
-  @Post()
-  public async createColumn(@Body() body: CreateColumnDto): Promise<TCreateColumnResponse> {
-    return await this.columnService.createColumn(body);
+  @Post('boards/:boardId/columns')
+  public async createColumn(
+    @Param('boardId', ParseIntPipe) boardId: number,
+    @Body() body: CreateColumnDto,
+  ): Promise<TCreateColumnResponse> {
+    return await this.columnService.createColumn(boardId, body);
   }
 
-  @Post(':columnId/move')
+  @Post('columns/:columnId/move')
   @HttpCode(HttpStatus.OK)
   public async moveColumn(
     @Param('columnId', ParseIntPipe) columnId: number,
@@ -35,7 +38,7 @@ export class ColumnController {
     return await this.columnService.moveColumn(columnId, body);
   }
 
-  @Patch(':columnId')
+  @Patch('columns/:columnId')
   public async patchColumn(
     @Param('columnId', ParseIntPipe) columnId: number,
     @Body() body: PatchColumnDto,
@@ -43,7 +46,7 @@ export class ColumnController {
     return this.columnService.patchColumn(columnId, body);
   }
 
-  @Delete(':columnId')
+  @Delete('columns/:columnId')
   public async deleteColumn(
     @Param('columnId', ParseIntPipe) columnId: number,
   ): Promise<TSuccessResponse> {

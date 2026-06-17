@@ -17,22 +17,17 @@ export class BoardMapper {
     entity: BoardEntity | BoardEntity[],
     options?: { withRelations: true } | { withRelations?: false },
   ): TBoardBase | TBoard | TBoardBase[] | TBoard[] {
-    const map = ({
-      boardId,
-      title,
-      description,
-      order,
-      columns,
-    }: BoardEntity): TBoardBase | TBoard => {
+    const map = (innerEntity: BoardEntity): TBoardBase | TBoard => {
       const mapped: TBoardBase = {
-        boardId,
-        title,
-        description,
-        order,
+        id: innerEntity.id,
+        title: innerEntity.title,
+        description: innerEntity.description,
+        order: innerEntity.order,
       };
-      if (!options?.withRelations || columns == null) return mapped;
 
-      return { ...mapped, columns: this.columnMapper.toModel(columns) };
+      if (!options?.withRelations || innerEntity.columns == null) return mapped;
+
+      return { ...mapped, columns: this.columnMapper.toModel(innerEntity.columns) };
     };
 
     return Array.isArray(entity) ? entity.map(innerEntity => map(innerEntity)) : map(entity);

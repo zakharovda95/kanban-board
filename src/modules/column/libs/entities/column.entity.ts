@@ -1,25 +1,11 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
-import { CreatedUpdatedDeletedAtEntity } from '@/libs/entities/created-updated-deleted-at.entity';
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
 import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
+import { OrderedEntity } from '@/modules/shared/libs/entities/ordered.entity';
 
 @Entity('columns')
-export class ColumnEntity {
-  @PrimaryGeneratedColumn()
-  columnId: number;
-
-  @Column(() => CreatedUpdatedDeletedAtEntity, { prefix: false })
-  createdUpdatedDeletedAt: CreatedUpdatedDeletedAtEntity;
-
+export class ColumnEntity extends OrderedEntity {
   @Column({ type: 'varchar', length: 128 })
   title: string;
 
@@ -28,9 +14,6 @@ export class ColumnEntity {
 
   @Column('varchar')
   color: string;
-
-  @Column()
-  order: number;
 
   @Index()
   @Column()

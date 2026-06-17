@@ -2,7 +2,7 @@ import type { TSuccessResponse } from '@/libs/types/response.types';
 import type { TColumn } from '@/modules/column/libs/types/column.types';
 
 export type TBoardBase = {
-  boardId: number;
+  id: number;
   title: string;
   order: number;
   description: string | null;
@@ -13,7 +13,7 @@ export type TBoard = TBoardBase & {
 };
 
 export type TCreateBoard = Pick<TBoardBase, 'title'> & Partial<Pick<TBoardBase, 'description'>>;
-export type TCreateBoardResponse = TSuccessResponse<Pick<TBoardBase, 'boardId'>>;
+export type TCreateBoardResponse = TSuccessResponse<Pick<TBoardBase, 'id'>>;
 
 export type TPatchBoard = Partial<Pick<TBoardBase, 'title' | 'description'>>;
 

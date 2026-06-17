@@ -1,24 +1,15 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
-import { CreatedUpdatedDeletedAtEntity } from '@/libs/entities/created-updated-deleted-at.entity';
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
+import { OrderedEntity } from '@/modules/shared/libs/entities/ordered.entity';
 
 @Entity('issues')
-export class IssueEntity {
-  @PrimaryGeneratedColumn()
-  issueId: number;
-
-  @Column(() => CreatedUpdatedDeletedAtEntity, { prefix: false })
-  createdUpdatedDeletedAt: CreatedUpdatedDeletedAtEntity;
-
+export class IssueEntity extends OrderedEntity {
   @Column({ type: 'varchar', length: 128 })
   title: string;
 
   @Column({ type: 'text', nullable: true })
   description: string | null;
-
-  @Column()
-  order: number;
 
   @Index()
   @Column()

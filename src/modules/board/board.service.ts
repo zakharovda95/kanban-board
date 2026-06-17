@@ -51,7 +51,7 @@ export class BoardService {
     const { manager } = this.dataSource;
 
     const board = await manager.findOne(BoardEntity, {
-      where: { boardId },
+      where: { id: boardId },
       relations: { columns: { issues: true } },
     });
     if (!board) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
@@ -66,15 +66,15 @@ export class BoardService {
 
     const boardsCount = await manager.count(BoardEntity);
 
-    const { boardId } = await manager.save(BoardEntity, {
+    const { id } = await manager.save(BoardEntity, {
       title: body.title,
-      description: body.description,
+      description: body.description ?? null,
       order: calculateOrderByIndex(boardsCount),
       columns: cloneDeep(DEFAULT_COLUMNS),
     });
-    if (!boardId) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
+    if (!id) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
 
-    return getSuccessResponseWithData({ boardId });
+    return getSuccessResponseWithData({ id });
   }
 
   public async patchBoard(boardId: number, body: TPatchBoard): Promise<TSuccessResponse> {
@@ -83,7 +83,7 @@ export class BoardService {
 
     const { manager } = this.dataSource;
 
-    const board = await manager.findOne(BoardEntity, { where: { boardId } });
+    const board = await manager.findOne(BoardEntity, { where: { id: boardId } });
     if (!board) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
     await manager.save(Object.assign(board, body));
@@ -107,11 +107,11 @@ export class BoardService {
         order: { order: 'ASC' },
       });
 
-      const targetBoard = boards.find(entity => entity.boardId === boardId);
+      const targetBoard = boards.find(({ id }) => id === boardId);
       if (!targetBoard) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
       // убираем перемещаемую доску элемент, чтобы не учитывать его при нормализации order и поиске соседей.
-      const boardsWithoutTarget = boards.filter(entity => entity.boardId !== boardId);
+      const boardsWithoutTarget = boards.filter(({ id }) => id !== boardId);
       if (!boardsWithoutTarget.length) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
 
       /** Получить соседние доски, между которыми будет помещена перемещаемая доска. **/
@@ -119,9 +119,7 @@ export class BoardService {
         searchableId: number,
         direction: 'previous' | 'next',
       ): [BoardEntity | undefined, BoardEntity | undefined] => {
-        const searchableBoardIndex = boardsWithoutTarget.findIndex(
-          ({ boardId }) => boardId === searchableId,
-        );
+        const searchableBoardIndex = boardsWithoutTarget.findIndex(({ id }) => id === searchableId);
 
         const adjacentBoardIndex =
           direction === 'previous' ? searchableBoardIndex + 1 : searchableBoardIndex - 1;
@@ -209,7 +207,7 @@ export class BoardService {
 
     const { manager } = this.dataSource;
 
-    const { affected } = await manager.delete(BoardEntity, { boardId });
+    const { affected } = await manager.delete(BoardEntity, { id: boardId });
     if (!affected || affected <= 0)
       throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
 

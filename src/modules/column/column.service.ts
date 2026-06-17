@@ -24,23 +24,23 @@ import type {
 export class ColumnService {
   constructor(private dataSource: DataSource) {}
 
-  public async createColumn(body: TCreateColumn): Promise<TCreateColumnResponse> {
+  public async createColumn(boardId: number, body: TCreateColumn): Promise<TCreateColumnResponse> {
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
 
-    const columnsCount = await manager.count(ColumnEntity, { where: { boardId: body.boardId } });
+    const columnsCount = await manager.count(ColumnEntity, { where: { boardId } });
 
-    const { columnId } = await manager.save(ColumnEntity, {
+    const { id } = await manager.save(ColumnEntity, {
       title: body.title,
       description: body?.description ?? null,
       color: body.color || getRandomHexColor(),
       order: calculateOrderByIndex(columnsCount),
-      boardId: body.boardId,
+      boardId: boardId,
     });
-    if (!columnId) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
+    if (!id) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
 
-    return getSuccessResponseWithData({ columnId });
+    return getSuccessResponseWithData({ id });
   }
 
   public async moveColumn(columnId: number, body: TMoveColumn): Promise<TSuccessResponse> {
@@ -58,8 +58,9 @@ export class ColumnService {
 
     const { manager } = this.dataSource;
 
-    const column = await manager.findOne(ColumnEntity, { where: { columnId } });
+    const column = await manager.findOne(ColumnEntity, { where: { id: columnId } });
     if (!column) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+
     await manager.save(Object.assign(column, body));
 
     return getSuccessResponse();
@@ -70,7 +71,7 @@ export class ColumnService {
 
     const { manager } = this.dataSource;
 
-    const { affected } = await manager.delete(ColumnEntity, { columnId });
+    const { affected } = await manager.delete(ColumnEntity, { id: columnId });
     if (!affected || affected <= 0)
       throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
 

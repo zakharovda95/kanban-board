@@ -9,9 +9,9 @@ export class IssueMapper {
   public toModel(entity: IssueEntity[]): TIssue[];
   public toModel(entity: IssueEntity | IssueEntity[]): TIssue | TIssue[] {
     const map = (innerEntity: IssueEntity): TIssue => ({
-      issueId: innerEntity.issueId,
-      createdAt: innerEntity.createdUpdatedDeletedAt.createdAt,
-      updatedAt: innerEntity.createdUpdatedDeletedAt.updatedAt,
+      id: innerEntity.id,
+      createdAt: innerEntity.createdAt,
+      updatedAt: innerEntity.updatedAt,
       title: innerEntity.title,
       description: innerEntity.description,
       columnId: innerEntity.columnId,

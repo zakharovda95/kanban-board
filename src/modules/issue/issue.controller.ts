@@ -1,42 +1,57 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 
 import { IssueService } from '@/modules/issue/issue.service';
 import { CreateIssueDto } from '@/modules/issue/libs/dtos/create-issue.dto';
 import { MoveIssueDto } from '@/modules/issue/libs/dtos/move-issue.dto';
 import { UpdateIssueDto } from '@/modules/issue/libs/dtos/update-issue.dto';
 
-@Controller('issues')
+@Controller()
 export class IssueController {
-  constructor(private issuesService: IssueService) {}
+  constructor(private issueService: IssueService) {}
 
-  @Post()
-  public async createIssue(@Body() body: CreateIssueDto): Promise<string> {
-    return await this.issuesService.createIssue(body);
+  @Post('columns/:columnId/issues')
+  public async createIssue(
+    @Param('columnId', ParseIntPipe) columnId: number,
+    @Body() body: CreateIssueDto,
+  ): Promise<string> {
+    return await this.issueService.createIssue(body);
   }
 
-  @Post(':issueId/move')
+  @Post('issues/:issueId/move')
+  @HttpCode(HttpStatus.OK)
   public async moveIssue(
     @Param('issueId', ParseIntPipe) issueId: number,
     @Body() body: MoveIssueDto,
   ): Promise<string> {
-    return await this.issuesService.moveIssue(issueId, body);
+    return await this.issueService.moveIssue(issueId, body);
   }
 
-  @Get(':issueId')
+  @Get('issues/:issueId')
   public async getIssueById(@Param('issueId', ParseIntPipe) issueId: number): Promise<string> {
-    return this.issuesService.getIssueById(issueId);
+    return this.issueService.getIssueById(issueId);
   }
 
-  @Put(':issueId')
+  @Put('issues/:issueId')
   public async updateIssue(
     @Param('issueId', ParseIntPipe) issueId: number,
     @Body() body: UpdateIssueDto,
   ): Promise<string> {
-    return await this.issuesService.updateIssue(issueId, body);
+    return await this.issueService.updateIssue(issueId, body);
   }
 
-  @Delete(':issueId')
+  @Delete('issues/:issueId')
   public async deleteIssue(@Param('issueId', ParseIntPipe) issueId: number): Promise<string> {
-    return await this.issuesService.deleteIssue(issueId);
+    return await this.issueService.deleteIssue(issueId);
   }
 }

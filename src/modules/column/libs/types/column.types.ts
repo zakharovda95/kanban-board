@@ -2,7 +2,7 @@ import { TSuccessResponse } from '@/libs/types/response.types';
 import type { TIssue } from '@/modules/issue/libs/types/issue.types';
 
 export type TColumnBase = {
-  columnId: number;
+  id: number;
   title: string;
   description: string | null;
   order: number;
@@ -14,10 +14,10 @@ export type TColumn = TColumnBase & {
   issues: TIssue[];
 };
 
-export type TCreateColumn = Pick<TColumnBase, 'title' | 'color' | 'boardId'> &
+export type TCreateColumn = Pick<TColumnBase, 'title' | 'color'> &
   Partial<Pick<TColumnBase, 'description'>>;
 
-export type TCreateColumnResponse = TSuccessResponse<Pick<TColumnBase, 'columnId'>>;
+export type TCreateColumnResponse = TSuccessResponse<Pick<TColumnBase, 'id'>>;
 
 export type TNewColumn = Pick<TColumnBase, 'title' | 'description' | 'order' | 'color'>;
 
