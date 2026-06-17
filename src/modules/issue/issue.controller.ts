@@ -14,8 +14,8 @@ import {
 import { IssueService } from '@/modules/issue/issue.service';
 import { CreateIssueDto } from '@/modules/issue/libs/dtos/create-issue.dto';
 import { UpdateIssueDto } from '@/modules/issue/libs/dtos/update-issue.dto';
-import { MoveDto } from '@/modules/libs/dto/move.dto';
-import { MovePipe } from '@/modules/libs/pipes/move.pipe';
+import { MoveDto } from '@/modules/shared/move/libs/dto/move.dto';
+import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 
 @Controller()
 export class IssueController {

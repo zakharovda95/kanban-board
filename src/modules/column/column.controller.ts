@@ -10,14 +10,14 @@ import {
   Post,
 } from '@nestjs/common';
 
+import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
 import type { TSuccessResponse } from '@/libs/types/response.types';
 import { ColumnService } from '@/modules/column/column.service';
 import { CreateColumnDto } from '@/modules/column/libs/dtos/create-column.dto';
 import { PatchColumnDto } from '@/modules/column/libs/dtos/patch-column.dto';
 import type { TCreateColumnResponse } from '@/modules/column/libs/types/column.types';
-import { MoveDto } from '@/modules/libs/dto/move.dto';
-import { MovePipe } from '@/modules/libs/pipes/move.pipe';
-import { RequireAnyPipe } from '@/modules/libs/pipes/require-any.pipe';
+import { MoveDto } from '@/modules/shared/move/libs/dto/move.dto';
+import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 
 @Controller()
 export class ColumnController {

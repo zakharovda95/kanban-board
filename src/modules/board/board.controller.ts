@@ -11,6 +11,7 @@ import {
   Post,
 } from '@nestjs/common';
 
+import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
 import type { TSuccessResponse } from '@/libs/types/response.types';
 import { BoardService } from '@/modules/board/board.service';
 import { CreateBoardDto } from '@/modules/board/libs/dtos/create-board.dto';
@@ -20,9 +21,8 @@ import type {
   TBoardBase,
   TCreateBoardResponse,
 } from '@/modules/board/libs/types/board.types';
-import { MoveDto } from '@/modules/libs/dto/move.dto';
-import { MovePipe } from '@/modules/libs/pipes/move.pipe';
-import { RequireAnyPipe } from '@/modules/libs/pipes/require-any.pipe';
+import { MoveDto } from '@/modules/shared/move/libs/dto/move.dto';
+import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 
 @Controller('boards')
 export class BoardController {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { sleep } from '@/libs/utils/sleep.utils';
+import { sleep } from '@/libs/utilities/sleep.utils';
 import type { TCreateIssue, TUpdateIssue } from '@/modules/issue/libs/types/issue.types';
-import { TMoveParameters } from '@/modules/libs/types/move.types';
+import { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 
 @Injectable()
 export class IssueService {

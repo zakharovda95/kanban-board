@@ -1,0 +1,27 @@
+import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
+import { ORDER_STEP } from '@/libs/constants/order.constants';
+import { isNull, isNullOrUndefined } from '@/libs/utilities/check.utilities';
+
+export class OrderUtility {
+  public static calculateOrderByIndex(index: number): number {
+    if (isNullOrUndefined(index)) throw new Error(EXCEPTION_MESSAGES.paramsNotFound);
+    return (Math.floor(index) + 1) * ORDER_STEP;
+  }
+
+  public static calculateIntermediateOrder(previousOrder: number, nextOrder: number): number {
+    if (isNullOrUndefined(previousOrder) || isNullOrUndefined(nextOrder))
+      throw new Error(EXCEPTION_MESSAGES.paramsNotFound);
+    return Math.floor((previousOrder + nextOrder) / 2);
+  }
+
+  public static calculateNextOrder(order: number): number {
+    if (isNullOrUndefined(order)) throw new Error(EXCEPTION_MESSAGES.paramsNotFound);
+    return order + ORDER_STEP;
+  }
+
+  public static needResetOrders(previousOrder: number, nextOrder: number): boolean {
+    if (isNull(previousOrder) || isNull(nextOrder))
+      throw new Error(EXCEPTION_MESSAGES.paramsNotFound);
+    return nextOrder - previousOrder <= 1;
+  }
+}

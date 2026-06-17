@@ -2,7 +2,7 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm
 
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
 import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
-import { MovableEntity } from '@/modules/libs/entities/movable.entity';
+import { MovableEntity } from '@/modules/shared/move/libs/entities/movable.entity';
 
 @Entity('columns')
 export class ColumnEntity extends MovableEntity {

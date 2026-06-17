@@ -1,7 +1,7 @@
 import { IsInt, IsPositive } from 'class-validator';
 
-import { ValidateIfDefinedAndNotNull } from '@/modules/libs/decorators/validation.decorators';
-import { TMoveParameters } from '@/modules/libs/types/move.types';
+import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
+import { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 
 export class MoveDto implements TMoveParameters {
   @ValidateIfDefinedAndNotNull()

@@ -1,7 +1,7 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
-import { MovableEntity } from '@/modules/libs/entities/movable.entity';
+import { MovableEntity } from '@/modules/shared/move/libs/entities/movable.entity';
 
 @Entity('issues')
 export class IssueEntity extends MovableEntity {

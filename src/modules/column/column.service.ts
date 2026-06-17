@@ -8,17 +8,20 @@ import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import type { TSuccessResponse } from '@/libs/types/response.types';
-import { getSuccessResponse, getSuccessResponseWithData } from '@/libs/utils/response.utils';
-import { sleep } from '@/libs/utils/sleep.utils';
+import { ColorUtility } from '@/libs/utilities/color.utility';
+import { OrderUtility } from '@/libs/utilities/order.utility';
+import {
+  getSuccessResponse,
+  getSuccessResponseWithData,
+} from '@/libs/utilities/response.utilities';
+import { sleep } from '@/libs/utilities/sleep.utils';
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
 import type {
   TCreateColumn,
   TCreateColumnResponse,
   TPatchColumn,
 } from '@/modules/column/libs/types/column.types';
-import { TMoveParameters } from '@/modules/libs/types/move.types';
-import { ColorUtility } from '@/modules/libs/utilities/color.utility';
-import { MoveUtility } from '@/modules/libs/utilities/move.utility';
+import { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 
 @Injectable()
 export class ColumnService {
@@ -35,7 +38,7 @@ export class ColumnService {
       title: body.title,
       description: body?.description ?? null,
       color: body.color || ColorUtility.getRandomHexColor(),
-      order: MoveUtility.calculateOrderByIndex(columnsCount),
+      order: OrderUtility.calculateOrderByIndex(columnsCount),
       boardId: boardId,
     });
     if (!id) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);

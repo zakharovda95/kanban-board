@@ -1,5 +1,5 @@
+import { ColorUtility } from '@/libs/utilities/color.utility';
 import type { TNewColumn } from '@/modules/column/libs/types/column.types';
-import { ColorUtility } from '@/modules/libs/utilities/color.utility';
 
 export const DEFAULT_COLUMNS: TNewColumn[] = [
   {

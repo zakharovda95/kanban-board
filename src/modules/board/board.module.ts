@@ -6,9 +6,10 @@ import { BoardMapper } from '@/modules/board/board.mapper';
 import { BoardService } from '@/modules/board/board.service';
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
 import { ColumnModule } from '@/modules/column/column.module';
+import { MoveModule } from '@/modules/shared/move/move.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BoardEntity]), ColumnModule],
+  imports: [TypeOrmModule.forFeature([BoardEntity]), ColumnModule, MoveModule],
   controllers: [BoardController],
   providers: [BoardService, BoardMapper],
   exports: [BoardService],

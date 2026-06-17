@@ -1,10 +1,10 @@
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-import type { TPatchBoard } from '@/modules/board/libs/types/board.types';
 import {
   ValidateIfDefined,
   ValidateIfDefinedAndNotNull,
-} from '@/modules/libs/decorators/validation.decorators';
+} from '@/libs/decorators/validation.decorators';
+import type { TPatchBoard } from '@/modules/board/libs/types/board.types';
 
 export class PatchBoardDto implements TPatchBoard {
   @ValidateIfDefined()

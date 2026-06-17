@@ -1,7 +1,7 @@
 import { IsHexColor, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
+import { ValidateIfDefined } from '@/libs/decorators/validation.decorators';
 import type { TPatchColumn } from '@/modules/column/libs/types/column.types';
-import { ValidateIfDefined } from '@/modules/libs/decorators/validation.decorators';
 
 export class PatchColumnDto implements TPatchColumn {
   @ValidateIfDefined()
