@@ -21,7 +21,7 @@ import type {
   TBoardBase,
   TCreateBoardResponse,
 } from '@/modules/board/libs/types/board.types';
-import { MoveDto } from '@/modules/shared/move/libs/dto/move.dto';
+import { MoveParametersDto } from '@/modules/shared/move/libs/dto/move-parameters.dto';
 import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 
 @Controller('boards')
@@ -42,7 +42,7 @@ export class BoardController {
   @HttpCode(HttpStatus.OK)
   public async moveBoard(
     @Param('boardId', ParseIntPipe) boardId: number,
-    @Body(MovePipe) body: MoveDto,
+    @Body(MovePipe) body: MoveParametersDto,
   ): Promise<TSuccessResponse> {
     return await this.boardService.moveBoard(boardId, body);
   }

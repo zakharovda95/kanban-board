@@ -16,7 +16,7 @@ import { ColumnService } from '@/modules/column/column.service';
 import { CreateColumnDto } from '@/modules/column/libs/dtos/create-column.dto';
 import { PatchColumnDto } from '@/modules/column/libs/dtos/patch-column.dto';
 import type { TCreateColumnResponse } from '@/modules/column/libs/types/column.types';
-import { MoveDto } from '@/modules/shared/move/libs/dto/move.dto';
+import { MoveParametersDto } from '@/modules/shared/move/libs/dto/move-parameters.dto';
 import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 
 @Controller()
@@ -35,7 +35,7 @@ export class ColumnController {
   @HttpCode(HttpStatus.OK)
   public async moveColumn(
     @Param('columnId', ParseIntPipe) columnId: number,
-    @Body(MovePipe) body: MoveDto,
+    @Body(MovePipe) body: MoveParametersDto,
   ): Promise<TSuccessResponse> {
     return await this.columnService.moveColumn(columnId, body);
   }

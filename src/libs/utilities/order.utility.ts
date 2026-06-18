@@ -1,6 +1,6 @@
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { ORDER_STEP } from '@/libs/constants/order.constants';
-import { isNull, isNullOrUndefined } from '@/libs/utilities/check.utilities';
+import { isNullOrUndefined } from '@/libs/utilities/check.utilities';
 
 export class OrderUtility {
   public static calculateOrderByIndex(index: number): number {
@@ -20,7 +20,7 @@ export class OrderUtility {
   }
 
   public static needResetOrders(previousOrder: number, nextOrder: number): boolean {
-    if (isNull(previousOrder) || isNull(nextOrder))
+    if (isNullOrUndefined(previousOrder) || isNullOrUndefined(nextOrder))
       throw new Error(EXCEPTION_MESSAGES.paramsNotFound);
     return nextOrder - previousOrder <= 1;
   }
