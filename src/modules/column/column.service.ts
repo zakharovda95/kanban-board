@@ -20,7 +20,7 @@ import type {
   TCreateColumnResponse,
   TPatchColumn,
 } from '@/modules/column/libs/types/column.types';
-import { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
+import type { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 import { MoveService } from '@/modules/shared/move/move.service';
 
 @Injectable()

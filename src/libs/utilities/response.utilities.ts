@@ -1,4 +1,4 @@
-import { TSuccessResponse } from '@/libs/types/response.types';
+import type { TSuccessResponse } from '@/libs/types/response.types';
 
 export function getSuccessResponse(): TSuccessResponse {
   return { isSuccess: true };

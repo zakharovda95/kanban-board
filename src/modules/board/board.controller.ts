@@ -33,6 +33,11 @@ export class BoardController {
     return await this.boardService.getBoards();
   }
 
+  @Get(':boardId')
+  public async getBoardById(@Param('boardId', ParseIntPipe) boardId: number): Promise<TBoard> {
+    return await this.boardService.getBoardById(boardId);
+  }
+
   @Post()
   public async createBoard(@Body() body: CreateBoardDto): Promise<TCreateBoardResponse> {
     return await this.boardService.createBoard(body);
@@ -45,11 +50,6 @@ export class BoardController {
     @Body(MovePipe) body: MoveParametersDto,
   ): Promise<TSuccessResponse> {
     return await this.boardService.moveBoard(boardId, body);
-  }
-
-  @Get(':boardId')
-  public async getBoardById(@Param('boardId', ParseIntPipe) boardId: number): Promise<TBoard> {
-    return await this.boardService.getBoardById(boardId);
   }
 
   @Patch(':boardId')

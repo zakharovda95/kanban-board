@@ -1,4 +1,4 @@
-import { TSuccessResponse } from '@/libs/types/response.types';
+import type { TSuccessResponse } from '@/libs/types/response.types';
 import type { TIssue } from '@/modules/issue/libs/types/issue.types';
 
 export type TColumnBase = {

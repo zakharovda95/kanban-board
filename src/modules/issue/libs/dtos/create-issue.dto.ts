@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsPositive, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 import type { TCreateIssue } from '@/modules/issue/libs/types/issue.types';
@@ -12,8 +12,4 @@ export class CreateIssueDto implements TCreateIssue {
   @ValidateIfDefinedAndNotNull()
   @IsString()
   description: string | null;
-
-  @IsInt()
-  @IsPositive()
-  columnId: number;
 }

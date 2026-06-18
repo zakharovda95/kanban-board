@@ -24,7 +24,7 @@ import type {
   TPatchBoard,
 } from '@/modules/board/libs/types/board.types';
 import { DEFAULT_COLUMNS } from '@/modules/column/libs/constants/column.constants';
-import { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
+import type { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 import { MoveService } from '@/modules/shared/move/move.service';
 
 @Injectable()
@@ -77,20 +77,6 @@ export class BoardService {
     return getSuccessResponseWithData({ id });
   }
 
-  public async patchBoard(boardId: number, body: TPatchBoard): Promise<TSuccessResponse> {
-    if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
-
-    const { manager } = this.dataSource;
-
-    const board = await manager.findOne(BoardEntity, { where: { id: boardId } });
-    if (!board) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
-
-    await manager.save(Object.assign(board, body));
-
-    return getSuccessResponse();
-  }
-
   public async moveBoard(boardId: number, body: TMoveParameters): Promise<TSuccessResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
@@ -107,6 +93,20 @@ export class BoardService {
 
       return getSuccessResponse();
     });
+  }
+
+  public async patchBoard(boardId: number, body: TPatchBoard): Promise<TSuccessResponse> {
+    if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+
+    const { manager } = this.dataSource;
+
+    const board = await manager.findOne(BoardEntity, { where: { id: boardId } });
+    if (!board) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+
+    await manager.save(Object.assign(board, body));
+
+    return getSuccessResponse();
   }
 
   public async deleteBoard(boardId: number): Promise<TSuccessResponse> {
