@@ -6,9 +6,10 @@ import { ColumnMapper } from '@/modules/column/column.mapper';
 import { ColumnService } from '@/modules/column/column.service';
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
 import { IssueModule } from '@/modules/issue/issue.module';
+import { MoveModule } from '@/modules/shared/move/move.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ColumnEntity]), IssueModule],
+  imports: [TypeOrmModule.forFeature([ColumnEntity]), IssueModule, MoveModule],
   controllers: [ColumnController],
   providers: [ColumnService, ColumnMapper],
   exports: [ColumnService, ColumnMapper],

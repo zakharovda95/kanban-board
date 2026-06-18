@@ -52,6 +52,7 @@ export class BoardService {
     const board = await manager.findOne(BoardEntity, {
       where: { id: boardId },
       relations: { columns: { issues: true } },
+      order: { order: 'ASC', columns: { order: 'ASC', issues: { order: 'ASC' } } },
     });
     if (!board) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 

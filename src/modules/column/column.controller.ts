@@ -31,13 +31,14 @@ export class ColumnController {
     return await this.columnService.createColumn(boardId, body);
   }
 
-  @Post('columns/:columnId/move')
+  @Post('boards/:boardId/columns/:columnId/move')
   @HttpCode(HttpStatus.OK)
   public async moveColumn(
+    @Param('boardId', ParseIntPipe) boardId: number,
     @Param('columnId', ParseIntPipe) columnId: number,
     @Body(MovePipe) body: MoveParametersDto,
   ): Promise<TSuccessResponse> {
-    return await this.columnService.moveColumn(columnId, body);
+    return await this.columnService.moveColumn(boardId, columnId, body);
   }
 
   @Patch('columns/:columnId')

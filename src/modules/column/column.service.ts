@@ -14,7 +14,6 @@ import {
   getSuccessResponse,
   getSuccessResponseWithData,
 } from '@/libs/utilities/response.utilities';
-import { sleep } from '@/libs/utilities/sleep.utils';
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
 import type {
   TCreateColumn,
@@ -22,10 +21,14 @@ import type {
   TPatchColumn,
 } from '@/modules/column/libs/types/column.types';
 import { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
+import { MoveService } from '@/modules/shared/move/move.service';
 
 @Injectable()
 export class ColumnService {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    private dataSource: DataSource,
+    private moveService: MoveService<ColumnEntity>,
+  ) {}
 
   public async createColumn(boardId: number, body: TCreateColumn): Promise<TCreateColumnResponse> {
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
@@ -46,13 +49,26 @@ export class ColumnService {
     return getSuccessResponseWithData({ id });
   }
 
-  public async moveColumn(columnId: number, body: TMoveParameters): Promise<TSuccessResponse> {
-    if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+  public async moveColumn(
+    boardId: number,
+    columnId: number,
+    body: TMoveParameters,
+  ): Promise<TSuccessResponse> {
+    if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
-    await sleep();
+    const { manager } = this.dataSource;
+    return manager.transaction(async transactionalManager => {
+      const columns = await transactionalManager.find(ColumnEntity, {
+        where: { boardId },
+        order: { order: 'ASC' },
+      });
 
-    return getSuccessResponse();
+      this.moveService.tryToMove(columns, columnId, body);
+      await transactionalManager.save(ColumnEntity, columns);
+
+      return getSuccessResponse();
+    });
   }
 
   public async patchColumn(columnId: number, body: TPatchColumn): Promise<TSuccessResponse> {
