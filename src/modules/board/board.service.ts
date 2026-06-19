@@ -77,6 +77,18 @@ export class BoardService {
     return getSuccessResponseWithData({ id });
   }
 
+  /**
+   * Изменить порядок досок в "пространстве".
+   * Правила перемещения:
+   * - Должен быть указан только previousId или nextId, но не оба сразу.
+   * - Если previousId - null - доска помещается в начало списка.
+   * - Если nextId - null - доска помещается в конец списка.
+   * - Если существует только одна доска, то она не может быть перемещена.
+   * - Если при перемещении доски ее позиция не меняется, то доска не может быть перемещена.
+   * @param boardId - id целевой (перемещаемой) доски.
+   * @param body - параметры перемещения (previousId / nextId).
+   * @returns - Стандартный успешный ответ.
+   * **/
   public async moveBoard(boardId: number, body: TMoveParameters): Promise<TSuccessResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);

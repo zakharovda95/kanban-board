@@ -14,6 +14,6 @@ export type TIssue = {
 export type TCreateIssue = Pick<TIssue, 'title' | 'description'>;
 export type TCreateIssueResponse = TSuccessResponse<Pick<TIssue, 'id'>>;
 
-export type TMoveIssue = TMoveParameters & Pick<TIssue, 'columnId'>;
+export type TMoveIssue = TMoveParameters & Partial<Pick<TIssue, 'columnId'>>;
 
 export type TPatchIssue = Partial<Pick<TIssue, 'title' | 'description'>>;

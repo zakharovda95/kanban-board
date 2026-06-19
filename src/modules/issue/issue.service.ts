@@ -22,6 +22,7 @@ import type {
   TMoveIssue,
   TPatchIssue,
 } from '@/modules/issue/libs/types/issue.types';
+import { TMoveOptions, TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 import { MoveService } from '@/modules/shared/move/move.service';
 
 @Injectable()
@@ -59,6 +60,22 @@ export class IssueService {
     return getSuccessResponseWithData({ id });
   }
 
+  /**
+   * Переместить задачу.
+   * Правила перемещения:
+   * - Если указан columnId - задача перемещается в указанную колонку.
+   * - Если не указан columnId - перемещение в рамках текущей колонки.
+   * - Должен быть указаны только previousId или nextId, но не оба сразу.
+   * - Если previousId - null - задача помещается в начало.
+   * - Если nextId - null - задача помещается в конец.
+   * - При перемещении задачи в другую ПУСТУЮ колонку необходимо указать previousId или nextId в значении null (иначе ошибка).
+   * - Если существует только одна задача, то она не может быть перемещена.
+   * - Если при перемещении задачи ее позиция на доске не меняется (та же колонка та же позиция), то она не может быть перемещена.
+   * - Задача не может быть перемещена на другую доску.
+   * @param issueId - id текущей задачи.
+   * @param body - параметры перемещения (previousId / nextId), columnId (опциональный) - целевая колонка.
+   * @returns - Стандартный успешный ответ.
+   * **/
   public async moveIssue(issueId: number, body: TMoveIssue): Promise<TSuccessResponse> {
     if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
@@ -73,16 +90,21 @@ export class IssueService {
       if (!targetIssue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
       const issues = await transactionalManager.find(IssueEntity, {
-        where: { columnId },
+        where: { columnId: columnId ?? targetIssue.columnId },
         order: { order: 'ASC' },
       });
 
+      const moveParameters: TMoveParameters = { nextId, previousId };
+      const moveOptions: TMoveOptions = {
+        allowForceMove: Boolean(columnId && columnId !== targetIssue.columnId),
+      };
+
       const issuesWithTarget =
-        targetIssue.columnId === columnId ? issues : [...issues, targetIssue];
+        !columnId || targetIssue.columnId === columnId ? issues : [...issues, targetIssue];
 
-      targetIssue.columnId = columnId;
+      if (columnId) targetIssue.columnId = columnId;
 
-      this.moveService.tryToMove(issuesWithTarget, issueId, { nextId, previousId });
+      this.moveService.tryToMove(issuesWithTarget, issueId, moveParameters, moveOptions);
       await transactionalManager.save(IssueEntity, issuesWithTarget);
 
       return getSuccessResponse();

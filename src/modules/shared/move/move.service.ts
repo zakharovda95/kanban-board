@@ -4,27 +4,41 @@ import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { isNull } from '@/libs/utilities/check.utilities';
 import { OrderUtility } from '@/libs/utilities/order.utility';
 import {
-  TMovable,
+  IMovable,
   TMoveDirection,
+  TMoveOptions,
   TMoveParameters,
 } from '@/modules/shared/move/libs/types/move.types';
 
 @Injectable()
-export class MoveService<T extends TMovable> {
-  public tryToMove(entities: T[], targetId: number, parameters: TMoveParameters): void {
+export class MoveService<T extends IMovable> {
+  public tryToMove(
+    entities: T[],
+    targetId: number,
+    parameters: TMoveParameters,
+    options?: TMoveOptions,
+  ): void {
     const { previousId, nextId } = parameters;
 
     const target = entities.find(({ id }) => id === targetId);
+    if (!target) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+
     // убрали перемещаемый объект, для простоты взаимодействия с order других элементов.
     const withoutTarget = entities.filter(({ id }) => id !== targetId);
 
-    if (!target) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
-    if (!withoutTarget.length) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
+    // Если элемент один, и разрешено форс-перемещение и нет указанных ID - сбрасывается order до 1000, становится первым в списке.
+    if (!withoutTarget.length) {
+      if (options?.allowForceMove && (isNull(previousId) || isNull(nextId))) {
+        target.order = OrderUtility.calculateNextOrder(0);
+        return;
+      } else throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
+    }
 
     if (previousId) {
-      const [previous, next] = this.getAdjacent(entities, previousId, 'previous');
-      if (!previous || this.isCurrentPosition(targetId, next?.id) || previousId === targetId)
+      const [previous, next] = this.getAdjacent(withoutTarget, previousId, 'previous');
+      if (!previous || previousId === targetId || this.isCurrentPosition(targetId, next?.id)) {
         throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
+      }
 
       // если нет next, значит помещается в конец (к order последнего элемента в списке прибавляем 1000).
       if (!next) {
@@ -50,9 +64,9 @@ export class MoveService<T extends TMovable> {
     }
 
     if (nextId) {
-      const [next, previous] = this.getAdjacent(entities, nextId, 'next');
+      const [next, previous] = this.getAdjacent(withoutTarget, nextId, 'next');
       // если позиция не меняется
-      if (!next || this.isCurrentPosition(targetId, previous?.id) || nextId === targetId)
+      if (!next || nextId === targetId || this.isCurrentPosition(targetId, previous?.id))
         throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
 
       // если нет previous, значит перемещаемая помещается в начало.
@@ -88,10 +102,10 @@ export class MoveService<T extends TMovable> {
 
     const adjacentIndex = direction === 'previous' ? searchableIndex + 1 : searchableIndex - 1;
 
-    const searchableBoard = entities[searchableIndex];
-    const adjacentBoard = entities[adjacentIndex];
+    const searchable = entities[searchableIndex];
+    const adjacent = entities[adjacentIndex];
 
-    return [searchableBoard, adjacentBoard];
+    return [searchable, adjacent];
   }
 
   private resetOrders(entitiesWithoutTarget: T[]): void {

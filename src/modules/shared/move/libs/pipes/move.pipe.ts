@@ -8,7 +8,6 @@ import type { TMoveParameters } from '@/modules/shared/move/libs/types/move.type
 export class MovePipe implements PipeTransform {
   transform(params: TMoveParameters, _: ArgumentMetadata): TMoveParameters {
     const { previousId, nextId } = params;
-    console.log(params);
 
     if (!isDefined(previousId) && !isDefined(nextId))
       throw new BadRequestException(EXCEPTION_MESSAGES.atLeastOneFieldRequired);
