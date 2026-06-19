@@ -8,5 +8,5 @@ export class MoveIssueDto extends MoveParametersDto implements TMoveIssue {
   @ValidateIfDefined()
   @IsInt()
   @IsPositive()
-  columnId?: number;
+  toColumnId?: number;
 }

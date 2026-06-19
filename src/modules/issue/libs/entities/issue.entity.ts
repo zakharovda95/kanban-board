@@ -13,6 +13,10 @@ export class IssueEntity extends MovableEntity {
 
   @Index()
   @Column()
+  boardId: number;
+
+  @Index()
+  @Column()
   columnId: number;
 
   @ManyToOne(() => ColumnEntity, entity => entity.issues, { onDelete: 'CASCADE' })

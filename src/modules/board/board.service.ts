@@ -35,6 +35,10 @@ export class BoardService {
     private moveService: MoveService<BoardEntity>,
   ) {}
 
+  /**
+   * Получить список всех досок.
+   * @returns список досок без вложенных колонок и задач (только title, description, order).
+   * **/
   public async getBoards(): Promise<TBoardBase[]> {
     const { manager } = this.dataSource;
 
@@ -44,6 +48,11 @@ export class BoardService {
     return this.boardMapper.toModel(boards);
   }
 
+  /**
+   * Получить доску по id.
+   * @param boardId - id доски.
+   * @returns объект доски с вложенными колонками и задачами.
+   * **/
   public async getBoardById(boardId: number): Promise<TBoard> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
@@ -59,6 +68,11 @@ export class BoardService {
     return this.boardMapper.toModel(board, { withRelations: true });
   }
 
+  /**
+   * Создать доску.
+   * @param body - данные доски (title, description).
+   * @returns стандартный успешный ответ с id созданной доски.
+   * **/
   public async createBoard(body: TCreateBoard): Promise<TCreateBoardResponse> {
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
@@ -87,7 +101,7 @@ export class BoardService {
    * - Если при перемещении доски ее позиция не меняется, то доска не может быть перемещена.
    * @param boardId - id целевой (перемещаемой) доски.
    * @param body - параметры перемещения (previousId / nextId).
-   * @returns - Стандартный успешный ответ.
+   * @returns стандартный успешный ответ.
    * **/
   public async moveBoard(boardId: number, body: TMoveParameters): Promise<TSuccessResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
@@ -107,6 +121,12 @@ export class BoardService {
     });
   }
 
+  /**
+   * Частично обновить доску.
+   * @param boardId - id доски.
+   * @param body - поля для обновления.
+   * @returns стандартный успешный ответ.
+   * **/
   public async patchBoard(boardId: number, body: TPatchBoard): Promise<TSuccessResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
@@ -121,6 +141,11 @@ export class BoardService {
     return getSuccessResponse();
   }
 
+  /**
+   * Удалить доску.
+   * @param boardId - id доски.
+   * @returns стандартный успешный ответ.
+   * **/
   public async deleteBoard(boardId: number): Promise<TSuccessResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 

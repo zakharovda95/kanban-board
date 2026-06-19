@@ -7,13 +7,14 @@ export type TIssue = {
   updatedAt: Date;
   title: string;
   description: string | null;
-  columnId: number;
   order: number;
+  boardId: number;
+  columnId: number;
 };
 
 export type TCreateIssue = Pick<TIssue, 'title' | 'description'>;
 export type TCreateIssueResponse = TSuccessResponse<Pick<TIssue, 'id'>>;
 
-export type TMoveIssue = TMoveParameters & Partial<Pick<TIssue, 'columnId'>>;
+export type TMoveIssue = TMoveParameters & { toColumnId?: number };
 
 export type TPatchIssue = Partial<Pick<TIssue, 'title' | 'description'>>;

@@ -14,6 +14,7 @@ import {
   getSuccessResponse,
   getSuccessResponseWithData,
 } from '@/libs/utilities/response.utilities';
+import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
 import type {
   TCreateColumn,
@@ -30,10 +31,19 @@ export class ColumnService {
     private moveService: MoveService<ColumnEntity>,
   ) {}
 
+  /**
+   * Создать колонку на доске.
+   * @param boardId - id доски.
+   * @param body - данные колонки (title, color, description).
+   * @returns стандартный успешный ответ с id созданной колонки.
+   * **/
   public async createColumn(boardId: number, body: TCreateColumn): Promise<TCreateColumnResponse> {
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
+
+    const isExists = await manager.exists(BoardEntity, { where: { id: boardId } });
+    if (!isExists) throw new BadRequestException(EXCEPTION_MESSAGES.createFailed);
 
     const columnsCount = await manager.count(ColumnEntity, { where: { boardId } });
 
@@ -61,7 +71,7 @@ export class ColumnService {
    * @param boardId - id текущей доски.
    * @param columnId - id перемещаемой колонки.
    * @param body - параметры перемещения (previousId / nextId).
-   * @returns - Стандартный успешный ответ.
+   * @returns стандартный успешный ответ.
    * **/
   public async moveColumn(
     boardId: number,
@@ -85,6 +95,12 @@ export class ColumnService {
     });
   }
 
+  /**
+   * Частично обновить колонку.
+   * @param columnId - id колонки.
+   * @param body - поля для обновления.
+   * @returns стандартный успешный ответ.
+   * **/
   public async patchColumn(columnId: number, body: TPatchColumn): Promise<TSuccessResponse> {
     if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
@@ -99,6 +115,11 @@ export class ColumnService {
     return getSuccessResponse();
   }
 
+  /**
+   * Удалить колонку.
+   * @param columnId - id колонки.
+   * @returns стандартный успешный ответ.
+   * **/
   public async deleteColumn(columnId: number): Promise<TSuccessResponse> {
     if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 

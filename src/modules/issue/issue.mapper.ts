@@ -14,6 +14,7 @@ export class IssueMapper {
       updatedAt: innerEntity.updatedAt,
       title: innerEntity.title,
       description: innerEntity.description,
+      boardId: innerEntity.boardId,
       columnId: innerEntity.columnId,
       order: innerEntity.order,
     });

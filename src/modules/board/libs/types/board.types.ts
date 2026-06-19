@@ -1,10 +1,9 @@
 import type { TSuccessResponse } from '@/libs/types/response.types';
 import type { TColumn } from '@/modules/column/libs/types/column.types';
+import type { IMovable } from '@/modules/shared/move/libs/types/move.types';
 
-export type TBoardBase = {
-  id: number;
+export type TBoardBase = IMovable & {
   title: string;
-  order: number;
   description: string | null;
 };
 

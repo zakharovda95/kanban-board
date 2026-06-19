@@ -28,21 +28,24 @@ export class IssueController {
     return this.issueService.getIssueById(issueId);
   }
 
-  @Post('columns/:columnId/issues')
+  @Post('boards/:boardId/columns/:columnId/issues')
   public async createIssue(
+    @Param('boardId', ParseIntPipe) boardId: number,
     @Param('columnId', ParseIntPipe) columnId: number,
     @Body() body: CreateIssueDto,
   ): Promise<TCreateIssueResponse> {
-    return await this.issueService.createIssue(columnId, body);
+    return await this.issueService.createIssue(boardId, columnId, body);
   }
 
-  @Post('issues/:issueId/move')
+  @Post('boards/:boardId/columns/:fromColumnId/issues/:issueId/move')
   @HttpCode(HttpStatus.OK)
   public async moveIssue(
+    @Param('boardId', ParseIntPipe) boardId: number,
+    @Param('fromColumnId', ParseIntPipe) fromColumnId: number,
     @Param('issueId', ParseIntPipe) issueId: number,
     @Body(MovePipe) body: MoveIssueDto,
   ): Promise<TSuccessResponse> {
-    return await this.issueService.moveIssue(issueId, body);
+    return await this.issueService.moveIssue(boardId, fromColumnId, issueId, body);
   }
 
   @Patch('issues/:issueId')

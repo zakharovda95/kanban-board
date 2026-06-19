@@ -12,6 +12,24 @@ import {
 
 @Injectable()
 export class MoveService<T extends IMovable> {
+  /**
+   * Изменить порядок элемента в списке.
+   * Правила перемещения:
+   * - Должен быть указан только previousId или nextId, но не оба сразу.
+   * - Если previousId - null - элемент помещается в начало.
+   * - Если nextId - null - элемент помещается в конец.
+   * - Если previousId указан числом - элемент помещается сразу после элемента с этим id.
+   * - Если nextId указан числом - элемент помещается сразу перед элементом с этим id.
+   * - Если существует только один элемент, то он не может быть перемещен (кроме случая allowForceMove).
+   * - При allowForceMove и пустом списке (кроме target) допускается перемещение с previousId или nextId равным null.
+   * - Если позиция элемента не меняется, то он не может быть перемещен.
+   * - При нехватке промежутка между order соседних элементов порядок остальных нормализуется.
+   * @param entities - список элементов контейнера, отсортированный по order.
+   * @param targetId - id перемещаемого элемента.
+   * @param parameters - параметры перемещения (previousId / nextId).
+   * @param options - дополнительные опции (allowForceMove).
+   * @returns void. Изменения применяются к переданным entities.
+   * **/
   public tryToMove(
     entities: T[],
     targetId: number,
@@ -36,7 +54,15 @@ export class MoveService<T extends IMovable> {
 
     if (previousId) {
       const [previous, next] = this.getAdjacent(withoutTarget, previousId, 'previous');
-      if (!previous || previousId === targetId || this.isCurrentPosition(targetId, next?.id)) {
+      if (!previous || previousId === targetId)
+        throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
+
+      // Проверяем не находится ли перемещаемая задача на той же позиции.
+      const previousIndex = entities.findIndex(({ id }) => id === previousId);
+      const targetIndex = entities.findIndex(({ id }) => id === targetId);
+      const isCurrentPosition = targetIndex === previousIndex + 1;
+
+      if (!options?.allowForceMove && isCurrentPosition) {
         throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
       }
 
@@ -64,7 +90,7 @@ export class MoveService<T extends IMovable> {
     }
 
     if (nextId) {
-      const [next, previous] = this.getAdjacent(withoutTarget, nextId, 'next');
+      const [next, previous] = this.getAdjacent(entities, nextId, 'next');
       // если позиция не меняется
       if (!next || nextId === targetId || this.isCurrentPosition(targetId, previous?.id))
         throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
@@ -82,9 +108,12 @@ export class MoveService<T extends IMovable> {
 
     // если nextId == null - помещаем в конец.
     if (isNull(nextId)) {
-      // если целевой элемент уже стоит последним.
-      if (this.isCurrentPosition(targetId, entities[entities.length - 1]?.id))
+      if (
+        !options?.allowForceMove &&
+        this.isCurrentPosition(targetId, entities[entities.length - 1]?.id)
+      ) {
         throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
+      }
 
       const last = withoutTarget[withoutTarget.length - 1];
       target.order = OrderUtility.calculateNextOrder(last.order);
@@ -92,6 +121,13 @@ export class MoveService<T extends IMovable> {
     }
   }
 
+  /**
+   * Найти элемент по id и его соседа в указанном направлении.
+   * @param entities - список элементов.
+   * @param searchableId - id искомого элемента.
+   * @param direction - направление поиска соседа (previous — следующий в списке, next — предыдущий).
+   * @returns - кортеж [искомый элемент, соседний элемент].
+   * **/
   private getAdjacent(
     entities: T[],
     searchableId: number,
@@ -108,12 +144,23 @@ export class MoveService<T extends IMovable> {
     return [searchable, adjacent];
   }
 
+  /**
+   * Нормализовать порядок элементов (кроме перемещаемого).
+   * @param entitiesWithoutTarget - список элементов без перемещаемого.
+   * @returns - void. Значения order пересчитываются in-place.
+   * **/
   private resetOrders(entitiesWithoutTarget: T[]): void {
     entitiesWithoutTarget.forEach((entity, index) => {
       entity.order = OrderUtility.calculateOrderByIndex(index);
     });
   }
 
+  /**
+   * Проверить, совпадает ли id с id перемещаемого элемента.
+   * @param targetId - id перемещаемого элемента.
+   * @param entityId - id для сравнения.
+   * @returns - true, если позиция не изменится.
+   * **/
   private isCurrentPosition(targetId: number, entityId: number | null | undefined): boolean {
     return entityId === targetId;
   }

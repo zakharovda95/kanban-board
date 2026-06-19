@@ -13,6 +13,7 @@ import {
   getSuccessResponse,
   getSuccessResponseWithData,
 } from '@/libs/utilities/response.utilities';
+import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
 import { IssueMapper } from '@/modules/issue/issue.mapper';
 import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
 import type {
@@ -33,6 +34,11 @@ export class IssueService {
     private moveService: MoveService<IssueEntity>,
   ) {}
 
+  /**
+   * Получить задачу по id.
+   * @param issueId - id задачи.
+   * @returns объект задачи.
+   * **/
   public async getIssueById(issueId: number): Promise<TIssue> {
     const { manager } = this.dataSource;
     const issue = await manager.findOne(IssueEntity, { where: { id: issueId } });
@@ -41,11 +47,25 @@ export class IssueService {
     return this.issueMapper.toModel(issue);
   }
 
-  public async createIssue(columnId: number, body: TCreateIssue): Promise<TCreateIssueResponse> {
-    if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+  /**
+   * Создать задачу в колонке.
+   * @param boardId - id доски.
+   * @param columnId - id колонки.
+   * @param body - данные задачи (title, description).
+   * @returns стандартный успешный ответ с id созданной задачи.
+   * **/
+  public async createIssue(
+    boardId: number,
+    columnId: number,
+    body: TCreateIssue,
+  ): Promise<TCreateIssueResponse> {
+    if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
+
+    const isExists = await manager.exists(ColumnEntity, { where: { id: columnId, boardId } });
+    if (!isExists) throw new BadRequestException(EXCEPTION_MESSAGES.createFailed);
 
     const issuesCount = await manager.count(IssueEntity, { where: { columnId } });
 
@@ -53,7 +73,8 @@ export class IssueService {
       title: body.title,
       description: body?.description ?? null,
       order: OrderUtility.calculateOrderByIndex(issuesCount),
-      columnId: columnId,
+      boardId,
+      columnId,
     });
     if (!id) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
 
@@ -63,8 +84,8 @@ export class IssueService {
   /**
    * Переместить задачу.
    * Правила перемещения:
-   * - Если указан columnId - задача перемещается в указанную колонку.
-   * - Если не указан columnId - перемещение в рамках текущей колонки.
+   * - Если указан toColumnId - задача перемещается в указанную колонку.
+   * - Если не указан toColumnId - перемещение в рамках текущей колонки.
    * - Должен быть указаны только previousId или nextId, но не оба сразу.
    * - Если previousId - null - задача помещается в начало.
    * - Если nextId - null - задача помещается в конец.
@@ -72,37 +93,52 @@ export class IssueService {
    * - Если существует только одна задача, то она не может быть перемещена.
    * - Если при перемещении задачи ее позиция на доске не меняется (та же колонка та же позиция), то она не может быть перемещена.
    * - Задача не может быть перемещена на другую доску.
+   * @param boardId - id текущей доски.
+   * @param fromColumnId - id текущей колонки.
    * @param issueId - id текущей задачи.
-   * @param body - параметры перемещения (previousId / nextId), columnId (опциональный) - целевая колонка.
-   * @returns - Стандартный успешный ответ.
+   * @param body - параметры перемещения (previousId / nextId), toColumnId (опциональный) - целевая колонка.
+   * @returns стандартный успешный ответ.
    * **/
-  public async moveIssue(issueId: number, body: TMoveIssue): Promise<TSuccessResponse> {
-    if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+  public async moveIssue(
+    boardId: number,
+    fromColumnId: number,
+    issueId: number,
+    body: TMoveIssue,
+  ): Promise<TSuccessResponse> {
+    if (!boardId || !fromColumnId || !issueId)
+      throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
-    const { columnId, nextId, previousId } = body;
+    const { toColumnId, nextId, previousId } = body;
     const { manager } = this.dataSource;
 
     return await manager.transaction(async transactionalManager => {
       const targetIssue = await transactionalManager.findOne(IssueEntity, {
-        where: { id: issueId },
+        where: { id: issueId, columnId: fromColumnId },
       });
       if (!targetIssue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
-      const issues = await transactionalManager.find(IssueEntity, {
-        where: { columnId: columnId ?? targetIssue.columnId },
-        order: { order: 'ASC' },
+      const isCurrentBoard = Boolean(targetIssue.boardId === boardId);
+      const isCurrentColumn = Boolean(!toColumnId || toColumnId === targetIssue.columnId);
+      const actualColumnId = toColumnId || targetIssue.columnId;
+
+      if (!isCurrentBoard) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
+
+      const targetColumn = await transactionalManager.findOne(ColumnEntity, {
+        relations: { issues: true },
+        where: { id: actualColumnId, boardId },
+        order: { issues: { order: 'ASC' } },
       });
+      if (!targetColumn) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
       const moveParameters: TMoveParameters = { nextId, previousId };
-      const moveOptions: TMoveOptions = {
-        allowForceMove: Boolean(columnId && columnId !== targetIssue.columnId),
-      };
+      const moveOptions: TMoveOptions = { allowForceMove: !isCurrentColumn };
 
-      const issuesWithTarget =
-        !columnId || targetIssue.columnId === columnId ? issues : [...issues, targetIssue];
+      const issuesWithTarget = isCurrentColumn
+        ? targetColumn.issues
+        : [...targetColumn.issues, targetIssue];
 
-      if (columnId) targetIssue.columnId = columnId;
+      if (!isCurrentColumn && toColumnId) targetIssue.columnId = toColumnId;
 
       this.moveService.tryToMove(issuesWithTarget, issueId, moveParameters, moveOptions);
       await transactionalManager.save(IssueEntity, issuesWithTarget);
@@ -111,6 +147,12 @@ export class IssueService {
     });
   }
 
+  /**
+   * Частично обновить задачу.
+   * @param issueId - id задачи.
+   * @param body - поля для обновления.
+   * @returns стандартный успешный ответ.
+   * **/
   public async patchIssue(issueId: number, body: TPatchIssue): Promise<TSuccessResponse> {
     if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
@@ -125,6 +167,11 @@ export class IssueService {
     return getSuccessResponse();
   }
 
+  /**
+   * Удалить задачу.
+   * @param issueId - id задачи.
+   * @returns стандартный успешный ответ.
+   * **/
   public async deleteIssue(issueId: number): Promise<TSuccessResponse> {
     if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
