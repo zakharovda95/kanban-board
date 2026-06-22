@@ -10,7 +10,7 @@ export class MovePipe implements PipeTransform {
     const { previousId, nextId } = params;
 
     if (!isDefined(previousId) && !isDefined(nextId))
-      throw new BadRequestException(EXCEPTION_MESSAGES.atLeastOneFieldRequired);
+      throw new BadRequestException(EXCEPTION_MESSAGES.atLeastOneIdRequired);
 
     if (isDefined(previousId) && isDefined(nextId))
       throw new BadRequestException(EXCEPTION_MESSAGES.onlyOneIdShouldBeSpecified);

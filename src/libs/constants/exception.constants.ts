@@ -2,6 +2,7 @@ export const EXCEPTION_MESSAGES = {
   idNotFound: 'Не указан идентификатор',
   onlyOneIdShouldBeSpecified: 'Можно указать только один идентификатор',
   atLeastOneFieldRequired: 'Необходимо указать хотя бы одно поле',
+  atLeastOneIdRequired: 'Необходимо указать хотя бы один идентификатор',
   notFound: 'Не найдено',
   createFailed: 'Не удалось создать',
   deleteFailed: 'Не удалось удалить',

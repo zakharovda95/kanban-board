@@ -54,17 +54,15 @@ export class MoveService<T extends IMovable> {
 
     if (previousId) {
       const [previous, next] = this.getAdjacent(withoutTarget, previousId, 'previous');
-      if (!previous || previousId === targetId)
+      if (!previous || this.isCurrentPosition(targetId, previousId))
         throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
 
       // Проверяем не находится ли перемещаемая задача на той же позиции.
       const previousIndex = entities.findIndex(({ id }) => id === previousId);
       const targetIndex = entities.findIndex(({ id }) => id === targetId);
-      const isCurrentPosition = targetIndex === previousIndex + 1;
 
-      if (!options?.allowForceMove && isCurrentPosition) {
+      if (!options?.allowForceMove && this.isCurrentPosition(targetIndex, previousIndex + 1))
         throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
-      }
 
       // если нет next, значит помещается в конец (к order последнего элемента в списке прибавляем 1000).
       if (!next) {
@@ -92,7 +90,7 @@ export class MoveService<T extends IMovable> {
     if (nextId) {
       const [next, previous] = this.getAdjacent(entities, nextId, 'next');
       // если позиция не меняется
-      if (!next || nextId === targetId || this.isCurrentPosition(targetId, previous?.id))
+      if (!next || this.isCurrentPosition(targetId, nextId))
         throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
 
       // если нет previous, значит перемещаемая помещается в начало.
@@ -100,6 +98,9 @@ export class MoveService<T extends IMovable> {
         target.order = OrderUtility.calculateIntermediateOrder(0, next.order);
         return;
       }
+
+      if (this.isCurrentPosition(targetId, previous.id))
+        throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
 
       if (OrderUtility.needResetOrders(previous.order, next.order)) this.resetOrders(withoutTarget);
       target.order = OrderUtility.calculateIntermediateOrder(previous.order, next.order);
@@ -110,7 +111,7 @@ export class MoveService<T extends IMovable> {
     if (isNull(nextId)) {
       if (
         !options?.allowForceMove &&
-        this.isCurrentPosition(targetId, entities[entities.length - 1]?.id)
+        this.isCurrentPosition(targetId, entities[entities.length - 1].id)
       ) {
         throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
       }
@@ -126,7 +127,7 @@ export class MoveService<T extends IMovable> {
    * @param entities - список элементов.
    * @param searchableId - id искомого элемента.
    * @param direction - направление поиска соседа (previous — следующий в списке, next — предыдущий).
-   * @returns - кортеж [искомый элемент, соседний элемент].
+   * @returns кортеж [искомый элемент, соседний элемент].
    * **/
   private getAdjacent(
     entities: T[],
@@ -157,11 +158,11 @@ export class MoveService<T extends IMovable> {
 
   /**
    * Проверить, совпадает ли id с id перемещаемого элемента.
-   * @param targetId - id перемещаемого элемента.
-   * @param entityId - id для сравнения.
-   * @returns - true, если позиция не изменится.
+   * @param target - порядковое значение перемещаемого элемента.
+   * @param entity - порядковое значение для сравнения.
+   * @returns true, если позиция не изменится.
    * **/
-  private isCurrentPosition(targetId: number, entityId: number | null | undefined): boolean {
-    return entityId === targetId;
+  private isCurrentPosition(target: number, entity: number): boolean {
+    return target === entity;
   }
 }

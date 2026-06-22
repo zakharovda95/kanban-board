@@ -1,11 +1,12 @@
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import { ORDER_STEP } from '@/libs/constants/order.constants';
 import { isNullOrUndefined } from '@/libs/utilities/check.utilities';
 
 export class OrderUtility {
+  private static ORDER_STEP = 1000;
+
   public static calculateOrderByIndex(index: number): number {
     if (isNullOrUndefined(index)) throw new Error(EXCEPTION_MESSAGES.paramsNotFound);
-    return (Math.floor(index) + 1) * ORDER_STEP;
+    return (Math.floor(index) + 1) * this.ORDER_STEP;
   }
 
   public static calculateIntermediateOrder(previousOrder: number, nextOrder: number): number {
@@ -16,7 +17,7 @@ export class OrderUtility {
 
   public static calculateNextOrder(order: number): number {
     if (isNullOrUndefined(order)) throw new Error(EXCEPTION_MESSAGES.paramsNotFound);
-    return order + ORDER_STEP;
+    return order + this.ORDER_STEP;
   }
 
   public static needResetOrders(previousOrder: number, nextOrder: number): boolean {

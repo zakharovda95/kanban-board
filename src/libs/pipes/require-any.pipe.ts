@@ -12,8 +12,8 @@ import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 export class RequireAnyPipe<T> implements PipeTransform {
   constructor(private fields: Array<keyof T>) {}
 
-  transform(value: T, _: ArgumentMetadata): T {
-    const hasField = this.fields.some(field => value?.[field] !== undefined);
+  transform(object: T, _: ArgumentMetadata): T {
+    const hasField = this.fields.some(field => object?.[field] !== undefined);
     if (!hasField) {
       throw new HttpException(
         EXCEPTION_MESSAGES.atLeastOneFieldRequired,
@@ -21,6 +21,6 @@ export class RequireAnyPipe<T> implements PipeTransform {
       );
     }
 
-    return value;
+    return object;
   }
 }
