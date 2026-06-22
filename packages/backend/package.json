@@ -1,0 +1,52 @@
+{
+  "name": "@kanban-board/backend",
+  "version": "1.0.0",
+  "scripts": {
+    "prepare": "husky",
+    "build": "nest build",
+    "start:dev": "cross-env NODE_ENV=development nest start --watch",
+    "start:prod": "cross-env NODE_ENV=production node dist/main",
+    "code:lint": "eslint \"src/**/*.{js,ts}\" --fix",
+    "code:format": "prettier \"src/**/*.{js,ts}\" --write",
+    "type:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@kanban-board/common": "*",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.4",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/typeorm": "^11.0.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "lodash": "^4.18.1",
+    "pg": "^8.21.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.30",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.18.0",
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/schematics": "^11.0.0",
+    "@types/express": "^5.0.0",
+    "@types/lodash": "^4.17.24",
+    "@types/node": "^24.0.0",
+    "cross-env": "^10.1.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "globals": "^17.0.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.4.2",
+    "source-map-support": "^0.5.21",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  }
+}

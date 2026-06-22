@@ -1,0 +1,40 @@
+{
+  "name": "@kanban-board/common",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "npm run build:types && npm run build:js",
+    "build:js": "vite build",
+    "build:types": "tsc -p tsconfig.lib.json --emitDeclarationOnly",
+    "run:dev": "vite build --watch",
+    "code:lint": "eslint \"src/**/*.{js,ts}\" --fix",
+    "code:format": "prettier \"src/**/*.{js,ts}\" --write",
+    "type:check": "tsc -b"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@types/node": "^24.13.2",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "globals": "^17.7.0",
+    "prettier": "^3.8.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.62.0",
+    "vite": "^8.0.16"
+  }
+}

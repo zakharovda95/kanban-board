@@ -1,7 +1,11 @@
+import { resolve } from 'node:path';
+
 import { ConfigModuleOptions } from '@nestjs/config';
 import { z } from 'zod';
 
 import { ENodeEnv } from '@/libs/enums/app.enums';
+
+const MONOREPO_ROOT = resolve(__dirname, '../../../../..');
 
 const MIN_LENGTH = 1;
 const MIN_PORT = 1;
@@ -26,7 +30,7 @@ export const appConfigSchema = z.object({
 });
 
 export const APP_CONFIG_OPTIONS: ConfigModuleOptions = {
-  envFilePath: `.env.${process.env.NODE_ENV}`,
+  envFilePath: resolve(MONOREPO_ROOT, `.env.${process.env.NODE_ENV}`),
   isGlobal: true,
   ignoreEnvFile: false, // игнорит .env.* файлы (переменные не попадут в configService.get())
   skipProcessEnv: false, // игнорит process.env (переменные не попадут в configService.get())
