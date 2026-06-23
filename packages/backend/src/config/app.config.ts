@@ -1,0 +1,53 @@
+import { resolve } from 'node:path';
+
+import { ConfigModuleOptions } from '@nestjs/config';
+import { z } from 'zod';
+
+import {
+  DEFAULT_HOST,
+  DEFAULT_PORT,
+  MAX_DB_CONNECTIONS,
+  MAX_PORT,
+  MIN_DB_PASSWORD_LENGTH,
+  MIN_LENGTH,
+  MIN_PORT,
+} from '@/config/libs/constants/app-config.constants';
+import { ENodeEnv } from '@/libs/enums/app.enums';
+
+export class AppConfig {
+  private static MONOREPO_ROOT: string = resolve(__dirname, '../../../..');
+
+  public static get appConfigSchema() {
+    return z.object({
+      NODE_ENV: z.enum(ENodeEnv),
+      HOST: z.string().trim().default(DEFAULT_HOST),
+      PORT: z.coerce.number().min(MIN_PORT).max(MAX_PORT).default(DEFAULT_PORT),
+      DB_HOST: z.string().min(MIN_LENGTH).trim(),
+      DB_PORT: z.coerce.number().min(MIN_PORT).max(MAX_PORT),
+      DB_NAME: z.string().min(MIN_LENGTH).trim(),
+      DB_USER: z.string().min(MIN_LENGTH).trim(),
+      DB_PASSWORD: z.string().min(MIN_DB_PASSWORD_LENGTH).trim(),
+      DB_MAX: z.coerce.number().default(MAX_DB_CONNECTIONS),
+    });
+  }
+
+  public static get appConfigOptions(): ConfigModuleOptions {
+    return {
+      envFilePath: resolve(this.MONOREPO_ROOT, `.env.${process.env.NODE_ENV}`),
+      isGlobal: true,
+      ignoreEnvFile: false, // игнорит .env.* файлы (переменные не попадут в configService.get())
+      skipProcessEnv: false, // игнорит process.env (переменные не попадут в configService.get())
+      expandVariables: true, // позволяет расширять env интерполяцией ENV_FILE=.env.${NODE_ENV}
+      cache: true,
+      validate: (envConfig: Record<string, unknown>): z.infer<typeof this.appConfigSchema> => {
+        const result = this.appConfigSchema.safeParse(envConfig);
+        if (!result.success) throw new Error(result.error.message);
+        return result.data;
+      },
+      validationOptions: {
+        allowUnknown: false,
+        abortEarly: false, // прервать (и отобразить) только первую ошибку валидации
+      },
+    };
+  }
+}

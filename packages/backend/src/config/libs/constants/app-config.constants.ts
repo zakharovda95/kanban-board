@@ -1,0 +1,10 @@
+export const DEFAULT_HOST = 'localhost';
+
+export const MIN_PORT = 1;
+export const MAX_PORT = 65535;
+export const DEFAULT_PORT = 3000;
+
+export const MIN_DB_PASSWORD_LENGTH = 8;
+export const MAX_DB_CONNECTIONS = 10;
+
+export const MIN_LENGTH = 1;
