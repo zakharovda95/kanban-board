@@ -1,35 +1,35 @@
-import withNuxt from "./.nuxt/eslint.config.mjs";
-import simpleImportSort from "eslint-plugin-simple-import-sort";
+import withNuxt from './.nuxt/eslint.config.mjs';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 
 export default withNuxt({
-  files: ["**/*.{ts,mts,tsx,vue}"],
+  files: ['**/*.{ts,mts,tsx,vue}'],
 
   plugins: {
-    "simple-import-sort": simpleImportSort,
+    'simple-import-sort': simpleImportSort,
   },
 
   rules: {
     // разрешаем v-html
-    "vue/no-v-text-v-html-on-component": "off",
-    "vue/no-v-html": "off",
+    'vue/no-v-text-v-html-on-component': 'off',
+    'vue/no-v-html': 'off',
 
     // группировка импортов
-    "simple-import-sort/imports": [
-      "error",
+    'simple-import-sort/imports': [
+      'error',
       {
         groups: [
-          ["^node:"],
-          ["^vue", "^@?\\w"],
-          ["^@/app", "^@/", "^~/"],
-          ["^@/components", "^~/components"],
-          ["^~/pages", "^~/layouts", "^@/pages", "^@/layouts"],
-          ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
-          ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
-          ["^.+\\.s?css$"],
+          ['^node:'],
+          ['^vue', '^@?\\w'],
+          ['^@/app', '^@/', '^~/'],
+          ['^@/components', '^~/components'],
+          ['^~/pages', '^~/layouts', '^@/pages', '^@/layouts'],
+          ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
+          ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
+          ['^.+\\.s?css$'],
         ],
       },
     ],
-    "simple-import-sort/exports": "error",
+    'simple-import-sort/exports': 'error',
 
     // убираем требование к самозакрывающимся тегам <input> --> <input />
     // "vue/html-self-closing": [

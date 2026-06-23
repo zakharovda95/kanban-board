@@ -9,8 +9,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "code:lint": "eslint \"app/**/*.{js,ts}\" --fix",
-    "code:format": "prettier \"app/**/*.{js,ts}\" --write",
+    "code:lint": "eslint app/ --fix",
+    "code:format": "prettier app/ --write",
     "type:check": "tsc --noEmit"
   },
   "dependencies": {

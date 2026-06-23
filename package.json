@@ -33,5 +33,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zakharovda95/kanban-board.git"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8"
   }
 }
