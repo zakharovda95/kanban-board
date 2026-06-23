@@ -8,7 +8,8 @@
     "start:prod": "cross-env NODE_ENV=production node dist/main",
     "code:lint": "eslint \"src/**/*.{js,ts}\" --fix",
     "code:format": "prettier \"src/**/*.{js,ts}\" --write",
-    "type:check": "tsc --noEmit"
+    "type:check": "tsc --noEmit",
+    "show:config": "tsc --showConfig"
   },
   "dependencies": {
     "@kanban-board/common": "*",
