@@ -1,0 +1,40 @@
+{
+  "name": "@kanban-board/frontend",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "code:lint": "eslint \"app/**/*.{js,ts}\" --fix",
+    "code:format": "prettier \"app/**/*.{js,ts}\" --write",
+    "type:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nuxt/fonts": "^0.14.0",
+    "@nuxt/icon": "^2.2.3",
+    "@nuxt/image": "^2.0.0",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@pinia/nuxt": "^0.11.3",
+    "dayjs-nuxt": "^2.1.11",
+    "izitoast": "^1.4.0",
+    "nuxt": "^4.4.8",
+    "nuxt-color-picker": "^1.2.8",
+    "nuxt-tiptap-editor": "^3.4.0",
+    "nuxt-toast": "^1.4.0",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.38",
+    "vue-router": "^5.1.0"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.16.0",
+    "@types/node": "^24.13.2",
+    "eslint": "^10.5.0",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "prettier": "^3.8.4",
+    "prettier-plugin-tailwindcss": "^0.8.0"
+  }
+}

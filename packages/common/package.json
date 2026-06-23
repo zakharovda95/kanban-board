@@ -19,16 +19,15 @@
     "build": "npm run build:types && npm run build:js",
     "build:js": "vite build",
     "build:types": "tsc -p tsconfig.lib.json --emitDeclarationOnly",
-    "run:dev": "vite build --watch",
     "code:lint": "eslint \"src/**/*.{js,ts}\" --fix",
     "code:format": "prettier \"src/**/*.{js,ts}\" --write",
     "type:check": "tsc --noEmit",
     "show:config": "tsc --showConfig"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.4",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^24.13.2",
-    "eslint": "^9.39.4",
+    "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-simple-import-sort": "^13.0.0",
