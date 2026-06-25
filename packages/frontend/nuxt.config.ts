@@ -1,6 +1,10 @@
+import { defineNuxtConfig } from 'nuxt/config';
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+
+  devtools: { enabled: process.env.NODE_ENV === 'development' },
+
   modules: [
     '@nuxt/eslint',
     '@nuxt/icon',
@@ -13,4 +17,14 @@ export default defineNuxtConfig({
     'nuxt-toast',
     'nuxt-color-picker',
   ],
+
+  runtimeConfig: {
+    public: {
+      nodeEnv: process.env.NODE_ENV,
+    },
+  },
+
+  imports: {
+    scan: false,
+  },
 });

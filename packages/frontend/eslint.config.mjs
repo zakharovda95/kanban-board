@@ -4,6 +4,12 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort';
 export default withNuxt({
   files: ['**/*.{ts,mts,tsx,vue}'],
 
+  languageOptions: {
+    parserOptions: {
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+
   plugins: {
     'simple-import-sort': simpleImportSort,
   },
