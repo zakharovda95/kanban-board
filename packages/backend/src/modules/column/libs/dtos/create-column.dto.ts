@@ -1,7 +1,7 @@
+import type { TCreateColumn } from '@kanban-board/common';
 import { IsHexColor, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
-import type { TCreateColumn } from '@/modules/column/libs/types/column.types';
 
 export class CreateColumnDto implements TCreateColumn {
   @IsString()

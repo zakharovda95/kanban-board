@@ -1,4 +1,13 @@
-import type { TSuccessResponse } from '@kanban-board/common';
+import type {
+  TCreateIssue,
+  TCreateIssueResponse,
+  TIssue,
+  TMoveIssue,
+  TMoveOptions,
+  TMoveParameters,
+  TPatchIssue,
+  TSuccessResponse,
+} from '@kanban-board/common';
 import {
   BadRequestException,
   Injectable,
@@ -16,14 +25,6 @@ import {
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
 import { IssueMapper } from '@/modules/issue/issue.mapper';
 import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
-import type {
-  TCreateIssue,
-  TCreateIssueResponse,
-  TIssue,
-  TMoveIssue,
-  TPatchIssue,
-} from '@/modules/issue/libs/types/issue.types';
-import { TMoveOptions, TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 import { MoveService } from '@/modules/shared/move/move.service';
 
 @Injectable()

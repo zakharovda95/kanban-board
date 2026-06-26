@@ -1,8 +1,7 @@
-import { isDefined } from '@kanban-board/common';
+import { isDefined, type TMoveParameters } from '@kanban-board/common';
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import type { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 
 @Injectable()
 export class MovePipe implements PipeTransform {

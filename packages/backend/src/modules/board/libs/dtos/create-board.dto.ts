@@ -1,7 +1,7 @@
+import type { TCreateBoard } from '@kanban-board/common';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
-import type { TCreateBoard } from '@/modules/board/libs/types/board.types';
 
 export class CreateBoardDto implements TCreateBoard {
   @IsString()

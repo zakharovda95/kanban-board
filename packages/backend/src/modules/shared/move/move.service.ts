@@ -1,14 +1,9 @@
 import { isNull } from '@kanban-board/common';
+import { IMovable, TMoveDirection, TMoveOptions, TMoveParameters } from '@kanban-board/common';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { OrderUtility } from '@/libs/utilities/order.utility';
-import {
-  IMovable,
-  TMoveDirection,
-  TMoveOptions,
-  TMoveParameters,
-} from '@/modules/shared/move/libs/types/move.types';
 
 @Injectable()
 export class MoveService<T extends IMovable> {

@@ -1,4 +1,12 @@
-import type { TSuccessResponse } from '@kanban-board/common';
+import type {
+  TBoard,
+  TBoardBase,
+  TCreateBoard,
+  TCreateBoardResponse,
+  TMoveParameters,
+  TPatchBoard,
+  TSuccessResponse,
+} from '@kanban-board/common';
 import {
   BadRequestException,
   Injectable,
@@ -16,15 +24,7 @@ import {
 } from '@/libs/utilities/response.utilities';
 import { BoardMapper } from '@/modules/board/board.mapper';
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
-import type {
-  TBoard,
-  TBoardBase,
-  TCreateBoard,
-  TCreateBoardResponse,
-  TPatchBoard,
-} from '@/modules/board/libs/types/board.types';
 import { DEFAULT_COLUMNS } from '@/modules/column/libs/constants/column.constants';
-import type { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 import { MoveService } from '@/modules/shared/move/move.service';
 
 @Injectable()

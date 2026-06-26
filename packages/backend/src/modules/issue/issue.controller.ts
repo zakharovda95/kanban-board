@@ -1,4 +1,4 @@
-import type { TSuccessResponse } from '@kanban-board/common';
+import type { TCreateIssueResponse, TIssue, TSuccessResponse } from '@kanban-board/common';
 import {
   Body,
   Controller,
@@ -16,7 +16,6 @@ import { IssueService } from '@/modules/issue/issue.service';
 import { CreateIssueDto } from '@/modules/issue/libs/dtos/create-issue.dto';
 import { MoveIssueDto } from '@/modules/issue/libs/dtos/move-issue.dto';
 import { PatchIssueDto } from '@/modules/issue/libs/dtos/patch-issue.dto';
-import type { TCreateIssueResponse, TIssue } from '@/modules/issue/libs/types/issue.types';
 import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 
 @Controller()

@@ -1,7 +1,7 @@
+import { type TCreateIssue } from '@kanban-board/common';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
-import type { TCreateIssue } from '@/modules/issue/libs/types/issue.types';
 
 export class CreateIssueDto implements TCreateIssue {
   @IsString()

@@ -1,5 +1,11 @@
-import type { TSuccessResponse } from '@kanban-board/common';
-import { ColorUtility } from '@kanban-board/common';
+import {
+  ColorUtility,
+  type TCreateColumn,
+  type TCreateColumnResponse,
+  type TMoveParameters,
+  type TPatchColumn,
+  type TSuccessResponse,
+} from '@kanban-board/common';
 import {
   BadRequestException,
   Injectable,
@@ -16,12 +22,6 @@ import {
 } from '@/libs/utilities/response.utilities';
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
-import type {
-  TCreateColumn,
-  TCreateColumnResponse,
-  TPatchColumn,
-} from '@/modules/column/libs/types/column.types';
-import type { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 import { MoveService } from '@/modules/shared/move/move.service';
 
 @Injectable()

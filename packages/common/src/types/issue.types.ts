@@ -1,6 +1,6 @@
 import type { TSuccessResponse } from '@kanban-board/common';
 
-import { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
+import { TMoveParameters } from './move.types.js';
 
 export type TIssue = {
   id: number;

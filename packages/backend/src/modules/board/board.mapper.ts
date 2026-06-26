@@ -1,7 +1,7 @@
+import type { TBoard, TBoardBase } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
-import type { TBoard, TBoardBase } from '@/modules/board/libs/types/board.types';
 import { ColumnMapper } from '@/modules/column/column.mapper';
 
 @Injectable()

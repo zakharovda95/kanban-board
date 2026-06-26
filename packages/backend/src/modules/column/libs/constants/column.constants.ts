@@ -1,6 +1,4 @@
-import { ColorUtility } from '@kanban-board/common';
-
-import type { TNewColumn } from '@/modules/column/libs/types/column.types';
+import { ColorUtility, type TNewColumn } from '@kanban-board/common';
 
 export const DEFAULT_COLUMNS: TNewColumn[] = [
   {

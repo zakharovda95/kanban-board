@@ -1,4 +1,4 @@
-import type { TSuccessResponse } from '@kanban-board/common';
+import type { TCreateColumnResponse, TSuccessResponse } from '@kanban-board/common';
 import {
   Body,
   Controller,
@@ -15,7 +15,6 @@ import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
 import { ColumnService } from '@/modules/column/column.service';
 import { CreateColumnDto } from '@/modules/column/libs/dtos/create-column.dto';
 import { PatchColumnDto } from '@/modules/column/libs/dtos/patch-column.dto';
-import type { TCreateColumnResponse } from '@/modules/column/libs/types/column.types';
 import { MoveParametersDto } from '@/modules/shared/move/libs/dto/move-parameters.dto';
 import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 

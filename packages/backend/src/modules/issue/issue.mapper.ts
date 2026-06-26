@@ -1,7 +1,7 @@
+import type { TIssue } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 
 import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
-import type { TIssue } from '@/modules/issue/libs/types/issue.types';
 
 @Injectable()
 export class IssueMapper {

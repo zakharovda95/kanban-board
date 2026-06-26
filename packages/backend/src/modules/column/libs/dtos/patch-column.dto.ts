@@ -1,10 +1,10 @@
+import type { TPatchColumn } from '@kanban-board/common';
 import { IsHexColor, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 import {
   ValidateIfDefined,
   ValidateIfDefinedAndNotNull,
 } from '@/libs/decorators/validation.decorators';
-import type { TPatchColumn } from '@/modules/column/libs/types/column.types';
 
 export class PatchColumnDto implements TPatchColumn {
   @ValidateIfDefined()

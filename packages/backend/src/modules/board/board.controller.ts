@@ -1,4 +1,9 @@
-import type { TSuccessResponse } from '@kanban-board/common';
+import type {
+  TBoard,
+  TBoardBase,
+  TCreateBoardResponse,
+  TSuccessResponse,
+} from '@kanban-board/common';
 import {
   Body,
   Controller,
@@ -16,11 +21,6 @@ import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
 import { BoardService } from '@/modules/board/board.service';
 import { CreateBoardDto } from '@/modules/board/libs/dtos/create-board.dto';
 import { PatchBoardDto } from '@/modules/board/libs/dtos/patch-board.dto';
-import type {
-  TBoard,
-  TBoardBase,
-  TCreateBoardResponse,
-} from '@/modules/board/libs/types/board.types';
 import { MoveParametersDto } from '@/modules/shared/move/libs/dto/move-parameters.dto';
 import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 
