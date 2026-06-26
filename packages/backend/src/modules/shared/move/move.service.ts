@@ -1,7 +1,7 @@
+import { isNull } from '@kanban-board/common';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import { isNull } from '@/libs/utilities/check.utilities';
 import { OrderUtility } from '@/libs/utilities/order.utility';
 import {
   IMovable,

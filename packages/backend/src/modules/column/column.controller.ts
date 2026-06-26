@@ -1,3 +1,4 @@
+import type { TSuccessResponse } from '@kanban-board/common';
 import {
   Body,
   Controller,
@@ -11,7 +12,6 @@ import {
 } from '@nestjs/common';
 
 import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
-import type { TSuccessResponse } from '@/libs/types/response.types';
 import { ColumnService } from '@/modules/column/column.service';
 import { CreateColumnDto } from '@/modules/column/libs/dtos/create-column.dto';
 import { PatchColumnDto } from '@/modules/column/libs/dtos/patch-column.dto';

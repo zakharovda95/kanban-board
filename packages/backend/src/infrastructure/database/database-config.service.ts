@@ -1,8 +1,7 @@
+import { ENodeEnv } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
-
-import { ENodeEnv } from '@/libs/enums/app.enums';
 
 @Injectable()
 export class DatabaseConfigService implements TypeOrmOptionsFactory {

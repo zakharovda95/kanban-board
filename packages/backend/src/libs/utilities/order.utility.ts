@@ -1,5 +1,6 @@
+import { isNullOrUndefined } from '@kanban-board/common';
+
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import { isNullOrUndefined } from '@/libs/utilities/check.utilities';
 
 export class OrderUtility {
   private static ORDER_STEP = 1000;

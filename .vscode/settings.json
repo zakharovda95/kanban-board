@@ -1,0 +1,28 @@
+{
+    "CSSNavigation.enableGoToDefinition": true,
+    "CSSNavigation.enableCompletions": true,
+    "CSSNavigation.enableWorkspaceSymbols": true,
+    "CSSNavigation.activeHTMLFileExtensions": [
+        "html",
+        "vue",
+        "js",
+        "ts",
+        "jsx",
+        "tsx"
+    ],
+    "CSSNavigation.activeCSSFileExtensions": ["css", "scss", "sass", "less"],
+    "CSSNavigation.alwaysIncludeGlobPatterns": [
+        "scss/**/*.scss",
+        "components/**/*.vue",
+        "pages/**/*.vue"
+    ],
+
+    "tailwindCSS.includeLanguages": {
+        "vue": "html",
+        "vue-html": "html"
+    },
+    "tailwindCSS.experimental.configFile": "tailwind.config.js",
+    "editor.quickSuggestions": {
+        "strings": "on"
+    }
+}

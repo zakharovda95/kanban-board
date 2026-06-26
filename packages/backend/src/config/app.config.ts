@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 
+import { ENodeEnv } from '@kanban-board/common';
 import { ConfigModuleOptions } from '@nestjs/config';
 import { z } from 'zod';
 
@@ -12,7 +13,6 @@ import {
   MIN_LENGTH,
   MIN_PORT,
 } from '@/config/libs/constants/app-config.constants';
-import { ENodeEnv } from '@/libs/enums/app.enums';
 
 export class AppConfig {
   private static MONOREPO_ROOT: string = resolve(__dirname, '../../../..');

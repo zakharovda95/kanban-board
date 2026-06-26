@@ -1,4 +1,5 @@
-import type { TSuccessResponse } from '@/libs/types/response.types';
+import type { TSuccessResponse } from '@kanban-board/common';
+
 import type { TColumn } from '@/modules/column/libs/types/column.types';
 import type { IMovable } from '@/modules/shared/move/libs/types/move.types';
 

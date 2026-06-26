@@ -1,4 +1,5 @@
-import type { TSuccessResponse } from '@/libs/types/response.types';
+import type { TSuccessResponse } from '@kanban-board/common';
+
 import { TMoveParameters } from '@/modules/shared/move/libs/types/move.types';
 
 export type TIssue = {

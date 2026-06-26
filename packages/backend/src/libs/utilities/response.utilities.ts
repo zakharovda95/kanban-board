@@ -1,4 +1,4 @@
-import type { TSuccessResponse } from '@/libs/types/response.types';
+import type { TSuccessResponse } from '@kanban-board/common';
 
 export function getSuccessResponse(): TSuccessResponse {
   return { isSuccess: true };

@@ -1,3 +1,4 @@
+import type { TSuccessResponse } from '@kanban-board/common';
 import {
   BadRequestException,
   Injectable,
@@ -8,7 +9,6 @@ import { cloneDeep } from 'lodash';
 import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import type { TSuccessResponse } from '@/libs/types/response.types';
 import { OrderUtility } from '@/libs/utilities/order.utility';
 import {
   getSuccessResponse,

@@ -1,1 +1,1 @@
-export * from './test.types.js';
+export * from './response.types.js';

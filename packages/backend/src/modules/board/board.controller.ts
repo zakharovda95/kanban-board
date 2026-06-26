@@ -1,3 +1,4 @@
+import type { TSuccessResponse } from '@kanban-board/common';
 import {
   Body,
   Controller,
@@ -12,7 +13,6 @@ import {
 } from '@nestjs/common';
 
 import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
-import type { TSuccessResponse } from '@/libs/types/response.types';
 import { BoardService } from '@/modules/board/board.service';
 import { CreateBoardDto } from '@/modules/board/libs/dtos/create-board.dto';
 import { PatchBoardDto } from '@/modules/board/libs/dtos/patch-board.dto';

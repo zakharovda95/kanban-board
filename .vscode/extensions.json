@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "Vue.volar",
+        "antfu.goto-alias",
+        "pucelle.vscode-css-navigation",
+        "bradlc.vscode-tailwindcss"
+    ],
+    "unwantedRecommendations": ["octref.vetur"]
+}

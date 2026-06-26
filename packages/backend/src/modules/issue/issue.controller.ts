@@ -1,3 +1,4 @@
+import type { TSuccessResponse } from '@kanban-board/common';
 import {
   Body,
   Controller,
@@ -11,7 +12,6 @@ import {
   Post,
 } from '@nestjs/common';
 
-import type { TSuccessResponse } from '@/libs/types/response.types';
 import { IssueService } from '@/modules/issue/issue.service';
 import { CreateIssueDto } from '@/modules/issue/libs/dtos/create-issue.dto';
 import { MoveIssueDto } from '@/modules/issue/libs/dtos/move-issue.dto';
