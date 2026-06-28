@@ -1,4 +1,6 @@
-import { defineNuxtConfig } from 'nuxt/config';
+import tailwindcss from '@tailwindcss/vite';
+
+import { DEFAULT_HOST, DEFAULT_PORT } from './app/constants/app-config.constants';
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -12,7 +14,6 @@ export default defineNuxtConfig({
     '@nuxt/image',
     'dayjs-nuxt',
     '@pinia/nuxt',
-    '@nuxtjs/tailwindcss',
     'nuxt-tiptap-editor',
     'nuxt-toast',
     'nuxt-color-picker',
@@ -26,5 +27,16 @@ export default defineNuxtConfig({
 
   imports: {
     scan: false,
+  },
+
+  devServer: {
+    port: Number(process.env.FRONTEND_PORT) || DEFAULT_PORT,
+    host: process.env.FRONTEND_HOST || DEFAULT_HOST,
+  },
+
+  css: ['~/assets/styles/fonts.css', '~/assets/styles/tailwind.css'],
+
+  vite: {
+    plugins: [tailwindcss()],
   },
 });

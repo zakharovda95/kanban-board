@@ -9,7 +9,7 @@
   "scripts": {
     "prepare": "husky",
     "dev:backend": "npm run start:dev -w @kanban-board/backend",
-    "dev:frontend": "-w @kanban-board/frontend",
+    "dev:frontend": "npm run dev -w @kanban-board/frontend",
     "build:common": "npm run build -w @kanban-board/common",
     "build:backend": "npm run build -w @kanban-board/backend",
     "build:frontend": "npm run build -w @kanban-board/frontend",

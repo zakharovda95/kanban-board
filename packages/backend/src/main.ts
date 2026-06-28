@@ -14,8 +14,8 @@ async function bootstrap() {
   });
   app.useGlobalPipes(globalValidationPipe);
 
-  const host = process.env.HOST || DEFAULT_HOST;
-  const port = process.env.PORT || DEFAULT_PORT;
+  const host = process.env.BACK_HOST || DEFAULT_HOST;
+  const port = process.env.BACK_PORT || DEFAULT_PORT;
   await app.listen(port, host, () => console.log(`Listening on ${port}`));
 }
 
