@@ -1,3 +1,4 @@
+import { ENodeEnv } from '@kanban-board/common';
 import tailwindcss from '@tailwindcss/vite';
 
 import { DEFAULT_HOST, DEFAULT_PORT } from './app/constants/app-config.constants';
@@ -5,7 +6,7 @@ import { DEFAULT_HOST, DEFAULT_PORT } from './app/constants/app-config.constants
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
 
-  devtools: { enabled: process.env.NODE_ENV === 'development' },
+  devtools: { enabled: process.env.NODE_ENV === ENodeEnv.DEVELOPMENT },
 
   modules: [
     '@nuxt/eslint',
@@ -38,5 +39,20 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+  },
+
+  icon: {
+    componentName: 'NuxtIcon',
+    mode: 'svg',
+    cssLayer: 'base',
+    provider: 'iconify',
+    class: 'ui-icon',
+    // serverBundle: {
+    //   collections: ['mingcute'],
+    // },
+    clientBundle: {
+      scan: true,
+    },
+    customCollections: [],
   },
 });
