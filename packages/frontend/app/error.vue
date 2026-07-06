@@ -1,3 +1,3 @@
 <template>
-  <div class="bg-red-600">234234</div>
+  <div class="bg-red-600" />
 </template>

@@ -8,3 +8,5 @@ export const MIN_DB_PASSWORD_LENGTH = 8;
 export const MAX_DB_CONNECTIONS = 10;
 
 export const MIN_LENGTH = 1;
+
+export const GLOBAL_API_PREFIX = 'api';

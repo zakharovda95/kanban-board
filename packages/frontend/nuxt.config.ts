@@ -47,12 +47,14 @@ export default defineNuxtConfig({
     cssLayer: 'base',
     provider: 'iconify',
     class: 'ui-icon',
-    // serverBundle: {
-    //   collections: ['mingcute'],
-    // },
     clientBundle: {
       scan: true,
     },
     customCollections: [],
+  },
+
+  routeRules: {
+    '/': { redirect: 'boards' },
+    '/boards/*': { ssr: true },
   },
 });

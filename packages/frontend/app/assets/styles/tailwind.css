@@ -12,12 +12,13 @@
   }
 
   html {
-    scrollbar-gutter: stable;
+    /*scrollbar-gutter: stable;*/
   }
 
   body {
     background-color: var(--color-light-100);
     color: var(--color-light-950);
+    min-height: 100vh;
   }
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <header class="border-b-light-300 bg-light-200 flex h-80 items-center justify-between border-b p-12">
+  <header class="border-b-light-300 bg-light-200 flex h-80 items-center justify-between border-b p-8">
     <div class="flex h-full items-center gap-48">
       <TheLogo />
 
@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <TheAvatar />
+    <TheAvatar v-if="false" />
   </header>
 </template>
 

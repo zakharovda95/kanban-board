@@ -1,5 +1,5 @@
 <template>
-  <NuxtLink :to="{ name: 'index' }" class="flex w-fit items-center justify-center duration-300 hover:scale-105">
+  <NuxtLink to="/" class="flex w-fit items-center justify-center underline-offset-4 duration-300 hover:underline">
     <span>KANBAN BOARD</span>
   </NuxtLink>
 </template>

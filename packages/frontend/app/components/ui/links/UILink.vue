@@ -1,14 +1,15 @@
 <template>
   <Component
     :is="resolvedTag"
-    class="text-light-700 flex cursor-pointer flex-nowrap items-center justify-center duration-300 hover:opacity-70 gap-4"
-    :class="`flex-${direction}`"
+    v-bind="isExternalLink(to) || tag === 'a' ? { to } : { href: to }"
+    class="text-light-700 text-18 flex cursor-pointer flex-nowrap items-center justify-start gap-4 duration-300"
+    :class="[{ 'hover:brightness-95': hoverable }]"
   >
-    <NuxtIcon :name="`mingcute:${icon}`" :size="24" />
+    <div :class="`size-${iconSize}`">
+      <NuxtIcon v-if="icon" :name="`mingcute:${icon}`" :size="iconSize" />
+    </div>
 
-    <span class="text-18 font-medium">
-      <slot />
-    </span>
+    <slot />
   </Component>
 </template>
 
@@ -24,12 +25,14 @@ const props = withDefaults(
     to: string | RouteLocationRaw;
     tag?: 'a' | 'NuxtLink' | 'span';
     icon?: string | null;
-    direction?: 'col' | 'row' | 'row-reverse';
+    iconSize?: number;
+    hoverable?: boolean;
   }>(),
   {
     tag: 'NuxtLink',
     icon: null,
-    direction: 'col',
+    iconSize: 24,
+    hoverable: true,
   },
 );
 
