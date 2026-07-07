@@ -7,6 +7,10 @@
 <script setup lang="ts">
 import { useBoardsStore } from '~/stores/boards.store';
 
+definePageMeta({
+  layout: 'boards',
+});
+
 const boardsStore = useBoardsStore();
 
 const text = computed(() =>
@@ -16,4 +20,8 @@ const text = computed(() =>
       ? 'Выберите доску в меню слева'
       : 'Вы еще не создали ни одной доски. Создайте Вашу первую доску.',
 );
+
+if (boardsStore.boards.length) {
+  navigateTo(`/boards/${boardsStore.boards[0]?.id}`);
+}
 </script>

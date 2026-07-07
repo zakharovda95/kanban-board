@@ -3,9 +3,9 @@
     <div class="flex h-full items-center gap-48">
       <TheLogo />
 
-      <div class="flex h-full items-center gap-4">
+      <nav class="flex h-full items-center gap-4">
         <UILink :to="{ name: 'index' }" icon="layout-7-line" direction="row-reverse">Доски</UILink>
-      </div>
+      </nav>
     </div>
 
     <TheAvatar v-if="false" />

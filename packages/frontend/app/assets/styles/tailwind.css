@@ -20,6 +20,20 @@
     color: var(--color-light-950);
     min-height: 100vh;
   }
+
+  .fade-enter-active {
+    transition: all 0.3s ease-out;
+  }
+
+  .fade-leave-active {
+    transition: all 0.3s ease-in;
+  }
+
+  .fade-enter-from,
+  .fade-leave-to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
 }
 
 @theme {
@@ -71,7 +85,7 @@
 
   --radius-*: initial;
   --radius-4: 4px;
-  --radius-6: 4px;
+  --radius-6: 6px;
   --radius-8: 8px;
   --radius-10: 10px;
   --radius-12: 12px;

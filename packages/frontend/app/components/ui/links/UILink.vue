@@ -3,10 +3,10 @@
     :is="resolvedTag"
     v-bind="isExternalLink(to) || tag === 'a' ? { to } : { href: to }"
     class="text-light-700 text-18 flex cursor-pointer flex-nowrap items-center justify-start gap-4 duration-300"
-    :class="[{ 'hover:brightness-95': hoverable }]"
+    :class="[{ 'hover:opacity-80': hoverable }]"
   >
-    <div :class="`size-${iconSize}`">
-      <NuxtIcon v-if="icon" :name="`mingcute:${icon}`" :size="iconSize" />
+    <div v-if="icon" :class="`size-${iconSize}`">
+      <NuxtIcon :name="`mingcute:${icon}`" :size="iconSize" />
     </div>
 
     <slot />

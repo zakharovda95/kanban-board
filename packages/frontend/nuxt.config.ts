@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     'nuxt-tiptap-editor',
     'nuxt-toast',
     'nuxt-color-picker',
+    '@vueuse/nuxt',
   ],
 
   runtimeConfig: {
@@ -55,6 +56,7 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/': { redirect: 'boards' },
+    '/boards': { ssr: true },
     '/boards/*': { ssr: true },
   },
 });
