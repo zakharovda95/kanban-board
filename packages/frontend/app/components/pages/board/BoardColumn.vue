@@ -18,28 +18,28 @@
       </span>
     </header>
 
-    <div class="flex w-full items-center px-8">
-      <span class="text-12 text-light-800 rounded-4 bg-light-200 block w-fit p-4 font-medium">
-        {{ column.issues.length ? `${column.issues.length} задач` : 'Нет задач' }}
-      </span>
+    <div class="flex w-full items-center justify-between px-8">
+      <UIBadge>{{ computedIssuesLength }}</UIBadge>
+      <UIIconButton icon="add-line" />
     </div>
 
     <div v-if="column.issues.length" class="flex flex-col items-center gap-8 px-8">
       <BoardIssueCard v-for="issue in column.issues" :key="issue.id" :issue="issue" />
     </div>
-
-    <footer class="w-full px-8">
-      <UIButton full prepend-icon="add-line">Добавить задачу</UIButton>
-    </footer>
   </article>
 </template>
 
 <script setup lang="ts">
-import type { TColumn } from '@kanban-board/common';
+import { StringUtility, type TColumn } from '@kanban-board/common';
 
 import BoardIssueCard from '~/components/pages/board/BoardIssueCard.vue';
-import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
+import UIBadge from '~/components/ui/UIBadge.vue';
 
-defineProps<{ column: TColumn }>();
+const props = defineProps<{ column: TColumn }>();
+
+const computedIssuesLength = computed(() => {
+  const length = props.column.issues.length;
+  return length ? `${length} ${StringUtility.pluralize(length, ['задача', 'задачи', 'задач'])}` : 'Нет задач';
+});
 </script>

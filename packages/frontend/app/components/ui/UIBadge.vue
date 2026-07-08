@@ -1,55 +1,46 @@
 <template>
-  <Component
-    :is="tag"
-    class="bg-light-300 text-light-800 rounded-4 flex w-fit cursor-pointer flex-row flex-nowrap items-center justify-center gap-4 leading-none whitespace-nowrap duration-300 outline-none hover:brightness-95"
-    :class="[{ 'w-full!': full }, computedSize.element]"
-    @click="emit('click:button', $event)"
+  <div
+    class="text-12 text-light-800 rounded-4 bg-light-200 flex w-fit items-center justify-center gap-4 leading-none"
+    :class="computedSize.element"
+    @click="emit('click:badge', $event)"
   >
     <NuxtIcon v-if="prependIcon" :name="`mingcute:${prependIcon}`" :size="computedSize.icon" />
     <slot />
     <NuxtIcon v-if="appendIcon" :name="`mingcute:${appendIcon}`" :size="computedSize.icon" />
-  </Component>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { EIconSizeSmall, ESize, ETag } from '~/enums/global.enums';
+import { EIconSizeSmall, ESize } from '~/enums/global.enums';
 import type { TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
 
 const props = withDefaults(
   defineProps<{
-    tag?: ETag.BUTTON | ETag.DIV | ETag.SPAN;
     size?: ESize;
     prependIcon?: string | null;
     appendIcon?: string | null;
-    iconSize?: EIconSizeSmall;
-    isLoading?: boolean;
-    full?: boolean;
   }>(),
   {
-    tag: ETag.BUTTON,
     size: ESize.SMALL,
     prependIcon: null,
     appendIcon: null,
-    iconSize: EIconSizeSmall.SMALL,
-    isLoading: false,
-    full: false,
   },
 );
 
-const emit = defineEmits<{ 'click:button': [event: MouseEvent] }>();
+const emit = defineEmits<{ 'click:badge': [event: MouseEvent] }>();
 
 const computedSize = computed<TUIComputedSize>(() => {
   const sizes: TUIComputedSizeMap = {
     small: {
-      element: 'h-24 py-4 rounded-4 px-8 text-14',
+      element: 'h-24 p-4 rounded-4 text-14',
       icon: EIconSizeSmall.SMALL,
     },
     medium: {
-      element: 'h-32 py-6 rounded-6 px-12 text-16',
+      element: 'h-32 p-6 rounded-6 text-16',
       icon: EIconSizeSmall.MEDIUM,
     },
     large: {
-      element: 'h-40 py-8 px-16 rounded-8 text-18',
+      element: 'h-40 p-8 rounded-8 text-18',
       icon: EIconSizeSmall.LARGE,
     },
   };

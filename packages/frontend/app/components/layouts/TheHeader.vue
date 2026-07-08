@@ -4,7 +4,7 @@
       <TheLogo />
 
       <nav class="flex h-full items-center gap-4">
-        <UILink :to="{ name: 'index' }" icon="layout-7-line" direction="row-reverse">Доски</UILink>
+        <UILink to="/" icon="layout-7-line">Доски</UILink>
       </nav>
     </div>
 

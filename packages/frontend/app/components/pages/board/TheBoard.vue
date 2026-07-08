@@ -16,6 +16,7 @@ import type { TBoard } from '@kanban-board/common';
 
 import BoardColumn from '~/components/pages/board/BoardColumn.vue';
 import BoardFilter from '~/components/pages/board/BoardFilter.vue';
+import UILoader from '~/components/ui/UILoader.vue';
 
 withDefaults(
   defineProps<{

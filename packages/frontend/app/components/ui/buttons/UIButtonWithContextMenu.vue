@@ -2,6 +2,7 @@
   <div class="size-fit">
     <UIIconButton
       :icon="icon || 'more-2-fill'"
+      :size="size"
       :icon-size="iconSize"
       @click:button="isContextMenuOpen = !isContextMenuOpen"
     />
@@ -18,16 +19,20 @@
 </template>
 
 <script setup lang="ts">
+import { EIconSize, ESize } from '~/enums/global.enums';
+
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 
 withDefaults(
   defineProps<{
     icon?: 'more-1-fill' | 'more-2-fill';
+    size?: ESize;
     iconSize?: number;
   }>(),
   {
     icon: 'more-2-fill',
-    iconSize: 16,
+    size: ESize.SMALL,
+    iconSize: EIconSize.SMALL,
   },
 );
 
