@@ -68,6 +68,11 @@
   /*--color-dark-800: #e5e5e5;*/
   /*--color-dark-900: #f5f5f5;*/
   /*--color-dark-950: #fafafa;*/
+  --color-green: #18a058;
+  --color-blue: #2080f0;
+  --color-orange: #f0a020;
+  --color-red: #d03050;
+
   --text-*: initial;
   --text-36: 36px;
   --text-32: 32px;

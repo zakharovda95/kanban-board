@@ -5,12 +5,14 @@
 </template>
 
 <script setup lang="ts">
+import { type EIconSize, EIconSizeSmall } from '~/enums/global.enums';
+
 withDefaults(
   defineProps<{
-    size?: number;
+    size?: EIconSize | EIconSizeSmall;
   }>(),
   {
-    size: 16,
+    size: EIconSizeSmall.SMALL,
   },
 );
 </script>
