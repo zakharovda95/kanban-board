@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-12 border-light-300 bg-light-200 flex h-100 w-full border p-8">
+  <div class="rounded-12 bg-light-base flex h-100 w-full p-16">
     <div class="flex w-full">
       <UIButton class="bg-green text-light-base" prepend-icon="add-line" :size="ESize.MEDIUM">Создать задачу</UIButton>
     </div>

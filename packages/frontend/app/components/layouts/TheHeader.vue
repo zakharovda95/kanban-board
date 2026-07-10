@@ -1,14 +1,16 @@
 <template>
-  <header class="border-b-light-300 bg-light-200 flex h-80 items-center justify-between border-b p-8">
-    <div class="flex h-full items-center gap-48">
-      <TheLogo />
+  <header class="flex h-80 items-center justify-center bg-transparent px-12 pt-12">
+    <div class="bg-light-base rounded-12 flex size-full items-center justify-between px-12 py-8">
+      <div class="flex h-full items-center gap-48">
+        <TheLogo />
 
-      <nav class="flex h-full items-center gap-4">
-        <UILink to="/" icon="layout-7-line">Доски</UILink>
-      </nav>
+        <nav class="flex h-full items-center gap-4">
+          <UILink to="/" icon="layout-7-line">Доски</UILink>
+        </nav>
+      </div>
+
+      <TheAvatar v-if="false" />
     </div>
-
-    <TheAvatar v-if="false" />
   </header>
 </template>
 

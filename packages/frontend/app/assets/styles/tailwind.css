@@ -16,8 +16,8 @@
   }
 
   body {
-    background-color: var(--color-light-100);
-    color: var(--color-light-950);
+    background-color: var(--color-light-200);
+    color: var(--color-light-800);
     min-height: 100vh;
   }
 

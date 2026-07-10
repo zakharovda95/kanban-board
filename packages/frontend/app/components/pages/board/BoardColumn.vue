@@ -1,7 +1,7 @@
 <template>
-  <article class="border-light-300 rounded-8 flex size-full w-280 flex-col items-center gap-8 overflow-hidden border">
+  <article class="border-light-300 rounded-12 flex size-full w-280 flex-col items-center gap-8 overflow-hidden border">
     <header
-      class="bg-light-200 flex h-60 w-full flex-col border-b-4 p-8 text-left"
+      class="bg-light-base flex h-60 w-full flex-col border-b-4 p-8 text-left"
       :style="{ borderBottomColor: column.color }"
     >
       <div class="flex w-full flex-row flex-nowrap items-center justify-between gap-4 overflow-hidden">
@@ -21,7 +21,7 @@
       <UIIconButton class="bg-green text-light-base" icon="add-line" />
     </div>
 
-    <div v-if="column.issues.length" class="flex flex-col items-center gap-8 px-8">
+    <div v-if="column.issues.length" class="flex w-full flex-col items-center gap-8 px-8">
       <BoardIssueCard v-for="issue in column.issues" :key="issue.id" :issue="issue" />
     </div>
   </article>
