@@ -10,7 +10,7 @@ import type { TBoard } from '@kanban-board/common';
 import TheBoard from '~/components/pages/board/TheBoard.vue';
 
 definePageMeta({
-  layout: 'boards',
+  layout: 'board',
 });
 
 const route = useRoute();

@@ -1,7 +1,7 @@
 <template>
   <Component
     :is="tag"
-    class="flex cursor-pointer items-center justify-center leading-none duration-300 outline-none hover:brightness-95"
+    class="bg-light-200 flex cursor-pointer items-center justify-center leading-none duration-300 outline-none hover:brightness-95"
     :class="computedSize.element"
     @click="emit('click:button', $event)"
   >

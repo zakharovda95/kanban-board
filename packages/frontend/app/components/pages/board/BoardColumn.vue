@@ -6,19 +6,16 @@
     >
       <div class="flex w-full flex-row flex-nowrap items-center justify-between gap-4 overflow-hidden">
         <span class="text-14 font-medium text-ellipsis whitespace-nowrap">{{ column.title }}</span>
-        <div class="justify-right flex w-fit gap-4">
-          <UIIconButton class="bg-orange text-light-base" icon="pencil-line" />
-          <UIIconButton class="bg-red text-light-base" icon="delete-2-line" />
-        </div>
+        <BaseActionsButtons />
       </div>
-      <span class="text-elipsis text-12 text-light-800 w-full overflow-hidden font-light">
+      <span class="text-elipsis text-12 w-full overflow-hidden font-light">
         {{ column.description }}
       </span>
     </header>
 
     <div class="flex w-full items-center justify-between px-8">
       <UIBadge class="bg-blue text-light-base">{{ computedIssuesLength }}</UIBadge>
-      <UIIconButton class="bg-green text-light-base" icon="add-line" />
+      <UIIconButton class="bg-green! text-light-base!" icon="add-line" />
     </div>
 
     <div v-if="column.issues.length" class="flex w-full flex-col items-center gap-8 px-8">
@@ -31,6 +28,7 @@
 import { StringUtility, type TColumn } from '@kanban-board/common';
 
 import BoardIssueCard from '~/components/pages/board/BoardIssueCard.vue';
+import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIBadge from '~/components/ui/UIBadge.vue';
 

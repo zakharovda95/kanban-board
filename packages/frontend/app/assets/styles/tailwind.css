@@ -34,6 +34,20 @@
     transform: translateY(-20px);
     opacity: 0;
   }
+
+  .modal-showed-enter-active {
+    transition: all 0.1s ease-out;
+  }
+
+  .modal-showed-leave-active {
+    transition: all 0.1s ease-in;
+  }
+
+  .modal-showed-enter-from,
+  .modal-showed-leave-to {
+    transform: scale(0.7);
+    opacity: 0;
+  }
 }
 
 @theme {
@@ -55,6 +69,7 @@
   --color-light-800: #262626;
   --color-light-900: #171717;
   --color-light-950: #0a0a0a;
+  --color-light-black-opacity: rgba(0, 0, 0, 0.4);
 
   /*--color-dark-base: #000000;*/
   /*--color-dark-50: #0a0a0a;*/
@@ -89,6 +104,7 @@
   --text-6: 6px;
 
   --radius-*: initial;
+  --radius-2: 2px;
   --radius-4: 4px;
   --radius-6: 6px;
   --radius-8: 8px;

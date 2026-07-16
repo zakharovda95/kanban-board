@@ -1,14 +1,15 @@
 <template>
   <div class="flex h-full flex-1 items-center justify-center self-stretch">
-    <span class="text-18 text-light-800 font-medium"> {{ text }} </span>
+    <span class="font-medium"> {{ text }} </span>
   </div>
 </template>
 
 <script setup lang="ts">
+import { NO_BOARDS_TEXT } from '~/constants/board.constants';
 import { useBoardsStore } from '~/stores/boards.store';
 
 definePageMeta({
-  layout: 'boards',
+  layout: 'board',
 });
 
 const boardsStore = useBoardsStore();
@@ -18,7 +19,7 @@ const text = computed(() =>
     ? 'Загружаем Ваши доски...'
     : boardsStore.boards.length && !boardsStore.isLoadingBoards
       ? 'Выберите доску в меню слева'
-      : 'Вы еще не создали ни одной доски. Создайте Вашу первую доску.',
+      : NO_BOARDS_TEXT,
 );
 
 if (boardsStore.boards.length) {

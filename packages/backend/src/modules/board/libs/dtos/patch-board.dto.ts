@@ -1,4 +1,8 @@
-import type { TPatchBoard } from '@kanban-board/common';
+import {
+  BOARD_DESCRIPTION_MAXLENGTH,
+  BOARD_TITLE_MAXLENGTH,
+  type TPatchBoard,
+} from '@kanban-board/common';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 import {
@@ -10,11 +14,11 @@ export class PatchBoardDto implements TPatchBoard {
   @ValidateIfDefined()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(64)
+  @MaxLength(BOARD_TITLE_MAXLENGTH)
   title?: string;
 
   @ValidateIfDefinedAndNotNull()
   @IsString()
-  @MaxLength(128)
+  @MaxLength(BOARD_DESCRIPTION_MAXLENGTH)
   description?: string | null;
 }

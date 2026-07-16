@@ -5,7 +5,7 @@
         <TheLogo />
 
         <nav class="flex h-full items-center gap-4">
-          <UILink to="/" icon="layout-7-line">Доски</UILink>
+          <UILink :to="{ name: 'boards' }" icon="layout-7-line">Доски</UILink>
         </nav>
       </div>
 

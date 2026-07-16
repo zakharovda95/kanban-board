@@ -10,7 +10,7 @@
     <Transition name="fade">
       <div
         v-if="isContextMenuOpen"
-        class="border-light-300 bg-light-200 rounded-8 max-size-200 absolute z-2 mt-8 size-fit border p-8"
+        class="border-light-200 bg-light-base rounded-6 max-size-200 absolute z-2 mt-8 size-fit border p-8"
       >
         <slot />
       </div>

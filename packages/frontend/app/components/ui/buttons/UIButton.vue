@@ -1,7 +1,7 @@
 <template>
   <Component
     :is="tag"
-    class="flex w-fit cursor-pointer flex-row flex-nowrap items-center justify-center gap-4 leading-none font-light whitespace-nowrap duration-300 outline-none hover:brightness-95"
+    class="bg-light-200 flex w-fit cursor-pointer flex-row flex-nowrap items-center justify-center gap-4 leading-none font-light whitespace-nowrap duration-300 outline-none hover:brightness-95"
     :class="[{ 'w-full!': full }, computedSize.element]"
     @click="emit('click:button', $event)"
   >

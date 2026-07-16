@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import type { RouteLocationRaw } from 'vue-router';
+import type { RouteLocation } from 'vue-router';
 
 import { EIconSize, type EIconSizeSmall, ETag } from '~/enums/global.enums';
 import { isExternalLink } from '~/utilities/link.utils';
@@ -23,7 +23,7 @@ import { NuxtLink } from '#components';
 
 const props = withDefaults(
   defineProps<{
-    to: string | RouteLocationRaw;
+    to: string | RouteLocation;
     tag?: ETag.A | ETag.NUXT_LINK | ETag.SPAN;
     icon?: string | null;
     iconSize?: EIconSize | EIconSizeSmall | number;
@@ -37,9 +37,18 @@ const props = withDefaults(
   },
 );
 
+// const route = useRoute();
+
 const resolvedTag = computed(() => {
   if (!props.to) return ETag.SPAN;
   if (props.tag === ETag.NUXT_LINK) return isExternalLink(props.to) ? ETag.A : NuxtLink;
   return props.tag;
 });
+
+// const isActive = computed(() => {
+//   if (!props.to || isExternalLink(props.to)) return false;
+//   return typeof props.to === 'string'
+//     ? props.to === route.path
+//     : props.to?.path === route.path || props.to?.name === route.name;
+// });
 </script>
