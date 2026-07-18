@@ -5,7 +5,7 @@
       <BoardFilter />
 
       <div class="flex w-full flex-1 flex-row gap-8 overflow-x-auto">
-        <BoardColumn v-for="column in board?.columns" :key="column.id" :column="column" />
+        <TheColumn v-for="column in board?.columns" :key="column.id" :column="column" />
       </div>
     </div>
   </div>
@@ -14,8 +14,8 @@
 <script setup lang="ts">
 import type { TBoard } from '@kanban-board/common';
 
-import BoardColumn from '~/components/pages/board/BoardColumn.vue';
-import BoardFilter from '~/components/pages/board/BoardFilter.vue';
+import BoardFilter from '~/components/sections/board/BoardFilter.vue';
+import TheColumn from '~/components/sections/column/TheColumn.vue';
 import UILoader from '~/components/ui/UILoader.vue';
 
 withDefaults(

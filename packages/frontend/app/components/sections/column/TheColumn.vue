@@ -19,7 +19,7 @@
     </div>
 
     <div v-if="column.issues.length" class="flex w-full flex-col items-center gap-8 px-8">
-      <BoardIssueCard v-for="issue in column.issues" :key="issue.id" :issue="issue" />
+      <IssueCard v-for="issue in column.issues" :key="issue.id" :issue="issue" />
     </div>
   </article>
 </template>
@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { StringUtility, type TColumn } from '@kanban-board/common';
 
-import BoardIssueCard from '~/components/pages/board/BoardIssueCard.vue';
+import IssueCard from '~/components/sections/issue/IssueCard.vue';
 import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIBadge from '~/components/ui/UIBadge.vue';

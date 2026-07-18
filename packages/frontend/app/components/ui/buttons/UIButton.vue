@@ -2,7 +2,7 @@
   <Component
     :is="tag"
     class="bg-light-200 flex w-fit cursor-pointer flex-row flex-nowrap items-center justify-center gap-4 leading-none font-light whitespace-nowrap duration-300 outline-none hover:brightness-95"
-    :class="[{ 'w-full!': full }, computedSize.element]"
+    :class="[{ 'w-full!': full, 'curson-not-allowed opacity-50': disabled || isLoading }, computedSize.element]"
     @click="emit('click:button', $event)"
   >
     <NuxtIcon v-if="prependIcon" :name="`mingcute:${prependIcon}`" :size="computedSize.icon" />
@@ -22,6 +22,7 @@ const props = withDefaults(
     prependIcon?: string | null;
     appendIcon?: string | null;
     iconSize?: EIconSizeSmall;
+    disabled?: boolean;
     isLoading?: boolean;
     full?: boolean;
   }>(),
@@ -31,6 +32,7 @@ const props = withDefaults(
     prependIcon: null,
     appendIcon: null,
     iconSize: EIconSizeSmall.SMALL,
+    disabled: false,
     isLoading: false,
     full: false,
   },

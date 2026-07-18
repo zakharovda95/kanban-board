@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import type { TBoard } from '@kanban-board/common';
 
-import TheBoard from '~/components/pages/board/TheBoard.vue';
+import TheBoard from '~/components/sections/board/TheBoard.vue';
 
 definePageMeta({
   layout: 'board',

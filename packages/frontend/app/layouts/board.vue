@@ -3,7 +3,7 @@
     <TheHeader />
 
     <main class="flex flex-1">
-      <BoardSidebar />
+      <TheSidebar />
       <slot />
     </main>
 
@@ -14,9 +14,9 @@
 <script setup lang="ts">
 import { useBoardsStore } from '~/stores/boards.store';
 
-import BoardSidebar from '~/components/layouts/BoardSidebar/BoardSidebar.vue';
-import TheFooter from '~/components/layouts/TheFooter.vue';
-import TheHeader from '~/components/layouts/TheHeader.vue';
+import TheSidebar from '~/components/layouts/board/TheSidebar.vue';
+import TheFooter from '~/components/layouts/shared/TheFooter.vue';
+import TheHeader from '~/components/layouts/shared/TheHeader.vue';
 
 const boardsStore = useBoardsStore();
 

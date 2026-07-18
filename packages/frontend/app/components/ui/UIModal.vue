@@ -8,9 +8,9 @@
       <Transition name="modal-showed" mode="out-in">
         <div v-if="isOpen" class="bg-light-base rounded-12 relative size-fit max-h-[80%] max-w-[80%] p-12">
           <header class="mb-8 flex items-center justify-between gap-8">
-            <div v-if="header || slots.header" class="flex-1 font-medium">
+            <div v-if="title || slots.header" class="flex-1 font-medium">
               <slot name="header">
-                {{ header }}
+                {{ title }}
               </slot>
             </div>
             <UIIconButton
@@ -41,11 +41,11 @@ const slots = defineSlots();
 const props = withDefaults(
   defineProps<{
     isOpen: boolean;
-    header?: string | null;
+    title?: string | null;
     closeOnOverlay?: boolean;
   }>(),
   {
-    header: null,
+    title: null,
     closeOnOverlay: true,
   },
 );
