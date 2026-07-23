@@ -17,7 +17,7 @@
 import type { RouteLocation } from 'vue-router';
 
 import { EIconSize, type EIconSizeSmall, ETag } from '~/enums/global.enums';
-import { isExternalLink } from '~/utilities/link.utils';
+import { isExternalLink } from '~/utilities/link.utilities';
 
 import { NuxtLink } from '#components';
 

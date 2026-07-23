@@ -7,6 +7,7 @@
     :autocomplete="autocomplete"
     :inputmode="inputMode"
     :placeholder="placeholder"
+    :maxlength="maxLength ?? undefined"
   >
 </template>
 
@@ -24,6 +25,7 @@ const props = withDefaults(
     inputMode?: TUIInputMode;
     autocomplete?: TUIInputAutocomplete;
     placeholder?: string | undefined;
+    maxLength?: number | null;
   }>(),
   {
     size: ESize.SMALL,
@@ -31,6 +33,7 @@ const props = withDefaults(
     inputMode: 'text',
     autocomplete: 'off',
     placeholder: undefined,
+    maxLength: null,
   },
 );
 

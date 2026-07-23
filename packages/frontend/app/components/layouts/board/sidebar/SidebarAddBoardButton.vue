@@ -1,0 +1,76 @@
+<template>
+  <div class="w-full">
+    <UIButton
+      class="bg-green! text-light-base!"
+      prepend-icon="add-line"
+      full
+      :size="ESize.MEDIUM"
+      @click:button="isModalOpen = true"
+    >
+      Добавить доску
+    </UIButton>
+
+    <UpsertModal
+      :is-open="isModalOpen"
+      :form-errors="formErrors"
+      :model-value="formData as TUpsertFormData"
+      :title-maxlength="BOARD_TITLE_MAXLENGTH"
+      :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
+      :is-loading="isLoading"
+      modal-title="Добавить доску"
+      action-button-label="Добавить"
+      @click:action-button="call"
+      @update:is-open="closeModal"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import {
+  BOARD_DESCRIPTION_MAXLENGTH,
+  BOARD_TITLE_MAXLENGTH,
+  type TCreateBoard,
+  type TValidationErrorResponse,
+} from '@kanban-board/common';
+
+import { useForm } from '~/composables/use-form.composable';
+import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
+import { ESize } from '~/enums/global.enums';
+import type { TUpsertFormData } from '~/types/shared.types';
+import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
+import { toBody } from '~/utilities/object.utilities';
+
+import UpsertModal from '~/components/shared/UpsertModal.vue';
+import UIButton from '~/components/ui/buttons/UIButton.vue';
+
+const emit = defineEmits<{
+  'update:boards': [];
+}>();
+
+const toast = useToast();
+
+const isModalOpen = ref(false);
+
+const { formData, reset, formErrors } = useForm<TCreateBoard>({ title: '', description: '' });
+
+const { isLoading, call } = useTryCatchFinally({
+  callback: async () => {
+    const result = await $fetch('/api/boards', { method: 'POST', body: toBody<TCreateBoard>(formData.value) });
+
+    if (result.isSuccess) {
+      toast.success({ message: 'Доска создана!' });
+      emit('update:boards');
+      reset();
+    }
+  },
+  catchCallback: (error: unknown) => {
+    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TCreateBoard>).validation;
+    else toast.error({ message: getErrorMessage(error) });
+  },
+});
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  reset();
+};
+</script>

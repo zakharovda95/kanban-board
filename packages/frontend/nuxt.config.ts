@@ -3,10 +3,14 @@ import tailwindcss from '@tailwindcss/vite';
 
 import { DEFAULT_HOST, DEFAULT_PORT } from './app/constants/app-config.constants';
 
+const NODE_ENV = process.env.NODE_ENV;
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
 
-  devtools: { enabled: process.env.NODE_ENV === ENodeEnv.DEVELOPMENT },
+  // ssr: false,
+
+  devtools: { enabled: NODE_ENV === ENodeEnv.DEVELOPMENT },
 
   modules: [
     '@nuxt/eslint',
@@ -23,7 +27,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      nodeEnv: process.env.NODE_ENV,
+      NODE_ENV: NODE_ENV,
+      BASE_URL: `http://${process.env.BACKEND_HOST}:${process.env.BACKEND_PORT}/api`,
     },
   },
 

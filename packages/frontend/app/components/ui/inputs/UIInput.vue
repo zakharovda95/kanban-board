@@ -1,19 +1,27 @@
 <template>
-  <div
-    class="bg-light-200 focus-within:border-green flex w-fit flex-nowrap items-center justify-between gap-4 border border-transparent duration-300"
-    :class="[computedSize.element, { 'w-full!': full }]"
-  >
-    <NuxtIcon v-if="icon" :name="`mingcute:${icon}`" :size="computedSize.icon" />
-    <UIInputBase
-      v-model="model"
-      :name="name"
-      :size="size"
-      :autocomplete="autocomplete"
-      :disabled="disabled || isLoading"
-      :input-mode="inputMode"
-      :placeholder="placeholder"
-    />
-    <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
+  <div class="w-fit" :class="{ 'w-full!': full }">
+    <div
+      class="bg-light-200 focus-within:border-green flex w-full flex-nowrap items-center justify-between gap-4 border border-transparent duration-300"
+      :class="[computedSize.element]"
+    >
+      <NuxtIcon v-if="icon" :name="`mingcute:${icon}`" :size="computedSize.icon" />
+      <UIInputBase
+        v-model="model"
+        :name="name"
+        :size="size"
+        :autocomplete="autocomplete"
+        :disabled="disabled || isLoading"
+        :input-mode="inputMode"
+        :placeholder="placeholder"
+        :max-length="maxLength"
+      />
+      <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
+    </div>
+    <UIAnimatedHeight>
+      <ul v-if="errors?.length" class="max-w-full">
+        <li v-for="error in errors" :key="error" class="text-12 text-red text-left">· {{ error }}</li>
+      </ul>
+    </UIAnimatedHeight>
   </div>
 </template>
 
@@ -38,6 +46,7 @@ const props = withDefaults(
     placeholder?: string | undefined;
     maxLength?: number | null;
     isLoading?: boolean;
+    errors?: string[] | null;
   }>(),
   {
     icon: null,
@@ -49,6 +58,7 @@ const props = withDefaults(
     placeholder: undefined,
     maxLength: null,
     isLoading: false,
+    errors: null,
   },
 );
 

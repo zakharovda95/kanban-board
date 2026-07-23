@@ -28,3 +28,5 @@ export type TUIInputAutocomplete =
   | 'organization';
 
 export type TUIInputMode = 'text' | 'email' | 'tel' | 'none' | 'url' | 'numeric' | 'decimal' | 'search' | undefined;
+
+export type TUIAnimatedHeightHook = (element: Element) => void;

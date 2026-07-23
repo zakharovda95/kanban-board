@@ -15,8 +15,16 @@ definePageMeta({
 
 const route = useRoute();
 
-const { data: board, pending: isLoadingBoard } = await useAsyncData(
+const {
+  data: board,
+  pending: isLoadingBoard,
+  error,
+} = await useAsyncData(
   `fetch-board-${route.params.id}`,
   async () => await $fetch<TBoard>(`/api/boards/${route.params.id}`),
 );
+
+if (error.value) {
+  navigateTo('/boards');
+}
 </script>

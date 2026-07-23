@@ -10,4 +10,5 @@ export const EXCEPTION_MESSAGES = {
   moveNotAllowed: 'Перемещение недоступно',
   requestBodyNotFound: 'Данные запроса не найдены',
   paramsNotFound: 'Не переданы параметры',
+  validationErrors: 'Ошибки валидации',
 };

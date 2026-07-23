@@ -20,7 +20,7 @@
             />
           </header>
 
-          <div class="h-fit w-full">
+          <div class="h-fit w-auto">
             <slot />
           </div>
 
