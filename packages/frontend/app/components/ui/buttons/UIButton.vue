@@ -1,8 +1,9 @@
 <template>
   <Component
     :is="tag"
-    class="bg-light-200 flex w-fit cursor-pointer flex-row flex-nowrap items-center justify-center gap-4 leading-none font-light whitespace-nowrap duration-300 outline-none hover:brightness-95"
+    class="flex w-fit cursor-pointer flex-row flex-nowrap items-center justify-center gap-4 leading-none font-light whitespace-nowrap duration-300 outline-none hover:brightness-95"
     :class="[{ 'w-full!': full, 'curson-not-allowed opacity-50': disabled || isLoading }, computedSize.element]"
+    :style="{ backgroundColor, color }"
     @click="emit('click:button', $event)"
   >
     <NuxtIcon v-if="prependIcon" :name="`mingcute:${prependIcon}`" :size="computedSize.icon" />
@@ -12,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { EIconSizeSmall, ESize, ETag } from '~/enums/global.enums';
+import { EColor, EIconSizeSmall, ESize, ETag } from '~/enums/global.enums';
 import type { TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
 
 const props = withDefaults(
@@ -25,6 +26,8 @@ const props = withDefaults(
     disabled?: boolean;
     isLoading?: boolean;
     full?: boolean;
+    backgroundColor?: EColor;
+    color?: EColor;
   }>(),
   {
     tag: ETag.BUTTON,
@@ -35,6 +38,8 @@ const props = withDefaults(
     disabled: false,
     isLoading: false,
     full: false,
+    backgroundColor: EColor.GREEN,
+    color: EColor.LIGHT_BASE,
   },
 );
 

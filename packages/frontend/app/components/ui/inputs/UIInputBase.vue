@@ -1,7 +1,7 @@
 <template>
   <input
     v-model="model"
-    class="w-full border-0 outline-0"
+    class="text-light-800 w-full border-0 outline-0"
     :class="[computedSize.element]"
     :name="name"
     :autocomplete="autocomplete"

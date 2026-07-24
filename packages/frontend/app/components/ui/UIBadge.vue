@@ -1,7 +1,8 @@
 <template>
   <div
     class="text-12 rounded-4 flex w-fit items-center justify-center gap-4 leading-none"
-    :class="computedSize.element"
+    :class="[computedSize.element]"
+    :style="{ backgroundColor, color }"
     @click="emit('click:badge', $event)"
   >
     <NuxtIcon v-if="prependIcon" :name="`mingcute:${prependIcon}`" :size="computedSize.icon" />
@@ -11,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { EIconSizeSmall, ESize } from '~/enums/global.enums';
+import { EColor, EIconSizeSmall, ESize } from '~/enums/global.enums';
 import type { TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
 
 const props = withDefaults(
@@ -19,11 +20,15 @@ const props = withDefaults(
     size?: ESize;
     prependIcon?: string | null;
     appendIcon?: string | null;
+    backgroundColor?: EColor;
+    color?: EColor;
   }>(),
   {
     size: ESize.SMALL,
     prependIcon: null,
     appendIcon: null,
+    backgroundColor: EColor.GREEN,
+    color: EColor.LIGHT_BASE,
   },
 );
 

@@ -58,8 +58,6 @@
   --color-*: initial;
 
   --color-light-base: #ffffff;
-  --color-light-50: #fafafa;
-  --color-light-100: #f5f5f5;
   --color-light-200: #e5e5e5;
   --color-light-300: #d4d4d4;
   --color-light-400: #a3a3a3;
@@ -68,7 +66,6 @@
   --color-light-700: #404040;
   --color-light-800: #262626;
   --color-light-900: #171717;
-  --color-light-950: #0a0a0a;
   --color-light-black-opacity: rgba(0, 0, 0, 0.4);
 
   /*--color-dark-base: #000000;*/

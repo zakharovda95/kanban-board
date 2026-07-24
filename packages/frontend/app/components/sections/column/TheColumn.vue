@@ -14,8 +14,8 @@
     </header>
 
     <div class="flex w-full items-center justify-between px-8">
-      <UIBadge class="bg-blue text-light-base">{{ computedIssuesLength }}</UIBadge>
-      <UIIconButton class="bg-green! text-light-base!" icon="add-line" />
+      <UIBadge :background-color="EColor.BLUE">{{ computedIssuesLength }}</UIBadge>
+      <UIIconButton icon="add-line" />
     </div>
 
     <div v-if="column.issues.length" class="flex w-full flex-col items-center gap-8 px-8">
@@ -26,6 +26,8 @@
 
 <script setup lang="ts">
 import { StringUtility, type TColumn } from '@kanban-board/common';
+
+import { EColor } from '~/enums/global.enums';
 
 import IssueCard from '~/components/sections/issue/IssueCard.vue';
 import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';

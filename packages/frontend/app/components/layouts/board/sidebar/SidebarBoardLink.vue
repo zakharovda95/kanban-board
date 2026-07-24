@@ -19,19 +19,29 @@
     </div>
 
     <StopPreventWrapper>
-      <BaseActionsButtons @edit="isModalOpen = true" />
+      <BaseActionsButtons @edit="isEditModalOpen = true" @delete="isDeleteModalOpen = true" />
     </StopPreventWrapper>
 
     <UpsertModal
-      :is-open="isModalOpen"
+      :is-open="isEditModalOpen"
       :form-errors="formErrors"
       :model-value="formData as TUpsertFormData"
       :title-maxlength="BOARD_TITLE_MAXLENGTH"
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
-      :is-loading="isLoading"
+      :is-loading="isLoadingEditing"
       modal-title="Редактировать доску"
       @update:is-open="closeModal"
-      @click:action-button="call"
+      @click:action-button="editBoard"
+    />
+    <UIConfirmationModal
+      :is-open="isDeleteModalOpen"
+      title="Удалить доску?"
+      text="Восстановить данные будет невозможно!"
+      action-button-label="Да, удалить доску"
+      :close-on-overlay="false"
+      :is-loading="isLoadingDeleting"
+      @update:is-open="closeModal"
+      @click:confirm="deleteBoard"
     />
   </UILink>
 </template>
@@ -57,6 +67,7 @@ import DragArea from '~/components/shared/DragArea.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UILink from '~/components/ui/links/UILink.vue';
+import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 
 const props = defineProps<{
   board: TBoardBase;
@@ -69,16 +80,23 @@ const emit = defineEmits<{
 const toast = useToast();
 const route = useRoute();
 
-const isModalOpen = ref(false);
+const isEditModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
+
+const closeModal = () => {
+  isEditModalOpen.value = false;
+  isDeleteModalOpen.value = false;
+  reset();
+};
 
 const { formData, reset, formErrors } = useForm<TPatchBoard>({
   title: props.board.title,
   description: props.board?.description ?? '',
 });
 
-const { isLoading, call } = useTryCatchFinally({
+const { isLoading: isLoadingEditing, call: editBoard } = useTryCatchFinally({
   callback: async () => {
-    const result = await $fetch(`/api/boards/${route.params.id}`, {
+    const result = await $fetch(`/api/boards/${props.board.id}`, {
       method: 'PATCH',
       body: toBody<TPatchBoard>(formData.value),
     });
@@ -95,8 +113,20 @@ const { isLoading, call } = useTryCatchFinally({
   },
 });
 
-const closeModal = () => {
-  isModalOpen.value = false;
-  reset();
-};
+const { isLoading: isLoadingDeleting, call: deleteBoard } = useTryCatchFinally({
+  callback: async () => {
+    const result = await $fetch(`/api/boards/${props.board.id}`, {
+      method: 'DELETE',
+      body: toBody<TPatchBoard>(formData.value),
+    });
+
+    if (result.isSuccess) {
+      toast.success({ message: 'Доска удалена!' });
+      emit('update:boards');
+    }
+  },
+  catchCallback: (error: unknown) => {
+    toast.error({ message: getErrorMessage(error) });
+  },
+});
 </script>

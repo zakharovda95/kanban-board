@@ -1,12 +1,6 @@
 <template>
   <div class="w-full">
-    <UIButton
-      class="bg-green! text-light-base!"
-      prepend-icon="add-line"
-      full
-      :size="ESize.MEDIUM"
-      @click:button="isModalOpen = true"
-    >
+    <UIButton prepend-icon="add-line" full :size="ESize.MEDIUM" @click:button="isModalOpen = true">
       Добавить доску
     </UIButton>
 

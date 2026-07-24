@@ -1,7 +1,8 @@
 <template>
   <Component
     :is="tag"
-    class="bg-light-200 flex cursor-pointer items-center justify-center leading-none duration-300 outline-none hover:brightness-95"
+    class="flex cursor-pointer items-center justify-center leading-none duration-300 outline-none hover:brightness-95"
+    :style="{ backgroundColor, color }"
     :class="computedSize.element"
     @click="emit('click:button', $event)"
   >
@@ -10,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { EIconSize, ESize, ETag } from '~/enums/global.enums';
+import { EColor, EIconSize, ESize, ETag } from '~/enums/global.enums';
 import type { TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
 
 const props = withDefaults(
@@ -20,12 +21,16 @@ const props = withDefaults(
     icon: string;
     iconSize?: EIconSize;
     isLoading?: boolean;
+    backgroundColor?: EColor;
+    color?: EColor;
   }>(),
   {
     tag: ETag.BUTTON,
     size: ESize.SMALL,
     iconSize: EIconSize.SMALL,
     isLoading: false,
+    backgroundColor: EColor.GREEN,
+    color: EColor.LIGHT_BASE,
   },
 );
 

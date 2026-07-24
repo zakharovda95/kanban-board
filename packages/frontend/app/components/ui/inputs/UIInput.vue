@@ -1,7 +1,7 @@
 <template>
   <div class="w-fit" :class="{ 'w-full!': full }">
     <div
-      class="bg-light-200 focus-within:border-green flex w-full flex-nowrap items-center justify-between gap-4 border border-transparent duration-300"
+      class="focus-within:border-green bg-light-200 flex w-full flex-nowrap items-center justify-between gap-4 border border-transparent duration-300"
       :class="[computedSize.element]"
     >
       <NuxtIcon v-if="icon" :name="`mingcute:${icon}`" :size="computedSize.icon" />

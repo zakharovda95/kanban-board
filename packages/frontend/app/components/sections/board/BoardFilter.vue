@@ -1,9 +1,7 @@
 <template>
   <div class="rounded-12 bg-light-base flex h-fit w-full p-12">
     <div class="flex w-full">
-      <UIButton class="bg-green! text-light-base!" prepend-icon="add-line" :size="ESize.MEDIUM">
-        Добавить колонку
-      </UIButton>
+      <UIButton prepend-icon="add-line" :size="ESize.MEDIUM"> Добавить колонку </UIButton>
     </div>
   </div>
 </template>

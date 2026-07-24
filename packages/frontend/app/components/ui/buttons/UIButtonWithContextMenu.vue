@@ -5,6 +5,8 @@
       :icon="icon || 'more-1-fill'"
       :size="size"
       :icon-size="iconSize"
+      :background-color="backgroundColor"
+      :color="color"
       @click:button="isContextMenuOpen = !isContextMenuOpen"
     />
     <Transition name="fade">
@@ -19,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { EIconSize, ESize } from '~/enums/global.enums';
+import { EColor, EIconSize, ESize } from '~/enums/global.enums';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 
@@ -30,18 +32,30 @@ withDefaults(
     icon?: 'more-1-fill' | 'more-2-fill';
     size?: ESize;
     iconSize?: number;
+    backgroundColor?: EColor;
+    color?: EColor;
   }>(),
   {
     icon: 'more-1-fill',
     size: ESize.SMALL,
     iconSize: EIconSize.SMALL,
+    backgroundColor: EColor.LIGHT_200,
+    color: EColor.LIGHT_800,
   },
 );
 
 const contextMenuRef = useTemplateRef('contextMenuRef');
 const isContextMenuOpen = ref(false);
 
-onClickOutside(contextMenuRef, () => {
+const closeContextMenu = () => {
   isContextMenuOpen.value = false;
+};
+
+onClickOutside(contextMenuRef, () => {
+  closeContextMenu();
+});
+
+defineExpose({
+  closeContextMenu,
 });
 </script>

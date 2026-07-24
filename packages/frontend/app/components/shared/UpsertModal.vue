@@ -30,10 +30,11 @@
           full
         />
       </UILabel>
+    </div>
 
+    <template #footer>
       <div class="flex w-full flex-col gap-8">
         <UIButton
-          class="bg-green! text-light-base!"
           full
           :size="ESize.MEDIUM"
           :is-loading="isLoading"
@@ -43,9 +44,9 @@
           {{ actionButtonLabel }}
         </UIButton>
         <UIButton
-          class="bg-red! text-light-base!"
           full
           :size="ESize.MEDIUM"
+          :background-color="EColor.RED"
           :is-loading="isLoading"
           :disabled="isLoading"
           @click:button="emit('update:is-open', false)"
@@ -53,20 +54,20 @@
           Отмена
         </UIButton>
       </div>
-    </div>
+    </template>
   </UIModal>
 </template>
 
 <script setup lang="ts">
 import type { TValidationErrors } from '@kanban-board/common';
 
-import { ESize } from '~/enums/global.enums';
+import { EColor, ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
+import UIModal from '~/components/ui/modals/UIModal.vue';
 import UILabel from '~/components/ui/UILabel.vue';
-import UIModal from '~/components/ui/UIModal.vue';
 
 const model = defineModel<TUpsertFormData>({ required: true });
 
