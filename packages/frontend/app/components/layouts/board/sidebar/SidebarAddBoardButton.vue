@@ -24,6 +24,7 @@ import {
   BOARD_DESCRIPTION_MAXLENGTH,
   BOARD_TITLE_MAXLENGTH,
   type TCreateBoard,
+  type TCreateBoardResponse,
   type TValidationErrorResponse,
 } from '@kanban-board/common';
 
@@ -38,7 +39,7 @@ import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
 const emit = defineEmits<{
-  'update:boards': [];
+  'update:boards': [value?: number];
 }>();
 
 const toast = useToast();
@@ -49,11 +50,14 @@ const { formData, reset, formErrors } = useForm<TCreateBoard>({ title: '', descr
 
 const { isLoading, call } = useTryCatchFinally({
   callback: async () => {
-    const result = await $fetch('/api/boards', { method: 'POST', body: toBody<TCreateBoard>(formData.value) });
+    const result = await $fetch<TCreateBoardResponse>('/api/boards', {
+      method: 'POST',
+      body: toBody<TCreateBoard>(formData.value),
+    });
 
     if (result.isSuccess) {
       toast.success({ message: 'Доска создана!' });
-      emit('update:boards');
+      emit('update:boards', result?.data?.id);
       reset();
     }
   },

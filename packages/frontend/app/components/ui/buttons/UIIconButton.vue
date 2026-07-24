@@ -11,7 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import { EColor, EIconSize, ESize, ETag } from '~/enums/global.enums';
+import { EColor } from '@kanban-board/common';
+
+import { EIconSize, ESize, ETag } from '~/enums/global.enums';
 import type { TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
 
 const props = withDefaults(

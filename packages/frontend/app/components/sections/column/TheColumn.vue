@@ -25,9 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { StringUtility, type TColumn } from '@kanban-board/common';
-
-import { EColor } from '~/enums/global.enums';
+import { EColor, StringUtility, type TColumn } from '@kanban-board/common';
 
 import IssueCard from '~/components/sections/issue/IssueCard.vue';
 import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';

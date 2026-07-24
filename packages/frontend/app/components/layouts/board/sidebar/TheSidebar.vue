@@ -11,13 +11,13 @@
             v-for="board in boardsStore.boards"
             :key="board.id"
             :board="board"
-            @update:boards="boardsStore.fetchBoards"
+            @update:boards="updateBoardsAfterUpdatingOrDeleting"
           />
         </nav>
         <div v-else class="p-8">
           <p class="text-12">{{ NO_BOARDS_TEXT }}</p>
         </div>
-        <SidebarAddBoardButton class="mt-12" @update:boards="boardsStore.fetchBoards" />
+        <SidebarAddBoardButton class="mt-12" @update:boards="updateBoardsAfterCreating" />
       </template>
     </div>
   </aside>
@@ -26,9 +26,22 @@
 <script setup lang="ts">
 import { NO_BOARDS_TEXT } from '~/constants/board.constants';
 import { useBoardsStore } from '~/stores/boards.store';
+import type { TBaseAction } from '~/types/shared.types';
 
 import SidebarAddBoardButton from '~/components/layouts/board/sidebar/SidebarAddBoardButton.vue';
 import SidebarBoardLink from '~/components/layouts/board/sidebar/SidebarBoardLink.vue';
 
+const route = useRoute();
 const boardsStore = useBoardsStore();
+
+const updateBoardsAfterUpdatingOrDeleting = async (action: TBaseAction, id: number) => {
+  await boardsStore.fetchBoards();
+  if (action === 'update') return;
+  if (route.params?.id && id === Number(route.params.id)) navigateTo(`/boards`);
+};
+
+const updateBoardsAfterCreating = async (id?: number) => {
+  await boardsStore.fetchBoards();
+  if (id) navigateTo(`/boards/${id}`);
+};
 </script>

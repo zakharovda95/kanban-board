@@ -21,7 +21,9 @@
 </template>
 
 <script setup lang="ts">
-import { EColor, EIconSize, ESize } from '~/enums/global.enums';
+import { EColor } from '@kanban-board/common';
+
+import { EIconSize, ESize } from '~/enums/global.enums';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 

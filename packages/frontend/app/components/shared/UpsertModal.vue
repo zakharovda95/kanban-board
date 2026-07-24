@@ -59,9 +59,9 @@
 </template>
 
 <script setup lang="ts">
-import type { TValidationErrors } from '@kanban-board/common';
+import { EColor, type TValidationErrors } from '@kanban-board/common';
 
-import { EColor, ESize } from '~/enums/global.enums';
+import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';

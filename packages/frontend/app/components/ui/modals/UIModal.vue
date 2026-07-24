@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { EColor } from '~/enums/global.enums';
+import { EColor } from '@kanban-board/common';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 
