@@ -21,7 +21,8 @@ export class PatchBoardDto implements TPatchBoard {
   title?: string;
 
   @ValidateIfDefinedAndNotNull()
-  @IsString()
+  @IsString({ message: VALIDATION_MESSAGES.isString })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
   @MaxLength(BOARD_DESCRIPTION_MAXLENGTH)
   description?: string | null;
 }

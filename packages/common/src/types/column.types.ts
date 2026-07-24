@@ -21,4 +21,4 @@ export type TCreateColumnResponse = TSuccessResponse<Pick<TColumnBase, 'id'>>;
 
 export type TNewColumn = Pick<TColumnBase, 'title' | 'description' | 'order' | 'color'>;
 
-export type TPatchColumn = Partial<Pick<TColumnBase, 'title' | 'description'>>;
+export type TPatchColumn = Partial<Pick<TColumnBase, 'title' | 'description' | 'color'>>;

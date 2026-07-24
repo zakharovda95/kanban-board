@@ -1,3 +1,4 @@
+import { COLUMN_TITLE_MAXLENGTH } from '@kanban-board/common';
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
@@ -6,7 +7,7 @@ import { MovableEntity } from '@/modules/shared/move/libs/entities/movable.entit
 
 @Entity('columns')
 export class ColumnEntity extends MovableEntity {
-  @Column({ type: 'varchar', length: 128 })
+  @Column({ type: 'varchar', length: COLUMN_TITLE_MAXLENGTH })
   title: string;
 
   @Column({ type: 'varchar', nullable: true })

@@ -12,7 +12,7 @@
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
       :is-loading="isLoading"
       modal-title="Добавить доску"
-      action-button-label="Добавить"
+      action-button-label="Добавить доску"
       @click:action-button="call"
       @update:is-open="closeModal"
     />
@@ -58,7 +58,7 @@ const { isLoading, call } = useTryCatchFinally({
     if (result.isSuccess) {
       toast.success({ message: 'Доска создана!' });
       emit('update:boards', result?.data?.id);
-      reset();
+      closeModal();
     }
   },
   catchCallback: (error: unknown) => {

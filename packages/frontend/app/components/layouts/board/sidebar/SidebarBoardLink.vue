@@ -28,7 +28,7 @@
       :model-value="formData as TUpsertFormData"
       :title-maxlength="BOARD_TITLE_MAXLENGTH"
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
-      :is-loading="isLoadingUpdating"
+      :is-loading="isLoadingUpdate"
       modal-title="Редактировать доску"
       @update:is-open="closeModal"
       @click:action-button="updateBoard"
@@ -39,7 +39,7 @@
       text="Восстановить данные будет невозможно!"
       action-button-label="Да, удалить доску"
       :close-on-overlay="false"
-      :is-loading="isLoadingDeleting"
+      :is-loading="isLoadingDelete"
       @update:is-open="closeModal"
       @click:confirm="deleteBoard"
     />
@@ -51,7 +51,6 @@ import {
   BOARD_DESCRIPTION_MAXLENGTH,
   BOARD_TITLE_MAXLENGTH,
   type TBoardBase,
-  type TCreateBoard,
   type TPatchBoard,
   type TSuccessResponse,
   type TValidationErrorResponse,
@@ -95,7 +94,7 @@ const { formData, reset, formErrors } = useForm<TPatchBoard>({
   description: props.board?.description ?? '',
 });
 
-const { isLoading: isLoadingUpdating, call: updateBoard } = useTryCatchFinally({
+const { isLoading: isLoadingUpdate, call: updateBoard } = useTryCatchFinally({
   callback: async () => {
     const result = await $fetch<TSuccessResponse>(`/api/boards/${props.board.id}`, {
       method: 'PATCH',
@@ -105,16 +104,16 @@ const { isLoading: isLoadingUpdating, call: updateBoard } = useTryCatchFinally({
     if (result.isSuccess) {
       toast.success({ message: 'Доска обновлена!' });
       emit('update:boards', 'update', props.board.id);
-      reset();
+      closeModal();
     }
   },
   catchCallback: (error: unknown) => {
-    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TCreateBoard>).validation;
+    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TPatchBoard>).validation;
     else toast.error({ message: getErrorMessage(error) });
   },
 });
 
-const { isLoading: isLoadingDeleting, call: deleteBoard } = useTryCatchFinally({
+const { isLoading: isLoadingDelete, call: deleteBoard } = useTryCatchFinally({
   callback: async () => {
     const result = await $fetch<TSuccessResponse>(`/api/boards/${props.board.id}`, {
       method: 'DELETE',
@@ -124,6 +123,7 @@ const { isLoading: isLoadingDeleting, call: deleteBoard } = useTryCatchFinally({
     if (result.isSuccess) {
       toast.success({ message: 'Доска удалена!' });
       emit('update:boards', 'delete', props.board.id);
+      closeModal();
     }
   },
   catchCallback: (error: unknown) => {

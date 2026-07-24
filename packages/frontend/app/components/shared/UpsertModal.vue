@@ -14,7 +14,7 @@
           :disabled="isLoading"
           :errors="formErrors.title"
           name="input-title"
-          placeholder="Укажите название доски..."
+          placeholder="Укажите название..."
           full
         />
       </UILabel>
@@ -26,10 +26,12 @@
           :disabled="isLoading"
           :errors="formErrors.description"
           name="input-description"
-          placeholder="Укажите описание доски..."
+          placeholder="Укажите описание..."
           full
         />
       </UILabel>
+
+      <slot v-if="slots.default" />
     </div>
 
     <template #footer>
@@ -68,6 +70,8 @@ import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
 import UILabel from '~/components/ui/UILabel.vue';
+
+const slots = defineSlots();
 
 const model = defineModel<TUpsertFormData>({ required: true });
 

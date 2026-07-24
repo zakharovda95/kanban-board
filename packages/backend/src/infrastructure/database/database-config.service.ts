@@ -21,7 +21,7 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
       synchronize: nodeEnv !== ENodeEnv.PRODUCTION,
       autoLoadEntities: true,
       entityPrefix: undefined,
-      //dropSchema: true,
+      // dropSchema: true,
     };
   }
 }

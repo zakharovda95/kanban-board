@@ -1,20 +1,9 @@
 <template>
   <article class="border-light-300 rounded-12 flex size-full w-280 flex-col items-center gap-8 overflow-hidden border">
-    <header
-      class="bg-light-base flex h-60 w-full flex-col border-b-4 p-8 text-left"
-      :style="{ borderBottomColor: column.color }"
-    >
-      <div class="flex w-full flex-row flex-nowrap items-center justify-between gap-4 overflow-hidden">
-        <span class="text-14 font-medium text-ellipsis whitespace-nowrap">{{ column.title }}</span>
-        <BaseActionsButtons />
-      </div>
-      <span class="text-elipsis text-12 w-full overflow-hidden font-light">
-        {{ column.description }}
-      </span>
-    </header>
+    <ColumnHeader :column="column" />
 
     <div class="flex w-full items-center justify-between px-8">
-      <UIBadge :background-color="EColor.BLUE">{{ computedIssuesLength }}</UIBadge>
+      <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">{{ computedIssuesLength }}</UIBadge>
       <UIIconButton icon="add-line" />
     </div>
 
@@ -27,8 +16,8 @@
 <script setup lang="ts">
 import { EColor, StringUtility, type TColumn } from '@kanban-board/common';
 
+import ColumnHeader from '~/components/sections/column/ColumnHeader.vue';
 import IssueCard from '~/components/sections/issue/IssueCard.vue';
-import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIBadge from '~/components/ui/UIBadge.vue';
 

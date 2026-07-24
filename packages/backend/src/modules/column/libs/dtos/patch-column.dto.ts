@@ -1,6 +1,11 @@
-import type { TPatchColumn } from '@kanban-board/common';
+import {
+  COLUMN_DESCRIPTION_MAXLENGTH,
+  COLUMN_TITLE_MAXLENGTH,
+  type TPatchColumn,
+} from '@kanban-board/common';
 import { IsHexColor, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
+import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import {
   ValidateIfDefined,
   ValidateIfDefinedAndNotNull,
@@ -8,19 +13,23 @@ import {
 
 export class PatchColumnDto implements TPatchColumn {
   @ValidateIfDefined()
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(24)
+  @IsString({ message: VALIDATION_MESSAGES.isString })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
+  @MaxLength(COLUMN_TITLE_MAXLENGTH, {
+    message: `${VALIDATION_MESSAGES.maxlength} ${COLUMN_TITLE_MAXLENGTH}`,
+  })
   title?: string;
 
   @ValidateIfDefinedAndNotNull()
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(64)
+  @IsString({ message: VALIDATION_MESSAGES.isString })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
+  @MaxLength(COLUMN_DESCRIPTION_MAXLENGTH, {
+    message: `${VALIDATION_MESSAGES.maxlength} ${COLUMN_DESCRIPTION_MAXLENGTH}`,
+  })
   description?: string | null;
 
   @ValidateIfDefined()
-  @IsNotEmpty()
-  @IsHexColor()
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
+  @IsHexColor({ message: VALIDATION_MESSAGES.isHex })
   color?: string;
 }
