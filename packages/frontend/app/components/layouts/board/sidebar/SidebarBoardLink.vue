@@ -3,7 +3,7 @@
     :to="`/boards/${board.id}`"
     :hoverable="false"
     class="border-light-200 justify-right rounded-8 flex h-60 w-full flex-1 cursor-pointer items-center justify-between gap-8 border p-8 duration-300"
-    :class="{ 'border-green!': board.id === Number(route.params?.id ?? 0) }"
+    :class="{ 'border-green!': board.id === route.params?.id }"
   >
     <StopPreventWrapper>
       <DragArea />
@@ -75,7 +75,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:boards': [action: TBaseAction, id: number];
+  'update:boards': [action: TBaseAction, id: string];
 }>();
 
 const toast = useToast();

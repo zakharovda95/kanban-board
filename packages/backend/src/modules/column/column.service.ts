@@ -37,7 +37,8 @@ export class ColumnService {
    * @param body - данные колонки (title, color, description).
    * @returns стандартный успешный ответ с id созданной колонки.
    * **/
-  public async createColumn(boardId: number, body: TCreateColumn): Promise<TCreateColumnResponse> {
+  public async createColumn(boardId: string, body: TCreateColumn): Promise<TCreateColumnResponse> {
+    if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
@@ -74,8 +75,8 @@ export class ColumnService {
    * @returns стандартный успешный ответ.
    * **/
   public async moveColumn(
-    boardId: number,
-    columnId: number,
+    boardId: string,
+    columnId: string,
     body: TMoveParameters,
   ): Promise<TSuccessResponse> {
     if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
@@ -103,11 +104,11 @@ export class ColumnService {
    * @returns стандартный успешный ответ.
    * **/
   public async patchColumn(
-    boardId: number,
-    columnId: number,
+    boardId: string,
+    columnId: string,
     body: TPatchColumn,
   ): Promise<TSuccessResponse> {
-    if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+    if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
@@ -126,8 +127,8 @@ export class ColumnService {
    * @param columnId - id колонки.
    * @returns стандартный успешный ответ.
    * **/
-  public async deleteColumn(boardId: number, columnId: number): Promise<TSuccessResponse> {
-    if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+  public async deleteColumn(boardId: string, columnId: string): Promise<TSuccessResponse> {
+    if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
 

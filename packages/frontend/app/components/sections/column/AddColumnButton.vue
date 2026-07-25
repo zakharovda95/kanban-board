@@ -38,6 +38,7 @@ import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composab
 import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
+import { toBody } from '~/utilities/object.utilities';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
@@ -62,7 +63,7 @@ const { isLoading, call } = useTryCatchFinally({
   callback: async () => {
     const result = await $fetch<TCreateColumnResponse>(`/api/boards/${route.params.id}/columns`, {
       method: 'POST',
-      body: formData.value,
+      body: toBody<TCreateColumn>(formData.value),
     });
 
     if (result.isSuccess) {

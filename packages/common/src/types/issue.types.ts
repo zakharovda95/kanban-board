@@ -1,21 +1,19 @@
 import type { TSuccessResponse } from '@kanban-board/common';
 
-import { TMoveParameters } from './move.types.js';
+import type { IMovable, TMoveParameters } from './move.types.js';
 
-export type TIssue = {
-  id: number;
+export type TIssue = IMovable & {
   createdAt: Date;
   updatedAt: Date;
   title: string;
   description: string | null;
-  order: number;
-  boardId: number;
-  columnId: number;
+  boardId: string;
+  columnId: string;
 };
 
 export type TCreateIssue = Pick<TIssue, 'title' | 'description'>;
 export type TCreateIssueResponse = TSuccessResponse<Pick<TIssue, 'id'>>;
 
-export type TMoveIssue = TMoveParameters & { toColumnId?: number };
+export type TMoveIssue = TMoveParameters & { toColumnId?: string };
 
 export type TPatchIssue = Partial<Pick<TIssue, 'title' | 'description'>>;

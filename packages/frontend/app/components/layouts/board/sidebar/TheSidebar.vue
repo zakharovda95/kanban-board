@@ -34,13 +34,13 @@ import SidebarBoardLink from '~/components/layouts/board/sidebar/SidebarBoardLin
 const route = useRoute();
 const boardsStore = useBoardsStore();
 
-const updateBoardsAfterUpdatingOrDeleting = async (action: TBaseAction, id: number) => {
+const updateBoardsAfterUpdatingOrDeleting = async (action: TBaseAction, id: string) => {
   await boardsStore.fetchBoards();
   if (action === 'update') return;
-  if (route.params?.id && id === Number(route.params.id)) navigateTo(`/boards`);
+  if (route.params?.id && id === route.params.id) navigateTo(`/boards`);
 };
 
-const updateBoardsAfterCreating = async (id?: number) => {
+const updateBoardsAfterCreating = async (id?: string) => {
   await boardsStore.fetchBoards();
   if (id) navigateTo(`/boards/${id}`);
 };

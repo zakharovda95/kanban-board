@@ -7,7 +7,7 @@ export type TColumnBase = IMovable & {
   title: string;
   description: string | null;
   color: string;
-  boardId: number;
+  boardId: string;
 };
 
 export type TColumn = TColumnBase & {

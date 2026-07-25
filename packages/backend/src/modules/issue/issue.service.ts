@@ -40,7 +40,7 @@ export class IssueService {
    * @param issueId - id задачи.
    * @returns объект задачи.
    * **/
-  public async getIssueById(issueId: number): Promise<TIssue> {
+  public async getIssueById(issueId: string): Promise<TIssue> {
     const { manager } = this.dataSource;
     const issue = await manager.findOne(IssueEntity, { where: { id: issueId } });
     if (!issue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
@@ -56,8 +56,8 @@ export class IssueService {
    * @returns стандартный успешный ответ с id созданной задачи.
    * **/
   public async createIssue(
-    boardId: number,
-    columnId: number,
+    boardId: string,
+    columnId: string,
     body: TCreateIssue,
   ): Promise<TCreateIssueResponse> {
     if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
@@ -101,9 +101,9 @@ export class IssueService {
    * @returns стандартный успешный ответ.
    * **/
   public async moveIssue(
-    boardId: number,
-    fromColumnId: number,
-    issueId: number,
+    boardId: string,
+    fromColumnId: string,
+    issueId: string,
     body: TMoveIssue,
   ): Promise<TSuccessResponse> {
     if (!boardId || !fromColumnId || !issueId)
@@ -154,7 +154,7 @@ export class IssueService {
    * @param body - поля для обновления.
    * @returns стандартный успешный ответ.
    * **/
-  public async patchIssue(issueId: number, body: TPatchIssue): Promise<TSuccessResponse> {
+  public async patchIssue(issueId: string, body: TPatchIssue): Promise<TSuccessResponse> {
     if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
@@ -173,7 +173,7 @@ export class IssueService {
    * @param issueId - id задачи.
    * @returns стандартный успешный ответ.
    * **/
-  public async deleteIssue(issueId: number): Promise<TSuccessResponse> {
+  public async deleteIssue(issueId: string): Promise<TSuccessResponse> {
     if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;

@@ -1,11 +1,11 @@
 export interface IMovable {
-  id: number;
+  id: string;
   order: number;
 }
 
 export type TMoveParameters = {
-  previousId?: number | null;
-  nextId?: number | null;
+  previousId?: string | null;
+  nextId?: string | null;
 };
 
 export type TMoveOptions = {

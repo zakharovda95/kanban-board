@@ -39,7 +39,7 @@ import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
 const emit = defineEmits<{
-  'update:boards': [value?: number];
+  'update:boards': [id?: string];
 }>();
 
 const toast = useToast();

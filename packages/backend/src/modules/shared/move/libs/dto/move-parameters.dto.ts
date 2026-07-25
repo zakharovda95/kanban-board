@@ -7,10 +7,10 @@ export class MoveParametersDto implements TMoveParameters {
   @ValidateIfDefinedAndNotNull()
   @IsInt()
   @IsPositive()
-  previousId?: number;
+  previousId?: string;
 
   @ValidateIfDefinedAndNotNull()
   @IsInt()
   @IsPositive()
-  nextId?: number;
+  nextId?: string;
 }

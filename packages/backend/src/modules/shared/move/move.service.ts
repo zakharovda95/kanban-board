@@ -27,7 +27,7 @@ export class MoveService<T extends IMovable> {
    * **/
   public tryToMove(
     entities: T[],
-    targetId: number,
+    targetId: string,
     parameters: TMoveParameters,
     options?: TMoveOptions,
   ): void {
@@ -137,7 +137,7 @@ export class MoveService<T extends IMovable> {
    * **/
   private getAdjacent(
     entities: T[],
-    searchableId: number,
+    searchableId: string,
     direction: TMoveDirection,
   ): [T | undefined, T | undefined] {
     const searchableIndex = entities.findIndex(({ id }) => id === searchableId);
@@ -152,12 +152,12 @@ export class MoveService<T extends IMovable> {
   }
 
   /**
-   * Проверить, совпадает ли id с id перемещаемого элемента.
+   * Проверить, совпадает ли id/index с id/index перемещаемого элемента.
    * @param target - порядковое значение перемещаемого элемента.
    * @param entity - порядковое значение для сравнения.
    * @returns true, если позиция не изменится.
    * **/
-  private isCurrentPosition(target: number, entity: number): boolean {
+  private isCurrentPosition(target: string | number, entity: string | number): boolean {
     return target === entity;
   }
 }

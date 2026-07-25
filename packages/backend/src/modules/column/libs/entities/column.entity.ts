@@ -17,8 +17,8 @@ export class ColumnEntity extends MovableEntity {
   color: string;
 
   @Index()
-  @Column()
-  boardId: number;
+  @Column({ type: 'uuid' })
+  boardId: string;
 
   @ManyToOne(() => BoardEntity, entity => entity.columns, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'boardId' })
