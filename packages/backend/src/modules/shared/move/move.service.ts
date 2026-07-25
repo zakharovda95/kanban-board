@@ -118,6 +118,17 @@ export class MoveService<T extends IMovable> {
   }
 
   /**
+   * Нормализовать порядок элементов (кроме перемещаемого).
+   * @param entitiesWithoutTarget - список элементов без перемещаемого.
+   * @returns - void. Значения order пересчитываются in-place.
+   * **/
+  public resetOrders(entitiesWithoutTarget: T[]): void {
+    entitiesWithoutTarget.forEach((entity, index) => {
+      entity.order = OrderUtility.calculateOrderByIndex(index);
+    });
+  }
+
+  /**
    * Найти элемент по id и его соседа в указанном направлении.
    * @param entities - список элементов.
    * @param searchableId - id искомого элемента.
@@ -138,17 +149,6 @@ export class MoveService<T extends IMovable> {
     const adjacent = entities[adjacentIndex];
 
     return [searchable, adjacent];
-  }
-
-  /**
-   * Нормализовать порядок элементов (кроме перемещаемого).
-   * @param entitiesWithoutTarget - список элементов без перемещаемого.
-   * @returns - void. Значения order пересчитываются in-place.
-   * **/
-  private resetOrders(entitiesWithoutTarget: T[]): void {
-    entitiesWithoutTarget.forEach((entity, index) => {
-      entity.order = OrderUtility.calculateOrderByIndex(index);
-    });
   }
 
   /**

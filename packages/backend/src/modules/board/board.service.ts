@@ -142,7 +142,7 @@ export class BoardService {
   }
 
   /**
-   * Удалить доску.
+   * Удалить доску. После удаления нужно нормализовать order.
    * @param boardId - id доски.
    * @returns стандартный успешный ответ.
    * **/
@@ -151,10 +151,24 @@ export class BoardService {
 
     const { manager } = this.dataSource;
 
-    const { affected } = await manager.delete(BoardEntity, { id: boardId });
-    if (!affected || affected <= 0)
-      throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
+    return manager.transaction(async transactionalManager => {
+      const boards = await transactionalManager.find(BoardEntity, {
+        order: { order: 'ASC' },
+      });
 
-    return getSuccessResponse();
+      const target = boards.find(({ id }) => id === boardId);
+      if (!target) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+
+      const { affected } = await transactionalManager.delete(BoardEntity, { id: boardId });
+      if (!affected || affected <= 0)
+        throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
+
+      const withoutTarget = boards.filter(({ id }) => id !== boardId);
+      this.moveService.resetOrders(withoutTarget);
+
+      await transactionalManager.save(BoardEntity, withoutTarget);
+
+      return getSuccessResponse();
+    });
   }
 }

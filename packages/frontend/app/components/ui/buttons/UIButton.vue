@@ -2,13 +2,13 @@
   <Component
     :is="tag"
     class="flex w-fit cursor-pointer flex-row flex-nowrap items-center justify-center gap-4 leading-none font-light whitespace-nowrap duration-300 outline-none hover:brightness-95"
-    :class="[{ 'w-full!': full, 'curson-not-allowed opacity-50': disabled || isLoading }, computedSize.element]"
+    :class="[{ 'w-full!': full, 'cursor-not-allowed opacity-50': disabled || isLoading }, computedSize.element]"
     :style="{ backgroundColor, color }"
     @click="emit('click:button', $event)"
   >
     <NuxtIcon v-if="prependIcon" :name="`mingcute:${prependIcon}`" :size="computedSize.icon" />
     <slot />
-    <NuxtIcon v-if="appendIcon" :name="`mingcute:${appendIcon}`" :size="computedSize.icon" />
+    <NuxtIcon v-if="appendIcon && !isLoading" :name="`mingcute:${appendIcon}`" :size="computedSize.icon" />
   </Component>
 </template>
 

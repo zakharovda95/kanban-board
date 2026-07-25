@@ -12,11 +12,11 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
 
+import CustomParseIntPipe from '@/libs/pipes/custom-parse-int.pipe';
 import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
 import { BoardService } from '@/modules/board/board.service';
 import { CreateBoardDto } from '@/modules/board/libs/dtos/create-board.dto';
@@ -34,7 +34,9 @@ export class BoardController {
   }
 
   @Get(':boardId')
-  public async getBoardById(@Param('boardId', ParseIntPipe) boardId: number): Promise<TBoard> {
+  public async getBoardById(
+    @Param('boardId', CustomParseIntPipe) boardId: number,
+  ): Promise<TBoard> {
     return await this.boardService.getBoardById(boardId);
   }
 
@@ -46,7 +48,7 @@ export class BoardController {
   @Post(':boardId/move')
   @HttpCode(HttpStatus.OK)
   public async moveBoard(
-    @Param('boardId', ParseIntPipe) boardId: number,
+    @Param('boardId', CustomParseIntPipe) boardId: number,
     @Body(MovePipe) body: MoveParametersDto,
   ): Promise<TSuccessResponse> {
     return await this.boardService.moveBoard(boardId, body);
@@ -54,7 +56,7 @@ export class BoardController {
 
   @Patch(':boardId')
   public async patchBoard(
-    @Param('boardId', ParseIntPipe) boardId: number,
+    @Param('boardId', CustomParseIntPipe) boardId: number,
     @Body(new RequireAnyPipe(['title', 'description'])) body: PatchBoardDto,
   ): Promise<TSuccessResponse> {
     return await this.boardService.patchBoard(boardId, body);
@@ -62,7 +64,7 @@ export class BoardController {
 
   @Delete(':boardId')
   public async deleteBoard(
-    @Param('boardId', ParseIntPipe) boardId: number,
+    @Param('boardId', CustomParseIntPipe) boardId: number,
   ): Promise<TSuccessResponse> {
     return await this.boardService.deleteBoard(boardId);
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="bg-light-300 rounded-2 flex size-fit items-center justify-center p-8">
-    <span class="text-12 leading-0 font-medium">{{ computedLength }}</span>
+    <output class="text-12 leading-0 font-medium">{{ computedLength }}</output>
   </div>
 </template>
 

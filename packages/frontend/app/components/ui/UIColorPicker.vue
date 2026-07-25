@@ -7,8 +7,8 @@
         :style="{ backgroundColor: model }"
         @click="show"
       />
-      <div class="flex cursor-pointer items-center gap-4">
-        <span class="font-medium underline underline-offset-5" @click="copyColor">{{ model.toUpperCase() }}</span>
+      <div class="flex cursor-pointer items-center gap-4" @click="copyColor">
+        <span class="font-medium underline underline-offset-5">{{ model.toUpperCase() }}</span>
         <NuxtIcon class="text-green" :name="`mingcute:copy-line`" :size="16" />
       </div>
     </div>

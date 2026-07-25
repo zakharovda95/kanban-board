@@ -2,7 +2,7 @@
   <div class="w-fit" :class="{ 'w-full!': full }">
     <div
       class="focus-within:border-green bg-light-200 flex w-full flex-nowrap items-center justify-between gap-4 border border-transparent duration-300"
-      :class="[computedSize.element]"
+      :class="[computedSize.element, { 'cursor-not-allowed opacity-50': disabled }]"
     >
       <NuxtIcon v-if="icon" :name="`mingcute:${icon}`" :size="computedSize.icon" />
       <UIInputBase
@@ -15,7 +15,8 @@
         :placeholder="placeholder"
         :max-length="maxLength"
       />
-      <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
+      <UIMaxLengthCounter v-if="maxLength && !isLoading" :value-length="model.length" :max-length="maxLength" />
+      <NuxtIcon v-else-if="isLoading" class="animate-spin" name="mingcute:loading-3-line" :size="computedSize.icon" />
     </div>
     <UIAnimatedHeight>
       <ul v-if="errors?.length" class="max-w-full">

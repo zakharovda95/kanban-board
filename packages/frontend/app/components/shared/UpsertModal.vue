@@ -81,12 +81,14 @@ withDefaults(
     formErrors: TValidationErrors<TUpsertFormData>;
     isOpen: boolean;
     isLoading?: boolean;
+    disabled?: boolean;
     titleMaxlength?: number | null;
     descriptionMaxlength?: number | null;
     actionButtonLabel?: string;
   }>(),
   {
     isLoading: false,
+    disabled: false,
     titleMaxlength: null,
     descriptionMaxlength: null,
     actionButtonLabel: 'Применить',

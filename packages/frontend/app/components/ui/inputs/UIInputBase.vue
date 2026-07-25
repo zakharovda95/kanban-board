@@ -4,6 +4,7 @@
     class="text-light-800 w-full border-0 outline-0"
     :class="[computedSize.element]"
     :name="name"
+    :disabled="disabled"
     :autocomplete="autocomplete"
     :inputmode="inputMode"
     :placeholder="placeholder"

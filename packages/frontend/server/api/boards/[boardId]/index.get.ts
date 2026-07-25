@@ -2,7 +2,7 @@ import type { TBoard } from '@kanban-board/common';
 
 export default defineEventHandler(async event => {
   const baseUrl = useRuntimeConfig().public?.BASE_URL ?? '';
-  const id = getRouterParam(event, 'id');
+  const boardId = getRouterParam(event, 'boardId');
 
-  return $fetch<TBoard>(`${baseUrl}/v1/boards/${id}`, { method: 'GET' });
+  return $fetch<TBoard>(`${baseUrl}/v1/boards/${boardId}`, { method: 'GET' });
 });

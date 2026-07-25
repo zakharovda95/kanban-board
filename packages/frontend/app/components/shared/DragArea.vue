@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-light-200 rounded-2 flex w-fit items-center justify-center py-4 duration-300 hover:brightness-95">
+  <div
+    class="bg-light-200 rounded-2 flex w-fit cursor-move! items-center justify-center py-4 duration-300 hover:brightness-95"
+  >
     <NuxtIcon name="mingcute:dots-fill" :size="size" />
   </div>
 </template>

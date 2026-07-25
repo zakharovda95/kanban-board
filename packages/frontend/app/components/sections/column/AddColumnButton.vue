@@ -38,13 +38,12 @@ import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composab
 import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
-import { toBody } from '~/utilities/object.utilities';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
 const emit = defineEmits<{
-  'update:columns': [id?: number];
+  'update:columns': [];
 }>();
 
 const route = useRoute();
@@ -63,12 +62,12 @@ const { isLoading, call } = useTryCatchFinally({
   callback: async () => {
     const result = await $fetch<TCreateColumnResponse>(`/api/boards/${route.params.id}/columns`, {
       method: 'POST',
-      body: toBody<TCreateColumn>(formData.value),
+      body: formData.value,
     });
 
     if (result.isSuccess) {
       toast.success({ message: 'Колонка добавлена!' });
-      emit('update:columns', result?.data?.id);
+      emit('update:columns');
       closeModal();
     }
   },

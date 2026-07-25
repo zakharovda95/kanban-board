@@ -41,7 +41,7 @@ export default defineNuxtConfig({
     host: process.env.FRONTEND_HOST || DEFAULT_HOST,
   },
 
-  css: ['~/assets/styles/fonts.css', '~/assets/styles/tailwind.css'],
+  css: ['~/assets/styles/fonts.css', '~/assets/styles/tailwind.css', '~/assets/styles/toasts.css'],
 
   vite: {
     plugins: [tailwindcss()],
@@ -57,6 +57,21 @@ export default defineNuxtConfig({
       scan: true,
     },
     customCollections: [],
+  },
+
+  toast: {
+    settings: {
+      position: 'topCenter',
+      timeout: 3000,
+      titleColor: '#ffffff',
+      titleSize: '16px',
+      messageColor: '#ffffff',
+      messageSize: '16px',
+      progressBar: false,
+      icon: undefined,
+      iconColor: '#ffffff',
+      close: false,
+    },
   },
 
   routeRules: {

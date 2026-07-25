@@ -7,11 +7,11 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
 
+import CustomParseIntPipe from '@/libs/pipes/custom-parse-int.pipe';
 import { IssueService } from '@/modules/issue/issue.service';
 import { CreateIssueDto } from '@/modules/issue/libs/dtos/create-issue.dto';
 import { MoveIssueDto } from '@/modules/issue/libs/dtos/move-issue.dto';
@@ -23,14 +23,16 @@ export class IssueController {
   constructor(private issueService: IssueService) {}
 
   @Get('issues/:issueId')
-  public async getIssueById(@Param('issueId', ParseIntPipe) issueId: number): Promise<TIssue> {
+  public async getIssueById(
+    @Param('issueId', CustomParseIntPipe) issueId: number,
+  ): Promise<TIssue> {
     return this.issueService.getIssueById(issueId);
   }
 
   @Post('boards/:boardId/columns/:columnId/issues')
   public async createIssue(
-    @Param('boardId', ParseIntPipe) boardId: number,
-    @Param('columnId', ParseIntPipe) columnId: number,
+    @Param('boardId', CustomParseIntPipe) boardId: number,
+    @Param('columnId', CustomParseIntPipe) columnId: number,
     @Body() body: CreateIssueDto,
   ): Promise<TCreateIssueResponse> {
     return await this.issueService.createIssue(boardId, columnId, body);
@@ -39,9 +41,9 @@ export class IssueController {
   @Post('boards/:boardId/columns/:fromColumnId/issues/:issueId/move')
   @HttpCode(HttpStatus.OK)
   public async moveIssue(
-    @Param('boardId', ParseIntPipe) boardId: number,
-    @Param('fromColumnId', ParseIntPipe) fromColumnId: number,
-    @Param('issueId', ParseIntPipe) issueId: number,
+    @Param('boardId', CustomParseIntPipe) boardId: number,
+    @Param('fromColumnId', CustomParseIntPipe) fromColumnId: number,
+    @Param('issueId', CustomParseIntPipe) issueId: number,
     @Body(MovePipe) body: MoveIssueDto,
   ): Promise<TSuccessResponse> {
     return await this.issueService.moveIssue(boardId, fromColumnId, issueId, body);
@@ -49,7 +51,7 @@ export class IssueController {
 
   @Patch('issues/:issueId')
   public async patchIssue(
-    @Param('issueId', ParseIntPipe) issueId: number,
+    @Param('issueId', CustomParseIntPipe) issueId: number,
     @Body() body: PatchIssueDto,
   ): Promise<TSuccessResponse> {
     return await this.issueService.patchIssue(issueId, body);
@@ -57,7 +59,7 @@ export class IssueController {
 
   @Delete('issues/:issueId')
   public async deleteIssue(
-    @Param('issueId', ParseIntPipe) issueId: number,
+    @Param('issueId', CustomParseIntPipe) issueId: number,
   ): Promise<TSuccessResponse> {
     return await this.issueService.deleteIssue(issueId);
   }

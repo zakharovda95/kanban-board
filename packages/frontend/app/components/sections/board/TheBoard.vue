@@ -2,10 +2,15 @@
   <div class="size-full">
     <UILoader v-if="isLoading" :size="64" full />
     <div v-else class="flex size-full flex-col items-center gap-12 p-12">
-      <BoardFilter />
+      <BoardFilter @update:columns="emit('update:columns')" />
 
       <div class="flex w-full flex-1 flex-row gap-8 overflow-x-auto">
-        <TheColumn v-for="column in board?.columns" :key="column.id" :column="column" />
+        <TheColumn
+          v-for="column in board?.columns"
+          :key="column.id"
+          :column="column"
+          @update:columns="emit('update:columns')"
+        />
       </div>
     </div>
   </div>
@@ -27,4 +32,8 @@ withDefaults(
     isLoading: false,
   },
 );
+
+const emit = defineEmits<{
+  'update:columns': [];
+}>();
 </script>

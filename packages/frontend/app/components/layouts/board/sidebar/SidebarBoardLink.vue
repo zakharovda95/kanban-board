@@ -33,6 +33,7 @@
       @update:is-open="closeModal"
       @click:action-button="updateBoard"
     />
+
     <UIConfirmationModal
       :is-open="isDeleteModalOpen"
       title="Удалить доску?"
@@ -94,18 +95,19 @@ const { formData, reset, formErrors } = useForm<TPatchBoard>({
   description: props.board?.description ?? '',
 });
 
+const onSuccessRequest = (action: TBaseAction = 'update'): void => {
+  toast.success({ message: action === 'update' ? 'Доска обновлена!' : 'Доска удалена!' });
+  emit('update:boards', action, props.board.id);
+  closeModal();
+};
+
 const { isLoading: isLoadingUpdate, call: updateBoard } = useTryCatchFinally({
   callback: async () => {
     const result = await $fetch<TSuccessResponse>(`/api/boards/${props.board.id}`, {
       method: 'PATCH',
       body: toBody<TPatchBoard>(formData.value),
     });
-
-    if (result.isSuccess) {
-      toast.success({ message: 'Доска обновлена!' });
-      emit('update:boards', 'update', props.board.id);
-      closeModal();
-    }
+    if (result.isSuccess) onSuccessRequest('update');
   },
   catchCallback: (error: unknown) => {
     if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TPatchBoard>).validation;
@@ -119,12 +121,7 @@ const { isLoading: isLoadingDelete, call: deleteBoard } = useTryCatchFinally({
       method: 'DELETE',
       body: toBody<TPatchBoard>(formData.value),
     });
-
-    if (result.isSuccess) {
-      toast.success({ message: 'Доска удалена!' });
-      emit('update:boards', 'delete', props.board.id);
-      closeModal();
-    }
+    if (result.isSuccess) onSuccessRequest('delete');
   },
   catchCallback: (error: unknown) => {
     toast.error({ message: getErrorMessage(error) });

@@ -7,6 +7,8 @@
       :icon-size="iconSize"
       :background-color="backgroundColor"
       :color="color"
+      :is-loading="isLoading"
+      :disabled="disabled"
       @click:button="isContextMenuOpen = !isContextMenuOpen"
     />
     <Transition name="fade">
@@ -36,6 +38,8 @@ withDefaults(
     iconSize?: number;
     backgroundColor?: EColor;
     color?: EColor;
+    disabled?: boolean;
+    isLoading?: boolean;
   }>(),
   {
     icon: 'more-1-fill',
@@ -43,6 +47,8 @@ withDefaults(
     iconSize: EIconSize.SMALL,
     backgroundColor: EColor.LIGHT_200,
     color: EColor.LIGHT_800,
+    disabled: false,
+    isLoading: false,
   },
 );
 

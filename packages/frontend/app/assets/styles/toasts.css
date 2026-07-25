@@ -1,0 +1,17 @@
+.iziToast:after {
+  box-shadow: none !important;
+}
+
+.iziToast.iziToast-color-green {
+  background-color: var(--color-green) !important;
+  color: var(--color-light-base) !important;
+}
+
+.iziToast.iziToast-color-red {
+  background-color: var(--color-red) !important;
+  color: var(--color-light-base) !important;
+}
+
+/*.iziToast.iziToast-color-yellow {}*/
+
+/*.iziToast.iziToast-color-blue {}*/

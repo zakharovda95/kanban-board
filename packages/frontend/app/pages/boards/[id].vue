@@ -1,6 +1,6 @@
 <template>
   <div class="flex size-full items-center justify-center">
-    <TheBoard :board="board ?? null" :is-loading="isLoadingBoard" />
+    <TheBoard :board="data ?? null" :is-loading="pending" @update:columns="refresh" />
   </div>
 </template>
 
@@ -15,14 +15,7 @@ definePageMeta({
 
 const route = useRoute();
 
-const {
-  data: board,
-  pending: isLoadingBoard,
-  error,
-} = await useAsyncData(
-  `fetch-board-${route.params.id}`,
-  async () => await $fetch<TBoard>(`/api/boards/${route.params.id}`),
-);
+const { data, pending, error, refresh } = await useFetch<TBoard>(`/api/boards/${route.params.id}`);
 
 if (error.value) {
   navigateTo('/boards');
