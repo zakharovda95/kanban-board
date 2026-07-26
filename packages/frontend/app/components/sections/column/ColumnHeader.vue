@@ -1,6 +1,6 @@
 <template>
   <header
-    class="bg-light-base flex h-52 w-full flex-col border-b-4 p-8 text-left"
+    class="bg-light-base flex h-52 w-full flex-col border-b-4 px-12 py-8 text-left"
     :style="{ borderBottomColor: column.color }"
   >
     <div class="flex size-full flex-nowrap items-center justify-between gap-8">
@@ -12,7 +12,7 @@
           </p>
         </div>
 
-        <BaseActionsButtons @update="isUpdateModalOpen = true" @delete="isDeleteModalOpen = true" />
+        <BaseActionsButtons show-move-button @update="isUpdateModalOpen = true" @delete="isDeleteModalOpen = true" />
       </div>
     </div>
 

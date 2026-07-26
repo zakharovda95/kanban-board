@@ -15,8 +15,8 @@
 import { useBoardsStore } from '~/stores/boards.store';
 
 import TheSidebar from '~/components/layouts/board/sidebar/TheSidebar.vue';
+import TheHeader from '~/components/layouts/shared/header/TheHeader.vue';
 import TheFooter from '~/components/layouts/shared/TheFooter.vue';
-import TheHeader from '~/components/layouts/shared/TheHeader.vue';
 
 const boardsStore = useBoardsStore();
 

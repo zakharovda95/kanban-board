@@ -29,6 +29,7 @@ export default defineNuxtConfig({
     public: {
       NODE_ENV: NODE_ENV,
       BASE_URL: `http://${process.env.BACKEND_HOST}:${process.env.BACKEND_PORT}/api`,
+      VERSION: process.env.npm_package_version,
     },
   },
 
@@ -78,5 +79,6 @@ export default defineNuxtConfig({
     '/': { redirect: 'boards' },
     '/boards': { ssr: true },
     '/boards/*': { ssr: true },
+    '/about': { prerender: true },
   },
 });

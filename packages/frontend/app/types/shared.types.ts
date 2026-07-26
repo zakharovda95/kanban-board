@@ -1,4 +1,4 @@
-export type TBaseAction = 'update' | 'delete';
+export type TBaseAction = 'update' | 'delete' | 'move';
 
 export type TUpsertFormData = {
   title: string;

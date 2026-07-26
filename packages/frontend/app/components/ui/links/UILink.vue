@@ -1,15 +1,15 @@
 <template>
   <Component
     :is="resolvedTag"
-    v-bind="isExternalLink(to) || tag === 'a' ? { to } : { href: to }"
-    class="text-light-700 text-18 flex cursor-pointer flex-nowrap items-center justify-start gap-4 leading-none duration-300"
-    :class="[{ 'hover:opacity-80': hoverable }]"
+    v-bind="resolvedAttributes"
+    class="text-light-700 decoration-green flex cursor-pointer flex-nowrap items-center justify-start gap-4 leading-none font-medium decoration-3 underline-offset-8 duration-300"
+    :class="[{ 'hover:opacity-50': hoverable, 'underline': isActive }]"
   >
     <div v-if="icon" :class="`size-${iconSize}`">
       <NuxtIcon :name="`mingcute:${icon}`" :size="iconSize" />
     </div>
 
-    <slot />
+    <slot v-if="slots.default" />
   </Component>
 </template>
 
@@ -21,6 +21,8 @@ import { isExternalLink } from '~/utilities/link.utilities';
 
 import { NuxtLink } from '#components';
 
+const slots = useSlots();
+
 const props = withDefaults(
   defineProps<{
     to: string | RouteLocation;
@@ -28,16 +30,16 @@ const props = withDefaults(
     icon?: string | null;
     iconSize?: EIconSize | EIconSizeSmall | number;
     hoverable?: boolean;
+    isActive?: boolean;
   }>(),
   {
     tag: ETag.NUXT_LINK,
     icon: null,
     iconSize: EIconSize.LARGE,
     hoverable: true,
+    isActive: false,
   },
 );
-
-// const route = useRoute();
 
 const resolvedTag = computed(() => {
   if (!props.to) return ETag.SPAN;
@@ -45,10 +47,7 @@ const resolvedTag = computed(() => {
   return props.tag;
 });
 
-// const isActive = computed(() => {
-//   if (!props.to || isExternalLink(props.to)) return false;
-//   return typeof props.to === 'string'
-//     ? props.to === route.path
-//     : props.to?.path === route.path || props.to?.name === route.name;
-// });
+const resolvedAttributes = computed(() =>
+  isExternalLink(props.to) || props.tag === ETag.A ? { href: props.to } : { to: props.to },
+);
 </script>

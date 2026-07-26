@@ -11,6 +11,6 @@
 </template>
 
 <script setup lang="ts">
+import TheHeader from '~/components/layouts/shared/header/TheHeader.vue';
 import TheFooter from '~/components/layouts/shared/TheFooter.vue';
-import TheHeader from '~/components/layouts/shared/TheHeader.vue';
 </script>
