@@ -34,20 +34,6 @@
     transform: translateY(-20px);
     opacity: 0;
   }
-
-  .modal-showed-enter-active {
-    transition: all 0.1s ease-out;
-  }
-
-  .modal-showed-leave-active {
-    transition: all 0.1s ease-in;
-  }
-
-  .modal-showed-enter-from,
-  .modal-showed-leave-to {
-    transform: scale(0.7);
-    opacity: 0;
-  }
 }
 
 @theme {
