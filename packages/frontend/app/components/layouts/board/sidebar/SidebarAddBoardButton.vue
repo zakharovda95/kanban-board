@@ -10,7 +10,7 @@
       :model-value="formData as TUpsertFormData"
       :title-maxlength="BOARD_TITLE_MAXLENGTH"
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
-      :is-loading="isLoading"
+      :disabled="isLoading"
       modal-title="Добавить доску"
       action-button-label="Добавить доску"
       @click:action-button="call"

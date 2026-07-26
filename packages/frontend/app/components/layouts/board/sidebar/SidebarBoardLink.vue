@@ -28,7 +28,7 @@
       :model-value="formData as TUpsertFormData"
       :title-maxlength="BOARD_TITLE_MAXLENGTH"
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
-      :is-loading="isLoadingUpdate"
+      :disabled="isLoadingUpdate || !isDirty"
       modal-title="Редактировать доску"
       @update:is-open="closeModal"
       @click:action-button="updateBoard"
@@ -40,7 +40,7 @@
       text="Восстановить данные будет невозможно!"
       action-button-label="Да, удалить доску"
       :close-on-overlay="false"
-      :is-loading="isLoadingDelete"
+      :disabled="isLoadingDelete"
       @update:is-open="closeModal"
       @click:confirm="deleteBoard"
     />
@@ -90,7 +90,7 @@ const closeModal = () => {
   reset();
 };
 
-const { formData, reset, formErrors } = useForm<TPatchBoard>({
+const { formData, reset, formErrors, isDirty } = useForm<TPatchBoard>({
   title: props.board.title,
   description: props.board?.description ?? '',
 });
@@ -103,10 +103,12 @@ const onSuccessRequest = (action: TBaseAction = 'update'): void => {
 
 const { isLoading: isLoadingUpdate, call: updateBoard } = useTryCatchFinally({
   callback: async () => {
-    const result = await $fetch<TSuccessResponse>(`/api/boards/${props.board.id}`, {
-      method: 'PATCH',
-      body: toBody<TPatchBoard>(formData.value),
-    });
+    const body: TPatchBoard = {
+      title: formData.value.title || undefined,
+      description: formData.value.description || null,
+    };
+
+    const result = await $fetch<TSuccessResponse>(`/api/boards/${props.board.id}`, { method: 'PATCH', body });
     if (result.isSuccess) onSuccessRequest('update');
   },
   catchCallback: (error: unknown) => {

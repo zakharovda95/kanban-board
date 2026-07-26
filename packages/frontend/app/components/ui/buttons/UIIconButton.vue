@@ -3,11 +3,11 @@
     :is="tag"
     class="flex cursor-pointer items-center justify-center leading-none duration-300 outline-none hover:brightness-95"
     :style="{ backgroundColor, color }"
-    :class="[computedSize.element, { 'cursor-not-allowed opacity-50': isLoading || disabled }]"
-    @click="emit('click:button', $event)"
+    :class="[computedSize.element, { 'cursor-not-allowed opacity-50': disabled }]"
+    :disabled="disabled"
+    @click="onClick"
   >
-    <NuxtIcon v-if="!isLoading" :name="`mingcute:${icon}`" :size="computedSize.icon" />
-    <NuxtIcon v-else class="animate-spin" name="mingcute:loading-3-line" :size="computedSize.icon" />
+    <NuxtIcon :name="`mingcute:${icon}`" :size="computedSize.icon" />
   </Component>
 </template>
 
@@ -23,7 +23,6 @@ const props = withDefaults(
     size?: ESize;
     icon: string;
     iconSize?: EIconSize;
-    isLoading?: boolean;
     disabled?: boolean;
     backgroundColor?: EColor;
     color?: EColor;
@@ -32,7 +31,6 @@ const props = withDefaults(
     tag: ETag.BUTTON,
     size: ESize.SMALL,
     iconSize: EIconSize.SMALL,
-    isLoading: false,
     disabled: false,
     backgroundColor: EColor.GREEN,
     color: EColor.LIGHT_BASE,
@@ -59,4 +57,9 @@ const computedSize = computed<TUIComputedSize>(() => {
 
   return sizes[props.size] ?? sizes.small;
 });
+
+const onClick = (event: MouseEvent): void => {
+  if (props.disabled) return;
+  emit('click:button', event);
+};
 </script>

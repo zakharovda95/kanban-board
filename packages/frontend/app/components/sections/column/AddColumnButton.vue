@@ -12,7 +12,7 @@
       :description-maxlength="COLUMN_DESCRIPTION_MAXLENGTH"
       :form-errors="formErrors"
       :is-open="isModalOpen"
-      :is-loading="isLoading"
+      :disabled="isLoading"
       @click:action-button="call"
       @update:is-open="closeModal"
     >

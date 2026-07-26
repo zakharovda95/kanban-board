@@ -7,7 +7,6 @@
       :icon-size="iconSize"
       :background-color="backgroundColor"
       :color="color"
-      :is-loading="isLoading"
       :disabled="disabled"
       @click:button="isContextMenuOpen = !isContextMenuOpen"
     />
@@ -39,7 +38,6 @@ withDefaults(
     backgroundColor?: EColor;
     color?: EColor;
     disabled?: boolean;
-    isLoading?: boolean;
   }>(),
   {
     icon: 'more-1-fill',
@@ -48,7 +46,6 @@ withDefaults(
     backgroundColor: EColor.LIGHT_200,
     color: EColor.LIGHT_800,
     disabled: false,
-    isLoading: false,
   },
 );
 

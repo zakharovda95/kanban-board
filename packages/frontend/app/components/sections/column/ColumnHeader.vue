@@ -4,9 +4,7 @@
     :style="{ borderBottomColor: column.color }"
   >
     <div class="flex size-full flex-nowrap items-center justify-between gap-8">
-      <DragArea />
-
-      <div class="flex flex-1 items-center justify-between gap-8">
+      <div class="flex flex-1 justify-between gap-8">
         <div class="h-full flex-1 overflow-hidden">
           <p class="text-14 font-medium text-ellipsis whitespace-nowrap">{{ column.title }}</p>
           <p class="text-elipsis text-12 w-full overflow-hidden font-light">
@@ -22,8 +20,8 @@
       modal-title="Редактировать колонку"
       :form-errors="formErrors"
       :is-open="isUpdateModalOpen"
-      :is-loading="isLoadingUpdate"
       :model-value="formData as TUpsertFormData"
+      :disabled="isLoadingUpdate || !isDirty"
       @click:action-button="updateColumn"
       @update:is-open="closeModal"
     >
@@ -35,7 +33,7 @@
     <UIConfirmationModal
       title="Удалить колонку?"
       :is-open="isDeleteModalOpen"
-      :is-loading="isLoadingDelete"
+      :disabled="isLoadingDelete"
       text="Восстановить данные будет невозможно!"
       action-button-label="Да, удалить колонку"
       @click:confirm="deleteColumn"
@@ -51,10 +49,8 @@ import { useForm } from '~/composables/use-form.composable';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
 import type { TBaseAction, TUpsertFormData } from '~/types/shared.types';
 import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
-import { toBody } from '~/utilities/object.utilities';
 
 import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';
-import DragArea from '~/components/shared/DragArea.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 import UIColorPicker from '~/components/ui/UIColorPicker.vue';
@@ -79,7 +75,7 @@ const closeModal = () => {
   reset();
 };
 
-const { formData, formErrors, reset } = useForm<TPatchColumn>({
+const { formData, formErrors, reset, isDirty } = useForm<TPatchColumn>({
   title: props.column.title ?? '',
   description: props.column.description ?? '',
   color: props.column.color ?? '',
@@ -93,9 +89,15 @@ const onSuccessRequest = (action: TBaseAction = 'update'): void => {
 
 const { isLoading: isLoadingUpdate, call: updateColumn } = useTryCatchFinally({
   callback: async () => {
+    const body: TPatchColumn = {
+      title: formData.value.title || undefined,
+      description: formData.value.description || null,
+      color: formData.value.color || undefined,
+    };
+
     const result = await $fetch<TSuccessResponse>(`/api/boards/${route.params.id}/columns/${props.column.id}`, {
       method: 'PATCH',
-      body: toBody<TPatchColumn>(formData.value),
+      body,
     });
     if (result.isSuccess) onSuccessRequest('update');
   },

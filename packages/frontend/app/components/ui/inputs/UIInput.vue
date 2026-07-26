@@ -10,13 +10,12 @@
         :name="name"
         :size="size"
         :autocomplete="autocomplete"
-        :disabled="disabled || isLoading"
+        :disabled="disabled"
         :input-mode="inputMode"
         :placeholder="placeholder"
         :max-length="maxLength"
       />
-      <UIMaxLengthCounter v-if="maxLength && !isLoading" :value-length="model.length" :max-length="maxLength" />
-      <NuxtIcon v-else-if="isLoading" class="animate-spin" name="mingcute:loading-3-line" :size="computedSize.icon" />
+      <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
     </div>
     <UIAnimatedHeight>
       <ul v-if="errors?.length" class="max-w-full">
@@ -46,7 +45,6 @@ const props = withDefaults(
     autocomplete?: TUIInputAutocomplete;
     placeholder?: string | undefined;
     maxLength?: number | null;
-    isLoading?: boolean;
     errors?: string[] | null;
   }>(),
   {
@@ -58,7 +56,6 @@ const props = withDefaults(
     autocomplete: 'off',
     placeholder: undefined,
     maxLength: null,
-    isLoading: false,
     errors: null,
   },
 );

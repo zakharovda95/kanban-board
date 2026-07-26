@@ -11,7 +11,6 @@
           v-model="model.title"
           :size="ESize.MEDIUM"
           :max-length="titleMaxlength"
-          :disabled="isLoading"
           :errors="formErrors.title"
           name="input-title"
           placeholder="Укажите название..."
@@ -23,7 +22,6 @@
           v-model="model.description"
           :size="ESize.MEDIUM"
           :max-length="descriptionMaxlength"
-          :disabled="isLoading"
           :errors="formErrors.description"
           name="input-description"
           placeholder="Укажите описание..."
@@ -36,21 +34,13 @@
 
     <template #footer>
       <div class="flex w-full flex-col gap-8">
-        <UIButton
-          full
-          :size="ESize.MEDIUM"
-          :is-loading="isLoading"
-          :disabled="isLoading"
-          @click:button="emit('click:action-button')"
-        >
+        <UIButton full :size="ESize.MEDIUM" :disabled="disabled" @click:button="emit('click:action-button')">
           {{ actionButtonLabel }}
         </UIButton>
         <UIButton
           full
           :size="ESize.MEDIUM"
           :background-color="EColor.RED"
-          :is-loading="isLoading"
-          :disabled="isLoading"
           @click:button="emit('update:is-open', false)"
         >
           Отмена
@@ -80,14 +70,12 @@ withDefaults(
     modalTitle: string;
     formErrors: TValidationErrors<TUpsertFormData>;
     isOpen: boolean;
-    isLoading?: boolean;
     disabled?: boolean;
     titleMaxlength?: number | null;
     descriptionMaxlength?: number | null;
     actionButtonLabel?: string;
   }>(),
   {
-    isLoading: false,
     disabled: false,
     titleMaxlength: null,
     descriptionMaxlength: null,
