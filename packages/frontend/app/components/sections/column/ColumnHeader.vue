@@ -17,25 +17,23 @@
     </div>
 
     <UpsertModal
-      modal-title="Редактировать колонку"
-      :form-errors="formErrors"
       :is-open="isUpdateModalOpen"
+      modal-title="Редактировать колонку"
+      action-button-label="Редактировать колонку"
       :model-value="formData as TUpsertFormData"
+      :form-errors="formErrors as TValidationErrors<TUpsertFormData>"
       :disabled="isLoadingUpdate || !isDirty"
+      show-color-picker
       @click:action-button="updateColumn"
       @update:is-open="closeModal"
-    >
-      <UILabel text="Цвет">
-        <UIColorPicker v-model="formData.color!" />
-      </UILabel>
-    </UpsertModal>
+    />
 
     <UIConfirmationModal
-      title="Удалить колонку?"
       :is-open="isDeleteModalOpen"
-      :disabled="isLoadingDelete"
-      text="Восстановить данные будет невозможно!"
+      title="Удалить колонку?"
       action-button-label="Да, удалить колонку"
+      text="Восстановить данные будет невозможно!"
+      :disabled="isLoadingDelete"
       @click:confirm="deleteColumn"
       @update:is-open="closeModal"
     />
@@ -43,7 +41,13 @@
 </template>
 
 <script setup lang="ts">
-import type { TColumn, TPatchColumn, TSuccessResponse, TValidationErrorResponse } from '@kanban-board/common';
+import type {
+  TColumn,
+  TPatchColumn,
+  TSuccessResponse,
+  TValidationErrorResponse,
+  TValidationErrors,
+} from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
@@ -53,8 +57,6 @@ import { getErrorMessage, isValidationError } from '~/utilities/error.utilities'
 import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
-import UIColorPicker from '~/components/ui/UIColorPicker.vue';
-import UILabel from '~/components/ui/UILabel.vue';
 
 const props = defineProps<{ column: TColumn }>();
 

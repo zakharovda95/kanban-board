@@ -1,5 +1,6 @@
 import type { TPatchBoard, TSuccessResponse } from '@kanban-board/common';
 
+/** Обновить доску **/
 export default defineEventHandler(async event => {
   const baseUrl = useRuntimeConfig().public?.BASE_URL ?? '';
   const body: TPatchBoard = await readBody(event);

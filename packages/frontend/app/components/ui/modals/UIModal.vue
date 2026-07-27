@@ -13,7 +13,6 @@
     :reserve-scroll-bar-gap="options.reserveScrollBarGap"
     :swipe-to-close="options.swipeToClose"
     class="flex items-center justify-center"
-    content-class=""
   >
     <div
       class="size-screen bg-light-black-opacity absolute inset-0 flex items-center justify-center overflow-hidden p-12"
@@ -29,13 +28,13 @@
             v-if="!hideCloseButton"
             :background-color="EColor.LIGHT_200"
             :color="EColor.LIGHT_800"
-            class="absolute right-0 bottom-[calc(100%+8px)]"
+            class="absolute right-0 bottom-[calc(100%+8px)] duration-300 hover:scale-110"
             icon="close-line"
             @click:button="isOpen = false"
           />
         </header>
 
-        <div class="h-fit w-auto">
+        <div class="h-fit w-auto" :class="[bodyClass]">
           <slot />
         </div>
 
@@ -59,11 +58,13 @@ const isOpen = defineModel<boolean>('isOpen', { required: true });
 
 const props = withDefaults(
   defineProps<{
+    bodyClass?: string | null;
     title?: string | null;
     closeOnOverlay?: boolean;
     hideCloseButton?: boolean;
   }>(),
   {
+    bodyClass: null,
     title: null,
     closeOnOverlay: true,
     hideCloseButton: false,

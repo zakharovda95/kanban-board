@@ -6,13 +6,13 @@
 
     <UpsertModal
       :is-open="isModalOpen"
-      :form-errors="formErrors"
+      modal-title="Добавить доску"
+      action-button-label="Добавить доску"
       :model-value="formData as TUpsertFormData"
+      :form-errors="formErrors as TValidationErrors<TUpsertFormData>"
       :title-maxlength="BOARD_TITLE_MAXLENGTH"
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
       :disabled="isLoading"
-      modal-title="Добавить доску"
-      action-button-label="Добавить доску"
       @click:action-button="call"
       @update:is-open="closeModal"
     />
@@ -26,6 +26,7 @@ import {
   type TCreateBoard,
   type TCreateBoardResponse,
   type TValidationErrorResponse,
+  type TValidationErrors,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable';

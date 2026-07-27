@@ -1,19 +1,16 @@
 <template>
   <div class="w-fit">
-    <UIButton prepend-icon="add-line" :size="ESize.MEDIUM" @click:button="isModalOpen = true">
-      Добавить колонку
-    </UIButton>
+    <UIIconButton icon="add-line" @click:button="isModalOpen = true" />
 
     <UpsertModal
       :is-open="isModalOpen"
-      modal-title="Добавить колонку"
-      action-button-label="Добавить колонку"
+      modal-title="Добавить задачу"
+      action-button-label="Добавить задачу"
       :model-value="formData as TUpsertFormData"
       :form-errors="formErrors as TValidationErrors<TUpsertFormData>"
-      :title-maxlength="COLUMN_TITLE_MAXLENGTH"
-      :description-maxlength="COLUMN_DESCRIPTION_MAXLENGTH"
+      :title-maxlength="ISSUE_TITLE_MAXLENGTH"
       :disabled="isLoading"
-      show-color-picker
+      description-component="editor"
       @click:action-button="call"
       @update:is-open="closeModal"
     />
@@ -22,56 +19,55 @@
 
 <script setup lang="ts">
 import {
-  ColorUtility,
-  COLUMN_DESCRIPTION_MAXLENGTH,
-  COLUMN_TITLE_MAXLENGTH,
-  type TCreateColumn,
-  type TCreateColumnResponse,
+  ISSUE_TITLE_MAXLENGTH,
+  type TCreateIssue,
+  type TCreateIssueResponse,
   type TValidationErrorResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
-import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
 import { toBody } from '~/utilities/object.utilities';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
-import UIButton from '~/components/ui/buttons/UIButton.vue';
+import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
+
+const props = defineProps<{
+  columnId: string;
+}>();
 
 const emit = defineEmits<{
   'update:columns': [];
 }>();
 
 const route = useRoute();
-
 const toast = useToast();
 
 const isModalOpen = ref(false);
 
-const { formData, formErrors, reset } = useForm<TCreateColumn>({
-  title: '',
-  description: '',
-  color: ColorUtility.getRandomHexColor(),
-});
+const { formData, formErrors, reset } = useForm<TCreateIssue>({ title: '', description: '' });
 
 const { isLoading, call } = useTryCatchFinally({
   callback: async () => {
-    const result = await $fetch<TCreateColumnResponse>(`/api/boards/${route.params.id}/columns`, {
-      method: 'POST',
-      body: toBody<TCreateColumn>(formData.value),
-    });
+    const result = await $fetch<TCreateIssueResponse>(
+      `/api/boards/${route.params.id}/columns/${props.columnId}/issues`,
+      {
+        method: 'POST',
+        body: toBody<TCreateIssue>(formData.value),
+      },
+    );
 
     if (result.isSuccess) {
-      toast.success({ message: 'Колонка добавлена!' });
+      toast.success({ message: 'Задача добавлена!' });
       emit('update:columns');
       closeModal();
     }
   },
   catchCallback: (error: unknown) => {
-    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TCreateColumn>).validation;
+    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TCreateIssue>).validation;
     else toast.error({ message: getErrorMessage(error) });
   },
 });

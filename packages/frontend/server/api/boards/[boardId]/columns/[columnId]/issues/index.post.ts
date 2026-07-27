@@ -1,11 +1,11 @@
-import type { TPatchBoard, TSuccessResponse } from '@kanban-board/common';
+import type { TPatchBoard } from '@kanban-board/common';
 
-/** Обновить колонку **/
+/** Добавить задачу **/
 export default defineEventHandler(async event => {
   const baseUrl = useRuntimeConfig().public?.BASE_URL ?? '';
   const boardId = getRouterParam(event, 'boardId');
   const columnId = getRouterParam(event, 'columnId');
   const body: TPatchBoard = await readBody(event);
 
-  return $fetch<TSuccessResponse>(`${baseUrl}/v1/boards/${boardId}/columns/${columnId}`, { method: 'PATCH', body });
+  return await $fetch(`${baseUrl}/v1/boards/${boardId}/columns/${columnId}/issues`, { method: 'POST', body });
 });

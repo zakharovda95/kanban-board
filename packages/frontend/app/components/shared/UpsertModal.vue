@@ -3,70 +3,68 @@
     :title="modalTitle"
     :is-open="isOpen"
     :close-on-overlay="false"
+    :body-class="bodyClass"
     @update:is-open="emit('update:is-open', $event)"
   >
-    <div class="flex w-320 flex-col gap-12">
-      <UILabel text="Название">
-        <UIInput
-          v-model="model.title"
-          :size="ESize.MEDIUM"
-          :max-length="titleMaxlength"
-          :errors="formErrors.title"
-          name="input-title"
-          placeholder="Укажите название..."
-          full
-        />
-      </UILabel>
-      <UILabel text="Описание">
-        <UIInput
-          v-model="model.description"
-          :size="ESize.MEDIUM"
-          :max-length="descriptionMaxlength"
-          :errors="formErrors.description"
-          name="input-description"
-          placeholder="Укажите описание..."
-          full
-        />
-      </UILabel>
+    <div class="w-full min-w-320">
+      <UIForm
+        :disabled="disabled"
+        :action-button-label="actionButtonLabel"
+        :buttons-size="ESize.MEDIUM"
+        full
+        @submit:form="emit('click:action-button')"
+        @reset:form="emit('update:is-open', false)"
+      >
+        <UILabel text="Название">
+          <UIInput
+            v-model="model.title"
+            :size="ESize.MEDIUM"
+            :max-length="titleMaxlength"
+            :errors="formErrors.title"
+            name="input-title"
+            placeholder="Укажите название..."
+            full
+          />
+        </UILabel>
 
-      <slot v-if="slots.default" />
+        <UILabel text="Описание">
+          <Component
+            :is="resolvedDescriptionComponent"
+            v-model="model.description"
+            :size="ESize.MEDIUM"
+            :max-length="descriptionMaxlength"
+            :errors="formErrors.description"
+            name="input-description"
+            placeholder="Укажите описание..."
+            full
+          />
+        </UILabel>
+
+        <UILabel v-if="showColorPicker && model.color" text="Цвет">
+          <UIColorPicker v-model="model.color" :size="ESize.MEDIUM" />
+        </UILabel>
+      </UIForm>
     </div>
-
-    <template #footer>
-      <div class="flex w-full flex-col gap-8">
-        <UIButton full :size="ESize.MEDIUM" :disabled="disabled" @click:button="emit('click:action-button')">
-          {{ actionButtonLabel }}
-        </UIButton>
-        <UIButton
-          full
-          :size="ESize.MEDIUM"
-          :background-color="EColor.RED"
-          @click:button="emit('update:is-open', false)"
-        >
-          Отмена
-        </UIButton>
-      </div>
-    </template>
   </UIModal>
 </template>
 
 <script setup lang="ts">
-import { EColor, type TValidationErrors } from '@kanban-board/common';
+import type { TValidationErrors } from '@kanban-board/common';
 
+import { ACTION_BUTTON_LABEL } from '~/constants/ui.constants';
 import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 
-import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
 import UILabel from '~/components/ui/UILabel.vue';
-
-const slots = defineSlots();
+import UIRichEditor from '~/components/ui/UIRichEditor.vue';
 
 const model = defineModel<TUpsertFormData>({ required: true });
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
+    bodyClass?: string | null;
     modalTitle: string;
     formErrors: TValidationErrors<TUpsertFormData>;
     isOpen: boolean;
@@ -74,12 +72,17 @@ withDefaults(
     titleMaxlength?: number | null;
     descriptionMaxlength?: number | null;
     actionButtonLabel?: string;
+    showColorPicker?: boolean;
+    descriptionComponent?: 'input' | 'editor';
   }>(),
   {
+    bodyClass: null,
     disabled: false,
     titleMaxlength: null,
     descriptionMaxlength: null,
-    actionButtonLabel: 'Применить',
+    actionButtonLabel: ACTION_BUTTON_LABEL,
+    showColorPicker: false,
+    descriptionComponent: 'input',
   },
 );
 
@@ -87,4 +90,6 @@ const emit = defineEmits<{
   'click:action-button': [];
   'update:is-open': [value: boolean];
 }>();
+
+const resolvedDescriptionComponent = computed(() => (props.descriptionComponent === 'input' ? UIInput : UIRichEditor));
 </script>

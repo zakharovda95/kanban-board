@@ -26,6 +26,7 @@
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
+import { ACTION_BUTTON_LABEL } from '~/constants/ui.constants';
 import { ESize } from '~/enums/global.enums';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
@@ -43,7 +44,7 @@ withDefaults(
   {
     title: null,
     closeOnOverlay: true,
-    actionButtonLabel: 'Применить',
+    actionButtonLabel: ACTION_BUTTON_LABEL,
     disabled: false,
   },
 );

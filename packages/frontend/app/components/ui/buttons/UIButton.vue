@@ -4,6 +4,7 @@
     class="flex w-fit cursor-pointer flex-row flex-nowrap items-center justify-center gap-4 leading-none font-light whitespace-nowrap duration-300 outline-none hover:brightness-95"
     :class="[{ 'w-full!': full, 'cursor-not-allowed opacity-50': disabled }, computedSize.element]"
     :disabled="disabled"
+    :type="type"
     :style="{ backgroundColor, color }"
     @click="onClick"
   >
@@ -23,6 +24,7 @@ const props = withDefaults(
   defineProps<{
     tag?: ETag.BUTTON | ETag.DIV | ETag.SPAN;
     size?: ESize;
+    type?: 'button' | 'submit';
     prependIcon?: string | null;
     appendIcon?: string | null;
     iconSize?: EIconSizeSmall;
@@ -34,6 +36,7 @@ const props = withDefaults(
   {
     tag: ETag.BUTTON,
     size: ESize.SMALL,
+    type: 'button',
     prependIcon: null,
     appendIcon: null,
     iconSize: EIconSizeSmall.SMALL,

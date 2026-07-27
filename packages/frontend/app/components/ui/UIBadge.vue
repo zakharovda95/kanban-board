@@ -22,7 +22,7 @@ const props = withDefaults(
     size?: ESize;
     prependIcon?: string | null;
     appendIcon?: string | null;
-    backgroundColor?: EColor;
+    backgroundColor?: EColor | string;
     color?: EColor;
   }>(),
   {
@@ -39,15 +39,15 @@ const emit = defineEmits<{ 'click:badge': [event: MouseEvent] }>();
 const computedSize = computed<TUIComputedSize>(() => {
   const sizes: TUIComputedSizeMap = {
     small: {
-      element: 'h-24 p-4 rounded-4 text-14',
+      element: 'h-20 p-4 rounded-4 text-12',
       icon: EIconSizeSmall.SMALL,
     },
     medium: {
-      element: 'h-32 p-6 rounded-6 text-16',
+      element: 'h-24 p-4 rounded-4 text-14',
       icon: EIconSizeSmall.MEDIUM,
     },
     large: {
-      element: 'h-40 p-8 rounded-8 text-18',
+      element: 'h-32 p-6 rounded-6 text-16',
       icon: EIconSizeSmall.LARGE,
     },
   };

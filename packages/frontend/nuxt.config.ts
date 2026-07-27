@@ -80,5 +80,6 @@ export default defineNuxtConfig({
     '/boards': { ssr: true },
     '/boards/*': { ssr: true },
     '/about': { prerender: true },
+    '/docs': { prerender: true },
   },
 });

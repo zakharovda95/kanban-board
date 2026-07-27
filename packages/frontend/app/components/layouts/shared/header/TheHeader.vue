@@ -7,9 +7,10 @@
       <span class="text-12 text-green font-semibold">v.{{ runtimeConfig.public.VERSION }}</span>
     </div>
 
-    <div class="bg-light-base rounded-12 flex h-full flex-1 items-center justify-between gap-24 px-12 py-8">
-      <nav class="mb-4 flex items-center gap-24">
+    <div class="bg-light-base rounded-12 flex h-full flex-1 items-center justify-between gap-24 px-48 py-8">
+      <nav class="mb-4 flex items-center gap-36">
         <UILink to="/boards" :is-active="route.name === 'boards' || route.name === 'boards-id'">Доски</UILink>
+        <UILink to="/docs" :is-active="route.name === 'docs'">Документация</UILink>
         <UILink to="/about" :is-active="route.name === 'about'">О проекте</UILink>
       </nav>
 

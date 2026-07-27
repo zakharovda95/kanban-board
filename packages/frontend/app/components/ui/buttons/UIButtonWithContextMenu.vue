@@ -1,10 +1,9 @@
 <template>
-  <button ref="contextMenuRef" class="m-0 size-fit bg-transparent p-0 outline-none">
+  <div ref="contextMenuRef" class="size-fit">
     <UIIconButton
       v-bind="$attrs"
       :icon="icon || 'more-1-fill'"
       :size="size"
-      :tag="ETag.DIV"
       :icon-size="iconSize"
       :background-color="backgroundColor"
       :color="color"
@@ -19,13 +18,13 @@
         <slot />
       </div>
     </Transition>
-  </button>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import { EIconSize, ESize, ETag } from '~/enums/global.enums';
+import { EIconSize, ESize } from '~/enums/global.enums';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 

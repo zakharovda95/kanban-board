@@ -1,5 +1,6 @@
 import type { TSuccessResponse } from '@kanban-board/common';
 
+/** Удалить колонку **/
 export default defineEventHandler(async event => {
   const baseUrl = useRuntimeConfig().public?.BASE_URL ?? '';
   const boardId = getRouterParam(event, 'boardId');

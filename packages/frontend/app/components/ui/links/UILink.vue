@@ -2,7 +2,7 @@
   <Component
     :is="resolvedTag"
     v-bind="resolvedAttributes"
-    class="text-light-700 decoration-green flex cursor-pointer flex-nowrap items-center justify-start gap-4 leading-none font-medium decoration-3 underline-offset-8 duration-300"
+    class="text-light-700 decoration-green flex cursor-pointer flex-nowrap items-center justify-start gap-4 leading-none font-medium decoration-3 underline-offset-6 duration-300"
     :class="[{ 'hover:opacity-50': hoverable, 'underline': isActive }]"
   >
     <div v-if="icon" :class="`size-${iconSize}`">

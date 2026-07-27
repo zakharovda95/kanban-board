@@ -24,12 +24,13 @@
 
     <UpsertModal
       :is-open="isUpdateModalOpen"
-      :form-errors="formErrors"
+      modal-title="Редактировать доску"
+      action-button-label="Редактировать доску"
       :model-value="formData as TUpsertFormData"
+      :form-errors="formErrors as TValidationErrors<TUpsertFormData>"
       :title-maxlength="BOARD_TITLE_MAXLENGTH"
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
       :disabled="isLoadingUpdate || !isDirty"
-      modal-title="Редактировать доску"
       @update:is-open="closeModal"
       @click:action-button="updateBoard"
     />
@@ -55,6 +56,7 @@ import {
   type TPatchBoard,
   type TSuccessResponse,
   type TValidationErrorResponse,
+  type TValidationErrors,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable';

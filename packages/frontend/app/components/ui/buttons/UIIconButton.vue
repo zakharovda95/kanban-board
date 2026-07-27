@@ -5,6 +5,7 @@
     :style="{ backgroundColor, color }"
     :class="[computedSize.element, { 'cursor-not-allowed opacity-50': disabled }]"
     :disabled="disabled"
+    :type="type"
     @click="onClick"
   >
     <NuxtIcon :name="`mingcute:${icon}`" :size="computedSize.icon" />
@@ -21,6 +22,7 @@ const props = withDefaults(
   defineProps<{
     tag?: ETag.BUTTON | ETag.DIV | ETag.SPAN;
     size?: ESize;
+    type?: 'button' | 'submit';
     icon: string;
     iconSize?: EIconSize;
     disabled?: boolean;
@@ -30,6 +32,7 @@ const props = withDefaults(
   {
     tag: ETag.BUTTON,
     size: ESize.SMALL,
+    type: 'button',
     iconSize: EIconSize.SMALL,
     disabled: false,
     backgroundColor: EColor.GREEN,

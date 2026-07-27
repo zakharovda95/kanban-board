@@ -1,5 +1,5 @@
 <template>
-  <div class="w-fit" :class="{ 'w-full!': full }">
+  <UIValidationErrors :full="full" :errors="errors">
     <div
       class="focus-within:border-green bg-light-200 flex w-full flex-nowrap items-center justify-between gap-4 border border-transparent duration-300"
       :class="[computedSize.element, { 'cursor-not-allowed opacity-50': disabled }]"
@@ -17,12 +17,7 @@
       />
       <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
     </div>
-    <UIAnimatedHeight>
-      <ul v-if="errors?.length" class="max-w-full">
-        <li v-for="error in errors" :key="error" class="text-12 text-red text-left">· {{ error }}</li>
-      </ul>
-    </UIAnimatedHeight>
-  </div>
+  </UIValidationErrors>
 </template>
 
 <script setup lang="ts">
@@ -31,6 +26,7 @@ import type { TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode } from '~/t
 
 import UIInputBase from '~/components/ui/inputs/UIInputBase.vue';
 import UIMaxLengthCounter from '~/components/ui/UIMaxLengthCounter.vue';
+import UIValidationErrors from '~/components/ui/UIValidationErrors.vue';
 
 const model = defineModel<string>({ required: true });
 
