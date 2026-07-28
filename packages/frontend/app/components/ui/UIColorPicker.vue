@@ -48,13 +48,10 @@ const computedSize = computed<TUIComputedSize>(() => {
   return sizes[props.size] ?? sizes.small;
 });
 
-const { copy, copied } = useClipboard({ source: model });
+const { copy } = useClipboard();
 
 const copyColor = async () => {
   await copy(model.value);
-
-  if (copied.value) {
-    toast.success({ message: 'Скопировано!' });
-  }
+  toast.success({ message: 'Скопировано!' });
 };
 </script>

@@ -5,8 +5,8 @@
     class="text-light-700 decoration-green flex cursor-pointer flex-nowrap items-center justify-start gap-4 leading-none font-medium decoration-3 underline-offset-6 duration-300"
     :class="[{ 'hover:opacity-50': hoverable, 'underline': isActive }]"
   >
-    <div v-if="icon" :class="`size-${iconSize}`">
-      <NuxtIcon :name="`mingcute:${icon}`" :size="iconSize" />
+    <div v-if="computedIconName" :class="`size-${iconSize}`">
+      <NuxtIcon :name="computedIconName" :size="iconSize" />
     </div>
 
     <slot v-if="slots.default" />
@@ -50,4 +50,9 @@ const resolvedTag = computed(() => {
 const resolvedAttributes = computed(() =>
   isExternalLink(props.to) || props.tag === ETag.A ? { href: props.to } : { to: props.to },
 );
+
+const computedIconName = computed(() => {
+  if (!props.icon) return null;
+  return props.icon.startsWith('icons:') ? props.icon : `mingcute:${props.icon}`;
+});
 </script>

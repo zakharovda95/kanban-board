@@ -1,6 +1,6 @@
 <template>
   <header
-    class="bg-light-base flex h-52 w-full flex-col border-b-4 px-12 py-8 text-left"
+    class="bg-light-base flex h-52 w-full flex-col border-b-4 px-12 py-8 text-left select-none"
     :style="{ borderBottomColor: column.color }"
   >
     <div class="flex size-full flex-nowrap items-center justify-between gap-8">

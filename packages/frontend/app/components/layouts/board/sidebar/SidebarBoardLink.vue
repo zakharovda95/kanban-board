@@ -2,14 +2,10 @@
   <UILink
     :to="`/boards/${board.id}`"
     :hoverable="false"
-    class="border-light-200 justify-right rounded-8 flex h-60 w-full flex-1 cursor-pointer items-center justify-between gap-8 border p-8 duration-300"
+    class="border-light-200 rounded-8 flex h-60 w-full flex-1 cursor-pointer items-center justify-between gap-8 border p-8 duration-300 select-none"
     :class="{ 'border-green!': board.id === Number(route.params?.id) }"
   >
-    <StopPreventWrapper>
-      <DragArea />
-    </StopPreventWrapper>
-
-    <div class="w-[calc(100%-(16px+16px+24px))] text-left">
+    <div class="w-[calc(100%-(24px+8px))] text-left">
       <p class="text-14 block overflow-hidden font-medium text-ellipsis whitespace-nowrap">
         {{ board.title }}
       </p>
@@ -66,7 +62,6 @@ import { getErrorMessage, isValidationError } from '~/utilities/error.utilities'
 import { toBody } from '~/utilities/object.utilities';
 
 import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';
-import DragArea from '~/components/shared/DragArea.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UILink from '~/components/ui/links/UILink.vue';

@@ -48,4 +48,8 @@ const onClick = (action: TBaseAction): void => {
   actionMap[action]();
   buttonWithContextMenuRef.value?.closeContextMenu();
 };
+
+onBeforeUnmount(() => {
+  buttonWithContextMenuRef.value?.closeContextMenu();
+});
 </script>
