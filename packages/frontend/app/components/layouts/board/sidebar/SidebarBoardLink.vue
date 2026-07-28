@@ -36,7 +36,6 @@
       title="Удалить доску?"
       text="Восстановить данные будет невозможно!"
       action-button-label="Да, удалить доску"
-      :close-on-overlay="false"
       :disabled="isLoadingDelete"
       @update:is-open="closeModal"
       @click:confirm="deleteBoard"

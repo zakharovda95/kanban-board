@@ -3,7 +3,7 @@
 @layer base {
   * {
     scroll-behavior: smooth;
-    scrollbar-color: var(--color-light-300) var(--color-light-400);
+    scrollbar-color: var(--color-light-400) var(--color-light-300);
     scrollbar-width: thin;
     font-family: Inter, sans-serif;
     font-weight: normal;

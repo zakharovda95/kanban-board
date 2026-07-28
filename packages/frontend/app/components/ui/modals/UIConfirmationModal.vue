@@ -1,11 +1,5 @@
 <template>
-  <UIModal
-    :is-open="isOpen"
-    :title="title"
-    :close-on-overlay="closeOnOverlay"
-    hide-close-button
-    @update:is-open="emit('update:is-open', $event)"
-  >
+  <UIModal v-model:is-open="isOpen" :title="title" :close-on-overlay="false">
     <div class="w-320">
       <p class="text-14 text-light-500">{{ text }}</p>
     </div>
@@ -32,18 +26,17 @@ import { ESize } from '~/enums/global.enums';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
 
+const isOpen = defineModel<boolean>('isOpen', { required: true });
+
 withDefaults(
   defineProps<{
-    isOpen: boolean;
     title?: string | null;
     text: string;
-    closeOnOverlay?: boolean;
     actionButtonLabel?: string;
     disabled?: boolean;
   }>(),
   {
     title: null,
-    closeOnOverlay: true,
     actionButtonLabel: ACTION_BUTTON_LABEL,
     disabled: false,
   },
@@ -52,11 +45,10 @@ withDefaults(
 const emit = defineEmits<{
   'click:confirm': [];
   'click:reset': [];
-  'update:is-open': [value: boolean];
 }>();
 
 const reset = () => {
+  isOpen.value = false;
   emit('click:reset');
-  emit('update:is-open', false);
 };
 </script>

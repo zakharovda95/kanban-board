@@ -1,11 +1,5 @@
 <template>
-  <UIModal
-    :title="modalTitle"
-    :is-open="isOpen"
-    :close-on-overlay="false"
-    :body-class="bodyClass"
-    @update:is-open="emit('update:is-open', $event)"
-  >
+  <UIModal v-model:is-open="isOpen" :title="modalTitle" :close-on-overlay="false" :body-class="bodyClass">
     <div class="w-full min-w-320">
       <UIForm
         :disabled="disabled"
@@ -13,7 +7,7 @@
         :buttons-size="ESize.MEDIUM"
         full
         @submit:form="emit('click:action-button')"
-        @reset:form="emit('update:is-open', false)"
+        @reset:form="isOpen = false"
       >
         <UILabel text="Название">
           <UIInput
@@ -61,13 +55,13 @@ import UILabel from '~/components/ui/UILabel.vue';
 import UIRichEditor from '~/components/ui/UIRichEditor.vue';
 
 const model = defineModel<TUpsertFormData>({ required: true });
+const isOpen = defineModel<boolean>('isOpen', { required: true });
 
 const props = withDefaults(
   defineProps<{
     bodyClass?: string | null;
     modalTitle: string;
     formErrors: TValidationErrors<TUpsertFormData>;
-    isOpen: boolean;
     disabled?: boolean;
     titleMaxlength?: number | null;
     descriptionMaxlength?: number | null;
@@ -88,7 +82,6 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   'click:action-button': [];
-  'update:is-open': [value: boolean];
 }>();
 
 const resolvedDescriptionComponent = computed(() => (props.descriptionComponent === 'input' ? UIInput : UIRichEditor));

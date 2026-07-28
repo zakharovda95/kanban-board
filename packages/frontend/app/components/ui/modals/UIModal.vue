@@ -16,15 +16,15 @@
   >
     <div
       class="size-screen bg-light-black-opacity absolute inset-0 flex items-center justify-center overflow-hidden p-12"
+      @click.self="onClickLayout"
     >
       <div class="bg-light-base rounded-12 relative size-fit max-h-[80%] max-w-[80%] p-12">
-        <header v-if="title || slots.header" class="mb-12 flex items-center justify-between gap-8">
-          <div class="flex-1 font-medium">
-            <slot name="header">
-              {{ title }}
-            </slot>
-          </div>
+        <header v-if="title || slots.header" class="mb-12 flex w-full items-center justify-between gap-8">
+          <slot name="header">
+            <h4 class="font-medium">{{ title }}</h4>
+          </slot>
         </header>
+
         <UIIconButton
           v-if="!hideCloseButton"
           :background-color="EColor.LIGHT_200"
@@ -61,12 +61,14 @@ const props = withDefaults(
     bodyClass?: string | null;
     title?: string | null;
     closeOnOverlay?: boolean;
+    closeOnEsc?: boolean;
     hideCloseButton?: boolean;
   }>(),
   {
     bodyClass: null,
     title: null,
     closeOnOverlay: true,
+    closeOnEsc: true,
     hideCloseButton: false,
   },
 );
@@ -77,11 +79,16 @@ const options = ref({
   hideOverlay: false,
   overlayTransition: 'vfm-fade',
   contentTransition: 'vfm-fade',
-  clickToClose: props.closeOnOverlay && !props.hideCloseButton,
-  escToClose: props.closeOnOverlay && !props.hideCloseButton,
+  clickToClose: props.closeOnOverlay,
+  escToClose: props.closeOnEsc,
   background: 'non-interactive' as const,
   lockScroll: true,
   reserveScrollBarGap: true,
   swipeToClose: 'none' as const,
 });
+
+const onClickLayout = () => {
+  if (!props.closeOnOverlay) return;
+  isOpen.value = false;
+};
 </script>

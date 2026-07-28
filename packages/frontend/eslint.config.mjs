@@ -37,16 +37,7 @@ export default withNuxt({
     ],
     'simple-import-sort/exports': 'error',
 
-    // убираем требование к самозакрывающимся тегам <input> --> <input />
-    // "vue/html-self-closing": [
-    //   "error",
-    //   {
-    //     html: {
-    //       void: "always",
-    //       normal: "never",
-    //       component: "always",
-    //     },
-    //   },
-    // ],
+    // разрешаем статичные классы-утилиты
+    '@typescript-eslint/no-extraneous-class': 'off',
   },
 });

@@ -1,6 +1,6 @@
 <template>
   <article
-    class="border-light-300 bg-light-200 rounded-12 flex size-full w-280 flex-col items-center gap-8 overflow-hidden border"
+    class="border-light-300 bg-light-200 rounded-12 flex size-full w-280 shrink-0 flex-col items-center gap-8 overflow-hidden border"
   >
     <ColumnHeader :column="column" @update:columns="emit('update:columns')" />
 

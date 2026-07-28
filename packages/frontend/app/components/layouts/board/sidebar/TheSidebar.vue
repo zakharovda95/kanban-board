@@ -1,5 +1,5 @@
 <template>
-  <aside class="flex size-full max-w-280 flex-col items-center justify-between gap-12 py-12 pr-0 pl-12">
+  <aside class="flex h-full w-280 flex-col items-center justify-between gap-12 py-12 pr-0 pl-12">
     <div class="bg-light-base rounded-12 flex size-full h-full flex-col gap-12 p-12">
       <UILoader v-if="boardsStore.isLoadingBoards" full />
       <template v-else>

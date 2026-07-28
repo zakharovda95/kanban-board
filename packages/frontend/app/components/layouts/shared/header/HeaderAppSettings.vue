@@ -10,7 +10,9 @@
     />
 
     <UIModal v-model:is-open="isModalOpen" title="Настройки приложения">
-      <div class="р-80 flex w-280 items-center justify-center">Тут будут настройки приложения</div>
+      <div class="bg-light-200 rounded-8 text-14 flex w-280 items-center justify-center p-20">
+        Тут будут настройки приложения
+      </div>
     </UIModal>
   </div>
 </template>

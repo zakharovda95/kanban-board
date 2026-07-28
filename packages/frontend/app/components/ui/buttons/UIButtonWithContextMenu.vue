@@ -2,6 +2,7 @@
   <div ref="contextMenuRef" class="size-fit">
     <UIIconButton
       v-bind="$attrs"
+      :class="{ 'brightness-95': isContextMenuOpen }"
       :icon="icon || 'more-1-fill'"
       :size="size"
       :icon-size="iconSize"

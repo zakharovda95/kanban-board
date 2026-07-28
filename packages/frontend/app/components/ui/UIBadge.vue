@@ -1,6 +1,6 @@
 <template>
   <div
-    class="text-12 rounded-4 flex w-fit items-center justify-center gap-4 leading-none"
+    class="text-12 rounded-4 flex w-fit cursor-default items-center justify-center gap-4 leading-none"
     :class="[computedSize.element]"
     :style="{ backgroundColor, color }"
     @click="emit('click:badge', $event)"
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import { EIconSizeSmall, ESize } from '~/enums/global.enums';
+import { ESize } from '~/enums/global.enums';
 import type { TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
 
 const props = withDefaults(
@@ -40,15 +40,15 @@ const computedSize = computed<TUIComputedSize>(() => {
   const sizes: TUIComputedSizeMap = {
     small: {
       element: 'h-20 p-4 rounded-4 text-12',
-      icon: EIconSizeSmall.SMALL,
+      icon: 12,
     },
     medium: {
       element: 'h-24 p-4 rounded-4 text-14',
-      icon: EIconSizeSmall.MEDIUM,
+      icon: 14,
     },
     large: {
       element: 'h-32 p-6 rounded-6 text-16',
-      icon: EIconSizeSmall.LARGE,
+      icon: 16,
     },
   };
 
