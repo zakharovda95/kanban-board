@@ -12,7 +12,11 @@
           </p>
         </div>
 
-        <BaseActionsButtons show-move-button @update="isUpdateModalOpen = true" @delete="isDeleteModalOpen = true" />
+        <BaseActionsButtons
+          :actions="['update', 'delete', 'move']"
+          @update="isUpdateModalOpen = true"
+          @delete="isDeleteModalOpen = true"
+        />
       </div>
     </div>
 

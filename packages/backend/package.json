@@ -1,6 +1,6 @@
 {
   "name": "@kanban-board/backend",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "scripts": {
     "start:dev": "cross-env NODE_ENV=development nest start --watch",
     "start:prod": "cross-env NODE_ENV=production node dist/main",

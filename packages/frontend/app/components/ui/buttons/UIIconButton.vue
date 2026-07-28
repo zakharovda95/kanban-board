@@ -1,14 +1,14 @@
 <template>
   <Component
     :is="tag"
-    class="flex cursor-pointer items-center justify-center leading-none duration-300 outline-none hover:brightness-95"
+    class="group flex cursor-pointer items-center justify-center leading-none duration-300 outline-none hover:brightness-95"
     :style="{ backgroundColor, color }"
     :class="[computedSize.element, { 'cursor-not-allowed opacity-50': disabled }]"
     :disabled="disabled"
     :type="type"
     @click="onClick"
   >
-    <NuxtIcon :name="`mingcute:${icon}`" :size="computedSize.icon" />
+    <NuxtIcon class="duration-300" :class="[iconClass]" :name="`mingcute:${icon}`" :size="computedSize.icon" />
   </Component>
 </template>
 
@@ -24,19 +24,19 @@ const props = withDefaults(
     size?: ESize;
     type?: 'button' | 'submit';
     icon: string;
-    iconSize?: EIconSize;
     disabled?: boolean;
     backgroundColor?: EColor;
     color?: EColor;
+    iconClass?: string | null;
   }>(),
   {
     tag: ETag.BUTTON,
     size: ESize.SMALL,
     type: 'button',
-    iconSize: EIconSize.SMALL,
     disabled: false,
     backgroundColor: EColor.GREEN,
     color: EColor.LIGHT_BASE,
+    iconClass: null,
   },
 );
 

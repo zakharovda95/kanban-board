@@ -1,13 +1,12 @@
 <template>
-  <UIButtonWithContextMenu ref="buttonWithContextMenuRef">
+  <UIButtonWithContextMenu ref="buttonWithContextMenuRef" :background-color="buttonBackgroundColor">
     <div class="flex flex-row flex-nowrap items-center justify-center gap-4">
-      <UIIconButton :background-color="EColor.ORANGE" icon="pencil-line" @click:button="onClick('update')" />
-      <UIIconButton :background-color="EColor.RED" icon="delete-2-line" @click:button="onClick('delete')" />
       <UIIconButton
-        v-if="showMoveButton"
-        :background-color="EColor.GREEN"
-        icon="move-line"
-        @click:button="onClick('move')"
+        v-for="action in computedActions"
+        :key="action.action"
+        :background-color="action.color"
+        :icon="action.icon"
+        @click:button="onClick(action.action)"
       />
     </div>
   </UIButtonWithContextMenu>
@@ -16,17 +15,20 @@
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import type { TBaseAction } from '~/types/shared.types';
+import { BASE_ACTIONS_BUTTONS_DATA } from '~/constants/shared.constants';
+import type { TBaseAction, TBaseActionButtonData } from '~/types/shared.types';
 
 import UIButtonWithContextMenu from '~/components/ui/buttons/UIButtonWithContextMenu.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
-    showMoveButton?: boolean;
+    actions?: TBaseAction[];
+    buttonBackgroundColor?: EColor;
   }>(),
   {
-    showMoveButton: false,
+    actions: () => ['update', 'delete'],
+    buttonBackgroundColor: EColor.LIGHT_200,
   },
 );
 
@@ -34,15 +36,31 @@ const emit = defineEmits<{
   'update': [];
   'delete': [];
   'move': [];
+  'copy': [];
+  'share': [];
 }>();
 
 const buttonWithContextMenuRef = useTemplateRef('buttonWithContextMenuRef');
+
+const computedActions = computed(() => {
+  const buttonData: TBaseActionButtonData[] = [];
+
+  for (const action of props.actions) {
+    const data = BASE_ACTIONS_BUTTONS_DATA[action];
+    if (!data) continue;
+    buttonData.push(data);
+  }
+
+  return buttonData;
+});
 
 const onClick = (action: TBaseAction): void => {
   const actionMap: Record<TBaseAction, () => void> = {
     update: () => emit('update'),
     delete: () => emit('delete'),
     move: () => emit('move'),
+    copy: () => emit('copy'),
+    share: () => emit('share'),
   };
 
   actionMap[action]();

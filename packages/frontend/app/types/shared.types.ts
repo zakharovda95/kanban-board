@@ -1,7 +1,15 @@
-export type TBaseAction = 'update' | 'delete' | 'move';
+import type { EColor } from '@kanban-board/common';
+
+export type TBaseAction = 'update' | 'delete' | 'move' | 'share' | 'copy';
 
 export type TUpsertFormData = {
   title: string;
   description: string;
   color?: string;
+};
+
+export type TBaseActionButtonData = {
+  action: TBaseAction;
+  icon: string;
+  color: EColor;
 };

@@ -3,6 +3,7 @@
     <div class="bg-light-base rounded-12 flex size-full h-full flex-col gap-12 p-12">
       <UILoader v-if="boardsStore.isLoadingBoards" full />
       <template v-else>
+        <h4 class="font-medium">Мои доски</h4>
         <nav
           v-if="!boardsStore.isLoadingBoards && boardsStore.boards?.length"
           class="flex max-h-[calc(100%-44px)] w-full flex-col gap-8 overflow-hidden"

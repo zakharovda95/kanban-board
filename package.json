@@ -1,41 +1,41 @@
 {
-  "name": "kanban-board",
-  "version": "1.0.0",
-  "description": "Портфолио-проект kanban-доска.",
-  "author": "zakharovda95 <zakharovda95@gmail.com>",
-  "type": "module",
-  "private": true,
-  "license": "UNLICENSED",
-  "scripts": {
-    "prepare": "husky",
-    "dev:backend": "npm run start:dev -w @kanban-board/backend",
-    "dev:frontend": "npm run dev -w @kanban-board/frontend",
-    "build:common": "npm run build -w @kanban-board/common",
-    "build:backend": "npm run build -w @kanban-board/backend",
-    "build:frontend": "npm run build -w @kanban-board/frontend",
-    "prod:backend": "npm run start:prod -w @kanban-board/backend",
-    "prod:frontend": "-w @kanban-board/frontend",
-    "check:common": "npm run type:check -w @kanban-board/common && npm run code:format -w @kanban-board/common && npm run code:lint -w @kanban-board/common",
-    "check:backend": "npm run type:check -w @kanban-board/backend && npm run code:format -w @kanban-board/backend && npm run code:lint -w @kanban-board/backend",
-    "check:frontend": "npm run type:check -w @kanban-board/frontend && npm run code:format -w @kanban-board/frontend && npm run code:lint -w @kanban-board/frontend",
-    "check:all": "npm run check:common && npm run check:backend && npm run check:frontend"
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "engines": {
-    "node": ">=22.0.0"
-  },
-  "homepage": "https://github.com/zakharovda95/kanban-board#readme",
-  "bugs": {
-    "url": "https://github.com/zakharovda95/kanban-board/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/zakharovda95/kanban-board.git"
-  },
-  "devDependencies": {
-    "husky": "^9.1.7",
-    "lint-staged": "^17.0.8"
-  }
+    "name": "kanban-board",
+    "version": "0.0.1",
+    "description": "Портфолио-проект kanban-доска.",
+    "author": "zakharovda95 <zakharovda95@gmail.com>",
+    "type": "module",
+    "private": true,
+    "license": "UNLICENSED",
+    "scripts": {
+        "prepare": "husky",
+        "dev:backend": "npm run start:dev -w @kanban-board/backend",
+        "dev:frontend": "npm run dev -w @kanban-board/frontend",
+        "build:common": "npm run build -w @kanban-board/common",
+        "build:backend": "npm run build -w @kanban-board/backend",
+        "build:frontend": "npm run build -w @kanban-board/frontend",
+        "prod:backend": "npm run start:prod -w @kanban-board/backend",
+        "prod:frontend": "-w @kanban-board/frontend",
+        "check:common": "npm run type:check -w @kanban-board/common && npm run code:format -w @kanban-board/common && npm run code:lint -w @kanban-board/common",
+        "check:backend": "npm run type:check -w @kanban-board/backend && npm run code:format -w @kanban-board/backend && npm run code:lint -w @kanban-board/backend",
+        "check:frontend": "npm run type:check -w @kanban-board/frontend && npm run code:format -w @kanban-board/frontend && npm run code:lint -w @kanban-board/frontend",
+        "check:all": "npm run check:common && npm run check:backend && npm run check:frontend"
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "engines": {
+        "node": ">=22.0.0"
+    },
+    "homepage": "https://github.com/zakharovda95/kanban-board#readme",
+    "bugs": {
+        "url": "https://github.com/zakharovda95/kanban-board/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/zakharovda95/kanban-board.git"
+    },
+    "devDependencies": {
+        "husky": "^9.1.7",
+        "lint-staged": "^17.0.8"
+    }
 }

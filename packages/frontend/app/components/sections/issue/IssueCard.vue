@@ -25,8 +25,8 @@
         </div>
       </div>
 
-      <StopPreventWrapper class="hidden duration-300 group-hover:block">
-        <BaseActionsButtons />
+      <StopPreventWrapper>
+        <BaseActionsButtons :actions="['copy', 'share']" @copy="copyIssueTitle" @share="copyIssueLink" />
       </StopPreventWrapper>
     </header>
 
@@ -52,6 +52,7 @@ const props = withDefaults(
   },
 );
 
+const runtimeConfig = useRuntimeConfig();
 const toast = useToast();
 
 const computedColor = computed(() => props.color || EColor.GREEN);
@@ -62,6 +63,16 @@ const { copy } = useClipboard();
 const copyIssueId = () => {
   copy(issueNumber.value);
   toast.success({ message: 'Номер задачи скопирован!' });
+};
+
+const copyIssueTitle = () => {
+  copy(props.issue.title);
+  toast.success({ message: 'Название задачи скопировано!' });
+};
+
+const copyIssueLink = () => {
+  copy(`${runtimeConfig.public.FRONTEND_URL}/boards/${props.issue.boardId}?issue=${issueNumber.value}`);
+  toast.success({ message: 'Ссылка на задачу скопирована!' });
 };
 </script>
 

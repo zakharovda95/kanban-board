@@ -28,7 +28,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       NODE_ENV: NODE_ENV,
-      BASE_URL: `http://${process.env.BACKEND_HOST}:${process.env.BACKEND_PORT}/api`,
+      BASE_URL: process.env.BACKEND_URL,
+      FRONTEND_URL: process.env.FRONTEND_URL,
       VERSION: process.env.npm_package_version,
     },
   },

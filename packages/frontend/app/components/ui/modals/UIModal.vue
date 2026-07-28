@@ -18,21 +18,21 @@
       class="size-screen bg-light-black-opacity absolute inset-0 flex items-center justify-center overflow-hidden p-12"
     >
       <div class="bg-light-base rounded-12 relative size-fit max-h-[80%] max-w-[80%] p-12">
-        <header class="mb-12 flex items-center justify-between gap-8">
-          <div v-if="title || slots.header" class="flex-1 font-medium">
+        <header v-if="title || slots.header" class="mb-12 flex items-center justify-between gap-8">
+          <div class="flex-1 font-medium">
             <slot name="header">
               {{ title }}
             </slot>
           </div>
-          <UIIconButton
-            v-if="!hideCloseButton"
-            :background-color="EColor.LIGHT_200"
-            :color="EColor.LIGHT_800"
-            class="absolute right-0 bottom-[calc(100%+8px)] duration-300 hover:scale-110"
-            icon="close-line"
-            @click:button="isOpen = false"
-          />
         </header>
+        <UIIconButton
+          v-if="!hideCloseButton"
+          :background-color="EColor.LIGHT_200"
+          :color="EColor.LIGHT_800"
+          class="absolute right-0 bottom-[calc(100%+8px)] duration-300 hover:scale-110"
+          icon="close-line"
+          @click:button="isOpen = false"
+        />
 
         <div class="h-fit w-auto" :class="[bodyClass]">
           <slot />

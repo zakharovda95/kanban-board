@@ -1,13 +1,27 @@
 <template>
-  <button
-    class="text-light-700 rounded-4 hover:bg-light-200 group m-0 flex size-fit cursor-pointer items-center justify-center bg-transparent p-4 outline-none"
-  >
-    <NuxtIcon
-      class="rotate-0 duration-500 group-hover:scale-110 group-hover:rotate-45"
-      name="mingcute:settings-5-line"
-      :size="22"
+  <div class="size-fit">
+    <UIIconButton
+      :background-color="EColor.LIGHT_BASE"
+      :color="EColor.LIGHT_500"
+      :size="ESize.MEDIUM"
+      icon="settings-5-line"
+      icon-class="rotate-0 scale-100 group-hover:rotate-45 group-hover:scale-120"
+      @click="isModalOpen = true"
     />
-  </button>
+
+    <UIModal v-model:is-open="isModalOpen" title="Настройки приложения">
+      <div class="р-80 flex w-280 items-center justify-center">Тут будут настройки приложения</div>
+    </UIModal>
+  </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { EColor } from '@kanban-board/common';
+
+import { ESize } from '~/enums/global.enums';
+
+import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
+import UIModal from '~/components/ui/modals/UIModal.vue';
+
+const isModalOpen = ref(false);
+</script>

@@ -11,13 +11,7 @@
     <div class="flex w-full flex-col gap-8">
       <slot name="bottom">
         <UIButton type="submit" :size="buttonsSize" full :disabled="disabled">{{ actionButtonLabel }}</UIButton>
-        <UIButton
-          :size="buttonsSize"
-          :background-color="EColor.RED"
-          full
-          :disabled="disabled"
-          @click:button="emit('reset:form')"
-        >
+        <UIButton :size="buttonsSize" :background-color="EColor.RED" full @click:button="emit('reset:form')">
           Отменить
         </UIButton>
       </slot>
