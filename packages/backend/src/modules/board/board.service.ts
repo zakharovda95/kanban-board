@@ -53,7 +53,7 @@ export class BoardService {
    * @param boardId - id доски.
    * @returns объект доски с вложенными колонками и задачами.
    * **/
-  public async getBoardById(boardId: string): Promise<TBoard> {
+  public async getBoardById(boardId: number): Promise<TBoard> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
@@ -103,7 +103,7 @@ export class BoardService {
    * @param body - параметры перемещения (previousId / nextId).
    * @returns стандартный успешный ответ.
    * **/
-  public async moveBoard(boardId: string, body: TMoveParameters): Promise<TSuccessResponse> {
+  public async moveBoard(boardId: number, body: TMoveParameters): Promise<TSuccessResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
@@ -127,7 +127,7 @@ export class BoardService {
    * @param body - поля для обновления.
    * @returns стандартный успешный ответ.
    * **/
-  public async patchBoard(boardId: string, body: TPatchBoard): Promise<TSuccessResponse> {
+  public async patchBoard(boardId: number, body: TPatchBoard): Promise<TSuccessResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
@@ -146,7 +146,7 @@ export class BoardService {
    * @param boardId - id доски.
    * @returns стандартный успешный ответ.
    * **/
-  public async deleteBoard(boardId: string): Promise<TSuccessResponse> {
+  public async deleteBoard(boardId: number): Promise<TSuccessResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;

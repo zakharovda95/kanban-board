@@ -16,7 +16,7 @@ import {
   Post,
 } from '@nestjs/common';
 
-import GuidPipe from '@/libs/pipes/guid.pipe';
+import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
 import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
 import { BoardService } from '@/modules/board/board.service';
 import { CreateBoardDto } from '@/modules/board/libs/dtos/create-board.dto';
@@ -34,7 +34,7 @@ export class BoardController {
   }
 
   @Get(':boardId')
-  public async getBoardById(@Param('boardId', GuidPipe) boardId: string): Promise<TBoard> {
+  public async getBoardById(@Param('boardId', ParameterIdPipe) boardId: number): Promise<TBoard> {
     return await this.boardService.getBoardById(boardId);
   }
 
@@ -46,7 +46,7 @@ export class BoardController {
   @Post(':boardId/move')
   @HttpCode(HttpStatus.OK)
   public async moveBoard(
-    @Param('boardId', GuidPipe) boardId: string,
+    @Param('boardId', ParameterIdPipe) boardId: number,
     @Body(MovePipe) body: MoveParametersDto,
   ): Promise<TSuccessResponse> {
     return await this.boardService.moveBoard(boardId, body);
@@ -54,14 +54,16 @@ export class BoardController {
 
   @Patch(':boardId')
   public async patchBoard(
-    @Param('boardId', GuidPipe) boardId: string,
+    @Param('boardId', ParameterIdPipe) boardId: number,
     @Body(new RequireAnyPipe(['title', 'description'])) body: PatchBoardDto,
   ): Promise<TSuccessResponse> {
     return await this.boardService.patchBoard(boardId, body);
   }
 
   @Delete(':boardId')
-  public async deleteBoard(@Param('boardId', GuidPipe) boardId: string): Promise<TSuccessResponse> {
+  public async deleteBoard(
+    @Param('boardId', ParameterIdPipe) boardId: number,
+  ): Promise<TSuccessResponse> {
     return await this.boardService.deleteBoard(boardId);
   }
 }

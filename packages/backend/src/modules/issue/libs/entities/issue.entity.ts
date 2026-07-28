@@ -13,12 +13,12 @@ export class IssueEntity extends MovableEntity {
   description: string | null;
 
   @Index()
-  @Column({ type: 'uuid' })
-  boardId: string;
+  @Column({ type: 'bigint' })
+  boardId: number;
 
   @Index()
-  @Column({ type: 'uuid' })
-  columnId: string;
+  @Column({ type: 'bigint' })
+  columnId: number;
 
   @ManyToOne(() => ColumnEntity, entity => entity.issues, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'columnId' })

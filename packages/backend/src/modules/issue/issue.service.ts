@@ -40,8 +40,9 @@ export class IssueService {
    * @param issueId - id задачи.
    * @returns объект задачи.
    * **/
-  public async getIssueById(issueId: string): Promise<TIssue> {
+  public async getIssueById(issueId: number): Promise<TIssue> {
     const { manager } = this.dataSource;
+
     const issue = await manager.findOne(IssueEntity, { where: { id: issueId } });
     if (!issue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
@@ -56,8 +57,8 @@ export class IssueService {
    * @returns стандартный успешный ответ с id созданной задачи.
    * **/
   public async createIssue(
-    boardId: string,
-    columnId: string,
+    boardId: number,
+    columnId: number,
     body: TCreateIssue,
   ): Promise<TCreateIssueResponse> {
     if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
@@ -101,9 +102,9 @@ export class IssueService {
    * @returns стандартный успешный ответ.
    * **/
   public async moveIssue(
-    boardId: string,
-    fromColumnId: string,
-    issueId: string,
+    boardId: number,
+    fromColumnId: number,
+    issueId: number,
     body: TMoveIssue,
   ): Promise<TSuccessResponse> {
     if (!boardId || !fromColumnId || !issueId)
@@ -115,7 +116,7 @@ export class IssueService {
 
     return await manager.transaction(async transactionalManager => {
       const targetIssue = await transactionalManager.findOne(IssueEntity, {
-        where: { id: issueId, columnId: fromColumnId },
+        where: { boardId: boardId, id: issueId, columnId: fromColumnId },
       });
       if (!targetIssue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
@@ -150,17 +151,25 @@ export class IssueService {
 
   /**
    * Частично обновить задачу.
+   * @param boardId - id доски
+   * @param columnId - id колонки
    * @param issueId - id задачи.
    * @param body - поля для обновления.
    * @returns стандартный успешный ответ.
    * **/
-  public async patchIssue(issueId: string, body: TPatchIssue): Promise<TSuccessResponse> {
-    if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+  public async patchIssue(
+    boardId: number,
+    columnId: number,
+    issueId: number,
+    body: TPatchIssue,
+  ): Promise<TSuccessResponse> {
+    if (!boardId || !columnId || !issueId)
+      throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
 
-    const issue = await manager.findOne(IssueEntity, { where: { id: issueId } });
+    const issue = await manager.findOne(IssueEntity, { where: { id: issueId, columnId, boardId } });
     if (!issue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
     await manager.save(IssueEntity, Object.assign(issue, body));
@@ -170,17 +179,37 @@ export class IssueService {
 
   /**
    * Удалить задачу.
+   * @param boardId - id доски
+   * @param columnId - id колонки
    * @param issueId - id задачи.
    * @returns стандартный успешный ответ.
    * **/
-  public async deleteIssue(issueId: string): Promise<TSuccessResponse> {
-    if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+  public async deleteIssue(
+    boardId: number,
+    columnId: number,
+    issueId: number,
+  ): Promise<TSuccessResponse> {
+    if (!boardId || !columnId || !issueId)
+      throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
-    const { affected } = await manager.delete(IssueEntity, { id: issueId });
-    if (!affected || affected <= 0)
-      throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
 
-    return getSuccessResponse();
+    return manager.transaction(async transactionalManager => {
+      const issues = await transactionalManager.find(IssueEntity, {
+        where: { id: issueId, columnId, boardId },
+      });
+
+      const target = issues.find(({ id }) => id === issueId);
+      if (!target) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+
+      const { affected } = await transactionalManager.delete(IssueEntity, { id: issueId });
+      if (!affected || affected <= 0)
+        throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
+
+      const withoutTarget = issues.filter(({ id }) => id === issueId);
+      this.moveService.resetOrders(withoutTarget);
+
+      return getSuccessResponse();
+    });
   }
 }

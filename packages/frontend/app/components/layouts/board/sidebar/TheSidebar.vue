@@ -40,13 +40,13 @@ import AddBoardButton from '~/components/sections/board/AddBoardButton.vue';
 const route = useRoute();
 const boardsStore = useBoardsStore();
 
-const updateBoardsAfterUpdatingOrDeleting = async (action: TBaseAction, id: string) => {
+const updateBoardsAfterUpdatingOrDeleting = async (action: TBaseAction, id: number) => {
   await boardsStore.fetchBoards();
   if (action === 'update') return;
-  if (route.params?.id && id === route.params.id) navigateTo(`/boards`);
+  if (route.params?.id && id === Number(route.params.id)) navigateTo(`/boards`);
 };
 
-const updateBoardsAfterCreating = async (id?: string) => {
+const updateBoardsAfterCreating = async (id?: number) => {
   await boardsStore.fetchBoards();
   if (id) navigateTo(`/boards/${id}`);
 };

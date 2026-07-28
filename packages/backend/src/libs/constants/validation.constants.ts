@@ -3,5 +3,5 @@ export const VALIDATION_MESSAGES = {
   required: 'Поле обязательно для заполнения',
   maxlength: 'Количество символов не должно превышать',
   isHex: 'Поле должно быть в формате HEX',
-  idMustBeAGuid: 'Id должен быть указан, и иметь формат GUID',
+  idMustBeBigint: 'Id должен быть указан, и иметь числовой формат',
 };

@@ -57,7 +57,14 @@ export default defineNuxtConfig({
     clientBundle: {
       scan: true,
     },
-    customCollections: [],
+    customCollections: [
+      {
+        prefix: 'icons',
+        dir: './app/assets/icons',
+        recursive: true,
+        normalizeIconName: false,
+      },
+    ],
   },
 
   toast: {

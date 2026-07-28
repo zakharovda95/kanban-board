@@ -37,7 +37,7 @@ export class ColumnService {
    * @param body - данные колонки (title, color, description).
    * @returns стандартный успешный ответ с id созданной колонки.
    * **/
-  public async createColumn(boardId: string, body: TCreateColumn): Promise<TCreateColumnResponse> {
+  public async createColumn(boardId: number, body: TCreateColumn): Promise<TCreateColumnResponse> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
@@ -75,8 +75,8 @@ export class ColumnService {
    * @returns стандартный успешный ответ.
    * **/
   public async moveColumn(
-    boardId: string,
-    columnId: string,
+    boardId: number,
+    columnId: number,
     body: TMoveParameters,
   ): Promise<TSuccessResponse> {
     if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
@@ -104,8 +104,8 @@ export class ColumnService {
    * @returns стандартный успешный ответ.
    * **/
   public async patchColumn(
-    boardId: string,
-    columnId: string,
+    boardId: number,
+    columnId: number,
     body: TPatchColumn,
   ): Promise<TSuccessResponse> {
     if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
@@ -127,7 +127,7 @@ export class ColumnService {
    * @param columnId - id колонки.
    * @returns стандартный успешный ответ.
    * **/
-  public async deleteColumn(boardId: string, columnId: string): Promise<TSuccessResponse> {
+  public async deleteColumn(boardId: number, columnId: number): Promise<TSuccessResponse> {
     if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;

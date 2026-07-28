@@ -36,7 +36,7 @@ import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 
 const props = defineProps<{
-  columnId: string;
+  columnId: number;
 }>();
 
 const emit = defineEmits<{

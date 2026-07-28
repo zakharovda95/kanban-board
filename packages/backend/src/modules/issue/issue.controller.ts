@@ -11,7 +11,7 @@ import {
   Post,
 } from '@nestjs/common';
 
-import GuidPipe from '@/libs/pipes/guid.pipe';
+import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
 import { IssueService } from '@/modules/issue/issue.service';
 import { CreateIssueDto } from '@/modules/issue/libs/dtos/create-issue.dto';
 import { MoveIssueDto } from '@/modules/issue/libs/dtos/move-issue.dto';
@@ -23,14 +23,14 @@ export class IssueController {
   constructor(private issueService: IssueService) {}
 
   @Get('issues/:issueId')
-  public async getIssueById(@Param('issueId', GuidPipe) issueId: string): Promise<TIssue> {
+  public async getIssueById(@Param('issueId', ParameterIdPipe) issueId: number): Promise<TIssue> {
     return this.issueService.getIssueById(issueId);
   }
 
   @Post('boards/:boardId/columns/:columnId/issues')
   public async createIssue(
-    @Param('boardId', GuidPipe) boardId: string,
-    @Param('columnId', GuidPipe) columnId: string,
+    @Param('boardId', ParameterIdPipe) boardId: number,
+    @Param('columnId', ParameterIdPipe) columnId: number,
     @Body() body: CreateIssueDto,
   ): Promise<TCreateIssueResponse> {
     return await this.issueService.createIssue(boardId, columnId, body);
@@ -39,24 +39,30 @@ export class IssueController {
   @Post('boards/:boardId/columns/:fromColumnId/issues/:issueId/move')
   @HttpCode(HttpStatus.OK)
   public async moveIssue(
-    @Param('boardId', GuidPipe) boardId: string,
-    @Param('fromColumnId', GuidPipe) fromColumnId: string,
-    @Param('issueId', GuidPipe) issueId: string,
+    @Param('boardId', ParameterIdPipe) boardId: number,
+    @Param('fromColumnId', ParameterIdPipe) fromColumnId: number,
+    @Param('issueId', ParameterIdPipe) issueId: number,
     @Body(MovePipe) body: MoveIssueDto,
   ): Promise<TSuccessResponse> {
     return await this.issueService.moveIssue(boardId, fromColumnId, issueId, body);
   }
 
-  @Patch('issues/:issueId')
+  @Patch('boards/:boardId/columns/:columnId/issues/:issueId')
   public async patchIssue(
-    @Param('issueId', GuidPipe) issueId: string,
+    @Param('boardId', ParameterIdPipe) boardId: number,
+    @Param('columnId', ParameterIdPipe) columnId: number,
+    @Param('issueId', ParameterIdPipe) issueId: number,
     @Body() body: PatchIssueDto,
   ): Promise<TSuccessResponse> {
-    return await this.issueService.patchIssue(issueId, body);
+    return await this.issueService.patchIssue(boardId, columnId, issueId, body);
   }
 
-  @Delete('issues/:issueId')
-  public async deleteIssue(@Param('issueId', GuidPipe) issueId: string): Promise<TSuccessResponse> {
-    return await this.issueService.deleteIssue(issueId);
+  @Delete('boards/:boardId/columns/:columnId/issues/:issueId')
+  public async deleteIssue(
+    @Param('boardId', ParameterIdPipe) boardId: number,
+    @Param('columnId', ParameterIdPipe) columnId: number,
+    @Param('issueId', ParameterIdPipe) issueId: number,
+  ): Promise<TSuccessResponse> {
+    return await this.issueService.deleteIssue(boardId, columnId, issueId);
   }
 }

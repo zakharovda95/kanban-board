@@ -1,11 +1,11 @@
 <template>
-  <div class="flex h-full flex-1 items-center justify-center self-stretch">
-    <span class="font-medium"> {{ text }} </span>
+  <div class="flex size-full items-center justify-center p-12">
+    <p class="text-14 font-medium">{{ text }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { NO_BOARDS_TEXT } from '~/constants/board.constants';
+import { CHOOSE_ONE_BOARD_TEXT, LOAD_BOARDS_TEXT, NO_BOARDS_TEXT } from '~/constants/board.constants';
 import { useBoardsStore } from '~/stores/boards.store';
 
 definePageMeta({
@@ -16,9 +16,9 @@ const boardsStore = useBoardsStore();
 
 const text = computed(() =>
   boardsStore.isLoadingBoards
-    ? 'Загружаем Ваши доски...'
+    ? LOAD_BOARDS_TEXT
     : boardsStore.boards?.length && !boardsStore.isLoadingBoards
-      ? 'Выберите доску в меню слева'
+      ? CHOOSE_ONE_BOARD_TEXT
       : NO_BOARDS_TEXT,
 );
 

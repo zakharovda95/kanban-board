@@ -19,7 +19,7 @@
             month="numeric"
             year="numeric"
           />
-          <span class="italic">(43 дня)</span>
+          <span class="italic">(12 дня)</span>
         </div>
       </div>
     </header>
