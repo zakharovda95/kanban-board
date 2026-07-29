@@ -1,6 +1,6 @@
 import type { TSuccessResponse } from '@kanban-board/common';
 
-import type { TIssue } from './issue.types.js';
+import type { TIssueBase } from './issue.types.js';
 import type { IMovable } from './move.types.js';
 
 export type TColumnBase = IMovable & {
@@ -11,7 +11,7 @@ export type TColumnBase = IMovable & {
 };
 
 export type TColumn = TColumnBase & {
-  issues: TIssue[];
+  issues: TIssueBase[];
 };
 
 export type TCreateColumn = Pick<TColumnBase, 'title' | 'color'> &

@@ -22,13 +22,9 @@ import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 export class IssueController {
   constructor(private issueService: IssueService) {}
 
-  @Get('boards/:boardId/columns/:columnId/issues/:issueId')
-  public async getIssueById(
-    @Param('boardId', ParameterIdPipe) boardId: number,
-    @Param('columnId', ParameterIdPipe) columnId: number,
-    @Param('issueId', ParameterIdPipe) issueId: number,
-  ): Promise<TIssue> {
-    return this.issueService.getIssueById(boardId, columnId, issueId);
+  @Get('issues/:issueId')
+  public async getIssueById(@Param('issueId', ParameterIdPipe) issueId: number): Promise<TIssue> {
+    return this.issueService.getIssueById(issueId);
   }
 
   @Post('boards/:boardId/columns/:columnId/issues')
@@ -51,22 +47,18 @@ export class IssueController {
     return await this.issueService.moveIssue(boardId, fromColumnId, issueId, body);
   }
 
-  @Patch('boards/:boardId/columns/:columnId/issues/:issueId')
+  @Patch('issues/:issueId')
   public async patchIssue(
-    @Param('boardId', ParameterIdPipe) boardId: number,
-    @Param('columnId', ParameterIdPipe) columnId: number,
     @Param('issueId', ParameterIdPipe) issueId: number,
     @Body() body: PatchIssueDto,
   ): Promise<TSuccessResponse> {
-    return await this.issueService.patchIssue(boardId, columnId, issueId, body);
+    return await this.issueService.patchIssue(issueId, body);
   }
 
-  @Delete('boards/:boardId/columns/:columnId/issues/:issueId')
+  @Delete('issues/:issueId')
   public async deleteIssue(
-    @Param('boardId', ParameterIdPipe) boardId: number,
-    @Param('columnId', ParameterIdPipe) columnId: number,
     @Param('issueId', ParameterIdPipe) issueId: number,
   ): Promise<TSuccessResponse> {
-    return await this.issueService.deleteIssue(boardId, columnId, issueId);
+    return await this.issueService.deleteIssue(issueId);
   }
 }

@@ -26,5 +26,9 @@ const { data, pending, error, refresh } = await useFetch<TBoard>(`/api/boards/${
 if (error.value) {
   toast.error({ message: getErrorMessage(error.value.data.data) });
   errorMessage.value = ERROR_BOARD_TEXT;
+
+  if (error.value.status === 404) {
+    navigateTo('/boards');
+  }
 }
 </script>

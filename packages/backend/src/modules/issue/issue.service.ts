@@ -37,18 +37,16 @@ export class IssueService {
 
   /**
    * Получить задачу по id.
-   * @param boardId - id доски.
-   * @param columnId - id колонки.
    * @param issueId - id задачи.
    * @returns объект задачи.
    * **/
-  public async getIssueById(boardId: number, columnId: number, issueId: number): Promise<TIssue> {
+  public async getIssueById(issueId: number): Promise<TIssue> {
     const { manager } = this.dataSource;
 
-    const issue = await manager.findOne(IssueEntity, { where: { id: issueId, columnId, boardId } });
+    const issue = await manager.findOne(IssueEntity, { where: { id: issueId } });
     if (!issue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
-    return this.issueMapper.toModel(issue);
+    return this.issueMapper.toModel(issue, { base: false });
   }
 
   /**
@@ -153,25 +151,17 @@ export class IssueService {
 
   /**
    * Частично обновить задачу.
-   * @param boardId - id доски
-   * @param columnId - id колонки
    * @param issueId - id задачи.
    * @param body - поля для обновления.
    * @returns стандартный успешный ответ.
    * **/
-  public async patchIssue(
-    boardId: number,
-    columnId: number,
-    issueId: number,
-    body: TPatchIssue,
-  ): Promise<TSuccessResponse> {
-    if (!boardId || !columnId || !issueId)
-      throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+  public async patchIssue(issueId: number, body: TPatchIssue): Promise<TSuccessResponse> {
+    if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
 
-    const issue = await manager.findOne(IssueEntity, { where: { id: issueId, columnId, boardId } });
+    const issue = await manager.findOne(IssueEntity, { where: { id: issueId } });
     if (!issue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
     await manager.save(IssueEntity, Object.assign(issue, body));
@@ -181,35 +171,32 @@ export class IssueService {
 
   /**
    * Удалить задачу.
-   * @param boardId - id доски
-   * @param columnId - id колонки
    * @param issueId - id задачи.
    * @returns стандартный успешный ответ.
    * **/
-  public async deleteIssue(
-    boardId: number,
-    columnId: number,
-    issueId: number,
-  ): Promise<TSuccessResponse> {
-    if (!boardId || !columnId || !issueId)
-      throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+  public async deleteIssue(issueId: number): Promise<TSuccessResponse> {
+    if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
 
     return manager.transaction(async transactionalManager => {
-      const issues = await transactionalManager.find(IssueEntity, {
-        where: { id: issueId, columnId, boardId },
-      });
-
-      const target = issues.find(({ id }) => id === issueId);
+      const target = await transactionalManager.findOne(IssueEntity, { where: { id: issueId } });
       if (!target) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+
+      const issues = await transactionalManager.find(IssueEntity, {
+        where: { columnId: target.columnId, boardId: target.boardId },
+        order: { order: 'ASC' },
+      });
 
       const { affected } = await transactionalManager.delete(IssueEntity, { id: issueId });
       if (!affected || affected <= 0)
         throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
 
-      const withoutTarget = issues.filter(({ id }) => id === issueId);
+      // TODO: когда возникнет необходимость - сделать не полный пересчет order, а только часть после target со сдвигом на ORDER_STEP в меньшую сторону
+      const withoutTarget = issues.filter(({ id }) => id !== issueId);
       this.moveService.resetOrders(withoutTarget);
+
+      await transactionalManager.save(IssueEntity, withoutTarget);
 
       return getSuccessResponse();
     });

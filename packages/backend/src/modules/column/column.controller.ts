@@ -21,7 +21,7 @@ export class ColumnController {
     return await this.columnService.createColumn(boardId, body);
   }
 
-  @Post('boards/:boardId/columns/:columnId/move')
+  @Post('/boards/:boardId/columns/:columnId/move')
   @HttpCode(HttpStatus.OK)
   public async moveColumn(
     @Param('boardId', ParameterIdPipe) boardId: number,
@@ -31,20 +31,18 @@ export class ColumnController {
     return await this.columnService.moveColumn(boardId, columnId, body);
   }
 
-  @Patch('boards/:boardId/columns/:columnId')
+  @Patch('columns/:columnId')
   public async patchColumn(
-    @Param('boardId', ParameterIdPipe) boardId: number,
     @Param('columnId', ParameterIdPipe) columnId: number,
     @Body(new RequireAnyPipe(['title', 'description', 'color'])) body: PatchColumnDto,
   ): Promise<TSuccessResponse> {
-    return this.columnService.patchColumn(boardId, columnId, body);
+    return this.columnService.patchColumn(columnId, body);
   }
 
-  @Delete('boards/:boardId/columns/:columnId')
+  @Delete('columns/:columnId')
   public async deleteColumn(
-    @Param('boardId', ParameterIdPipe) boardId: number,
     @Param('columnId', ParameterIdPipe) columnId: number,
   ): Promise<TSuccessResponse> {
-    return this.columnService.deleteColumn(boardId, columnId);
+    return this.columnService.deleteColumn(columnId);
   }
 }

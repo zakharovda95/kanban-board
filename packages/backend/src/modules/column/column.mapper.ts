@@ -18,7 +18,7 @@ export class ColumnMapper {
       color: innerEntity.color,
       boardId: innerEntity.boardId,
       order: innerEntity.order,
-      issues: this.issueMapper.toModel(innerEntity.issues),
+      issues: this.issueMapper.toModel(innerEntity.issues, { base: true }),
     });
 
     return Array.isArray(entity) ? entity.map(innerEntity => map(innerEntity)) : map(entity);

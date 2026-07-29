@@ -13,7 +13,7 @@
         </div>
 
         <BaseActionsButtons
-          :actions="['update', 'delete', 'move']"
+          :actions="['update', 'delete', 'move', 'setup']"
           @update="isUpdateModalOpen = true"
           @delete="isDeleteModalOpen = true"
         />
@@ -69,8 +69,6 @@ const emit = defineEmits<{
   'update:board': [];
 }>();
 
-const route = useRoute();
-
 const toast = useToast();
 
 const isUpdateModalOpen = ref(false);
@@ -102,7 +100,7 @@ const { isLoading: isLoadingUpdate, call: updateColumn } = useTryCatchFinally({
       color: formData.value.color || undefined,
     };
 
-    const result = await $fetch<TSuccessResponse>(`/api/boards/${route.params.id}/columns/${props.column.id}`, {
+    const result = await $fetch<TSuccessResponse>(`/api/columns/${props.column.id}`, {
       method: 'PATCH',
       body,
     });
@@ -116,7 +114,7 @@ const { isLoading: isLoadingUpdate, call: updateColumn } = useTryCatchFinally({
 
 const { isLoading: isLoadingDelete, call: deleteColumn } = useTryCatchFinally({
   callback: async () => {
-    const result = await $fetch<TSuccessResponse>(`/api/boards/${route.params.id}/columns/${props.column.id}`, {
+    const result = await $fetch<TSuccessResponse>(`/api/columns/${props.column.id}`, {
       method: 'DELETE',
     });
     if (result.isSuccess) onSuccessRequest('delete');

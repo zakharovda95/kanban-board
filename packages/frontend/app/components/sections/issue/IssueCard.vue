@@ -6,15 +6,17 @@
     <header class="flex w-full justify-between gap-8">
       <div class="flex flex-col gap-8">
         <div class="flex gap-4">
-          <UIBadge
-            class="cursor-pointer"
-            :background-color="color"
-            :color="color ? ColorUtility.getTextColor(color, 170) : EColor.LIGHT_BASE"
-            append-icon="copy-line"
-            @click:badge="copyIssueId"
-          >
-            {{ issueNumber }}
-          </UIBadge>
+          <StopPreventWrapper>
+            <UIBadge
+              class="cursor-pointer"
+              :background-color="color"
+              :color="color ? ColorUtility.getTextColor(color, 170) : EColor.LIGHT_BASE"
+              append-icon="copy-line"
+              @click:badge="copyIssueId"
+            >
+              {{ issueNumber }}
+            </UIBadge>
+          </StopPreventWrapper>
 
           <UIBadge v-if="false" :background-color="EColor.RED">Просрочена</UIBadge>
         </div>

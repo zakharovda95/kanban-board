@@ -1,7 +1,7 @@
 <template>
   <UIModal v-model:is-open="isOpen">
     <template #header>
-      <div class="flex flex-1 flex-col gap-8">
+      <div v-if="!isEditMode" class="flex flex-1 flex-col gap-8">
         <div class="flex w-full justify-between gap-12">
           <h4 class="text-18 flex items-center gap-4">
             <button
@@ -54,7 +54,7 @@
       </div>
     </template>
 
-    <div class="w-640 py-12">
+    <div v-if="!isEditMode" class="w-640 py-12">
       <div class="border-light-200 rounded-8 border p-12">
         <p v-if="issue.description">{{ issue.description }}</p>
         <p v-else class="text-light-500 italic">(описание не добавлено)</p>
@@ -117,6 +117,8 @@ const { issue } = toRefs(props);
 
 const toast = useToast();
 
+const isEditMode = ref(false);
+
 const { issueNumber, daysPassedSinceCreation, daysPassedSinceUpdating, copyIssueId, copyIssueLink, copyIssueTitle } =
   useIssueInfo(issue);
 
@@ -129,13 +131,10 @@ const closeModal = () => {
 
 const { isLoading: isLoadingDelete, call: deleteIssue } = useTryCatchFinally({
   callback: async () => {
-    const result = await $fetch<TSuccessResponse>(
-      `/api/boards/${props.issue.boardId}/columns/${props.issue.columnId}/issues/${props.issue.id}`,
-      { method: 'DELETE' },
-    );
+    const result = await $fetch<TSuccessResponse>(`/api/issues/${props.issue.id}`, { method: 'DELETE' });
 
     if (result.isSuccess) {
-      toast.success('Задача удалена!');
+      toast.success({ message: 'Задача удалена!' });
       emit('update:board');
       closeModal();
     }

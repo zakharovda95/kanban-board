@@ -98,17 +98,12 @@ export class ColumnService {
 
   /**
    * Частично обновить колонку.
-   * @param boardId - id доски.
    * @param columnId - id колонки.
    * @param body - поля для обновления.
    * @returns стандартный успешный ответ.
    * **/
-  public async patchColumn(
-    boardId: number,
-    columnId: number,
-    body: TPatchColumn,
-  ): Promise<TSuccessResponse> {
-    if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+  public async patchColumn(columnId: number, body: TPatchColumn): Promise<TSuccessResponse> {
+    if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
@@ -123,28 +118,28 @@ export class ColumnService {
 
   /**
    * Удалить колонку.
-   * @param boardId - id доски.
    * @param columnId - id колонки.
    * @returns стандартный успешный ответ.
    * **/
-  public async deleteColumn(boardId: number, columnId: number): Promise<TSuccessResponse> {
-    if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+  public async deleteColumn(columnId: number): Promise<TSuccessResponse> {
+    if (!columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
 
     return manager.transaction(async transactionalManager => {
+      const target = await transactionalManager.findOne(ColumnEntity, { where: { id: columnId } });
+      if (!target) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+
       const columns = await transactionalManager.find(ColumnEntity, {
-        where: { boardId },
+        where: { boardId: target.boardId },
         order: { order: 'ASC' },
       });
-
-      const target = columns.find(({ id }) => id === columnId);
-      if (!target) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
       const { affected } = await transactionalManager.delete(ColumnEntity, { id: columnId });
       if (!affected || affected <= 0)
         throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
 
+      // TODO: когда возникнет необходимость - сделать не полный пересчет order, а только часть после target со сдвигом на ORDER_STEP в меньшую сторону
       const withoutTarget = columns.filter(({ id }) => id !== columnId);
       this.moveService.resetOrders(withoutTarget);
 

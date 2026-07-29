@@ -1,7 +1,7 @@
 <template>
   <header class="flex h-80 shrink-0 items-center justify-between gap-12 bg-transparent px-12 pt-12">
     <div
-      class="bg-light-base rounded-12 flex size-full max-w-[calc(280px-12px)] items-center justify-between gap-12 px-12 py-8"
+      class="bg-light-base rounded-12 flex size-full max-w-[calc(280px-12px)] shrink-0 items-center justify-between gap-12 px-12 py-8"
     >
       <TheLogo show-version />
       <HeaderAppSettings />

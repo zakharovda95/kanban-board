@@ -8,7 +8,7 @@ import { ColumnMapper } from '@/modules/column/column.mapper';
 export class BoardMapper {
   constructor(private columnMapper: ColumnMapper) {}
 
-  toModel(entity: BoardEntity, options: { withRelations?: false }): TBoardBase;
+  toModel(entity: BoardEntity, options?: { withRelations?: false }): TBoardBase;
   toModel(entity: BoardEntity, options?: { withRelations: true }): TBoard;
   toModel(entity: BoardEntity[], options?: { withRelations?: false }): TBoardBase[];
   toModel(entity: BoardEntity[], options?: { withRelations: true }): TBoard[];

@@ -2,13 +2,16 @@ import type { TSuccessResponse } from '@kanban-board/common';
 
 import type { IMovable, TMoveParameters } from './move.types.js';
 
-export type TIssue = IMovable & {
+export type TIssueBase = IMovable & {
   createdAt: Date;
-  updatedAt: Date;
   title: string;
-  description: string | null;
   boardId: number;
   columnId: number;
+};
+
+export type TIssue = TIssueBase & {
+  updatedAt: Date;
+  description: string | null;
 };
 
 export type TCreateIssue = Pick<TIssue, 'title' | 'description'>;

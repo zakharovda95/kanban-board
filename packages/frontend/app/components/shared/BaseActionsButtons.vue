@@ -1,10 +1,11 @@
 <template>
   <UIButtonWithContextMenu ref="buttonWithContextMenuRef" :background-color="buttonBackgroundColor">
-    <div class="flex flex-row flex-nowrap items-center justify-center gap-4">
+    <div class="grid grid-cols-2 gap-4">
       <UIIconButton
         v-for="action in computedActions"
         :key="action.action"
-        :background-color="action.color"
+        :background-color="action.backgroundColor"
+        :color="action.color"
         :icon="action.icon"
         @click:button="onClick(action.action)"
       />
@@ -38,6 +39,7 @@ const emit = defineEmits<{
   'move': [];
   'copy': [];
   'share': [];
+  'setup': [];
 }>();
 
 const buttonWithContextMenuRef = useTemplateRef('buttonWithContextMenuRef');
@@ -61,6 +63,7 @@ const onClick = (action: TBaseAction): void => {
     move: () => emit('move'),
     copy: () => emit('copy'),
     share: () => emit('share'),
+    setup: () => emit('setup'),
   };
 
   actionMap[action]();

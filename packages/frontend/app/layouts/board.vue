@@ -26,6 +26,6 @@ const { error } = await useAsyncData('fetch-boards', async () => {
 });
 
 if (error.value) {
-  navigateTo('/boards');
+  throw createError(error.value);
 }
 </script>

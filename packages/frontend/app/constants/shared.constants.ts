@@ -6,26 +6,37 @@ export const BASE_ACTIONS_BUTTONS_DATA: Record<TBaseAction, TBaseActionButtonDat
   update: {
     action: 'update',
     icon: 'pencil-line',
-    color: EColor.ORANGE,
+    backgroundColor: EColor.ORANGE,
+    color: EColor.LIGHT_BASE,
   },
   delete: {
     action: 'delete',
     icon: 'delete-2-line',
-    color: EColor.RED,
+    backgroundColor: EColor.RED,
+    color: EColor.LIGHT_BASE,
   },
   move: {
     action: 'move',
     icon: 'move-line',
-    color: EColor.GREEN,
+    backgroundColor: EColor.GREEN,
+    color: EColor.LIGHT_BASE,
   },
   copy: {
     action: 'copy',
     icon: 'copy-line',
-    color: EColor.GREEN,
+    backgroundColor: EColor.GREEN,
+    color: EColor.LIGHT_BASE,
   },
   share: {
     action: 'share',
     icon: 'share-2-line',
-    color: EColor.BLUE,
+    backgroundColor: EColor.BLUE,
+    color: EColor.LIGHT_BASE,
+  },
+  setup: {
+    action: 'setup',
+    icon: 'settings-5-line',
+    backgroundColor: EColor.LIGHT_200,
+    color: EColor.LIGHT_800,
   },
 };
