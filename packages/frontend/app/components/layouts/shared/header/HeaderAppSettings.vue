@@ -9,7 +9,7 @@
       @click="isModalOpen = true"
     />
 
-    <UIModal v-model:is-open="isModalOpen" title="Настройки приложения">
+    <UIModal v-model:is-open="isModalOpen" title="Настройки приложения" close-on-overlay>
       <div class="bg-light-200 rounded-8 text-14 flex w-280 items-center justify-center p-20">
         Тут будут настройки приложения
       </div>

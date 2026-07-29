@@ -67,7 +67,7 @@ const props = withDefaults(
   {
     bodyClass: null,
     title: null,
-    closeOnOverlay: true,
+    closeOnOverlay: false,
     closeOnEsc: true,
     hideCloseButton: false,
   },

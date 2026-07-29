@@ -1,12 +1,12 @@
 <template>
-  <aside class="flex h-full w-280 flex-col items-center justify-between gap-12 py-12 pr-0 pl-12">
+  <aside class="flex h-full w-280 shrink-0 flex-col items-center justify-between gap-12 py-12 pr-0 pl-12">
     <div class="bg-light-base rounded-12 flex size-full h-full flex-col gap-12 p-12">
       <UILoader v-if="boardsStore.isLoadingBoards" full />
       <template v-else>
         <h4 class="font-medium">Мои доски</h4>
         <nav
           v-if="!boardsStore.isLoadingBoards && boardsStore.boards?.length"
-          class="flex max-h-[calc(100%-44px)] w-full flex-col gap-8 overflow-hidden"
+          class="flex h-fit w-full flex-col gap-8 overflow-hidden"
         >
           <SidebarBoardLink
             v-for="board in boardsStore.boards"

@@ -35,8 +35,8 @@
     <UIConfirmationModal
       :is-open="isDeleteModalOpen"
       title="Удалить колонку?"
+      :text="CONFIRMATION_MODAL_TEXT"
       action-button-label="Да, удалить колонку"
-      text="Восстановить данные будет невозможно!"
       :disabled="isLoadingDelete"
       @click:confirm="deleteColumn"
       @update:is-open="closeModal"
@@ -55,6 +55,7 @@ import type {
 
 import { useForm } from '~/composables/use-form.composable';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
+import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants';
 import type { TBaseAction, TUpsertFormData } from '~/types/shared.types';
 import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
 
@@ -65,7 +66,7 @@ import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue'
 const props = defineProps<{ column: TColumn }>();
 
 const emit = defineEmits<{
-  'update:columns': [];
+  'update:board': [];
 }>();
 
 const route = useRoute();
@@ -89,7 +90,7 @@ const { formData, formErrors, reset, isDirty } = useForm<TPatchColumn>({
 
 const onSuccessRequest = (action: TBaseAction = 'update'): void => {
   toast.success({ message: action === 'update' ? 'Колонка обновлена!' : 'Колонка удалена!' });
-  emit('update:columns');
+  emit('update:board');
   closeModal();
 };
 

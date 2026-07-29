@@ -53,7 +53,7 @@
       <h4 class="text-14 cursor-text font-medium select-text">{{ issue.title }}</h4>
     </div>
 
-    <IssueDetailsModal v-model:is-open="isModalOpen" :issue="issue" />
+    <IssueDetailsModal v-model:is-open="isModalOpen" :issue="issue" @update:board="emit('update:board')" />
   </article>
 </template>
 
@@ -75,6 +75,10 @@ const props = withDefaults(
     color: EColor.GREEN,
   },
 );
+
+const emit = defineEmits<{
+  'update:board': [];
+}>();
 
 const { issue } = toRefs(props);
 

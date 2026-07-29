@@ -42,7 +42,7 @@ import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
 const emit = defineEmits<{
-  'update:columns': [];
+  'update:board': [];
 }>();
 
 const route = useRoute();
@@ -66,7 +66,7 @@ const { isLoading, call } = useTryCatchFinally({
 
     if (result.isSuccess) {
       toast.success({ message: 'Колонка добавлена!' });
-      emit('update:columns');
+      emit('update:board');
       closeModal();
     }
   },

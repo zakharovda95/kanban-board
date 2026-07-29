@@ -5,14 +5,14 @@
       <p class="text-14 font-medium">{{ ERROR_BOARD_TEXT }}</p>
     </div>
     <div v-else class="flex size-full flex-col items-center gap-12 p-12">
-      <BoardFilter @update:columns="emit('update:columns')" />
+      <BoardFilter @update:board="emit('update:board')" />
 
-      <div class="flex w-[calc(100vw-280px-24px)] flex-1 flex-row gap-8 overflow-auto pb-6">
+      <div class="flex h-full w-[calc(100vw-304px)] flex-1 flex-row gap-8 overflow-x-scroll pb-8">
         <TheColumn
           v-for="column in board?.columns"
           :key="column.id"
           :column="column"
-          @update:columns="emit('update:columns')"
+          @update:board="emit('update:board')"
         />
       </div>
     </div>
@@ -41,6 +41,6 @@ withDefaults(
 );
 
 const emit = defineEmits<{
-  'update:columns': [];
+  'update:board': [];
 }>();
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="text-12 rounded-4 flex w-fit cursor-default items-center justify-center gap-4 leading-none"
+    class="text-12 rounded-4 flex w-fit cursor-default items-center justify-center gap-4 leading-none whitespace-nowrap"
     :class="[computedSize.element]"
     :style="{ backgroundColor, color }"
     @click="emit('click:badge', $event)"

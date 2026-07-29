@@ -1,6 +1,6 @@
 <template>
   <div class="flex size-full items-center justify-center">
-    <TheBoard :board="data ?? null" :is-loading="pending" :error-text="errorMessage" @update:columns="refresh" />
+    <TheBoard :board="data ?? null" :is-loading="pending" :error-text="errorMessage" @update:board="refresh" />
   </div>
 </template>
 

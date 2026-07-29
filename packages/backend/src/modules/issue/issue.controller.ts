@@ -22,9 +22,13 @@ import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 export class IssueController {
   constructor(private issueService: IssueService) {}
 
-  @Get('issues/:issueId')
-  public async getIssueById(@Param('issueId', ParameterIdPipe) issueId: number): Promise<TIssue> {
-    return this.issueService.getIssueById(issueId);
+  @Get('boards/:boardId/columns/:columnId/issues/:issueId')
+  public async getIssueById(
+    @Param('boardId', ParameterIdPipe) boardId: number,
+    @Param('columnId', ParameterIdPipe) columnId: number,
+    @Param('issueId', ParameterIdPipe) issueId: number,
+  ): Promise<TIssue> {
+    return this.issueService.getIssueById(boardId, columnId, issueId);
   }
 
   @Post('boards/:boardId/columns/:columnId/issues')

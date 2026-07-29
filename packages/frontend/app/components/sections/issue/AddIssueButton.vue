@@ -40,7 +40,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:columns': [];
+  'update:board': [];
 }>();
 
 const route = useRoute();
@@ -62,7 +62,7 @@ const { isLoading, call } = useTryCatchFinally({
 
     if (result.isSuccess) {
       toast.success({ message: 'Задача добавлена!' });
-      emit('update:columns');
+      emit('update:board');
       closeModal();
     }
   },

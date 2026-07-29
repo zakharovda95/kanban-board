@@ -1,5 +1,5 @@
 <template>
-  <UIModal v-model:is-open="isOpen" :title="modalTitle" :close-on-overlay="false" :body-class="bodyClass">
+  <UIModal v-model:is-open="isOpen" :title="modalTitle" :body-class="bodyClass">
     <div class="w-full min-w-320">
       <UIForm
         :disabled="disabled"

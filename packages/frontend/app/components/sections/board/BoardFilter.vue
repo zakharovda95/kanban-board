@@ -1,6 +1,6 @@
 <template>
-  <div class="rounded-12 bg-light-base flex h-fit w-full p-12">
-    <AddColumnButton @update:columns="emit('update:columns')" />
+  <div class="rounded-12 bg-light-base flex h-56 w-full items-center p-12">
+    <AddColumnButton @update:board="emit('update:board')" />
   </div>
 </template>
 
@@ -8,6 +8,6 @@
 import AddColumnButton from '~/components/sections/column/AddColumnButton.vue';
 
 const emit = defineEmits<{
-  'update:columns': [];
+  'update:board': [];
 }>();
 </script>

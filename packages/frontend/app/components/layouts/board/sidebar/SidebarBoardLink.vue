@@ -2,7 +2,7 @@
   <UILink
     :to="`/boards/${board.id}`"
     :hoverable="false"
-    class="border-light-200 rounded-8 flex h-60 w-full flex-1 cursor-pointer items-center justify-between gap-8 border p-8 duration-300 select-none"
+    class="border-light-200 rounded-8 flex h-60 w-full flex-1 shrink-0 cursor-pointer items-center justify-between gap-8 border p-8 duration-300 select-none"
     :class="{ 'border-green!': board.id === Number(route.params?.id) }"
   >
     <div class="w-[calc(100%-(24px+8px))] text-left">
@@ -34,7 +34,7 @@
     <UIConfirmationModal
       :is-open="isDeleteModalOpen"
       title="Удалить доску?"
-      text="Восстановить данные будет невозможно!"
+      :text="CONFIRMATION_MODAL_TEXT"
       action-button-label="Да, удалить доску"
       :disabled="isLoadingDelete"
       @update:is-open="closeModal"
@@ -56,6 +56,7 @@ import {
 
 import { useForm } from '~/composables/use-form.composable';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
+import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants';
 import type { TBaseAction, TUpsertFormData } from '~/types/shared.types';
 import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
 import { toBody } from '~/utilities/object.utilities';
@@ -63,8 +64,8 @@ import { toBody } from '~/utilities/object.utilities';
 import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';
-import UILink from '~/components/ui/links/UILink.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
+import UILink from '~/components/ui/UILink.vue';
 
 const props = defineProps<{
   board: TBoardBase;

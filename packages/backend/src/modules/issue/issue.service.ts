@@ -37,13 +37,15 @@ export class IssueService {
 
   /**
    * Получить задачу по id.
+   * @param boardId - id доски.
+   * @param columnId - id колонки.
    * @param issueId - id задачи.
    * @returns объект задачи.
    * **/
-  public async getIssueById(issueId: number): Promise<TIssue> {
+  public async getIssueById(boardId: number, columnId: number, issueId: number): Promise<TIssue> {
     const { manager } = this.dataSource;
 
-    const issue = await manager.findOne(IssueEntity, { where: { id: issueId } });
+    const issue = await manager.findOne(IssueEntity, { where: { id: issueId, columnId, boardId } });
     if (!issue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
     return this.issueMapper.toModel(issue);

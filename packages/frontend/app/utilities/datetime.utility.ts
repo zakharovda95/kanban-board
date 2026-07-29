@@ -13,8 +13,8 @@ export class DatetimeUtility {
   }
 
   public static getDaysPassedSince(date: Date | Dayjs): number {
-    const currentDate = dayjs(date);
-    const today = dayjs();
-    return currentDate.diff(today, 'day');
+    const targetDate = dayjs(date).startOf('day');
+    const today = dayjs().startOf('day');
+    return today.diff(targetDate, 'day');
   }
 }

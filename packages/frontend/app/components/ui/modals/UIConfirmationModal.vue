@@ -1,5 +1,5 @@
 <template>
-  <UIModal v-model:is-open="isOpen" :title="title" :close-on-overlay="false">
+  <UIModal v-model:is-open="isOpen" :title="title">
     <div class="w-320">
       <p class="text-14 text-light-500">{{ text }}</p>
     </div>
