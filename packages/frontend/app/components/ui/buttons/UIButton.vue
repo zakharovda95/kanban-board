@@ -2,7 +2,7 @@
   <Component
     :is="tag"
     class="flex w-fit cursor-pointer flex-row flex-nowrap items-center justify-center gap-4 leading-none font-light whitespace-nowrap duration-300 outline-none hover:brightness-95"
-    :class="[{ 'w-full!': full, 'cursor-not-allowed opacity-50': disabled }, computedSize.element]"
+    :class="[{ 'w-full!': full, 'disabled-element': disabled }, computedSize.element]"
     :disabled="disabled"
     :type="type"
     :style="{ backgroundColor, color }"

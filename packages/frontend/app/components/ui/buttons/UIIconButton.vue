@@ -3,7 +3,7 @@
     :is="tag"
     class="group flex cursor-pointer items-center justify-center leading-none duration-300 outline-none hover:brightness-95"
     :style="{ backgroundColor, color }"
-    :class="[computedSize.element, { 'cursor-not-allowed opacity-50': disabled }]"
+    :class="[computedSize.element, { 'disabled-element': disabled }]"
     :disabled="disabled"
     :type="type"
     @click="onClick"

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-fit flex-row items-center justify-center gap-4 p-8" :class="{ 'size-full!': full }">
+  <div class="flex w-fit flex-row items-center justify-center gap-4 p-2" :class="{ 'size-full!': full }">
     <NuxtIcon class="animate-spin" :name="`mingcute:${variant}`" :size="size" />
   </div>
 </template>

@@ -1,11 +1,12 @@
-import { StringUtility, type TIssue } from '@kanban-board/common';
+import { StringUtility, type TIssue, type TIssueBase } from '@kanban-board/common';
 
 import { DatetimeUtility } from '~/utilities/datetime.utility';
 
-export function useIssueInfo(issue: Ref<TIssue>): {
-  issueNumber: ComputedRef<string>;
+export function useIssueInfo(issue: Ref<TIssue> | Ref<TIssueBase>): {
+  issueString: ComputedRef<string>;
+  issueIdFromQuery: ComputedRef<number | null>;
   daysPassedSinceCreation: ComputedRef<string>;
-  daysPassedSinceUpdating: ComputedRef<string>;
+  daysPassedSinceUpdating: ComputedRef<string | null>;
   copyIssueId: () => void;
   copyIssueTitle: () => void;
   copyIssueLink: () => void;
@@ -13,6 +14,7 @@ export function useIssueInfo(issue: Ref<TIssue>): {
   const runtimeConfig = useRuntimeConfig();
   const { copy } = useClipboard();
   const toast = useToast();
+  const route = useRoute();
 
   const getDaysPassedSince = (date: Date) => {
     const daysLeft = DatetimeUtility.getDaysPassedSince(date);
@@ -22,12 +24,23 @@ export function useIssueInfo(issue: Ref<TIssue>): {
     return `${daysLeft} ${StringUtility.pluralize(daysLeft, ['день', 'дня', 'дней'])}`;
   };
 
-  const issueNumber = computed(() => `task-${issue.value.id}`);
+  const issueString = computed(() => `task-${issue.value.id}`);
   const daysPassedSinceCreation = computed(() => getDaysPassedSince(issue.value.createdAt));
-  const daysPassedSinceUpdating = computed(() => getDaysPassedSince(issue.value.updatedAt));
+
+  const isIssueDetails = Object.hasOwn(issue.value, 'updatedAt');
+  const daysPassedSinceUpdating = computed(() =>
+    isIssueDetails ? getDaysPassedSince((issue.value as TIssue).updatedAt) : null,
+  );
+
+  const issueIdFromQuery = computed(() => {
+    if (!route.query?.issue) return null;
+    const queryId = String(route.query.issue).split('-')?.[1];
+    if (!queryId) return null;
+    return Number(queryId);
+  });
 
   const copyIssueId = async () => {
-    await copy(issueNumber.value);
+    await copy(issueString.value);
     toast.success({ message: 'Номер задачи скопирован!' });
   };
 
@@ -37,9 +50,17 @@ export function useIssueInfo(issue: Ref<TIssue>): {
   };
 
   const copyIssueLink = async () => {
-    await copy(`${runtimeConfig.public.FRONTEND_URL}/boards/${issue.value.boardId}?issue=${issueNumber.value}`);
+    await copy(`${runtimeConfig.public.FRONTEND_URL}/boards/${issue.value.boardId}?issue=${issueString.value}`);
     toast.success({ message: 'Ссылка на задачу скопирована!' });
   };
 
-  return { issueNumber, daysPassedSinceCreation, daysPassedSinceUpdating, copyIssueId, copyIssueTitle, copyIssueLink };
+  return {
+    issueString,
+    daysPassedSinceCreation,
+    daysPassedSinceUpdating,
+    issueIdFromQuery,
+    copyIssueId,
+    copyIssueTitle,
+    copyIssueLink,
+  };
 }

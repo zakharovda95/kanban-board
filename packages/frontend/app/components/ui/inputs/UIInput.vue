@@ -2,7 +2,7 @@
   <UIValidationErrors :full="full" :errors="errors">
     <div
       class="focus-within:border-green bg-light-200 flex w-full flex-nowrap items-center justify-between gap-4 border border-transparent duration-300"
-      :class="[computedSize.element, { 'cursor-not-allowed opacity-50': disabled }]"
+      :class="[computedSize.element, { 'disabled-element': disabled }]"
     >
       <NuxtIcon v-if="icon" :name="`mingcute:${icon}`" :size="computedSize.icon" />
       <UIInputBase

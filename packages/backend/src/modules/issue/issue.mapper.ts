@@ -29,6 +29,7 @@ export class IssueMapper {
       return {
         ...mapped,
         title: innerEntity.title,
+        updatedAt: innerEntity.updatedAt,
         description: innerEntity.description,
       };
     };

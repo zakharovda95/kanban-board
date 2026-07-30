@@ -107,3 +107,7 @@
 @utility max-width {
   @apply max-w-1280;
 }
+
+@utility disabled-element {
+  @apply pointer-events-none cursor-not-allowed! opacity-50 hover:border-transparent!;
+}
