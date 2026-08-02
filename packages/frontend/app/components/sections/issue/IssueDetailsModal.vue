@@ -146,6 +146,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:board': [];
+  'update:issue': [];
 }>();
 
 const { issue } = toRefs(props);
@@ -177,6 +178,7 @@ const { call: updateIssue, isLoading: isLoadingUpdate } = useTryCatchFinally({
     };
     const result = await $fetch<TSuccessResponse>(`/api/issues/${issue.value.id}`, { method: 'PATCH', body });
     if (result.isSuccess) {
+      emit('update:issue');
       emit('update:board');
       toast.success({ message: 'Задача обновлена!' });
       resetUpdating();

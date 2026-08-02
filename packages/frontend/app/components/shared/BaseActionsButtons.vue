@@ -1,6 +1,6 @@
 <template>
   <UIButtonWithContextMenu ref="buttonWithContextMenuRef" :background-color="buttonBackgroundColor">
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid gap-4" :style="{ gridTemplateColumns: computedGridCols }">
       <UIIconButton
         v-for="action in computedActions"
         :key="action.action"
@@ -26,20 +26,25 @@ const props = withDefaults(
   defineProps<{
     actions?: TBaseAction[];
     buttonBackgroundColor?: EColor;
+    gridTemplateColumns?: number;
   }>(),
   {
     actions: () => ['update', 'delete'],
     buttonBackgroundColor: EColor.LIGHT_200,
+    gridTemplateColumns: 2,
   },
 );
 
 const emit = defineEmits<{
   'update': [];
   'delete': [];
-  'move': [];
   'copy': [];
   'share': [];
   'setup': [];
+  'moveToStart': [];
+  'moveToEnd': [];
+  'moveToPrevious': [];
+  'moveToNext': [];
 }>();
 
 const buttonWithContextMenuRef = useTemplateRef('buttonWithContextMenuRef');
@@ -56,14 +61,19 @@ const computedActions = computed(() => {
   return buttonData;
 });
 
+const computedGridCols = computed(() => `repeat(${props.gridTemplateColumns}, 1fr)`);
+
 const onClick = (action: TBaseAction): void => {
   const actionMap: Record<TBaseAction, () => void> = {
     update: () => emit('update'),
     delete: () => emit('delete'),
-    move: () => emit('move'),
     copy: () => emit('copy'),
     share: () => emit('share'),
     setup: () => emit('setup'),
+    moveToStart: () => emit('moveToStart'),
+    moveToEnd: () => emit('moveToEnd'),
+    moveToPrevious: () => emit('moveToPrevious'),
+    moveToNext: () => emit('moveToNext'),
   };
 
   actionMap[action]();

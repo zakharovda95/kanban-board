@@ -45,7 +45,8 @@
       :is-open="isModalOpen"
       :issue="issueDetails"
       @update:is-open="closeIssueDetails"
-      @update:board="updateBoard"
+      @update:issue="fetchIssueDetails"
+      @update:board="emit('update:board')"
     />
   </article>
 </template>
@@ -100,11 +101,6 @@ const {
   },
   callOnInit: needOpenCardOnInit.value,
 });
-
-const updateBoard = () => {
-  fetchIssueDetails();
-  emit('update:board');
-};
 
 const openIssueDetails = async () => {
   if (isLoading.value) return;

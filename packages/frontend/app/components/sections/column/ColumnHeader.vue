@@ -13,7 +13,8 @@
         </div>
 
         <BaseActionsButtons
-          :actions="['update', 'delete', 'move', 'setup']"
+          :grid-template-columns="4"
+          :actions="['moveToStart', 'moveToPrevious', 'moveToNext', 'moveToEnd', 'update', 'delete']"
           @update="isUpdateModalOpen = true"
           @delete="isDeleteModalOpen = true"
         />

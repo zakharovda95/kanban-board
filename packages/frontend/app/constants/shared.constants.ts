@@ -15,12 +15,6 @@ export const BASE_ACTIONS_BUTTONS_DATA: Record<TBaseAction, TBaseActionButtonDat
     backgroundColor: EColor.RED,
     color: EColor.LIGHT_BASE,
   },
-  move: {
-    action: 'move',
-    icon: 'move-line',
-    backgroundColor: EColor.GREEN,
-    color: EColor.LIGHT_BASE,
-  },
   copy: {
     action: 'copy',
     icon: 'copy-line',
@@ -38,5 +32,29 @@ export const BASE_ACTIONS_BUTTONS_DATA: Record<TBaseAction, TBaseActionButtonDat
     icon: 'settings-5-line',
     backgroundColor: EColor.LIGHT_200,
     color: EColor.LIGHT_800,
+  },
+  moveToStart: {
+    action: 'moveToStart',
+    icon: 'arrow-to-left-fill',
+    backgroundColor: EColor.GREEN,
+    color: EColor.LIGHT_BASE,
+  },
+  moveToEnd: {
+    action: 'moveToEnd',
+    icon: 'arrow-to-right-fill',
+    backgroundColor: EColor.GREEN,
+    color: EColor.LIGHT_BASE,
+  },
+  moveToPrevious: {
+    action: 'moveToPrevious',
+    icon: 'align-arrow-left-fill',
+    backgroundColor: EColor.GREEN,
+    color: EColor.LIGHT_BASE,
+  },
+  moveToNext: {
+    action: 'moveToNext',
+    icon: 'align-arrow-right-fill',
+    backgroundColor: EColor.GREEN,
+    color: EColor.LIGHT_BASE,
   },
 };
