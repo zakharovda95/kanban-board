@@ -21,7 +21,7 @@
       <div class="bg-light-base rounded-12 relative size-fit max-h-[80%] max-w-[80%] p-12">
         <header v-if="title || slots.header" class="mb-12 flex w-full items-center justify-between gap-8">
           <slot name="header">
-            <h4 class="font-medium">{{ title }}</h4>
+            <h4 class="text-18 font-medium">{{ title }}</h4>
           </slot>
         </header>
 

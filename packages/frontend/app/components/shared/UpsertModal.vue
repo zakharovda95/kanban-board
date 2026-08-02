@@ -51,6 +51,8 @@ import type { TUpsertFormData } from '~/types/shared.types';
 
 import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
+import UIColorPicker from '~/components/ui/UIColorPicker.vue';
+import UIForm from '~/components/ui/UIForm.vue';
 import UILabel from '~/components/ui/UILabel.vue';
 import UIRichEditor from '~/components/ui/UIRichEditor.vue';
 

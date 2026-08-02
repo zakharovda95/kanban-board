@@ -1,8 +1,8 @@
 import { EColor } from '@kanban-board/common';
 
-import type { TBaseAction, TBaseActionButtonData } from '~/types/shared.types';
+import type { TAction, TActionButtonData } from '~/types/shared.types';
 
-export const BASE_ACTIONS_BUTTONS_DATA: Record<TBaseAction, TBaseActionButtonData> = {
+export const ACTIONS_BUTTONS_DATA: Record<TAction, TActionButtonData> = {
   update: {
     action: 'update',
     icon: 'pencil-line',

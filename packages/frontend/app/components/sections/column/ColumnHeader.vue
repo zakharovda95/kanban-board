@@ -12,7 +12,7 @@
           </p>
         </div>
 
-        <BaseActionsButtons
+        <ActionsButtons
           :grid-template-columns="4"
           :actions="['moveToStart', 'moveToPrevious', 'moveToNext', 'moveToEnd', 'update', 'delete']"
           @update="isUpdateModalOpen = true"
@@ -57,10 +57,10 @@ import type {
 import { useForm } from '~/composables/use-form.composable';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants';
-import type { TBaseAction, TUpsertFormData } from '~/types/shared.types';
+import type { TAction, TUpsertFormData } from '~/types/shared.types';
 import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
 
-import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';
+import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 
@@ -87,7 +87,7 @@ const { formData, formErrors, reset, isDirty } = useForm<TPatchColumn>({
   color: props.column.color ?? '',
 });
 
-const onSuccessRequest = (action: TBaseAction = 'update'): void => {
+const onSuccessRequest = (action: TAction = 'update'): void => {
   toast.success({ message: action === 'update' ? 'Колонка обновлена!' : 'Колонка удалена!' });
   emit('update:board');
   closeModal();

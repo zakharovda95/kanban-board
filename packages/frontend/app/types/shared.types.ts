@@ -1,6 +1,6 @@
 import type { EColor } from '@kanban-board/common';
 
-export type TBaseAction =
+export type TAction =
   'update' | 'delete' | 'share' | 'copy' | 'setup' | 'moveToStart' | 'moveToEnd' | 'moveToPrevious' | 'moveToNext';
 
 export type TUpsertFormData = {
@@ -9,8 +9,8 @@ export type TUpsertFormData = {
   color?: string;
 };
 
-export type TBaseActionButtonData = {
-  action: TBaseAction;
+export type TActionButtonData = {
+  action: TAction;
   icon: string;
   backgroundColor: EColor;
   color: EColor;

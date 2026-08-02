@@ -5,7 +5,7 @@
     class="border-light-200 rounded-8 bg-light-base flex h-60 w-full flex-1 shrink-0 cursor-pointer items-center justify-between gap-8 border p-8 duration-300 select-none"
     :class="{ 'border-green!': board.id === Number(route.params?.id) }"
   >
-    <div class="w-[calc(100%-(24px+8px))] text-left">
+    <div class="w-[calc(100%-32px)] text-left">
       <p class="text-14 block overflow-hidden font-medium text-ellipsis whitespace-nowrap">
         {{ board.title }}
       </p>
@@ -15,7 +15,7 @@
     </div>
 
     <StopPreventWrapper>
-      <BaseActionsButtons @update="isUpdateModalOpen = true" @delete="isDeleteModalOpen = true" />
+      <ActionsButtons @update="isUpdateModalOpen = true" @delete="isDeleteModalOpen = true" />
     </StopPreventWrapper>
 
     <UpsertModal
@@ -57,11 +57,11 @@ import {
 import { useForm } from '~/composables/use-form.composable';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants';
-import type { TBaseAction, TUpsertFormData } from '~/types/shared.types';
+import type { TAction, TUpsertFormData } from '~/types/shared.types';
 import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
 import { toBody } from '~/utilities/object.utilities';
 
-import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';
+import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
@@ -72,7 +72,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:boards': [action: TBaseAction, id: number];
+  'update:boards': [action: TAction, id: number];
 }>();
 
 const toast = useToast();
@@ -92,7 +92,7 @@ const { formData, reset, formErrors, isDirty } = useForm<TPatchBoard>({
   description: props.board?.description ?? '',
 });
 
-const onSuccessRequest = (action: TBaseAction = 'update'): void => {
+const onSuccessRequest = (action: TAction = 'update'): void => {
   toast.success({ message: action === 'update' ? 'Доска обновлена!' : 'Доска удалена!' });
   emit('update:boards', action, props.board.id);
   closeModal();

@@ -27,7 +27,7 @@
 
       <UILoader v-if="isLoading" :size="EIconSizeSmall.MEDIUM" />
       <StopPreventWrapper v-else>
-        <BaseActionsButtons
+        <ActionsButtons
           :actions="['copy', 'share']"
           :button-background-color="EColor.LIGHT_BASE"
           @copy="copyIssueTitle"
@@ -61,8 +61,10 @@ import { getErrorMessage } from '~/utilities/error.utilities';
 
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
 import IssueDetailsModal from '~/components/sections/issue/IssueDetailsModal.vue';
-import BaseActionsButtons from '~/components/shared/BaseActionsButtons.vue';
+import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
+import UIBadge from '~/components/ui/UIBadge.vue';
+import UILoader from '~/components/ui/UILoader.vue';
 
 const props = withDefaults(
   defineProps<{

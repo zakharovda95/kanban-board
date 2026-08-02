@@ -27,7 +27,7 @@
           <UIInput
             v-model="formData.title as string"
             name="issue-title"
-            :size="ESize.LARGE"
+            :size="ESize.MEDIUM"
             full
             placeholder="Введите название задачи"
           />
@@ -137,6 +137,7 @@ import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
 import UILabel from '~/components/ui/UILabel.vue';
+import UIRichEditor from '~/components/ui/UIRichEditor.vue';
 
 const isOpen = defineModel<boolean>('isOpen', { required: true });
 
@@ -208,5 +209,9 @@ const { isLoading: isLoadingDelete, call: deleteIssue } = useTryCatchFinally({
   catchCallback: (error: unknown) => {
     toast.error({ message: getErrorMessage(error) });
   },
+});
+
+onBeforeUnmount(() => {
+  resetUpdating();
 });
 </script>
