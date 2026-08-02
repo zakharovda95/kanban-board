@@ -7,6 +7,7 @@
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
+        "first-install": "npm install --ignore-scripts",
         "prepare": "husky",
         "dev:backend": "npm run start:dev -w @kanban-board/backend",
         "dev:frontend": "npm run dev -w @kanban-board/frontend",

@@ -58,6 +58,9 @@ export default defineNuxtConfig({
     clientBundle: {
       scan: true,
     },
+    serverBundle: {
+      collections: ['mingcute'],
+    },
     customCollections: [
       {
         prefix: 'icons',
