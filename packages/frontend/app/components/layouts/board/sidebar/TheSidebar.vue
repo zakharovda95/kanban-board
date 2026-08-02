@@ -8,12 +8,25 @@
           v-if="!boardsStore.isLoadingBoards && boardsStore.boards?.length"
           class="flex h-fit w-full flex-col gap-8 overflow-hidden"
         >
-          <SidebarBoardLink
+          <UILink
             v-for="board in boardsStore.boards"
             :key="board.id"
-            :board="board"
-            @update:boards="updateBoardsAfterUpdatingOrDeleting"
-          />
+            :to="`/boards/${board.id}`"
+            :hoverable="false"
+            class="border-light-200 rounded-8 bg-light-base flex h-60 w-full flex-1 shrink-0 cursor-pointer items-center justify-between gap-8 border p-8 duration-300 select-none"
+            :class="{ 'border-green!': board.id === Number(route.params?.id) }"
+          >
+            <div class="w-[calc(100%-32px)] text-left">
+              <p class="text-14 block overflow-hidden font-medium text-ellipsis whitespace-nowrap">
+                {{ board.title }}
+              </p>
+              <p class="text-12 block overflow-hidden font-light text-ellipsis whitespace-nowrap">
+                {{ board.description }}
+              </p>
+            </div>
+
+            <BoardActionsButtons :board="board" @update:boards="updateBoardsAfterUpdatingOrDeleting" />
+          </UILink>
         </nav>
         <div v-else class="p-8">
           <p class="text-12">{{ NO_BOARDS_TEXT }}</p>
@@ -34,9 +47,10 @@ import { NO_BOARDS_TEXT } from '~/constants/board.constants';
 import { useBoardsStore } from '~/stores/boards.store';
 import type { TAction } from '~/types/shared.types';
 
-import SidebarBoardLink from '~/components/layouts/board/sidebar/SidebarBoardLink.vue';
 import SidebarProfileWidget from '~/components/layouts/board/sidebar/SidebarProfileWidget.vue';
 import AddBoardButton from '~/components/sections/board/AddBoardButton.vue';
+import BoardActionsButtons from '~/components/sections/board/BoardActionsButtons.vue';
+import UILink from '~/components/ui/UILink.vue';
 import UILoader from '~/components/ui/UILoader.vue';
 
 const route = useRoute();

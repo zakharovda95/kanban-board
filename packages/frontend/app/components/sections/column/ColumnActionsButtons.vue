@@ -1,25 +1,11 @@
 <template>
-  <header
-    class="bg-light-base flex h-52 w-full flex-col border-b-4 px-12 py-8 text-left select-none"
-    :style="{ borderBottomColor: column.color }"
-  >
-    <div class="flex size-full flex-nowrap items-center justify-between gap-8">
-      <div class="flex flex-1 justify-between gap-8">
-        <div class="h-full flex-1 overflow-hidden">
-          <p class="text-14 font-medium text-ellipsis whitespace-nowrap">{{ column.title }}</p>
-          <p class="text-elipsis text-12 w-full overflow-hidden font-light">
-            {{ column.description }}
-          </p>
-        </div>
-
-        <ActionsButtons
-          :grid-template-columns="4"
-          :actions="['moveToStart', 'moveToPrevious', 'moveToNext', 'moveToEnd', 'update', 'delete']"
-          @update="isUpdateModalOpen = true"
-          @delete="isDeleteModalOpen = true"
-        />
-      </div>
-    </div>
+  <div class="size-fit">
+    <ActionsButtons
+      :grid-template-columns="4"
+      :actions="['moveToStart', 'moveToPrevious', 'moveToNext', 'moveToEnd', 'update', 'delete']"
+      @update="isUpdateModalOpen = true"
+      @delete="isDeleteModalOpen = true"
+    />
 
     <UpsertModal
       :is-open="isUpdateModalOpen"
@@ -42,7 +28,7 @@
       @click:confirm="deleteColumn"
       @update:is-open="closeModal"
     />
-  </header>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -54,11 +40,11 @@ import type {
   TValidationErrors,
 } from '@kanban-board/common';
 
-import { useForm } from '~/composables/use-form.composable';
-import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
-import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants';
-import type { TAction, TUpsertFormData } from '~/types/shared.types';
-import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
+import { useForm } from '~/composables/use-form.composable.ts';
+import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
+import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
+import type { TAction, TUpsertFormData } from '~/types/shared.types.ts';
+import { getErrorMessage, isValidationError } from '~/utilities/error.utilities.ts';
 
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';

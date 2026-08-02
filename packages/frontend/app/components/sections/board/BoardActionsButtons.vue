@@ -1,19 +1,5 @@
 <template>
-  <UILink
-    :to="`/boards/${board.id}`"
-    :hoverable="false"
-    class="border-light-200 rounded-8 bg-light-base flex h-60 w-full flex-1 shrink-0 cursor-pointer items-center justify-between gap-8 border p-8 duration-300 select-none"
-    :class="{ 'border-green!': board.id === Number(route.params?.id) }"
-  >
-    <div class="w-[calc(100%-32px)] text-left">
-      <p class="text-14 block overflow-hidden font-medium text-ellipsis whitespace-nowrap">
-        {{ board.title }}
-      </p>
-      <p class="text-12 block overflow-hidden font-light text-ellipsis whitespace-nowrap">
-        {{ board.description }}
-      </p>
-    </div>
-
+  <div class="size-fit">
     <StopPreventWrapper>
       <ActionsButtons @update="isUpdateModalOpen = true" @delete="isDeleteModalOpen = true" />
     </StopPreventWrapper>
@@ -40,7 +26,7 @@
       @update:is-open="closeModal"
       @click:confirm="deleteBoard"
     />
-  </UILink>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -54,18 +40,17 @@ import {
   type TValidationErrors,
 } from '@kanban-board/common';
 
-import { useForm } from '~/composables/use-form.composable';
-import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
-import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants';
-import type { TAction, TUpsertFormData } from '~/types/shared.types';
-import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
-import { toBody } from '~/utilities/object.utilities';
+import { useForm } from '~/composables/use-form.composable.ts';
+import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
+import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
+import type { TAction, TUpsertFormData } from '~/types/shared.types.ts';
+import { getErrorMessage, isValidationError } from '~/utilities/error.utilities.ts';
+import { toBody } from '~/utilities/object.utilities.ts';
 
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
-import UILink from '~/components/ui/UILink.vue';
 
 const props = defineProps<{
   board: TBoardBase;
@@ -76,7 +61,6 @@ const emit = defineEmits<{
 }>();
 
 const toast = useToast();
-const route = useRoute();
 
 const isUpdateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);

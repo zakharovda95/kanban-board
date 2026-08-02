@@ -2,7 +2,23 @@
   <article
     class="border-light-300 bg-light-200 rounded-12 flex size-full w-280 shrink-0 flex-col items-center gap-8 overflow-hidden border"
   >
-    <ColumnHeader :column="column" @update:board="emit('update:board')" />
+    <header
+      class="bg-light-base flex h-52 w-full flex-col border-b-4 px-12 py-8 text-left select-none"
+      :style="{ borderBottomColor: column.color }"
+    >
+      <div class="flex size-full flex-nowrap items-center justify-between gap-8">
+        <div class="flex flex-1 justify-between gap-8">
+          <div class="h-full flex-1 overflow-hidden">
+            <p class="text-14 font-medium text-ellipsis whitespace-nowrap">{{ column.title }}</p>
+            <p class="text-elipsis text-12 w-full overflow-hidden font-light">
+              {{ column.description }}
+            </p>
+          </div>
+
+          <ColumnActionsButtons :column="column" @update:board="emit('update:board')" />
+        </div>
+      </div>
+    </header>
 
     <div class="flex w-full items-center justify-between px-8">
       <div class="flex w-fit gap-4">
@@ -33,7 +49,7 @@ import { EColor, StringUtility, type TColumn } from '@kanban-board/common';
 
 import { ESize } from '~/enums/global.enums';
 
-import ColumnHeader from '~/components/sections/column/ColumnHeader.vue';
+import ColumnActionsButtons from '~/components/sections/column/ColumnActionsButtons.vue';
 import AddIssueButton from '~/components/sections/issue/AddIssueButton.vue';
 import IssueCard from '~/components/sections/issue/IssueCard.vue';
 import UIBadge from '~/components/ui/UIBadge.vue';
