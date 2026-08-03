@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { BoardController } from '@/modules/board/board.controller';
+import BoardGateway from '@/modules/board/board.gateway';
 import { BoardMapper } from '@/modules/board/board.mapper';
 import { BoardService } from '@/modules/board/board.service';
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
@@ -11,7 +12,7 @@ import { MoveModule } from '@/modules/shared/move/move.module';
 @Module({
   imports: [TypeOrmModule.forFeature([BoardEntity]), ColumnModule, MoveModule],
   controllers: [BoardController],
-  providers: [BoardService, BoardMapper],
+  providers: [BoardService, BoardMapper, BoardGateway],
   exports: [BoardService],
 })
 export class BoardModule {}

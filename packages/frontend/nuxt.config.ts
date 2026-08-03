@@ -30,6 +30,7 @@ export default defineNuxtConfig({
       NODE_ENV: NODE_ENV,
       BASE_URL: process.env.BACKEND_URL,
       FRONTEND_URL: process.env.FRONTEND_URL,
+      WEBSOCKET_URL: process.env.WEBSOCKET_URL,
       VERSION: process.env.npm_package_version,
     },
   },
