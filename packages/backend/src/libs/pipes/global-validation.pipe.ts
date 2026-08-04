@@ -8,6 +8,7 @@ export const globalValidationPipe = new ValidationPipe({
   whitelist: true,
   transform: true,
   validateCustomDecorators: true,
+  errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
   exceptionFactory: (errors: ValidationError[]) => {
     const validationErrorResponse: TValidationErrorResponse<unknown> = {
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY,

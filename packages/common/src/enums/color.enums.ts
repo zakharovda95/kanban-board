@@ -9,7 +9,6 @@ export enum EColor {
   LIGHT_800 = '#262626',
   LIGHT_900 = '#171717',
   LIGHT_OPACITY = 'rgba(0, 0, 0, 0.4)',
-
   GREEN = '#18a058',
   BLUE = '#2080f0',
   ORANGE = '#f0a020',

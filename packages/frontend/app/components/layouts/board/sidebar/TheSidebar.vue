@@ -32,8 +32,7 @@
           <p class="text-12">{{ NO_BOARDS_TEXT }}</p>
         </div>
 
-        <AddBoardButton @update:boards="updateBoardsAfterCreating" />
-        <UIButton :size="ESize.MEDIUM" @click:button="testSocket">TestSocket</UIButton>
+        <AddBoardButton />
       </template>
     </div>
 
@@ -45,41 +44,21 @@
 
 <script setup lang="ts">
 import { NO_BOARDS_TEXT } from '~/constants/board.constants';
-import { ESize } from '~/enums/global.enums.ts';
 import { useBoardsStore } from '~/stores/boards.store';
 import type { TAction } from '~/types/shared.types';
 
 import SidebarProfileWidget from '~/components/layouts/board/sidebar/SidebarProfileWidget.vue';
 import AddBoardButton from '~/components/sections/board/AddBoardButton.vue';
 import BoardActionsButtons from '~/components/sections/board/BoardActionsButtons.vue';
-import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UILink from '~/components/ui/UILink.vue';
 import UILoader from '~/components/ui/UILoader.vue';
 
 const route = useRoute();
 const boardsStore = useBoardsStore();
 
-const { $socket } = useNuxtApp();
-
 const updateBoardsAfterUpdatingOrDeleting = async (action: TAction, id: number) => {
   await boardsStore.fetchBoards();
   if (action === 'update') return;
   if (route.params?.id && id === Number(route.params.id)) navigateTo(`/boards`);
-};
-
-const updateBoardsAfterCreating = async (id?: number) => {
-  await boardsStore.fetchBoards();
-  if (id) navigateTo(`/boards/${id}`);
-};
-
-$socket?.on('test.test', (message: string) => {
-  console.log(message);
-  alert(message);
-});
-
-const testSocket = () => {
-  $socket.emit('test.test', 'Тест', (response: string) => {
-    console.log(response);
-  });
 };
 </script>

@@ -2,10 +2,10 @@ import type {
   TBoard,
   TBoardBase,
   TCreateBoard,
-  TCreateBoardResponse,
+  TDeleteBoardEmitPayload,
   TMoveParameters,
-  TPatchBoard,
   TSuccessResponse,
+  TUpdateBoard,
 } from '@kanban-board/common';
 import {
   BadRequestException,
@@ -18,10 +18,7 @@ import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { OrderUtility } from '@/libs/utilities/order.utility';
-import {
-  getSuccessResponse,
-  getSuccessResponseWithData,
-} from '@/libs/utilities/response.utilities';
+import { getSuccessResponse } from '@/libs/utilities/response.utilities';
 import { BoardMapper } from '@/modules/board/board.mapper';
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
 import { DEFAULT_COLUMNS } from '@/modules/column/libs/constants/column.constants';
@@ -71,24 +68,24 @@ export class BoardService {
   /**
    * Создать доску.
    * @param body - данные доски (title, description).
-   * @returns стандартный успешный ответ с id созданной доски.
+   * @returns объект созданной доски.
    * **/
-  public async createBoard(body: TCreateBoard): Promise<TCreateBoardResponse> {
+  public async createBoard(body: TCreateBoard): Promise<TBoardBase> {
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
 
     const boardsCount = await manager.count(BoardEntity);
 
-    const { id } = await manager.save(BoardEntity, {
+    const board = await manager.save(BoardEntity, {
       title: body.title,
       description: body.description ?? null,
       order: OrderUtility.calculateOrderByIndex(boardsCount),
       columns: cloneDeep(DEFAULT_COLUMNS),
     });
-    if (!id) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
+    if (!board?.id) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
 
-    return getSuccessResponseWithData({ id });
+    return this.boardMapper.toModel(board);
   }
 
   /**
@@ -122,12 +119,12 @@ export class BoardService {
   }
 
   /**
-   * Частично обновить доску.
+   * Обновить доску.
    * @param boardId - id доски.
    * @param body - поля для обновления.
-   * @returns стандартный успешный ответ.
+   * @returns объект обновленной доски.
    * **/
-  public async patchBoard(boardId: number, body: TPatchBoard): Promise<TSuccessResponse> {
+  public async updateBoard(boardId: number, body: TUpdateBoard): Promise<TBoardBase> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
     if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
@@ -136,17 +133,17 @@ export class BoardService {
     const board = await manager.findOne(BoardEntity, { where: { id: boardId } });
     if (!board) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
-    await manager.save(Object.assign(board, body));
+    const updatedBoard = await manager.save(Object.assign(board, body));
 
-    return getSuccessResponse();
+    return this.boardMapper.toModel(updatedBoard);
   }
 
   /**
    * Удалить доску. После удаления нужно нормализовать order.
    * @param boardId - id доски.
-   * @returns стандартный успешный ответ.
+   * @returns массив досок и ID удаленной доски (для оповещения всех подписчиков доски).
    * **/
-  public async deleteBoard(boardId: number): Promise<TSuccessResponse> {
+  public async deleteBoard(boardId: number): Promise<TDeleteBoardEmitPayload> {
     if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
@@ -166,9 +163,9 @@ export class BoardService {
       const withoutTarget = boards.filter(({ id }) => id !== boardId);
       this.moveService.resetOrders(withoutTarget);
 
-      await transactionalManager.save(BoardEntity, withoutTarget);
+      const boardsAfterDeleting = await transactionalManager.save(BoardEntity, withoutTarget);
 
-      return getSuccessResponse();
+      return { deletedBoardId: boardId, boards: boardsAfterDeleting };
     });
   }
 }
