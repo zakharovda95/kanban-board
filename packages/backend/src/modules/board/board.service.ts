@@ -13,6 +13,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { WsException } from '@nestjs/websockets';
 import { cloneDeep } from 'lodash';
 import { DataSource } from 'typeorm';
 
@@ -71,7 +72,7 @@ export class BoardService {
    * @returns объект созданной доски.
    * **/
   public async createBoard(body: TCreateBoard): Promise<TBoardBase> {
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
 
@@ -83,7 +84,7 @@ export class BoardService {
       order: OrderUtility.calculateOrderByIndex(boardsCount),
       columns: cloneDeep(DEFAULT_COLUMNS),
     });
-    if (!board?.id) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
+    if (!board?.id) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
     return this.boardMapper.toModel(board);
   }

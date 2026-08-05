@@ -16,14 +16,16 @@ export class BoardController {
   }
 
   @Get(':boardId')
-  public async getBoardById(@Param('boardId', ParameterIdPipe) boardId: number): Promise<TBoard> {
+  public async getBoardById(
+    @Param('boardId', new ParameterIdPipe('http')) boardId: number,
+  ): Promise<TBoard> {
     return await this.boardService.getBoardById(boardId);
   }
 
   @Post(':boardId/move')
   @HttpCode(HttpStatus.OK)
   public async moveBoard(
-    @Param('boardId', ParameterIdPipe) boardId: number,
+    @Param('boardId', new ParameterIdPipe('http')) boardId: number,
     @Body(MovePipe) body: MoveParametersDto,
   ): Promise<TSuccessResponse> {
     return await this.boardService.moveBoard(boardId, body);

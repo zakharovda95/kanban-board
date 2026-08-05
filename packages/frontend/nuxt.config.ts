@@ -1,8 +1,6 @@
 import { ENodeEnv } from '@kanban-board/common';
 import tailwindcss from '@tailwindcss/vite';
 
-import { DEFAULT_HOST, DEFAULT_PORT } from './app/constants/app-config.constants';
-
 const NODE_ENV = process.env.NODE_ENV;
 
 export default defineNuxtConfig({
@@ -40,8 +38,8 @@ export default defineNuxtConfig({
   },
 
   devServer: {
-    port: Number(process.env.FRONTEND_PORT) || DEFAULT_PORT,
-    host: process.env.FRONTEND_HOST || DEFAULT_HOST,
+    port: Number(process.env.FRONTEND_PORT),
+    host: process.env.FRONTEND_HOST,
   },
 
   css: ['~/assets/styles/fonts.css', '~/assets/styles/tailwind.css', '~/assets/styles/toasts.css'],

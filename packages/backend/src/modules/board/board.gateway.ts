@@ -1,39 +1,30 @@
-import { EBoardEvent, type TCreateBoard, type TCreateBoardResponse } from '@kanban-board/common';
+import { EBoardEvent, type TCreateBoardResponse } from '@kanban-board/common';
+import { UseFilters, UsePipes } from '@nestjs/common';
 import {
-  ConnectedSocket,
   MessageBody,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import type { Server, Socket } from 'socket.io';
+import type { Server } from 'socket.io';
 
+import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
+import { CustomValidationPipe } from '@/libs/pipes/custom-validation.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import { BoardService } from '@/modules/board/board.service';
+import { CreateBoardDto } from '@/modules/board/libs/dtos/create-board.dto';
 
-@WebSocketGateway({
-  cors: {
-    origin: true,
-  },
-})
-export default class BoardGateway implements OnGatewayConnection, OnGatewayDisconnect {
+@UseFilters(WsExceptionFilter)
+@WebSocketGateway({ cors: { origin: true } })
+export default class BoardGateway {
   constructor(private boardService: BoardService) {}
 
   @WebSocketServer()
   server: Server;
 
-  public handleConnection(@ConnectedSocket() client: Socket): void {
-    console.log('Подключено', client.id);
-  }
-
-  handleDisconnect(@ConnectedSocket() client: Socket) {
-    console.log('Отключено', client.id);
-  }
-
   @SubscribeMessage(EBoardEvent.CREATE)
-  public async createBoard(@MessageBody() body: TCreateBoard): Promise<TCreateBoardResponse> {
+  @UsePipes(CustomValidationPipe.wsValidationPipe)
+  public async createBoard(@MessageBody() body: CreateBoardDto): Promise<TCreateBoardResponse> {
     const newBoard = await this.boardService.createBoard(body);
 
     this.server.emit(EBoardEvent.CREATED, newBoard);

@@ -1,6 +1,5 @@
-import type { TSuccessResponse } from '@kanban-board/common';
-
 import type { IMovable, TMoveParameters } from './move.types.js';
+import type { TSuccessResponse } from './response.types.js';
 
 export type TIssueBase = IMovable & {
   createdAt: Date;

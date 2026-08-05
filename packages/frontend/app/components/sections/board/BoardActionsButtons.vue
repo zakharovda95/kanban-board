@@ -34,8 +34,8 @@ import {
   BOARD_DESCRIPTION_MAXLENGTH,
   BOARD_TITLE_MAXLENGTH,
   type TBoardBase,
-  type TPatchBoard,
   type TSuccessResponse,
+  type TUpdateBoard,
   type TValidationErrorResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
@@ -45,7 +45,6 @@ import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composab
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 import type { TAction, TUpsertFormData } from '~/types/shared.types.ts';
 import { getErrorMessage, isValidationError } from '~/utilities/error.utilities.ts';
-import { toBody } from '~/utilities/object.utilities.ts';
 
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
@@ -71,7 +70,7 @@ const closeModal = () => {
   reset();
 };
 
-const { formData, reset, formErrors, isDirty } = useForm<TPatchBoard>({
+const { formData, reset, formErrors, isDirty } = useForm<Omit<TUpdateBoard, 'id'>>({
   title: props.board.title,
   description: props.board?.description ?? '',
 });
@@ -84,7 +83,8 @@ const onSuccessRequest = (action: TAction = 'update'): void => {
 
 const { isLoading: isLoadingUpdate, call: updateBoard } = useTryCatchFinally({
   callback: async () => {
-    const body: TPatchBoard = {
+    const body: TUpdateBoard = {
+      id: props.board.id,
       title: formData.value.title || undefined,
       description: formData.value.description || null,
     };
@@ -93,17 +93,14 @@ const { isLoading: isLoadingUpdate, call: updateBoard } = useTryCatchFinally({
     if (result.isSuccess) onSuccessRequest('update');
   },
   catchCallback: (error: unknown) => {
-    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TPatchBoard>).validation;
+    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TUpdateBoard>).validation;
     else toast.error({ message: getErrorMessage(error) });
   },
 });
 
 const { isLoading: isLoadingDelete, call: deleteBoard } = useTryCatchFinally({
   callback: async () => {
-    const result = await $fetch<TSuccessResponse>(`/api/boards/${props.board.id}`, {
-      method: 'DELETE',
-      body: toBody<TPatchBoard>(formData.value),
-    });
+    const result = await $fetch<TSuccessResponse>(`/api/boards/${props.board.id}`, { method: 'DELETE' });
     if (result.isSuccess) onSuccessRequest('delete');
   },
   catchCallback: (error: unknown) => {

@@ -5,8 +5,6 @@ import { ConfigModuleOptions } from '@nestjs/config';
 import { z } from 'zod';
 
 import {
-  DEFAULT_HOST,
-  DEFAULT_PORT,
   MAX_DB_CONNECTIONS,
   MAX_PORT,
   MIN_DB_PASSWORD_LENGTH,
@@ -20,9 +18,9 @@ export class AppConfig {
   public static get appConfigSchema() {
     return z.object({
       NODE_ENV: z.enum(ENodeEnv),
-      HOST: z.string().trim().default(DEFAULT_HOST),
-      PORT: z.coerce.number().min(MIN_PORT).max(MAX_PORT).default(DEFAULT_PORT),
-      DB_HOST: z.string().min(MIN_LENGTH).trim(),
+      BACKEND_HOST: z.string().trim(),
+      BACKEND_PORT: z.coerce.number().min(MIN_PORT).max(MAX_PORT),
+      DB_HOST: z.string().min(1).trim(),
       DB_PORT: z.coerce.number().min(MIN_PORT).max(MAX_PORT),
       DB_NAME: z.string().min(MIN_LENGTH).trim(),
       DB_USER: z.string().min(MIN_LENGTH).trim(),
@@ -35,9 +33,6 @@ export class AppConfig {
     return {
       envFilePath: resolve(this.MONOREPO_ROOT, `.env.${process.env.NODE_ENV}`),
       isGlobal: true,
-      ignoreEnvFile: false, // игнорит .env.* файлы (переменные не попадут в configService.get())
-      skipProcessEnv: false, // игнорит process.env (переменные не попадут в configService.get())
-      expandVariables: true, // позволяет расширять env интерполяцией ENV_FILE=.env.${NODE_ENV}
       cache: true,
       validate: (envConfig: Record<string, unknown>): z.infer<typeof this.appConfigSchema> => {
         const result = this.appConfigSchema.safeParse(envConfig);

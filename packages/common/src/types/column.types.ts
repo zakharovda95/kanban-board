@@ -1,7 +1,6 @@
-import type { TSuccessResponse } from '@kanban-board/common';
-
 import type { TIssueBase } from './issue.types.js';
 import type { IMovable } from './move.types.js';
+import type { TSuccessResponse } from './response.types.js';
 
 export type TColumnBase = IMovable & {
   title: string;

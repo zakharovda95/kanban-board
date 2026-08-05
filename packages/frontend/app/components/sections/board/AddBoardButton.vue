@@ -24,8 +24,13 @@ import {
   BOARD_DESCRIPTION_MAXLENGTH,
   BOARD_TITLE_MAXLENGTH,
   EBoardEvent,
+  getErrorMessage,
+  isSuccessResponse,
+  isValidationError,
   type TCreateBoard,
   type TCreateBoardResponse,
+  type TErrorResponse,
+  type TValidationErrorResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
@@ -47,34 +52,29 @@ const { formData, reset, formErrors } = useForm<TCreateBoard>({ title: '', descr
 const isLoading = ref(false);
 const createBoard = () => {
   isLoading.value = true;
-  $socket.emit(EBoardEvent.CREATE, toBody<TCreateBoard>(formData.value), (response: TCreateBoardResponse) => {
-    isLoading.value = false;
-    if (response.isSuccess) {
-      toast.success({ message: 'Доска создана!' });
-      closeModal();
-      if (response.data?.id) navigateTo(`/boards/${response.data?.id}`);
-    }
-  });
-};
+  $socket.emit(
+    EBoardEvent.CREATE,
+    toBody<TCreateBoard>(formData.value),
+    (response: TCreateBoardResponse | TErrorResponse | TValidationErrorResponse<TCreateBoard>) => {
+      isLoading.value = false;
 
-// const { isLoading, call } = useTryCatchFinally({
-//   callback: async () => {
-//     const result = await $fetch<TCreateBoardResponse>('/api/boards', {
-//       method: 'POST',
-//       body: toBody<TCreateBoard>(formData.value),
-//     });
-//
-//     if (result.isSuccess) {
-//       toast.success({ message: 'Доска создана!' });
-//       emit('update:boards', result?.data?.id);
-//       closeModal();
-//     }
-//   },
-//   catchCallback: (error: unknown) => {
-//     if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TCreateBoard>).validation;
-//     else toast.error({ message: getErrorMessage(error) });
-//   },
-// });
+      if (isSuccessResponse<{ id: number }>(response)) {
+        const id = response.data?.id;
+        if (id) navigateTo(`/boards/${id}`);
+        toast.success({ message: 'Доска создана!' });
+        closeModal();
+        return;
+      }
+
+      if (isValidationError(response)) {
+        formErrors.value = response.validation;
+        return;
+      }
+
+      toast.error({ message: getErrorMessage(response) });
+    },
+  );
+};
 
 const closeModal = () => {
   isModalOpen.value = false;

@@ -1,4 +1,5 @@
 export const EXCEPTION_MESSAGES = {
+  bootstrapError: 'Ошибка параметров запуска приложения',
   idNotFound: 'Не указан идентификатор',
   onlyOneIdShouldBeSpecified: 'Можно указать только один идентификатор',
   atLeastOneFieldRequired: 'Необходимо указать хотя бы одно поле',

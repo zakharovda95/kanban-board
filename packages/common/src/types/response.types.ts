@@ -1,15 +1,13 @@
+import { TValidationErrors } from './error.types';
+
 export type TSuccessResponse<TData = undefined> = {
   isSuccess: boolean;
   data?: TData | undefined;
 };
 
 export type TErrorResponse = {
-  statusCode: number;
+  statusCode: number | string;
   message: string;
-};
-
-export type TValidationErrors<T> = {
-  [K in keyof T]?: T[K] extends object ? TValidationErrors<T[K]> : string[];
 };
 
 export type TValidationErrorResponse<T> = TErrorResponse & {
