@@ -2,15 +2,7 @@ import { StringUtility, type TIssue, type TIssueBase } from '@kanban-board/commo
 
 import { DatetimeUtility } from '~/utilities/datetime.utility';
 
-export function useIssueInfo(issue: Ref<TIssue> | Ref<TIssueBase>): {
-  issueString: ComputedRef<string>;
-  issueIdFromQuery: ComputedRef<number | null>;
-  daysPassedSinceCreation: ComputedRef<string>;
-  daysPassedSinceUpdating: ComputedRef<string | null>;
-  copyIssueId: () => void;
-  copyIssueTitle: () => void;
-  copyIssueLink: () => void;
-} {
+export function useIssueInfo(issue: Ref<TIssue> | Ref<TIssueBase>) {
   const runtimeConfig = useRuntimeConfig();
   const { copy } = useClipboard();
   const toast = useToast();

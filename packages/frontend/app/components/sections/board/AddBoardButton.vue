@@ -25,16 +25,14 @@ import {
   BOARD_TITLE_MAXLENGTH,
   EBoardEvent,
   getErrorMessage,
-  isSuccessResponse,
   isValidationError,
   type TCreateBoard,
   type TCreateBoardResponse,
-  type TErrorResponse,
-  type TValidationErrorResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable';
+import { useSocket } from '~/composables/use-socket.composable.ts';
 import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 import { toBody } from '~/utilities/object.utilities.ts';
@@ -43,37 +41,28 @@ import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
 const toast = useToast();
-const { $socket } = useNuxtApp();
 
 const isModalOpen = ref(false);
 
 const { formData, reset, formErrors } = useForm<TCreateBoard>({ title: '', description: '' });
 
-const isLoading = ref(false);
+const { emitEvent, isLoading } = useSocket();
+
 const createBoard = () => {
-  isLoading.value = true;
-  $socket.emit(
-    EBoardEvent.CREATE,
-    toBody<TCreateBoard>(formData.value),
-    (response: TCreateBoardResponse | TErrorResponse | TValidationErrorResponse<TCreateBoard>) => {
-      isLoading.value = false;
-
-      if (isSuccessResponse<{ id: number }>(response)) {
-        const id = response.data?.id;
-        if (id) navigateTo(`/boards/${id}`);
-        toast.success({ message: 'Доска создана!' });
-        closeModal();
-        return;
-      }
-
-      if (isValidationError(response)) {
-        formErrors.value = response.validation;
-        return;
-      }
-
-      toast.error({ message: getErrorMessage(response) });
+  emitEvent<TCreateBoardResponse>({
+    event: String(EBoardEvent.CREATE),
+    data: toBody<TCreateBoard>(formData.value),
+    successCallback: (response: TCreateBoardResponse) => {
+      const id = response.data?.id;
+      if (id) navigateTo(`/boards/${id}`);
+      toast.success({ message: 'Доска создана!' });
+      closeModal();
     },
-  );
+    errorCallback: (error: unknown) => {
+      if (isValidationError(error)) formErrors.value = error.validation;
+      else toast.error({ message: getErrorMessage(error) });
+    },
+  });
 };
 
 const closeModal = () => {

@@ -6,11 +6,7 @@ export function useTryCatchFinally<TReturnData, TParams = undefined>(options: {
   catchCallback?: (error: unknown) => void;
   finallyCallback?: () => void;
   callOnInit?: boolean;
-}): {
-  data: Ref<TReturnData | null>;
-  isLoading: Ref<boolean>;
-  call: (params?: TParams) => Promise<void>;
-} {
+}) {
   const isLoading = ref(false);
   const data: Ref<TReturnData | null> = ref(null);
 
@@ -21,23 +17,15 @@ export function useTryCatchFinally<TReturnData, TParams = undefined>(options: {
     } catch (error: unknown) {
       const errorData = (error as FetchError)?.response?._data?.data ?? null;
 
-      if (options.catchCallback) {
-        options.catchCallback(errorData);
-      } else {
-        throw errorData;
-      }
+      if (options.catchCallback) options.catchCallback(errorData);
+      else throw errorData;
     } finally {
-      if (options.finallyCallback) {
-        options.finallyCallback();
-      }
-
+      options.finallyCallback?.();
       isLoading.value = false;
     }
   };
 
-  if (options.callOnInit) {
-    void call();
-  }
+  if (options.callOnInit) void call();
 
   return { data, isLoading, call };
 }

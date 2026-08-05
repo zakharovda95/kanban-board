@@ -1,4 +1,5 @@
 export enum EErrorType {
-  VALIDATION = 'validation',
-  BASE = 'base',
+  VALIDATION = 'VALIDATION_ERROR',
+  TIMEOUT = 'TIMEOUT_ERROR',
+  INTERNAL = 'INTERNAL_ERROR',
 }
