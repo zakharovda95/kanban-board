@@ -18,7 +18,7 @@ export class RequireAnyPipe<T> implements PipeTransform {
   ) {}
 
   transform(object: T, _: ArgumentMetadata): T {
-    const hasField = this.fields.some(field => object?.[field] !== undefined);
+    const hasField = this.fields.some(field => object?.[field] != null);
     if (!hasField) {
       switch (this.context) {
         case 'http':

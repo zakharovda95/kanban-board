@@ -121,20 +121,18 @@ export class BoardService {
 
   /**
    * Обновить доску.
-   * @param boardId - id доски.
    * @param body - поля для обновления.
    * @returns объект обновленной доски.
    * **/
-  public async updateBoard(boardId: number, body: TUpdateBoard): Promise<TBoardBase> {
-    if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
-
+  public async updateBoard(body: TUpdateBoard): Promise<TBoardBase> {
+    if (!body?.id) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+    const { id, ...rest } = body;
     const { manager } = this.dataSource;
 
-    const board = await manager.findOne(BoardEntity, { where: { id: boardId } });
+    const board = await manager.findOne(BoardEntity, { where: { id } });
     if (!board) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
-    const updatedBoard = await manager.save(Object.assign(board, body));
+    const updatedBoard = await manager.save(Object.assign(board, rest));
 
     return this.boardMapper.toModel(updatedBoard);
   }

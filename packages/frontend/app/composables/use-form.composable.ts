@@ -22,11 +22,7 @@ export function useForm<T extends Record<string, any>>(initial: T) {
 
     for (let i = 0; i < keys.length - 1; i++) {
       const key = keys[i]!;
-
-      if (current[key] == null || typeof current[key] !== 'object') {
-        current[key] = {};
-      }
-
+      if (current[key] == null || typeof current[key] !== 'object') current[key] = {};
       current = current[key];
     }
 
@@ -54,16 +50,9 @@ export function useForm<T extends Record<string, any>>(initial: T) {
 
   const set = (data: T, options?: { setAsInitial?: boolean; clearErrors?: boolean }): void => {
     const cloned = cloneSafe(data);
-
     formData.value = cloned;
-
-    if (options?.setAsInitial) {
-      initialValue.value = cloneSafe(cloned);
-    }
-
-    if (options?.clearErrors !== false) {
-      formErrors.value = {};
-    }
+    if (options?.setAsInitial) initialValue.value = cloneSafe(cloned);
+    if (options?.clearErrors) formErrors.value = {};
   };
 
   const reset = (): void => {

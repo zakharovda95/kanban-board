@@ -55,7 +55,6 @@ const createBoard = () => {
     successCallback: (response: TCreateBoardResponse) => {
       const id = response.data?.id;
       if (id) navigateTo(`/boards/${id}`);
-      toast.success({ message: 'Доска создана!' });
       closeModal();
     },
     errorCallback: (error: unknown) => {

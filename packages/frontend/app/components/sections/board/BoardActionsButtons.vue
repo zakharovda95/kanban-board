@@ -1,7 +1,7 @@
 <template>
   <div class="size-fit">
     <StopPreventWrapper>
-      <ActionsButtons @update="isUpdateModalOpen = true" @delete="isDeleteModalOpen = true" />
+      <ActionsButtons @update="openUpdateModal" @delete="isDeleteModalOpen = true" />
     </StopPreventWrapper>
 
     <UpsertModal
@@ -33,18 +33,20 @@
 import {
   BOARD_DESCRIPTION_MAXLENGTH,
   BOARD_TITLE_MAXLENGTH,
+  EBoardEvent,
+  getErrorMessage,
+  isValidationError,
   type TBoardBase,
   type TSuccessResponse,
   type TUpdateBoard,
-  type TValidationErrorResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable.ts';
+import { useSocket } from '~/composables/use-socket.composable.ts';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
-import type { TAction, TUpsertFormData } from '~/types/shared.types.ts';
-import { getErrorMessage, isValidationError } from '~/utilities/error.utilities.ts';
+import type { TUpsertFormData } from '~/types/shared.types.ts';
 
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
@@ -53,10 +55,6 @@ import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue'
 
 const props = defineProps<{
   board: TBoardBase;
-}>();
-
-const emit = defineEmits<{
-  'update:boards': [action: TAction, id: number];
 }>();
 
 const toast = useToast();
@@ -70,41 +68,50 @@ const closeModal = () => {
   reset();
 };
 
-const { formData, reset, formErrors, isDirty } = useForm<Omit<TUpdateBoard, 'id'>>({
+const getInitialValue = (): Omit<TUpdateBoard, 'id'> => ({
   title: props.board.title,
   description: props.board?.description ?? '',
 });
 
-const onSuccessRequest = (action: TAction = 'update'): void => {
-  toast.success({ message: action === 'update' ? 'Доска обновлена!' : 'Доска удалена!' });
-  emit('update:boards', action, props.board.id);
-  closeModal();
+const { formData, reset, formErrors, isDirty, set } = useForm<Omit<TUpdateBoard, 'id'>>(getInitialValue());
+
+const { isLoading: isLoadingUpdate, emitEvent: emitUpdate } = useSocket();
+
+const updateBoard = () => {
+  const body: TUpdateBoard = {
+    id: props.board.id,
+    title: formData.value.title || undefined,
+    description: formData.value.description || null,
+  };
+
+  emitUpdate({
+    event: EBoardEvent.UPDATE,
+    data: body,
+    successCallback: (response: TSuccessResponse) => {
+      if (response.isSuccess) closeModal();
+    },
+    errorCallback: (error: unknown) => {
+      if (isValidationError(error)) formErrors.value = error.validation;
+      else toast.error({ message: getErrorMessage(error) });
+    },
+  });
 };
-
-const { isLoading: isLoadingUpdate, call: updateBoard } = useTryCatchFinally({
-  callback: async () => {
-    const body: TUpdateBoard = {
-      id: props.board.id,
-      title: formData.value.title || undefined,
-      description: formData.value.description || null,
-    };
-
-    const result = await $fetch<TSuccessResponse>(`/api/boards/${props.board.id}`, { method: 'PATCH', body });
-    if (result.isSuccess) onSuccessRequest('update');
-  },
-  catchCallback: (error: unknown) => {
-    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TUpdateBoard>).validation;
-    else toast.error({ message: getErrorMessage(error) });
-  },
-});
 
 const { isLoading: isLoadingDelete, call: deleteBoard } = useTryCatchFinally({
   callback: async () => {
     const result = await $fetch<TSuccessResponse>(`/api/boards/${props.board.id}`, { method: 'DELETE' });
-    if (result.isSuccess) onSuccessRequest('delete');
+    if (result.isSuccess) {
+      toast.success({ message: 'Доска удалена!' });
+      closeModal();
+    }
   },
   catchCallback: (error: unknown) => {
     toast.error({ message: getErrorMessage(error) });
   },
 });
+
+const openUpdateModal = () => {
+  set(getInitialValue(), { setAsInitial: true, clearErrors: true });
+  isUpdateModalOpen.value = true;
+};
 </script>

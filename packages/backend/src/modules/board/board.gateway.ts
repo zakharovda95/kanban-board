@@ -1,4 +1,4 @@
-import { EBoardEvent, type TCreateBoardResponse } from '@kanban-board/common';
+import { EBoardEvent, type TCreateBoardResponse, TSuccessResponse } from '@kanban-board/common';
 import { UseFilters, UsePipes } from '@nestjs/common';
 import {
   MessageBody,
@@ -10,12 +10,18 @@ import type { Server } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import { CustomValidationPipe } from '@/libs/pipes/custom-validation.pipe';
-import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
+import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
+import {
+  getSuccessResponse,
+  getSuccessResponseWithData,
+} from '@/libs/utilities/response.utilities';
 import { BoardService } from '@/modules/board/board.service';
 import { CreateBoardDto } from '@/modules/board/libs/dtos/create-board.dto';
+import { UpdateBoardDto } from '@/modules/board/libs/dtos/update-board.dto';
 
-@UseFilters(WsExceptionFilter)
 @WebSocketGateway({ cors: { origin: true } })
+@UsePipes(CustomValidationPipe.wsValidationPipe)
+@UseFilters(WsExceptionFilter)
 export default class BoardGateway {
   constructor(private boardService: BoardService) {}
 
@@ -23,12 +29,18 @@ export default class BoardGateway {
   server: Server;
 
   @SubscribeMessage(EBoardEvent.CREATE)
-  @UsePipes(CustomValidationPipe.wsValidationPipe)
   public async createBoard(@MessageBody() body: CreateBoardDto): Promise<TCreateBoardResponse> {
     const newBoard = await this.boardService.createBoard(body);
-
     this.server.emit(EBoardEvent.CREATED, newBoard);
-
     return getSuccessResponseWithData({ id: newBoard.id });
+  }
+
+  @SubscribeMessage(EBoardEvent.UPDATE)
+  public async updateBoard(
+    @MessageBody(new RequireAnyPipe(['title', 'description'], 'ws')) body: UpdateBoardDto,
+  ): Promise<TSuccessResponse> {
+    const updatedBoard = await this.boardService.updateBoard(body);
+    this.server.emit(EBoardEvent.UPDATED, updatedBoard);
+    return getSuccessResponse();
   }
 }
