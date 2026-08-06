@@ -21,12 +21,15 @@ export type TUpdateBoard = Pick<TBoardBase, 'id'> &
   Partial<Pick<TBoardBase, 'title' | 'description'>>;
 
 /** Ответ ack после создания доски. **/
-export type TCreateBoardResponse = TSuccessResponse<Pick<TBoardBase, 'id'>>;
+export type TCreateBoardResponse = TSuccessResponse<TBoardBase>;
+
+/** Ответ ack после обновления доски. **/
+export type TUpdateBoardResponse = TSuccessResponse<TBoardBase>;
 
 /** Ответ ack после удаления доски. **/
-export type TDeleteBoardResponse = TSuccessResponse<Pick<TBoardBase, 'id'>>;
+export type TDeleteBoardResponse = TSuccessResponse<TDeleteBoardEmitPayload>;
 
-/** Обновленный список досок и ID удаленной доски (чтобы перенаправить подписчиков, если активная доска больше не доступна). **/
+/** Полезная нагрузка эмита удаления доски. **/
 export type TDeleteBoardEmitPayload = {
   boards: TBoardBase[];
   deletedBoardId: number;

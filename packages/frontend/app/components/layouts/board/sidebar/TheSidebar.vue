@@ -25,14 +25,14 @@
               </p>
             </div>
 
-            <BoardActionsButtons :board="board" />
+            <BoardActionsButtons :board="board" @update:boards="updateBoards" />
           </UILink>
         </nav>
         <div v-else class="p-8">
           <p class="text-12">{{ BOARD_MESSAGES.noBoards }}</p>
         </div>
 
-        <AddBoardButton />
+        <AddBoardButton @update:boards="boardsStore.addNewBoard" />
       </template>
     </div>
 
@@ -43,6 +43,8 @@
 </template>
 
 <script setup lang="ts">
+import type { TBoardBase, TDeleteBoardEmitPayload } from '@kanban-board/common';
+
 import { BOARD_MESSAGES } from '~/constants/board.constants';
 import { useBoardsStore } from '~/stores/boards.store';
 
@@ -54,4 +56,14 @@ import UILoader from '~/components/ui/UILoader.vue';
 
 const route = useRoute();
 const boardsStore = useBoardsStore();
+
+const isDeleteBoardPayload = (payload: TBoardBase | TDeleteBoardEmitPayload): payload is TDeleteBoardEmitPayload => {
+  if (!payload) return false;
+  return Object.hasOwn(payload, 'deletedBoardId');
+};
+
+const updateBoards = (payload: TBoardBase | TDeleteBoardEmitPayload) => {
+  if (isDeleteBoardPayload(payload)) boardsStore.deleteBoard(payload);
+  else boardsStore.updateBoard(payload);
+};
 </script>

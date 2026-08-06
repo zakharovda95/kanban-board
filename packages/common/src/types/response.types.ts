@@ -2,7 +2,7 @@ import { TValidationErrors } from './error.types';
 
 export type TSuccessResponse<TData = undefined> = {
   isSuccess: boolean;
-  data?: TData | undefined;
+  data?: TData;
 };
 
 export type TErrorResponse = {

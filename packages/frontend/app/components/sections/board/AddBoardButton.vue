@@ -26,6 +26,7 @@ import {
   EBoardEvent,
   getErrorMessage,
   isValidationError,
+  type TBoardBase,
   type TCreateBoard,
   type TCreateBoardResponse,
   type TValidationErrors,
@@ -33,12 +34,17 @@ import {
 
 import { useForm } from '~/composables/use-form.composable';
 import { useSocket } from '~/composables/use-socket.composable.ts';
+import { BOARD_MESSAGES } from '~/constants/board.constants.ts';
 import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 import { toBody } from '~/utilities/object.utilities.ts';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
+
+const emit = defineEmits<{
+  'update:boards': [newBoard: TBoardBase];
+}>();
 
 const toast = useToast();
 
@@ -53,9 +59,12 @@ const createBoard = () => {
     event: String(EBoardEvent.CREATE),
     data: toBody<TCreateBoard>(formData.value),
     successCallback: (response: TCreateBoardResponse) => {
-      const id = response.data?.id;
-      if (id) navigateTo(`/boards/${id}`);
-      closeModal();
+      if (response.isSuccess && response.data) {
+        emit('update:boards', response.data);
+        toast.success({ message: BOARD_MESSAGES.boardCreated });
+        navigateTo(`/boards/${response.data.id}`);
+        closeModal();
+      }
     },
     errorCallback: (error: unknown) => {
       if (isValidationError(error)) formErrors.value = error.validation;

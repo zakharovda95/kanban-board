@@ -13,6 +13,20 @@ export const useBoardsStore = defineStore('boards-store', () => {
   const isLoadingBoards = ref(false);
   const boards = ref<TBoardBase[]>([]);
 
+  const addNewBoard = (newBoard: TBoardBase): void => {
+    boards.value.push(newBoard);
+  };
+
+  const updateBoard = (updatedBoard: TBoardBase) => {
+    const targetIndex = boards.value.findIndex(({ order }: TBoardBase) => order === updatedBoard.order);
+    if (targetIndex != -1) boards.value.splice(targetIndex, 1, updatedBoard);
+  };
+
+  const deleteBoard = (payload: TDeleteBoardEmitPayload) => {
+    boards.value = payload.boards;
+    if (payload.deletedBoardId === Number(route.params.id)) navigateTo(`/boards`);
+  };
+
   const { call: fetchBoards } = useTryCatchFinally({
     callback: async () => {
       isLoadingBoards.value = true;
@@ -25,32 +39,27 @@ export const useBoardsStore = defineStore('boards-store', () => {
 
   listen(EBoardEvent.CREATED, (newBoard: TBoardBase) => {
     if (newBoard.id) {
-      boards.value.push(newBoard);
+      addNewBoard(newBoard);
       toast.success({ message: BOARD_MESSAGES.changesOccurred });
     }
   });
 
   listen(EBoardEvent.UPDATED, (updatedBoard: TBoardBase) => {
     if (updatedBoard.id) {
-      const targetIndex = boards.value.findIndex(({ order }: TBoardBase) => order === updatedBoard.order);
-      if (targetIndex != -1) {
-        boards.value.splice(targetIndex, 1, updatedBoard);
-        toast.success({ message: BOARD_MESSAGES.changesOccurred });
-      }
-    }
-  });
-
-  listen(EBoardEvent.DELETED, (boardsAfterDeleting: TDeleteBoardEmitPayload) => {
-    if (boardsAfterDeleting.deletedBoardId) {
-      boards.value = boardsAfterDeleting.boards;
+      updateBoard(updatedBoard);
       toast.success({ message: BOARD_MESSAGES.changesOccurred });
-
-      if (boardsAfterDeleting.deletedBoardId === Number(route.params.id)) {
-        navigateTo(`/boards`);
-        toast.info({ message: BOARD_MESSAGES.boardWasDeleted });
-      }
     }
   });
 
-  return { isLoadingBoards, boards, fetchBoards };
+  listen(EBoardEvent.DELETED, (payload: TDeleteBoardEmitPayload) => {
+    if (payload.deletedBoardId) {
+      deleteBoard(payload);
+
+      if (payload.deletedBoardId === Number(route.params.id)) {
+        toast.info({ message: BOARD_MESSAGES.boardWasDeleted });
+      } else toast.success({ message: BOARD_MESSAGES.changesOccurred });
+    }
+  });
+
+  return { isLoadingBoards, boards, fetchBoards, addNewBoard, updateBoard, deleteBoard };
 });

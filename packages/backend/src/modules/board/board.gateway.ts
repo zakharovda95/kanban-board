@@ -2,31 +2,28 @@ import {
   EBoardEvent,
   type TCreateBoardResponse,
   type TDeleteBoardResponse,
-  type TSuccessResponse,
+  type TUpdateBoardResponse,
 } from '@kanban-board/common';
-import { UseFilters, UsePipes } from '@nestjs/common';
+import { UseFilters } from '@nestjs/common';
 import {
+  ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import type { Server } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import { CustomValidationPipe } from '@/libs/pipes/custom-validation.pipe';
 import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
 import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
-import {
-  getSuccessResponse,
-  getSuccessResponseWithData,
-} from '@/libs/utilities/response.utilities';
+import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import { BoardService } from '@/modules/board/board.service';
 import { CreateBoardDto } from '@/modules/board/libs/dtos/create-board.dto';
 import { UpdateBoardDto } from '@/modules/board/libs/dtos/update-board.dto';
 
 @WebSocketGateway({ cors: { origin: true } })
-@UsePipes(CustomValidationPipe.wsValidationPipe)
 @UseFilters(WsExceptionFilter)
 export default class BoardGateway {
   constructor(private boardService: BoardService) {}
@@ -35,27 +32,36 @@ export default class BoardGateway {
   server: Server;
 
   @SubscribeMessage(EBoardEvent.CREATE)
-  public async createBoard(@MessageBody() body: CreateBoardDto): Promise<TCreateBoardResponse> {
+  public async createBoard(
+    @MessageBody(CustomValidationPipe.wsValidationPipe) body: CreateBoardDto,
+    @ConnectedSocket() client: Socket,
+  ): Promise<TCreateBoardResponse> {
     const newBoard = await this.boardService.createBoard(body);
-    this.server.emit(EBoardEvent.CREATED, newBoard);
-    return getSuccessResponseWithData({ id: newBoard.id });
+    client.broadcast.emit(EBoardEvent.CREATED, newBoard);
+    return getSuccessResponseWithData(newBoard);
   }
 
   @SubscribeMessage(EBoardEvent.UPDATE)
   public async updateBoard(
-    @MessageBody(new RequireAnyPipe(['title', 'description'], 'ws')) body: UpdateBoardDto,
-  ): Promise<TSuccessResponse> {
+    @MessageBody(
+      CustomValidationPipe.wsValidationPipe,
+      new RequireAnyPipe(['title', 'description'], 'ws'),
+    )
+    body: UpdateBoardDto,
+    @ConnectedSocket() client: Socket,
+  ): Promise<TUpdateBoardResponse> {
     const updatedBoard = await this.boardService.updateBoard(body);
-    this.server.emit(EBoardEvent.UPDATED, updatedBoard);
-    return getSuccessResponse();
+    client.broadcast.emit(EBoardEvent.UPDATED, updatedBoard);
+    return getSuccessResponseWithData(updatedBoard);
   }
 
   @SubscribeMessage(EBoardEvent.DELETE)
   public async deleteBoard(
     @MessageBody(new ParameterIdPipe('ws')) boardId: number,
+    @ConnectedSocket() client: Socket,
   ): Promise<TDeleteBoardResponse> {
     const boardsAfterDeleting = await this.boardService.deleteBoard(boardId);
-    this.server.emit(EBoardEvent.DELETED, boardsAfterDeleting);
-    return getSuccessResponseWithData({ id: boardsAfterDeleting.deletedBoardId });
+    client.broadcast.emit(EBoardEvent.DELETED, boardsAfterDeleting);
+    return getSuccessResponseWithData(boardsAfterDeleting);
   }
 }

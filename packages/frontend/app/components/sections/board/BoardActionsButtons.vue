@@ -37,14 +37,16 @@ import {
   getErrorMessage,
   isValidationError,
   type TBoardBase,
+  type TDeleteBoardEmitPayload,
   type TDeleteBoardResponse,
-  type TSuccessResponse,
   type TUpdateBoard,
+  type TUpdateBoardResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
+import { BOARD_MESSAGES } from '~/constants/board.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 
@@ -57,7 +59,10 @@ const props = defineProps<{
   board: TBoardBase;
 }>();
 
-const route = useRoute();
+const emit = defineEmits<{
+  'update:boards': [payload: TBoardBase | TDeleteBoardEmitPayload];
+}>();
+
 const toast = useToast();
 
 const isUpdateModalOpen = ref(false);
@@ -88,8 +93,12 @@ const updateBoard = () => {
   emitUpdate({
     event: EBoardEvent.UPDATE,
     data: body,
-    successCallback: (response: TSuccessResponse) => {
-      if (response.isSuccess) closeModal();
+    successCallback: (response: TUpdateBoardResponse) => {
+      if (response.isSuccess && response.data) {
+        emit('update:boards', response.data);
+        toast.success({ message: BOARD_MESSAGES.boardUpdated });
+        closeModal();
+      }
     },
     errorCallback: (error: unknown) => {
       if (isValidationError(error)) formErrors.value = error.validation;
@@ -105,12 +114,10 @@ const deleteBoard = () => {
     event: EBoardEvent.DELETE,
     data: props.board.id,
     successCallback: (response: TDeleteBoardResponse) => {
-      if (response.isSuccess) {
+      if (response.isSuccess && response.data) {
+        emit('update:boards', response.data);
+        toast.success({ message: BOARD_MESSAGES.boardDeleted });
         closeModal();
-        if (response.data?.id === Number(route.params.id)) {
-          navigateTo(`/boards`);
-          toast.info({ message: 'Доска была удалена!' });
-        }
       }
     },
     errorCallback: (error: unknown) => {

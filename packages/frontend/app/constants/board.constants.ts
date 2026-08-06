@@ -7,4 +7,7 @@ export const BOARD_MESSAGES = {
   errorLoading: 'Произошла ошибка при загрузке доски.',
   changesOccurred: 'Список досок обновлен!',
   boardWasDeleted: 'Активная доска была удалена и больше недоступна. Выберите доску в меню слева или создайте новую.',
+  boardCreated: 'Доска создана!',
+  boardUpdated: 'Доска обновлена!',
+  boardDeleted: 'Доска удалена!',
 };
