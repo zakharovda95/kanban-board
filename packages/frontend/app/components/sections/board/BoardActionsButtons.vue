@@ -37,6 +37,7 @@ import {
   getErrorMessage,
   isValidationError,
   type TBoardBase,
+  type TDeleteBoardResponse,
   type TSuccessResponse,
   type TUpdateBoard,
   type TValidationErrors,
@@ -44,7 +45,6 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 
@@ -57,6 +57,7 @@ const props = defineProps<{
   board: TBoardBase;
 }>();
 
+const route = useRoute();
 const toast = useToast();
 
 const isUpdateModalOpen = ref(false);
@@ -97,18 +98,26 @@ const updateBoard = () => {
   });
 };
 
-const { isLoading: isLoadingDelete, call: deleteBoard } = useTryCatchFinally({
-  callback: async () => {
-    const result = await $fetch<TSuccessResponse>(`/api/boards/${props.board.id}`, { method: 'DELETE' });
-    if (result.isSuccess) {
-      toast.success({ message: 'Доска удалена!' });
-      closeModal();
-    }
-  },
-  catchCallback: (error: unknown) => {
-    toast.error({ message: getErrorMessage(error) });
-  },
-});
+const { isLoading: isLoadingDelete, emitEvent: emitDelete } = useSocket();
+
+const deleteBoard = () => {
+  emitDelete({
+    event: EBoardEvent.DELETE,
+    data: props.board.id,
+    successCallback: (response: TDeleteBoardResponse) => {
+      if (response.isSuccess) {
+        closeModal();
+        if (response.data?.id === Number(route.params.id)) {
+          navigateTo(`/boards`);
+          toast.info({ message: 'Доска была удалена!' });
+        }
+      }
+    },
+    errorCallback: (error: unknown) => {
+      toast.error({ message: getErrorMessage(error) });
+    },
+  });
+};
 
 const openUpdateModal = () => {
   set(getInitialValue(), { setAsInitial: true, clearErrors: true });

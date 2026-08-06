@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import type { TBoard } from '@kanban-board/common';
 
-import { ERROR_BOARD_TEXT } from '~/constants/board.constants';
+import { BOARD_MESSAGES } from '~/constants/board.constants';
 
 import TheBoard from '~/components/sections/board/TheBoard.vue';
 
@@ -23,7 +23,7 @@ const errorMessage = ref<string | null>(null);
 const { data, pending, error, refresh } = await useFetch<TBoard>(`/api/boards/${route.params.id}`);
 
 if (error.value) {
-  toast.error({ message: ERROR_BOARD_TEXT });
-  errorMessage.value = ERROR_BOARD_TEXT;
+  toast.error({ message: BOARD_MESSAGES.errorLoading });
+  errorMessage.value = BOARD_MESSAGES.errorLoading;
 }
 </script>

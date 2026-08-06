@@ -29,7 +29,7 @@
           </UILink>
         </nav>
         <div v-else class="p-8">
-          <p class="text-12">{{ NO_BOARDS_TEXT }}</p>
+          <p class="text-12">{{ BOARD_MESSAGES.noBoards }}</p>
         </div>
 
         <AddBoardButton />
@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { NO_BOARDS_TEXT } from '~/constants/board.constants';
+import { BOARD_MESSAGES } from '~/constants/board.constants';
 import { useBoardsStore } from '~/stores/boards.store';
 
 import SidebarProfileWidget from '~/components/layouts/board/sidebar/SidebarProfileWidget.vue';
@@ -54,10 +54,4 @@ import UILoader from '~/components/ui/UILoader.vue';
 
 const route = useRoute();
 const boardsStore = useBoardsStore();
-
-// const updateBoardsAfterUpdatingOrDeleting = async (action: TAction, id: number) => {
-//   await boardsStore.fetchBoards();
-//   if (action === 'update') return;
-//   if (route.params?.id && id === Number(route.params.id)) navigateTo(`/boards`);
-// };
 </script>

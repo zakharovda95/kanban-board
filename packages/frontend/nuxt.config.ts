@@ -73,7 +73,7 @@ export default defineNuxtConfig({
   toast: {
     settings: {
       position: 'topCenter',
-      timeout: 3000,
+      timeout: 5000,
       titleColor: '#ffffff',
       titleSize: '16px',
       messageColor: '#ffffff',
@@ -82,6 +82,9 @@ export default defineNuxtConfig({
       icon: undefined,
       iconColor: '#ffffff',
       close: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      maxWidth: 300,
     },
   },
 

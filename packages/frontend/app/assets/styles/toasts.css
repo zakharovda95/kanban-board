@@ -14,4 +14,7 @@
 
 /*.iziToast.iziToast-color-yellow {}*/
 
-/*.iziToast.iziToast-color-blue {}*/
+.iziToast.iziToast-color-blue {
+  background-color: var(--color-blue) !important;
+  color: var(--color-light-base) !important;
+}

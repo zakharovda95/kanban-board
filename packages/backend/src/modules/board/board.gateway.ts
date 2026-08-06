@@ -1,4 +1,9 @@
-import { EBoardEvent, type TCreateBoardResponse, TSuccessResponse } from '@kanban-board/common';
+import {
+  EBoardEvent,
+  type TCreateBoardResponse,
+  type TDeleteBoardResponse,
+  type TSuccessResponse,
+} from '@kanban-board/common';
 import { UseFilters, UsePipes } from '@nestjs/common';
 import {
   MessageBody,
@@ -10,6 +15,7 @@ import type { Server } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import { CustomValidationPipe } from '@/libs/pipes/custom-validation.pipe';
+import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
 import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
 import {
   getSuccessResponse,
@@ -42,5 +48,14 @@ export default class BoardGateway {
     const updatedBoard = await this.boardService.updateBoard(body);
     this.server.emit(EBoardEvent.UPDATED, updatedBoard);
     return getSuccessResponse();
+  }
+
+  @SubscribeMessage(EBoardEvent.DELETE)
+  public async deleteBoard(
+    @MessageBody(new ParameterIdPipe('ws')) boardId: number,
+  ): Promise<TDeleteBoardResponse> {
+    const boardsAfterDeleting = await this.boardService.deleteBoard(boardId);
+    this.server.emit(EBoardEvent.DELETED, boardsAfterDeleting);
+    return getSuccessResponseWithData({ id: boardsAfterDeleting.deletedBoardId });
   }
 }

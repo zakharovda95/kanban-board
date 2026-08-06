@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { CHOOSE_ONE_BOARD_TEXT, LOAD_BOARDS_TEXT, NO_BOARDS_TEXT } from '~/constants/board.constants';
+import { BOARD_MESSAGES } from '~/constants/board.constants';
 import { useBoardsStore } from '~/stores/boards.store';
 
 definePageMeta({
@@ -16,10 +16,10 @@ const boardsStore = useBoardsStore();
 
 const text = computed(() =>
   boardsStore.isLoadingBoards
-    ? LOAD_BOARDS_TEXT
+    ? BOARD_MESSAGES.loadBoard
     : boardsStore.boards?.length && !boardsStore.isLoadingBoards
-      ? CHOOSE_ONE_BOARD_TEXT
-      : NO_BOARDS_TEXT,
+      ? BOARD_MESSAGES.chooseBoard
+      : BOARD_MESSAGES.noBoards,
 );
 
 if (boardsStore.boards?.length) {

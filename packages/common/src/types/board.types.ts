@@ -20,8 +20,11 @@ export type TCreateBoard = Pick<TBoardBase, 'title'> & Partial<Pick<TBoardBase, 
 export type TUpdateBoard = Pick<TBoardBase, 'id'> &
   Partial<Pick<TBoardBase, 'title' | 'description'>>;
 
-/** Ответ после создания доски. **/
+/** Ответ ack после создания доски. **/
 export type TCreateBoardResponse = TSuccessResponse<Pick<TBoardBase, 'id'>>;
+
+/** Ответ ack после удаления доски. **/
+export type TDeleteBoardResponse = TSuccessResponse<Pick<TBoardBase, 'id'>>;
 
 /** Обновленный список досок и ID удаленной доски (чтобы перенаправить подписчиков, если активная доска больше не доступна). **/
 export type TDeleteBoardEmitPayload = {
