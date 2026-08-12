@@ -7,12 +7,7 @@ import type {
   TSuccessResponse,
   TUpdateBoard,
 } from '@kanban-board/common';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { cloneDeep } from 'lodash';
 import { DataSource } from 'typeorm';
@@ -125,15 +120,15 @@ export class BoardService {
    * @returns объект обновленной доски.
    * **/
   public async updateBoard(body: TUpdateBoard): Promise<TBoardBase> {
-    if (!body?.id) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+    if (!body?.id) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
     const { id, ...rest } = body;
     const { manager } = this.dataSource;
 
     const board = await manager.findOne(BoardEntity, { where: { id } });
-    if (!board) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+    if (!board) throw new WsException(EXCEPTION_MESSAGES.notFound);
 
     const updatedBoard = await manager.save(Object.assign(board, rest));
-
+    if (!updatedBoard) throw new WsException(EXCEPTION_MESSAGES.updateFailed);
     return this.boardMapper.toModel(updatedBoard);
   }
 
@@ -143,7 +138,7 @@ export class BoardService {
    * @returns массив досок и ID удаленной доски (для оповещения всех подписчиков доски).
    * **/
   public async deleteBoard(boardId: number): Promise<TDeleteBoardEmitPayload> {
-    if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+    if (!boardId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
 
@@ -153,18 +148,17 @@ export class BoardService {
       });
 
       const target = boards.find(({ id }) => id === boardId);
-      if (!target) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+      if (!target) throw new WsException(EXCEPTION_MESSAGES.notFound);
 
       const { affected } = await transactionalManager.delete(BoardEntity, { id: boardId });
-      if (!affected || affected <= 0)
-        throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
+      if (!affected || affected <= 0) throw new WsException(EXCEPTION_MESSAGES.deleteFailed);
 
       const withoutTarget = boards.filter(({ id }) => id !== boardId);
       this.moveService.resetOrders(withoutTarget);
 
       const boardsAfterDeleting = await transactionalManager.save(BoardEntity, withoutTarget);
 
-      return { deletedBoardId: boardId, boards: boardsAfterDeleting };
+      return { deletedBoardId: boardId, boards: this.boardMapper.toModel(boardsAfterDeleting) };
     });
   }
 }

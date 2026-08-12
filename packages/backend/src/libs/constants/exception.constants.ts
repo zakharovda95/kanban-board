@@ -6,6 +6,7 @@ export const EXCEPTION_MESSAGES = {
   atLeastOneIdRequired: 'Необходимо указать хотя бы один идентификатор',
   notFound: 'Не найдено',
   createFailed: 'Не удалось создать',
+  updateFailed: 'Не удалось обновить',
   deleteFailed: 'Не удалось удалить',
   moveFailed: 'Не удалось переместить',
   moveNotAllowed: 'Перемещение недоступно',

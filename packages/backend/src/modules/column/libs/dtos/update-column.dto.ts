@@ -1,11 +1,14 @@
-import { type TUpdateBoard } from '@kanban-board/common';
-import { PartialType } from '@nestjs/mapped-types';
+import type { TUpdateColumn } from '@kanban-board/common';
+import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { IsInt, IsNumber, IsPositive } from 'class-validator';
 
 import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
-import { CreateBoardDto } from '@/modules/board/libs/dtos/create-board.dto';
+import { CreateColumnDto } from '@/modules/column/libs/dtos/create-column.dto';
 
-export class UpdateBoardDto extends PartialType(CreateBoardDto) implements TUpdateBoard {
+export class UpdateColumnDto
+  extends PartialType(OmitType(CreateColumnDto, ['boardId'] as const))
+  implements TUpdateColumn
+{
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
     { message: VALIDATION_MESSAGES.idMustBeBigint },

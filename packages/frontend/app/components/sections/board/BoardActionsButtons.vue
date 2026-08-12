@@ -40,7 +40,7 @@ import {
   type TDeleteBoardEmitPayload,
   type TDeleteBoardResponse,
   type TUpdateBoard,
-  type TUpdateBoardResponse,
+  type TUpsertBoardResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
@@ -93,7 +93,7 @@ const updateBoard = () => {
   emitUpdate({
     event: EBoardEvent.UPDATE,
     data: body,
-    successCallback: (response: TUpdateBoardResponse) => {
+    successCallback: (response: TUpsertBoardResponse) => {
       if (response.isSuccess && response.data) {
         emit('update:boards', response.data);
         toast.success({ message: BOARD_MESSAGES.boardUpdated });

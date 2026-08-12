@@ -28,7 +28,7 @@ import {
   isValidationError,
   type TBoardBase,
   type TCreateBoard,
-  type TCreateBoardResponse,
+  type TUpsertBoardResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
@@ -55,10 +55,10 @@ const { formData, reset, formErrors } = useForm<TCreateBoard>({ title: '', descr
 const { emitEvent, isLoading } = useSocket();
 
 const createBoard = () => {
-  emitEvent<TCreateBoardResponse>({
+  emitEvent<TUpsertBoardResponse>({
     event: String(EBoardEvent.CREATE),
     data: toBody<TCreateBoard>(formData.value),
-    successCallback: (response: TCreateBoardResponse) => {
+    successCallback: (response: TUpsertBoardResponse) => {
       if (response.isSuccess && response.data) {
         emit('update:boards', response.data);
         toast.success({ message: BOARD_MESSAGES.boardCreated });

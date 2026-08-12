@@ -30,7 +30,7 @@
       <AddIssueButton :column-id="column.id" @update:board="emit('update:board')" />
     </div>
 
-    <div v-if="column.issues.length" class="size-full overflow-hidden pb-8">
+    <div v-if="column.issues.length" class="size-full overflow-hidden">
       <div class="flex h-[calc(100vh-368px)] w-full flex-col items-center gap-8 overflow-auto px-8">
         <IssueCard
           v-for="issue in column.issues"

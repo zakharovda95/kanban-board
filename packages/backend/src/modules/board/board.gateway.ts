@@ -1,8 +1,7 @@
 import {
   EBoardEvent,
-  type TCreateBoardResponse,
   type TDeleteBoardResponse,
-  type TUpdateBoardResponse,
+  type TUpsertBoardResponse,
 } from '@kanban-board/common';
 import { UseFilters } from '@nestjs/common';
 import {
@@ -35,7 +34,7 @@ export default class BoardGateway {
   public async createBoard(
     @MessageBody(CustomValidationPipe.wsValidationPipe) body: CreateBoardDto,
     @ConnectedSocket() client: Socket,
-  ): Promise<TCreateBoardResponse> {
+  ): Promise<TUpsertBoardResponse> {
     const newBoard = await this.boardService.createBoard(body);
     client.broadcast.emit(EBoardEvent.CREATED, newBoard);
     return getSuccessResponseWithData(newBoard);
@@ -49,7 +48,7 @@ export default class BoardGateway {
     )
     body: UpdateBoardDto,
     @ConnectedSocket() client: Socket,
-  ): Promise<TUpdateBoardResponse> {
+  ): Promise<TUpsertBoardResponse> {
     const updatedBoard = await this.boardService.updateBoard(body);
     client.broadcast.emit(EBoardEvent.UPDATED, updatedBoard);
     return getSuccessResponseWithData(updatedBoard);

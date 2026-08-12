@@ -1,6 +1,6 @@
-import { EColor, type TNewColumn } from '@kanban-board/common';
+import { EColor, type TColumnBase } from '@kanban-board/common';
 
-export const DEFAULT_COLUMNS: TNewColumn[] = [
+export const DEFAULT_COLUMNS: Pick<TColumnBase, 'title' | 'description' | 'order' | 'color'>[] = [
   {
     title: 'К выполнению',
     description: null,

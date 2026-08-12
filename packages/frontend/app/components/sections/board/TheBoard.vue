@@ -7,7 +7,7 @@
     <div v-else class="flex size-full flex-col items-center gap-12 p-12">
       <BoardFilter @update:board="emit('update:board')" />
 
-      <div class="flex h-full w-[calc(100vw-304px)] flex-1 flex-row gap-8 overflow-x-scroll pb-8">
+      <div class="flex h-full w-[calc(100vw-304px)] flex-1 flex-row gap-8 overflow-x-auto">
         <TheColumn
           v-for="column in board?.columns"
           :key="column.id"
