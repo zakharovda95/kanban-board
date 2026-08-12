@@ -60,7 +60,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:boards': [payload: TBoardBase | TDeleteBoardEmitPayload];
+  'update:board': [payload: TBoardBase];
+  'delete:board': [payload: TDeleteBoardEmitPayload];
 }>();
 
 const toast = useToast();
@@ -95,7 +96,7 @@ const updateBoard = () => {
     data: body,
     successCallback: (response: TUpsertBoardResponse) => {
       if (response.isSuccess && response.data) {
-        emit('update:boards', response.data);
+        emit('update:board', response.data);
         toast.success({ message: BOARD_MESSAGES.boardUpdated });
         closeModal();
       }
@@ -115,7 +116,7 @@ const deleteBoard = () => {
     data: props.board.id,
     successCallback: (response: TDeleteBoardResponse) => {
       if (response.isSuccess && response.data) {
-        emit('update:boards', response.data);
+        emit('delete:board', response.data);
         toast.success({ message: BOARD_MESSAGES.boardDeleted });
         closeModal();
       }

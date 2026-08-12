@@ -5,7 +5,7 @@
       <p class="text-14 font-medium">{{ errorText }}</p>
     </div>
     <div v-else class="flex size-full flex-col items-center gap-12 p-12">
-      <BoardFilter @update:board="emit('update:board')" />
+      <BoardFilter @add:column="emit('add:column', $event)" />
 
       <div class="flex h-full w-[calc(100vw-304px)] flex-1 flex-row gap-8 overflow-x-auto">
         <TheColumn
@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TBoard } from '@kanban-board/common';
+import type { TBoard, TColumn } from '@kanban-board/common';
 
 import BoardFilter from '~/components/sections/board/BoardFilter.vue';
 import TheColumn from '~/components/sections/column/TheColumn.vue';
@@ -39,6 +39,7 @@ withDefaults(
 );
 
 const emit = defineEmits<{
+  'add:column': [payload: TColumn];
   'update:board': [];
 }>();
 </script>

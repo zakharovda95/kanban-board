@@ -43,7 +43,7 @@ import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
 const emit = defineEmits<{
-  'update:boards': [newBoard: TBoardBase];
+  'add:board': [payload: TBoardBase];
 }>();
 
 const toast = useToast();
@@ -60,7 +60,7 @@ const createBoard = () => {
     data: toBody<TCreateBoard>(formData.value),
     successCallback: (response: TUpsertBoardResponse) => {
       if (response.isSuccess && response.data) {
-        emit('update:boards', response.data);
+        emit('add:board', response.data);
         toast.success({ message: BOARD_MESSAGES.boardCreated });
         navigateTo(`/boards/${response.data.id}`);
         closeModal();

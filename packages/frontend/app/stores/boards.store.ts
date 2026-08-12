@@ -13,20 +13,6 @@ export const useBoardsStore = defineStore('boards-store', () => {
   const isLoadingBoards = ref(false);
   const boards = ref<TBoardBase[]>([]);
 
-  const addNewBoard = (newBoard: TBoardBase): void => {
-    boards.value.push(newBoard);
-  };
-
-  const updateBoard = (updatedBoard: TBoardBase) => {
-    const targetIndex = boards.value.findIndex(({ order }: TBoardBase) => order === updatedBoard.order);
-    if (targetIndex != -1) boards.value.splice(targetIndex, 1, updatedBoard);
-  };
-
-  const deleteBoard = (payload: TDeleteBoardEmitPayload) => {
-    boards.value = payload.boards;
-    if (payload.deletedBoardId === Number(route.params.id)) navigateTo(`/boards`);
-  };
-
   const { call: fetchBoards } = useTryCatchFinally({
     callback: async () => {
       isLoadingBoards.value = true;
@@ -36,6 +22,25 @@ export const useBoardsStore = defineStore('boards-store', () => {
       isLoadingBoards.value = false;
     },
   });
+
+  /* BOARD */
+
+  const addNewBoard = (newBoard: TBoardBase): void => {
+    if (!newBoard) return;
+    boards.value.push(newBoard);
+  };
+
+  const updateBoard = (updatedBoard: TBoardBase) => {
+    if (!updatedBoard) return;
+    const targetIndex = boards.value.findIndex(({ order }: TBoardBase) => order === updatedBoard.order);
+    if (targetIndex != -1) boards.value.splice(targetIndex, 1, updatedBoard);
+  };
+
+  const deleteBoard = (payload: TDeleteBoardEmitPayload) => {
+    if (!payload) return;
+    boards.value = payload.boards;
+    if (payload.deletedBoardId === Number(route.params.id)) navigateTo(`/boards`);
+  };
 
   listen(EBoardEvent.CREATED, (newBoard: TBoardBase) => {
     if (newBoard.id) {

@@ -7,7 +7,7 @@ export function useSocket() {
 
   const emitEvent = <TAckReturnValue>({
     event,
-    timeout = 5000,
+    timeout = 10000,
     data,
     successCallback,
     errorCallback,

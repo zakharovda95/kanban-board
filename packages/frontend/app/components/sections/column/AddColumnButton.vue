@@ -14,7 +14,7 @@
       :description-maxlength="COLUMN_DESCRIPTION_MAXLENGTH"
       :disabled="isLoading"
       show-color-picker
-      @click:action-button="call"
+      @click:action-button="createBoard"
       @update:is-open="closeModal"
     />
   </div>
@@ -25,56 +25,61 @@ import {
   ColorUtility,
   COLUMN_DESCRIPTION_MAXLENGTH,
   COLUMN_TITLE_MAXLENGTH,
+  EColumnEvent,
+  getErrorMessage,
+  isValidationError,
+  type TColumn,
   type TCreateColumn,
-  type TCreateColumnResponse,
-  type TValidationErrorResponse,
+  type TUpsertColumnResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable';
-import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
+import { useSocket } from '~/composables/use-socket.composable.ts';
+import { COLUMN_MESSAGES } from '~/constants/column.constants.ts';
 import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
-import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
 import { toBody } from '~/utilities/object.utilities';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
 const emit = defineEmits<{
-  'update:board': [];
+  'add:column': [column: TColumn];
 }>();
 
 const route = useRoute();
-
 const toast = useToast();
+const { emitEvent, isLoading } = useSocket();
 
 const isModalOpen = ref(false);
 
-const { formData, formErrors, reset } = useForm<TCreateColumn>({
+const { formData, formErrors, reset } = useForm<Omit<TCreateColumn, 'boardId'>>({
   title: '',
   description: '',
   color: ColorUtility.getRandomHexColor(),
 });
 
-const { isLoading, call } = useTryCatchFinally({
-  callback: async () => {
-    const result = await $fetch<TCreateColumnResponse>(`/api/boards/${route.params.id}/columns`, {
-      method: 'POST',
-      body: toBody<TCreateColumn>(formData.value),
-    });
-
-    if (result.isSuccess) {
-      toast.success({ message: 'Колонка добавлена!' });
-      emit('update:board');
-      closeModal();
-    }
-  },
-  catchCallback: (error: unknown) => {
-    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TCreateColumn>).validation;
-    else toast.error({ message: getErrorMessage(error) });
-  },
-});
+const createBoard = () => {
+  emitEvent({
+    event: EColumnEvent.CREATE,
+    data: {
+      boardId: Number(route.params.id),
+      ...toBody<Omit<TCreateColumn, 'boardId'>>(formData.value),
+    },
+    successCallback: async (response: TUpsertColumnResponse) => {
+      if (response.isSuccess && response.data) {
+        emit('add:column', response.data);
+        toast.success({ message: COLUMN_MESSAGES.columnCreated });
+        closeModal();
+      }
+    },
+    errorCallback: (error: unknown) => {
+      if (isValidationError(error)) formErrors.value = error.validation;
+      else toast.error({ message: getErrorMessage(error) });
+    },
+  });
+};
 
 const closeModal = () => {
   isModalOpen.value = false;
