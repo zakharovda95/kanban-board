@@ -31,5 +31,6 @@ export type TDeleteColumnResponse = TSuccessResponse<TDeleteColumnEmitPayload>;
 /** Полезная нагрузка эмита удаления колонки. **/
 export type TDeleteColumnEmitPayload = {
   columns: TColumn[];
+  boardId: number;
   deletedColumnId: number;
 };

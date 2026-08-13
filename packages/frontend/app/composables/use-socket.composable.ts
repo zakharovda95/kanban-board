@@ -37,10 +37,13 @@ export function useSocket() {
   };
 
   const listen = <TData>(event: string, callback: (data: TData) => void) => {
-    $socket?.on(event, (data: TData) => {
+    const handler = (data: TData) => {
       callback(data);
-    });
+    };
+    $socket?.on(event, handler);
+
+    return () => $socket.off(event, handler);
   };
 
-  return { listen, emitEvent, isLoading };
+  return { listen, emitEvent, isLoading, $socket };
 }

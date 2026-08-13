@@ -13,6 +13,8 @@ export const useBoardsStore = defineStore('boards-store', () => {
   const isLoadingBoards = ref(false);
   const boards = ref<TBoardBase[]>([]);
 
+  const currentBoardId = computed(() => Number(route.params.id));
+
   const { call: fetchBoards } = useTryCatchFinally({
     callback: async () => {
       isLoadingBoards.value = true;
@@ -39,32 +41,44 @@ export const useBoardsStore = defineStore('boards-store', () => {
   const deleteBoard = (payload: TDeleteBoardEmitPayload) => {
     if (!payload) return;
     boards.value = payload.boards;
-    if (payload.deletedBoardId === Number(route.params.id)) navigateTo(`/boards`);
+    if (payload.deletedBoardId === currentBoardId.value) navigateTo(`/boards`);
   };
 
-  listen(EBoardEvent.CREATED, (newBoard: TBoardBase) => {
+  const stopListenCreated = listen(EBoardEvent.CREATED, (newBoard: TBoardBase) => {
     if (newBoard.id) {
       addNewBoard(newBoard);
-      toast.success({ message: BOARD_MESSAGES.changesOccurred });
+      toast.info({ message: BOARD_MESSAGES.newBoardAdded(newBoard.title) });
     }
   });
 
-  listen(EBoardEvent.UPDATED, (updatedBoard: TBoardBase) => {
+  const stopListenUpdated = listen(EBoardEvent.UPDATED, (updatedBoard: TBoardBase) => {
     if (updatedBoard.id) {
       updateBoard(updatedBoard);
-      toast.success({ message: BOARD_MESSAGES.changesOccurred });
+      toast.info({ message: BOARD_MESSAGES.boardWasUpdated(updatedBoard.title) });
     }
   });
 
-  listen(EBoardEvent.DELETED, (payload: TDeleteBoardEmitPayload) => {
+  const stopListenDeleted = listen(EBoardEvent.DELETED, (payload: TDeleteBoardEmitPayload) => {
     if (payload.deletedBoardId) {
+      const deletedBoard = boards.value.find(({ id }) => id === payload.deletedBoardId);
       deleteBoard(payload);
 
-      if (payload.deletedBoardId === Number(route.params.id)) {
-        toast.info({ message: BOARD_MESSAGES.boardWasDeleted });
-      } else toast.success({ message: BOARD_MESSAGES.changesOccurred });
+      if (payload.deletedBoardId === currentBoardId.value) {
+        toast.info({ message: BOARD_MESSAGES.activeBoardWasDeleted });
+      } else
+        toast.info({
+          message: deletedBoard
+            ? BOARD_MESSAGES.boardWasDeleted(deletedBoard.title)
+            : BOARD_MESSAGES.namelessBoardWasDeleted,
+        });
     }
   });
 
-  return { isLoadingBoards, boards, fetchBoards, addNewBoard, updateBoard, deleteBoard };
+  const stopListen = () => {
+    stopListenCreated();
+    stopListenUpdated();
+    stopListenDeleted();
+  };
+
+  return { isLoadingBoards, boards, fetchBoards, addNewBoard, updateBoard, deleteBoard, stopListen };
 });

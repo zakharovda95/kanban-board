@@ -1,4 +1,6 @@
 export enum EBoardEvent {
+  JOIN = 'board.join',
+  LEAVE = 'board.leave',
   CREATE = 'board.create',
   CREATED = 'board.created',
   UPDATE = 'board.update',

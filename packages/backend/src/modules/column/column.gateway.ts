@@ -1,4 +1,9 @@
-import { EColumnEvent, TDeleteColumnResponse, TUpsertColumnResponse } from '@kanban-board/common';
+import {
+  EColumnEvent,
+  getWsBoardRoomName,
+  TDeleteColumnResponse,
+  TUpsertColumnResponse,
+} from '@kanban-board/common';
 import { UseFilters } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -28,7 +33,7 @@ export default class ColumnGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<TUpsertColumnResponse> {
     const createdColumn = await this.columnService.createColumn(body);
-    client.broadcast.emit(EColumnEvent.CREATED, createdColumn);
+    client.to(getWsBoardRoomName(createdColumn.boardId)).emit(EColumnEvent.CREATED, createdColumn);
     return getSuccessResponseWithData(createdColumn);
   }
 
@@ -42,7 +47,7 @@ export default class ColumnGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<TUpsertColumnResponse> {
     const updatedColumn = await this.columnService.updateColumn(body);
-    client.broadcast.emit(EColumnEvent.UPDATED, updatedColumn);
+    client.to(getWsBoardRoomName(updatedColumn.boardId)).emit(EColumnEvent.UPDATED, updatedColumn);
     return getSuccessResponseWithData(updatedColumn);
   }
 
@@ -52,7 +57,9 @@ export default class ColumnGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<TDeleteColumnResponse> {
     const columnsAfterDeleting = await this.columnService.deleteColumn(columnId);
-    client.broadcast.emit(EColumnEvent.DELETED, columnsAfterDeleting);
+    client
+      .to(getWsBoardRoomName(columnsAfterDeleting.boardId))
+      .emit(EColumnEvent.DELETED, columnsAfterDeleting);
     return getSuccessResponseWithData(columnsAfterDeleting);
   }
 }

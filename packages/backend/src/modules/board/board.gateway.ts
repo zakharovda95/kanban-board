@@ -1,5 +1,6 @@
 import {
   EBoardEvent,
+  getWsBoardRoomName,
   type TDeleteBoardResponse,
   type TUpsertBoardResponse,
 } from '@kanban-board/common';
@@ -9,9 +10,8 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
 } from '@nestjs/websockets';
-import type { Server, Socket } from 'socket.io';
+import type { Socket } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import { CustomValidationPipe } from '@/libs/pipes/custom-validation.pipe';
@@ -27,8 +27,21 @@ import { UpdateBoardDto } from '@/modules/board/libs/dtos/update-board.dto';
 export default class BoardGateway {
   constructor(private boardService: BoardService) {}
 
-  @WebSocketServer()
-  server: Server;
+  @SubscribeMessage(EBoardEvent.JOIN)
+  public async joinRoom(
+    @MessageBody(new ParameterIdPipe('ws')) boardId: number,
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    await client.join(getWsBoardRoomName(boardId));
+  }
+
+  @SubscribeMessage(EBoardEvent.LEAVE)
+  public async leaveRoom(
+    @MessageBody(new ParameterIdPipe('ws')) boardId: number,
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    await client.leave(getWsBoardRoomName(boardId));
+  }
 
   @SubscribeMessage(EBoardEvent.CREATE)
   public async createBoard(

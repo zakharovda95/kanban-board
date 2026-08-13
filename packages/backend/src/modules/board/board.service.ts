@@ -159,7 +159,7 @@ export class BoardService {
       const boardsAfterDeleting = await transactionalManager.save(BoardEntity, withoutTarget);
 
       return {
-        deletedBoardId: boardId,
+        deletedBoardId: target.id,
         boards: this.boardMapper.toModel(boardsAfterDeleting, { withRelations: false }),
       };
     });

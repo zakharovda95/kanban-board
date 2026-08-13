@@ -28,4 +28,9 @@ const { error } = await useAsyncData('fetch-boards', async () => {
 if (error.value) {
   throw createError(error.value);
 }
+
+onBeforeUnmount(() => {
+  boardsStore.stopListen();
+  boardsStore.$reset();
+});
 </script>

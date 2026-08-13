@@ -1,5 +1,6 @@
 import {
   EIssueEvent,
+  getWsBoardRoomName,
   type TDeleteIssueResponse,
   type TUpsertIssueResponse,
 } from '@kanban-board/common';
@@ -32,7 +33,7 @@ export default class IssueGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<TUpsertIssueResponse> {
     const createdIssue = await this.issueService.createIssue(body);
-    client.broadcast.emit(EIssueEvent.CREATED, createdIssue);
+    client.to(getWsBoardRoomName(createdIssue.boardId)).emit(EIssueEvent.CREATED, createdIssue);
     return getSuccessResponseWithData(createdIssue);
   }
 
@@ -46,7 +47,7 @@ export default class IssueGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<TUpsertIssueResponse> {
     const updatedIssue = await this.issueService.updateIssue(body);
-    client.broadcast.emit(EIssueEvent.UPDATED, updatedIssue);
+    client.to(getWsBoardRoomName(updatedIssue.boardId)).emit(EIssueEvent.UPDATED, updatedIssue);
     return getSuccessResponseWithData(updatedIssue);
   }
 
@@ -56,7 +57,9 @@ export default class IssueGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<TDeleteIssueResponse> {
     const issuesAfterDeleting = await this.issueService.deleteIssue(issueId);
-    client.broadcast.emit(EIssueEvent.DELETED, issuesAfterDeleting);
+    client
+      .to(getWsBoardRoomName(issuesAfterDeleting.boardId))
+      .emit(EIssueEvent.DELETED, issuesAfterDeleting);
     return getSuccessResponseWithData(issuesAfterDeleting);
   }
 }

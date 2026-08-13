@@ -196,7 +196,9 @@ export class IssueService {
       });
 
       return {
-        deletedIssueId: issueId,
+        boardId: target.boardId,
+        columnId: target.columnId,
+        deletedIssueId: target.id,
         issues: this.issueMapper.toModel(issuesAfterDeleting, { base: true }),
       };
     });

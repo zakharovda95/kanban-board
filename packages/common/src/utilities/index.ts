@@ -1,3 +1,4 @@
+export * from './board.utilities.js';
 export * from './check.utilities.js';
 export * from './color.utility.js';
 export * from './error.utulities.js';

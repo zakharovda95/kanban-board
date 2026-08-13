@@ -14,7 +14,7 @@
             :to="`/boards/${board.id}`"
             :hoverable="false"
             class="border-light-200 rounded-8 bg-light-base flex h-60 w-full flex-1 shrink-0 cursor-pointer items-center justify-between gap-8 border p-8 duration-300 select-none"
-            :class="{ 'border-green!': board.id === Number(route.params?.id) }"
+            :class="{ 'border-green!': board.id === boardId }"
           >
             <div class="w-[calc(100%-32px)] text-left">
               <p class="text-14 block overflow-hidden font-medium text-ellipsis whitespace-nowrap">
@@ -58,4 +58,6 @@ import UILoader from '~/components/ui/UILoader.vue';
 
 const route = useRoute();
 const boardsStore = useBoardsStore();
+
+const boardId = computed(() => Number(route.params.id));
 </script>

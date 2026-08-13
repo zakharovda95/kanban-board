@@ -149,7 +149,8 @@ export class ColumnService {
       });
 
       return {
-        deletedColumnId: columnId,
+        boardId: target.boardId,
+        deletedColumnId: target.id,
         columns: this.columnMapper.toModel(columnsAfterDeleting),
       };
     });

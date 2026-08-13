@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import {
+  EBoardEvent,
   EColumnEvent,
   EIssueEvent,
   type TBoard,
@@ -27,6 +28,8 @@ import {
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { BOARD_MESSAGES } from '~/constants/board.constants';
+import { COLUMN_MESSAGES } from '~/constants/column.constants.ts';
+import { ISSUE_MESSAGES } from '~/constants/issue.constants.ts';
 
 import TheBoard from '~/components/sections/board/TheBoard.vue';
 
@@ -36,11 +39,13 @@ definePageMeta({
 
 const route = useRoute();
 const toast = useToast();
-const { listen } = useSocket();
+const { listen, $socket } = useSocket();
+
+const boardId = computed(() => Number(route.params.id));
 
 const errorMessage = ref<string | null>(null);
 
-const { data, pending, error } = await useFetch<TBoard>(`/api/boards/${route.params.id}`, { deep: true });
+const { data, pending, error } = await useFetch<TBoard>(`/api/boards/${boardId.value}`, { deep: true });
 
 if (error.value) {
   toast.error({ message: BOARD_MESSAGES.errorLoading });
@@ -63,19 +68,24 @@ const deleteColumn = (payload: TDeleteColumnEmitPayload) => {
   data.value.columns = payload.columns;
 };
 
-listen(EColumnEvent.CREATED, (column: TColumn) => {
+const stopListenColumnCreated = listen(EColumnEvent.CREATED, (column: TColumn) => {
   addColumn(column);
-  toast.success({ message: BOARD_MESSAGES.boardUpdated });
+  toast.info({ message: COLUMN_MESSAGES.newColumnAdded(column.title) });
 });
 
-listen(EColumnEvent.UPDATED, (column: TColumn) => {
+const stopListenColumnUpdated = listen(EColumnEvent.UPDATED, (column: TColumn) => {
   updateColumn(column);
-  toast.success({ message: BOARD_MESSAGES.boardUpdated });
+  toast.info({ message: COLUMN_MESSAGES.columnWasUpdated(column.title) });
 });
 
-listen(EColumnEvent.DELETED, (payload: TDeleteColumnEmitPayload) => {
+const stopListenColumnDeleted = listen(EColumnEvent.DELETED, (payload: TDeleteColumnEmitPayload) => {
+  const deletedColumn = data.value?.columns?.find(({ id }) => id === payload.deletedColumnId);
   deleteColumn(payload);
-  toast.success({ message: BOARD_MESSAGES.boardUpdated });
+  toast.info({
+    message: deletedColumn
+      ? COLUMN_MESSAGES.columnWasDeleted(deletedColumn.title)
+      : COLUMN_MESSAGES.namelessColumnWasDeleted,
+  });
 });
 
 const addIssue = (issue: TIssueBase) => {
@@ -94,29 +104,44 @@ const updateIssue = (issue: TIssueBase) => {
 
 const deleteIssue = (payload: TDeleteIssueEmitPayload) => {
   if (!payload || !data.value) return;
-  const deletedIssue = data.value.columns
-    .flatMap(column => column.issues)
-    .find(({ id }) => id === payload.deletedIssueId);
-
-  if (deletedIssue) {
-    const targetColumn = data.value.columns.find(({ id }) => id === deletedIssue.columnId);
-    if (targetColumn) targetColumn.issues = payload.issues;
-  }
+  const targetColumn = data.value.columns.find(({ id }) => id === payload.columnId);
+  if (targetColumn) targetColumn.issues = payload.issues;
 };
 
-listen(EIssueEvent.CREATED, (issue: TIssueBase) => {
+const stopListenIssueCreated = listen(EIssueEvent.CREATED, (issue: TIssueBase) => {
   addIssue(issue);
-  toast.success({ message: BOARD_MESSAGES.boardUpdated });
+  toast.info({ message: ISSUE_MESSAGES.newIssueAdded(issue.title) });
 });
 
-listen(EIssueEvent.UPDATED, (issue: TIssueBase) => {
+const stopListenIssueUpdated = listen(EIssueEvent.UPDATED, (issue: TIssueBase) => {
   // TODO: На данный момент если у подписчика открыта детальная задачи, а по ней пришли изменения после редактирования кем-то еще, то детальная подписчика не рефетчится. Нужно придумать решение.
   updateIssue(issue);
-  toast.success({ message: BOARD_MESSAGES.boardUpdated });
+  toast.info({ message: ISSUE_MESSAGES.issueWasUpdated(issue.title) });
 });
 
-listen(EIssueEvent.DELETED, (payload: TDeleteIssueEmitPayload) => {
+const stopListenIssueDeleted = listen(EIssueEvent.DELETED, (payload: TDeleteIssueEmitPayload) => {
+  const deletedIssue = data.value?.columns
+    ?.flatMap(column => column.issues)
+    .find(({ id }) => id === payload.deletedIssueId);
   deleteIssue(payload);
-  toast.success({ message: BOARD_MESSAGES.boardUpdated });
+  toast.info({
+    message: deletedIssue ? ISSUE_MESSAGES.issueWasDeleted(deletedIssue.title) : ISSUE_MESSAGES.namelessIssueWasDeleted,
+  });
+});
+
+onMounted(() => {
+  $socket.emit(EBoardEvent.JOIN, boardId.value);
+});
+
+onBeforeUnmount(() => {
+  stopListenColumnCreated();
+  stopListenColumnUpdated();
+  stopListenColumnDeleted();
+
+  stopListenIssueCreated();
+  stopListenIssueUpdated();
+  stopListenIssueDeleted();
+
+  $socket.emit(EBoardEvent.LEAVE, boardId.value);
 });
 </script>
