@@ -52,9 +52,17 @@
 </template>
 
 <script setup lang="ts">
-import { ColorUtility, EColor, type TDeleteIssueEmitPayload, type TIssue, type TIssueBase } from '@kanban-board/common';
+import {
+  ColorUtility,
+  EColor,
+  EIssueEvent,
+  type TDeleteIssueEmitPayload,
+  type TIssue,
+  type TIssueBase,
+} from '@kanban-board/common';
 
 import { useIssueInfo } from '~/composables/app/use-issue-info.composable';
+import { useSocket } from '~/composables/use-socket.composable.ts';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
 import { EIconSizeSmall } from '~/enums/global.enums';
 import { getErrorMessage } from '~/utilities/error.utilities';
@@ -86,6 +94,7 @@ const { issue } = toRefs(props);
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
+const { listen } = useSocket();
 
 const { issueString, daysPassedSinceCreation, issueIdFromQuery, copyIssueId, copyIssueTitle, copyIssueLink } =
   useIssueInfo(issue);
@@ -105,16 +114,25 @@ const {
   callOnInit: needOpenCardOnInit.value,
 });
 
+let stopListen: (() => void) | null = null;
 const openIssueDetails = async () => {
   if (isLoading.value) return;
+
   await fetchIssueDetails();
+
   isModalOpen.value = true;
   router.replace({ query: { ...route.query, issue: issueString.value } });
+
+  // если у кого-то открыта задача, которая обновлена кем-то еще - будет рефетч для актуализации данных
+  stopListen = listen(EIssueEvent.UPDATED, (updatedIssue: TIssueBase) => {
+    if (updatedIssue.id === issueIdFromQuery.value) fetchIssueDetails();
+  });
 };
 
 const closeIssueDetails = () => {
   isModalOpen.value = false;
   router.replace({ query: { ...route.query, issue: undefined } });
+  if (stopListen) stopListen();
 };
 
 const computedColor = computed(() => props.color || EColor.GREEN);

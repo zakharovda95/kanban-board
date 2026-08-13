@@ -114,7 +114,6 @@ const stopListenIssueCreated = listen(EIssueEvent.CREATED, (issue: TIssueBase) =
 });
 
 const stopListenIssueUpdated = listen(EIssueEvent.UPDATED, (issue: TIssueBase) => {
-  // TODO: На данный момент если у подписчика открыта детальная задачи, а по ней пришли изменения после редактирования кем-то еще, то детальная подписчика не рефетчится. Нужно придумать решение.
   updateIssue(issue);
   toast.info({ message: ISSUE_MESSAGES.issueWasUpdated(issue.title) });
 });
