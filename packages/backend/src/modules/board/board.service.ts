@@ -135,7 +135,7 @@ export class BoardService {
   /**
    * Удалить доску. После удаления нужно нормализовать order.
    * @param boardId - id доски.
-   * @returns массив досок и ID удаленной доски (для оповещения всех подписчиков доски).
+   * @returns массив досок после reorder и ID удаленной доски (для оповещения всех подписчиков доски).
    * **/
   public async deleteBoard(boardId: number): Promise<TDeleteBoardEmitPayload> {
     if (!boardId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);

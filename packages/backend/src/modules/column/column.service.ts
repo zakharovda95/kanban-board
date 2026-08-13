@@ -118,7 +118,7 @@ export class ColumnService {
   /**
    * Удалить колонку.
    * @param columnId - id колонки.
-   * @returns массив колонок и ID удаленной доски.
+   * @returns массив колонок после reorder и ID удаленной доски.
    * **/
   public async deleteColumn(columnId: number): Promise<TDeleteColumnEmitPayload> {
     if (!columnId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);

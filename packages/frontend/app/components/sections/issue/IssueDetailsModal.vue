@@ -75,7 +75,7 @@
             :size="ESize.MEDIUM"
             :background-color="EColor.ORANGE"
             prepend-icon="pencil-line"
-            @click:button="isUpdateMode = true"
+            @click:button="startUpdateMode"
           >
             Редактировать задачу
           </UIButton>
@@ -94,7 +94,7 @@
             :size="ESize.MEDIUM"
             :background-color="EColor.ORANGE"
             :disabled="isLoadingUpdate || !isDirty"
-            @click:button="updateIssue()"
+            @click:button="updateIssue"
           >
             Применить
           </UIButton>
@@ -117,18 +117,23 @@
 <script setup lang="ts">
 import {
   EColor,
+  EIssueEvent,
+  getErrorMessage,
+  isValidationError,
+  type TDeleteIssueEmitPayload,
+  type TDeleteIssueResponse,
   type TIssue,
-  type TPatchIssue,
-  type TSuccessResponse,
-  type TValidationErrorResponse,
+  type TIssueBase,
+  type TUpdateIssue,
+  type TUpsertIssueResponse,
 } from '@kanban-board/common';
 
 import { useIssueInfo } from '~/composables/app/use-issue-info.composable';
 import { useForm } from '~/composables/use-form.composable';
-import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
+import { useSocket } from '~/composables/use-socket.composable.ts';
+import { ISSUE_MESSAGES } from '~/constants/issue.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants';
 import { ESize } from '~/enums/global.enums';
-import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
 
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
@@ -146,70 +151,84 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:board': [];
-  'update:issue': [];
+  'update:issue': [payload: TIssueBase];
+  'delete:issue': [payload: TDeleteIssueEmitPayload];
 }>();
 
 const { issue } = toRefs(props);
 
 const toast = useToast();
 
+const isOpenDeleteModal = ref(false);
 const isUpdateMode = ref(false);
 
 const { issueString, daysPassedSinceCreation, daysPassedSinceUpdating, copyIssueId, copyIssueLink, copyIssueTitle } =
   useIssueInfo(issue);
 
-const isOpenDeleteModal = ref(false);
+const getInitialValue = (): Partial<TUpdateIssue> => ({
+  title: props.issue?.title ?? '',
+  description: props.issue?.description ?? '',
+});
+
+const { formData, formErrors, isDirty, reset, set } = useForm<Partial<TUpdateIssue>>(getInitialValue());
+const { emitEvent: emitEventUpdate, isLoading: isLoadingUpdate } = useSocket();
+const { emitEvent: emitEventDelete, isLoading: isLoadingDelete } = useSocket();
+
+const updateIssue = () => {
+  const body: TUpdateIssue = {
+    id: issue.value.id,
+    title: formData.value.title || undefined,
+    description: formData.value.description || null,
+  };
+
+  emitEventUpdate({
+    event: EIssueEvent.UPDATE,
+    data: body,
+    successCallback: (response: TUpsertIssueResponse) => {
+      if (response.isSuccess && response.data) {
+        emit('update:issue', response.data);
+        toast.success({ message: ISSUE_MESSAGES.issueUpdated });
+        resetUpdating();
+      }
+    },
+    errorCallback: (error: unknown) => {
+      if (isValidationError(error)) formErrors.value = error.validation;
+      else toast.error({ message: getErrorMessage(error) });
+    },
+  });
+};
+
+const deleteIssue = () => {
+  emitEventDelete({
+    event: EIssueEvent.DELETE,
+    data: issue.value.id,
+    successCallback: (response: TDeleteIssueResponse) => {
+      if (response.isSuccess && response.data) {
+        emit('delete:issue', response.data);
+        toast.success({ message: ISSUE_MESSAGES.issueDeleted });
+        closeModal();
+      }
+    },
+    errorCallback: (error: unknown) => {
+      toast.error({ message: getErrorMessage(error) });
+    },
+  });
+};
 
 const closeModal = () => {
   isOpenDeleteModal.value = false;
   isOpen.value = false;
 };
 
-const { formData, formErrors, isDirty, reset } = useForm<TPatchIssue>({
-  title: props.issue?.title ?? '',
-  description: props.issue?.description ?? '',
-});
-
-const { call: updateIssue, isLoading: isLoadingUpdate } = useTryCatchFinally({
-  callback: async () => {
-    const body: TPatchIssue = {
-      title: formData.value?.title || undefined,
-      description: formData.value?.description || null,
-    };
-    const result = await $fetch<TSuccessResponse>(`/api/issues/${issue.value.id}`, { method: 'PATCH', body });
-    if (result.isSuccess) {
-      emit('update:issue');
-      emit('update:board');
-      toast.success({ message: 'Задача обновлена!' });
-      resetUpdating();
-    }
-  },
-  catchCallback: (error: unknown) => {
-    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TPatchIssue>)?.validation;
-    else toast.error({ message: getErrorMessage(error) });
-  },
-});
-
 const resetUpdating = () => {
   isUpdateMode.value = false;
   reset();
 };
 
-const { isLoading: isLoadingDelete, call: deleteIssue } = useTryCatchFinally({
-  callback: async () => {
-    const result = await $fetch<TSuccessResponse>(`/api/issues/${issue.value.id}`, { method: 'DELETE' });
-
-    if (result.isSuccess) {
-      toast.success({ message: 'Задача удалена!' });
-      emit('update:board');
-      closeModal();
-    }
-  },
-  catchCallback: (error: unknown) => {
-    toast.error({ message: getErrorMessage(error) });
-  },
-});
+const startUpdateMode = () => {
+  isUpdateMode.value = true;
+  set(getInitialValue(), { setAsInitial: true, clearErrors: true });
+};
 
 onBeforeUnmount(() => {
   resetUpdating();

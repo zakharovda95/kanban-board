@@ -69,20 +69,14 @@ const toast = useToast();
 const isUpdateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 
-const closeModal = () => {
-  isUpdateModalOpen.value = false;
-  isDeleteModalOpen.value = false;
-  reset();
-};
-
 const getInitialValue = (): Omit<TUpdateBoard, 'id'> => ({
   title: props.board.title,
   description: props.board?.description ?? '',
 });
 
 const { formData, reset, formErrors, isDirty, set } = useForm<Omit<TUpdateBoard, 'id'>>(getInitialValue());
-
 const { isLoading: isLoadingUpdate, emitEvent: emitUpdate } = useSocket();
+const { isLoading: isLoadingDelete, emitEvent: emitDelete } = useSocket();
 
 const updateBoard = () => {
   const body: TUpdateBoard = {
@@ -108,8 +102,6 @@ const updateBoard = () => {
   });
 };
 
-const { isLoading: isLoadingDelete, emitEvent: emitDelete } = useSocket();
-
 const deleteBoard = () => {
   emitDelete({
     event: EBoardEvent.DELETE,
@@ -130,5 +122,11 @@ const deleteBoard = () => {
 const openUpdateModal = () => {
   set(getInitialValue(), { setAsInitial: true, clearErrors: true });
   isUpdateModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isUpdateModalOpen.value = false;
+  isDeleteModalOpen.value = false;
+  reset();
 };
 </script>

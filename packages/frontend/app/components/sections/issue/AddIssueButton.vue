@@ -11,7 +11,7 @@
       :title-maxlength="ISSUE_TITLE_MAXLENGTH"
       :disabled="isLoading"
       description-component="editor"
-      @click:action-button="call"
+      @click:action-button="createIssue"
       @update:is-open="closeModal"
     />
   </div>
@@ -19,17 +19,20 @@
 
 <script setup lang="ts">
 import {
+  EIssueEvent,
+  getErrorMessage,
   ISSUE_TITLE_MAXLENGTH,
+  isValidationError,
   type TCreateIssue,
-  type TCreateIssueResponse,
-  type TValidationErrorResponse,
+  type TIssueBase,
+  type TUpsertIssueResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable';
-import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
+import { useSocket } from '~/composables/use-socket.composable.ts';
+import { ISSUE_MESSAGES } from '~/constants/issue.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types';
-import { getErrorMessage, isValidationError } from '~/utilities/error.utilities';
 import { toBody } from '~/utilities/object.utilities';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
@@ -40,7 +43,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:board': [];
+  'add:issue': [payload: TIssueBase];
 }>();
 
 const route = useRoute();
@@ -48,29 +51,30 @@ const toast = useToast();
 
 const isModalOpen = ref(false);
 
-const { formData, formErrors, reset } = useForm<TCreateIssue>({ title: '', description: '' });
+const { formData, formErrors, reset } = useForm<Partial<TCreateIssue>>({ title: '', description: '' });
+const { emitEvent, isLoading } = useSocket();
 
-const { isLoading, call } = useTryCatchFinally({
-  callback: async () => {
-    const result = await $fetch<TCreateIssueResponse>(
-      `/api/boards/${route.params.id}/columns/${props.columnId}/issues`,
-      {
-        method: 'POST',
-        body: toBody<TCreateIssue>(formData.value),
-      },
-    );
-
-    if (result.isSuccess) {
-      toast.success({ message: 'Задача добавлена!' });
-      emit('update:board');
-      closeModal();
-    }
-  },
-  catchCallback: (error: unknown) => {
-    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TCreateIssue>).validation;
-    else toast.error({ message: getErrorMessage(error) });
-  },
-});
+const createIssue = () => {
+  emitEvent({
+    event: EIssueEvent.CREATE,
+    data: {
+      columnId: props.columnId,
+      boardId: Number(route.params.id),
+      ...toBody<Partial<TCreateIssue>>(formData.value),
+    },
+    successCallback: (response: TUpsertIssueResponse) => {
+      if (response.isSuccess && response.data) {
+        emit('add:issue', response.data);
+        toast.success({ message: ISSUE_MESSAGES.issueCreated });
+        closeModal();
+      }
+    },
+    errorCallback: (error: unknown) => {
+      if (isValidationError(error)) formErrors.value = error.validation;
+      else toast.error({ message: getErrorMessage(error) });
+    },
+  });
+};
 
 const closeModal = () => {
   isModalOpen.value = false;

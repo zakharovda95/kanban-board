@@ -1,12 +1,13 @@
 import type {
   TCreateIssue,
-  TCreateIssueResponse,
+  TDeleteIssueEmitPayload,
   TIssue,
+  TIssueBase,
   TMoveIssue,
   TMoveOptions,
   TMoveParameters,
-  TPatchIssue,
   TSuccessResponse,
+  TUpdateIssue,
 } from '@kanban-board/common';
 import {
   BadRequestException,
@@ -14,14 +15,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { WsException } from '@nestjs/websockets';
 import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { OrderUtility } from '@/libs/utilities/order.utility';
-import {
-  getSuccessResponse,
-  getSuccessResponseWithData,
-} from '@/libs/utilities/response.utilities';
+import { getSuccessResponse } from '@/libs/utilities/response.utilities';
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
 import { IssueMapper } from '@/modules/issue/issue.mapper';
 import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
@@ -51,36 +50,30 @@ export class IssueService {
 
   /**
    * Создать задачу в колонке.
-   * @param boardId - id доски.
-   * @param columnId - id колонки.
-   * @param body - данные задачи (title, description).
-   * @returns стандартный успешный ответ с id созданной задачи.
+   * @param body - данные задачи (boardId, columnId, title, description).
+   * @returns объект созданной задачи.
    * **/
-  public async createIssue(
-    boardId: number,
-    columnId: number,
-    body: TCreateIssue,
-  ): Promise<TCreateIssueResponse> {
-    if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+  public async createIssue(body: TCreateIssue): Promise<TIssueBase> {
+    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
+    const { boardId, columnId, title, description } = body;
     const { manager } = this.dataSource;
 
     const isExists = await manager.exists(ColumnEntity, { where: { id: columnId, boardId } });
-    if (!isExists) throw new BadRequestException(EXCEPTION_MESSAGES.createFailed);
+    if (!isExists) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
     const issuesCount = await manager.count(IssueEntity, { where: { columnId } });
 
-    const { id } = await manager.save(IssueEntity, {
-      title: body.title,
-      description: body?.description ?? null,
+    const createdIssue = await manager.save(IssueEntity, {
+      title,
+      description: description ?? null,
       order: OrderUtility.calculateOrderByIndex(issuesCount),
       boardId,
       columnId,
     });
-    if (!id) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
+    if (!createdIssue) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
-    return getSuccessResponseWithData({ id });
+    return this.issueMapper.toModel(createdIssue, { base: true });
   }
 
   /**
@@ -151,30 +144,30 @@ export class IssueService {
 
   /**
    * Частично обновить задачу.
-   * @param issueId - id задачи.
    * @param body - поля для обновления.
-   * @returns стандартный успешный ответ.
+   * @returns базовый объект обновленной задачи.
    * **/
-  public async patchIssue(issueId: number, body: TPatchIssue): Promise<TSuccessResponse> {
-    if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+  public async updateIssue(body: TUpdateIssue): Promise<TIssueBase> {
+    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
+    const { id, ...rest } = body;
     const { manager } = this.dataSource;
 
-    const issue = await manager.findOne(IssueEntity, { where: { id: issueId } });
-    if (!issue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+    const issue = await manager.findOne(IssueEntity, { where: { id } });
+    if (!issue) throw new WsException(EXCEPTION_MESSAGES.notFound);
 
-    await manager.save(IssueEntity, Object.assign(issue, body));
+    const updatedIssue = await manager.save(IssueEntity, Object.assign(issue, rest));
+    if (!updatedIssue) throw new WsException(EXCEPTION_MESSAGES.updateFailed);
 
-    return getSuccessResponse();
+    return this.issueMapper.toModel(updatedIssue, { base: true });
   }
 
   /**
    * Удалить задачу.
    * @param issueId - id задачи.
-   * @returns стандартный успешный ответ.
+   * @returns ID удаленной задачи и массив базовых объектов задач после reorder.
    * **/
-  public async deleteIssue(issueId: number): Promise<TSuccessResponse> {
+  public async deleteIssue(issueId: number): Promise<TDeleteIssueEmitPayload> {
     if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
@@ -192,13 +185,20 @@ export class IssueService {
       if (!affected || affected <= 0)
         throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
 
-      // TODO: когда возникнет необходимость - сделать не полный пересчет order, а только часть после target со сдвигом на ORDER_STEP в меньшую сторону
       const withoutTarget = issues.filter(({ id }) => id !== issueId);
       this.moveService.resetOrders(withoutTarget);
 
       await transactionalManager.save(IssueEntity, withoutTarget);
 
-      return getSuccessResponse();
+      const issuesAfterDeleting = await transactionalManager.find(IssueEntity, {
+        where: { columnId: target.columnId, boardId: target.boardId },
+        order: { order: 'ASC' },
+      });
+
+      return {
+        deletedIssueId: issueId,
+        issues: this.issueMapper.toModel(issuesAfterDeleting, { base: true }),
+      };
     });
   }
 }

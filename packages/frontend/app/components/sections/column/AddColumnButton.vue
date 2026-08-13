@@ -50,7 +50,6 @@ const emit = defineEmits<{
 
 const route = useRoute();
 const toast = useToast();
-const { emitEvent, isLoading } = useSocket();
 
 const isModalOpen = ref(false);
 
@@ -59,6 +58,7 @@ const { formData, formErrors, reset } = useForm<Partial<TCreateColumn>>({
   description: '',
   color: ColorUtility.getRandomHexColor(),
 });
+const { emitEvent, isLoading } = useSocket();
 
 const createBoard = () => {
   emitEvent({

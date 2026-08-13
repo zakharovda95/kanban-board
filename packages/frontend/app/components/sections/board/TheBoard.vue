@@ -14,6 +14,9 @@
           :column="column"
           @update:column="emit('update:column', $event)"
           @delete:column="emit('delete:column', $event)"
+          @add:issue="emit('add:issue', $event)"
+          @update:issue="emit('update:issue', $event)"
+          @delete:issue="emit('delete:issue', $event)"
         />
       </div>
     </div>
@@ -21,7 +24,13 @@
 </template>
 
 <script setup lang="ts">
-import type { TBoard, TColumn, TDeleteColumnEmitPayload } from '@kanban-board/common';
+import type {
+  TBoard,
+  TColumn,
+  TDeleteColumnEmitPayload,
+  TDeleteIssueEmitPayload,
+  TIssueBase,
+} from '@kanban-board/common';
 
 import BoardFilter from '~/components/sections/board/BoardFilter.vue';
 import TheColumn from '~/components/sections/column/TheColumn.vue';
@@ -43,5 +52,8 @@ const emit = defineEmits<{
   'add:column': [payload: TColumn];
   'update:column': [payload: TColumn];
   'delete:column': [payload: TDeleteColumnEmitPayload];
+  'add:issue': [payload: TIssueBase];
+  'update:issue': [payload: TIssueBase];
+  'delete:issue': [payload: TDeleteIssueEmitPayload];
 }>();
 </script>

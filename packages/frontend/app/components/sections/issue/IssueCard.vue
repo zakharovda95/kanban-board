@@ -45,14 +45,14 @@
       :is-open="isModalOpen"
       :issue="issueDetails"
       @update:is-open="closeIssueDetails"
-      @update:issue="fetchIssueDetails"
-      @update:board="emit('update:board')"
+      @update:issue="updateIssue"
+      @delete:issue="emit('delete:issue', $event)"
     />
   </article>
 </template>
 
 <script setup lang="ts">
-import { ColorUtility, EColor, type TIssue, type TIssueBase } from '@kanban-board/common';
+import { ColorUtility, EColor, type TDeleteIssueEmitPayload, type TIssue, type TIssueBase } from '@kanban-board/common';
 
 import { useIssueInfo } from '~/composables/app/use-issue-info.composable';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
@@ -77,7 +77,8 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  'update:board': [];
+  'update:issue': [payload: TIssueBase];
+  'delete:issue': [payload: TDeleteIssueEmitPayload];
 }>();
 
 const { issue } = toRefs(props);
@@ -117,6 +118,11 @@ const closeIssueDetails = () => {
 };
 
 const computedColor = computed(() => props.color || EColor.GREEN);
+
+const updateIssue = (issue: TIssueBase) => {
+  fetchIssueDetails();
+  emit('update:issue', issue);
+};
 </script>
 
 <style scoped>

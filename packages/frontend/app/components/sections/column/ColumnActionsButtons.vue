@@ -3,7 +3,7 @@
     <ActionsButtons
       :grid-template-columns="4"
       :actions="['moveToStart', 'moveToPrevious', 'moveToNext', 'moveToEnd', 'update', 'delete']"
-      @update="isUpdateModalOpen = true"
+      @update="openUpdateModal"
       @delete="isDeleteModalOpen = true"
     />
 
@@ -66,18 +66,13 @@ const toast = useToast();
 const isUpdateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 
-const closeModal = () => {
-  isUpdateModalOpen.value = false;
-  isDeleteModalOpen.value = false;
-  reset();
-};
-
-const { formData, formErrors, reset, isDirty } = useForm<TUpdateColumn>({
+const getInitialValue = (): TUpdateColumn => ({
   title: props.column.title ?? '',
   description: props.column.description ?? '',
   color: props.column.color ?? '',
 });
 
+const { formData, formErrors, reset, isDirty, set } = useForm<TUpdateColumn>(getInitialValue());
 const { emitEvent: emitEventUpdate, isLoading: isLoadingUpdate } = useSocket();
 const { emitEvent: emitEventDelete, isLoading: isLoadingDelete } = useSocket();
 
@@ -121,5 +116,16 @@ const deleteColumn = () => {
       toast.error({ message: getErrorMessage(error) });
     },
   });
+};
+
+const openUpdateModal = () => {
+  isUpdateModalOpen.value = true;
+  set(getInitialValue(), { setAsInitial: true, clearErrors: true });
+};
+
+const closeModal = () => {
+  isUpdateModalOpen.value = false;
+  isDeleteModalOpen.value = false;
+  reset();
 };
 </script>

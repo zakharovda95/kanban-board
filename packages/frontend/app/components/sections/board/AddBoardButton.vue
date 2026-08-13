@@ -51,7 +51,6 @@ const toast = useToast();
 const isModalOpen = ref(false);
 
 const { formData, reset, formErrors } = useForm<TCreateBoard>({ title: '', description: '' });
-
 const { emitEvent, isLoading } = useSocket();
 
 const createBoard = () => {
