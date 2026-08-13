@@ -15,7 +15,11 @@
             </p>
           </div>
 
-          <ColumnActionsButtons :column="column" @update:board="emit('update:board')" />
+          <ColumnActionsButtons
+            :column="column"
+            @update:column="emit('update:column', $event)"
+            @delete:column="emit('delete:column', $event)"
+          />
         </div>
       </div>
     </header>
@@ -27,25 +31,19 @@
         </UIBadge>
         <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800" :size="ESize.MEDIUM"> WIP ∞ </UIBadge>
       </div>
-      <AddIssueButton :column-id="column.id" @update:board="emit('update:board')" />
+      <AddIssueButton :column-id="column.id" />
     </div>
 
     <div v-if="column.issues.length" class="size-full overflow-hidden">
       <div class="flex h-[calc(100vh-368px)] w-full flex-col items-center gap-8 overflow-auto px-8">
-        <IssueCard
-          v-for="issue in column.issues"
-          :key="issue.id"
-          :issue="issue"
-          :color="column.color"
-          @update:board="emit('update:board')"
-        />
+        <IssueCard v-for="issue in column.issues" :key="issue.id" :issue="issue" :color="column.color" />
       </div>
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
-import { EColor, StringUtility, type TColumn } from '@kanban-board/common';
+import { EColor, StringUtility, type TColumn, type TDeleteColumnEmitPayload } from '@kanban-board/common';
 
 import { ESize } from '~/enums/global.enums';
 
@@ -57,7 +55,8 @@ import UIBadge from '~/components/ui/UIBadge.vue';
 const props = defineProps<{ column: TColumn }>();
 
 const emit = defineEmits<{
-  'update:board': [];
+  'update:column': [payload: TColumn];
+  'delete:column': [payload: TDeleteColumnEmitPayload];
 }>();
 
 const computedIssuesLength = computed(() => {

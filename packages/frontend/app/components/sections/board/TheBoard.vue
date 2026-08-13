@@ -12,7 +12,8 @@
           v-for="column in board?.columns"
           :key="column.id"
           :column="column"
-          @update:board="emit('update:board')"
+          @update:column="emit('update:column', $event)"
+          @delete:column="emit('delete:column', $event)"
         />
       </div>
     </div>
@@ -20,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TBoard, TColumn } from '@kanban-board/common';
+import type { TBoard, TColumn, TDeleteColumnEmitPayload } from '@kanban-board/common';
 
 import BoardFilter from '~/components/sections/board/BoardFilter.vue';
 import TheColumn from '~/components/sections/column/TheColumn.vue';
@@ -40,6 +41,7 @@ withDefaults(
 
 const emit = defineEmits<{
   'add:column': [payload: TColumn];
-  'update:board': [];
+  'update:column': [payload: TColumn];
+  'delete:column': [payload: TDeleteColumnEmitPayload];
 }>();
 </script>

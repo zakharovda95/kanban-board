@@ -32,7 +32,7 @@ export const useBoardsStore = defineStore('boards-store', () => {
 
   const updateBoard = (updatedBoard: TBoardBase) => {
     if (!updatedBoard) return;
-    const targetIndex = boards.value.findIndex(({ order }: TBoardBase) => order === updatedBoard.order);
+    const targetIndex = boards.value.findIndex(({ id }: TBoardBase) => id === updatedBoard.id);
     if (targetIndex != -1) boards.value.splice(targetIndex, 1, updatedBoard);
   };
 

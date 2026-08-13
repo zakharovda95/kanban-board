@@ -38,7 +38,7 @@ export class BoardService {
     const boards = await manager.find(BoardEntity, { order: { order: 'ASC' } });
 
     if (!boards.length) return [];
-    return this.boardMapper.toModel(boards);
+    return this.boardMapper.toModel(boards, { withRelations: false });
   }
 
   /**
@@ -81,7 +81,7 @@ export class BoardService {
     });
     if (!board?.id) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
-    return this.boardMapper.toModel(board);
+    return this.boardMapper.toModel(board, { withRelations: false });
   }
 
   /**
@@ -129,7 +129,7 @@ export class BoardService {
 
     const updatedBoard = await manager.save(Object.assign(board, rest));
     if (!updatedBoard) throw new WsException(EXCEPTION_MESSAGES.updateFailed);
-    return this.boardMapper.toModel(updatedBoard);
+    return this.boardMapper.toModel(updatedBoard, { withRelations: false });
   }
 
   /**
@@ -158,7 +158,10 @@ export class BoardService {
 
       const boardsAfterDeleting = await transactionalManager.save(BoardEntity, withoutTarget);
 
-      return { deletedBoardId: boardId, boards: this.boardMapper.toModel(boardsAfterDeleting) };
+      return {
+        deletedBoardId: boardId,
+        boards: this.boardMapper.toModel(boardsAfterDeleting, { withRelations: false }),
+      };
     });
   }
 }

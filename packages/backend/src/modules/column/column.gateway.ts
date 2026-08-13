@@ -1,9 +1,4 @@
-import {
-  EColumnEvent,
-  type TColumn,
-  type TDeleteColumnEmitPayload,
-  type TSuccessResponse,
-} from '@kanban-board/common';
+import { EColumnEvent, TDeleteColumnResponse, TUpsertColumnResponse } from '@kanban-board/common';
 import { UseFilters } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -31,7 +26,7 @@ export default class ColumnGateway {
   public async createColumn(
     @MessageBody(CustomValidationPipe.wsValidationPipe) body: CreateColumnDto,
     @ConnectedSocket() client: Socket,
-  ): Promise<TSuccessResponse<TColumn>> {
+  ): Promise<TUpsertColumnResponse> {
     const createdColumn = await this.columnService.createColumn(body);
     client.broadcast.emit(EColumnEvent.CREATED, createdColumn);
     return getSuccessResponseWithData(createdColumn);
@@ -45,7 +40,7 @@ export default class ColumnGateway {
     )
     body: UpdateColumnDto,
     @ConnectedSocket() client: Socket,
-  ): Promise<TSuccessResponse<TColumn>> {
+  ): Promise<TUpsertColumnResponse> {
     const updatedColumn = await this.columnService.updateColumn(body);
     client.broadcast.emit(EColumnEvent.UPDATED, updatedColumn);
     return getSuccessResponseWithData(updatedColumn);
@@ -55,7 +50,7 @@ export default class ColumnGateway {
   public async deleteColumn(
     @MessageBody(new ParameterIdPipe('ws')) columnId: number,
     @ConnectedSocket() client: Socket,
-  ): Promise<TSuccessResponse<TDeleteColumnEmitPayload>> {
+  ): Promise<TDeleteColumnResponse> {
     const columnsAfterDeleting = await this.columnService.deleteColumn(columnId);
     client.broadcast.emit(EColumnEvent.DELETED, columnsAfterDeleting);
     return getSuccessResponseWithData(columnsAfterDeleting);

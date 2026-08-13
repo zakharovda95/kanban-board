@@ -104,9 +104,15 @@ export class ColumnService {
     const column = await manager.findOne(ColumnEntity, { where: { id } });
     if (!column) throw new WsException(EXCEPTION_MESSAGES.notFound);
 
-    const updatedColumn = await manager.save(Object.assign(column, rest));
-    if (!updatedColumn) throw new WsException(EXCEPTION_MESSAGES.updateFailed);
-    return this.columnMapper.toModel(updatedColumn);
+    await manager.save(Object.assign(column, rest));
+
+    const columnAfterUpdating = await manager.findOne(ColumnEntity, {
+      where: { id },
+      relations: { issues: true },
+    });
+    if (!columnAfterUpdating) throw new WsException(EXCEPTION_MESSAGES.notFound);
+
+    return this.columnMapper.toModel(columnAfterUpdating);
   }
 
   /**
@@ -134,7 +140,13 @@ export class ColumnService {
       const withoutTarget = columns.filter(({ id }) => id !== columnId);
       this.moveService.resetOrders(withoutTarget);
 
-      const columnsAfterDeleting = await transactionalManager.save(ColumnEntity, withoutTarget);
+      await transactionalManager.save(ColumnEntity, withoutTarget);
+
+      const columnsAfterDeleting = await transactionalManager.find(ColumnEntity, {
+        where: { boardId: target.boardId },
+        order: { order: 'ASC' },
+        relations: { issues: true },
+      });
 
       return {
         deletedColumnId: columnId,

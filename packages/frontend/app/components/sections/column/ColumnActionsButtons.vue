@@ -32,19 +32,23 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  TColumn,
-  TPatchColumn,
-  TSuccessResponse,
-  TValidationErrorResponse,
-  TValidationErrors,
+import {
+  EColumnEvent,
+  getErrorMessage,
+  isValidationError,
+  type TColumn,
+  type TDeleteColumnEmitPayload,
+  type TDeleteColumnResponse,
+  type TUpdateColumn,
+  type TUpsertColumnResponse,
+  type TValidationErrors,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable.ts';
-import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
+import { useSocket } from '~/composables/use-socket.composable.ts';
+import { COLUMN_MESSAGES } from '~/constants/column.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
-import type { TAction, TUpsertFormData } from '~/types/shared.types.ts';
-import { getErrorMessage, isValidationError } from '~/utilities/error.utilities.ts';
+import type { TUpsertFormData } from '~/types/shared.types.ts';
 
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';
@@ -53,7 +57,8 @@ import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue'
 const props = defineProps<{ column: TColumn }>();
 
 const emit = defineEmits<{
-  'update:board': [];
+  'update:column': [payload: TColumn];
+  'delete:column': [payload: TDeleteColumnEmitPayload];
 }>();
 
 const toast = useToast();
@@ -67,47 +72,54 @@ const closeModal = () => {
   reset();
 };
 
-const { formData, formErrors, reset, isDirty } = useForm<TPatchColumn>({
+const { formData, formErrors, reset, isDirty } = useForm<TUpdateColumn>({
   title: props.column.title ?? '',
   description: props.column.description ?? '',
   color: props.column.color ?? '',
 });
 
-const onSuccessRequest = (action: TAction = 'update'): void => {
-  toast.success({ message: action === 'update' ? 'Колонка обновлена!' : 'Колонка удалена!' });
-  emit('update:board');
-  closeModal();
+const { emitEvent: emitEventUpdate, isLoading: isLoadingUpdate } = useSocket();
+const { emitEvent: emitEventDelete, isLoading: isLoadingDelete } = useSocket();
+
+const updateColumn = () => {
+  const body: TUpdateColumn = {
+    id: props.column.id,
+    title: formData.value.title || undefined,
+    description: formData.value.description || null,
+    color: formData.value.color || undefined,
+  };
+
+  emitEventUpdate({
+    event: EColumnEvent.UPDATE,
+    data: body,
+    successCallback: (response: TUpsertColumnResponse) => {
+      if (response.isSuccess && response.data) {
+        emit('update:column', response.data);
+        toast.success({ message: COLUMN_MESSAGES.columnUpdated });
+        closeModal();
+      }
+    },
+    errorCallback: (error: unknown) => {
+      if (isValidationError(error)) formErrors.value = error.validation;
+      else toast.error({ message: getErrorMessage(error) });
+    },
+  });
 };
 
-const { isLoading: isLoadingUpdate, call: updateColumn } = useTryCatchFinally({
-  callback: async () => {
-    const body: TPatchColumn = {
-      title: formData.value.title || undefined,
-      description: formData.value.description || null,
-      color: formData.value.color || undefined,
-    };
-
-    const result = await $fetch<TSuccessResponse>(`/api/columns/${props.column.id}`, {
-      method: 'PATCH',
-      body,
-    });
-    if (result.isSuccess) onSuccessRequest('update');
-  },
-  catchCallback: (error: unknown) => {
-    if (isValidationError(error)) formErrors.value = (error as TValidationErrorResponse<TPatchColumn>).validation;
-    else toast.error({ message: getErrorMessage(error) });
-  },
-});
-
-const { isLoading: isLoadingDelete, call: deleteColumn } = useTryCatchFinally({
-  callback: async () => {
-    const result = await $fetch<TSuccessResponse>(`/api/columns/${props.column.id}`, {
-      method: 'DELETE',
-    });
-    if (result.isSuccess) onSuccessRequest('delete');
-  },
-  catchCallback: (error: unknown) => {
-    toast.error({ message: getErrorMessage(error) });
-  },
-});
+const deleteColumn = () => {
+  emitEventDelete({
+    event: EColumnEvent.DELETE,
+    data: props.column.id,
+    successCallback: (response: TDeleteColumnResponse) => {
+      if (response.isSuccess && response.data) {
+        emit('delete:column', response.data);
+        toast.success({ message: COLUMN_MESSAGES.columnDeleted });
+        closeModal();
+      }
+    },
+    errorCallback: (error: unknown) => {
+      toast.error({ message: getErrorMessage(error) });
+    },
+  });
+};
 </script>

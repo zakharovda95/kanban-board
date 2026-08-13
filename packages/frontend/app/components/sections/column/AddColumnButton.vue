@@ -54,7 +54,7 @@ const { emitEvent, isLoading } = useSocket();
 
 const isModalOpen = ref(false);
 
-const { formData, formErrors, reset } = useForm<Omit<TCreateColumn, 'boardId'>>({
+const { formData, formErrors, reset } = useForm<Partial<TCreateColumn>>({
   title: '',
   description: '',
   color: ColorUtility.getRandomHexColor(),
@@ -65,9 +65,9 @@ const createBoard = () => {
     event: EColumnEvent.CREATE,
     data: {
       boardId: Number(route.params.id),
-      ...toBody<Omit<TCreateColumn, 'boardId'>>(formData.value),
+      ...toBody<Partial<TCreateColumn>>(formData.value),
     },
-    successCallback: async (response: TUpsertColumnResponse) => {
+    successCallback: (response: TUpsertColumnResponse) => {
       if (response.isSuccess && response.data) {
         emit('add:column', response.data);
         toast.success({ message: COLUMN_MESSAGES.columnCreated });
