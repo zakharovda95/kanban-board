@@ -56,6 +56,7 @@ import {
   ColorUtility,
   EColor,
   EIssueEvent,
+  getErrorMessage,
   type TDeleteIssueEmitPayload,
   type TIssue,
   type TIssueBase,
@@ -65,7 +66,6 @@ import { useIssueInfo } from '~/composables/app/use-issue-info.composable';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
 import { EIconSizeSmall } from '~/enums/global.enums';
-import { getErrorMessage } from '~/utilities/error.utilities';
 
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
 import IssueDetailsModal from '~/components/sections/issue/IssueDetailsModal.vue';
@@ -108,9 +108,7 @@ const {
   call: fetchIssueDetails,
 } = useTryCatchFinally({
   callback: async () => $fetch<TIssue>(`/api/issues/${issue.value.id}`, { method: 'GET' }),
-  catchCallback: (error: unknown) => {
-    toast.error({ message: getErrorMessage(error) });
-  },
+  catchCallback: (error: unknown) => toast.error({ message: getErrorMessage(error) }),
   callOnInit: needOpenCardOnInit.value,
 });
 
@@ -132,6 +130,7 @@ const openIssueDetails = async () => {
 const closeIssueDetails = () => {
   isModalOpen.value = false;
   router.replace({ query: { ...route.query, issue: undefined } });
+
   if (stopListen) stopListen();
 };
 

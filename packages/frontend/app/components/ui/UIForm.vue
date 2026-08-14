@@ -8,10 +8,21 @@
       <slot />
     </div>
 
-    <div class="flex w-full flex-col gap-8">
+    <div class="flex w-full gap-8" :class="[isColButtonsPosition ? 'flex-col' : 'flex-row-reverse']">
       <slot name="bottom">
-        <UIButton type="submit" :size="buttonsSize" full :disabled="disabled">{{ actionButtonLabel }}</UIButton>
-        <UIButton :size="buttonsSize" :background-color="EColor.RED" full @click:button="emit('reset:form')">
+        <UIButton
+          :class="isColButtonsPosition ? 'w-full' : 'flex-1'"
+          type="submit"
+          :size="buttonsSize"
+          :disabled="disabled"
+          >{{ actionButtonLabel }}</UIButton
+        >
+        <UIButton
+          :class="isColButtonsPosition ? 'w-full' : 'w-fit'"
+          :size="buttonsSize"
+          :background-color="EColor.RED"
+          @click:button="emit('reset:form')"
+        >
           Отменить
         </UIButton>
       </slot>
@@ -24,23 +35,26 @@ import { EColor } from '@kanban-board/common';
 
 import { ACTION_BUTTON_LABEL } from '~/constants/ui.constants';
 import { ESize } from '~/enums/global.enums';
+import type { TUIFormButtonsPosition } from '~/types/ui.types.ts';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
 const slots = defineSlots();
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     title?: string | null;
     actionButtonLabel?: string;
     buttonsSize?: ESize;
     full?: boolean;
     disabled?: boolean;
+    buttonsPosition?: TUIFormButtonsPosition;
   }>(),
   {
     title: null,
     actionButtonLabel: ACTION_BUTTON_LABEL,
     buttonsSize: ESize.SMALL,
+    buttonsPosition: 'column',
     full: false,
     disabled: false,
   },
@@ -50,4 +64,6 @@ const emit = defineEmits<{
   'submit:form': [];
   'reset:form': [];
 }>();
+
+const isColButtonsPosition = computed(() => props.buttonsPosition === 'column');
 </script>

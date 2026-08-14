@@ -7,6 +7,6 @@ import { MoveParametersDto } from '@/modules/shared/move/libs/dto/move-parameter
 
 export class MoveIssueDto extends MoveParametersDto implements TMoveIssue {
   @ValidateIfDefined()
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeBigint })
+  @IsInt({ message: VALIDATION_MESSAGES.idMustBeDefined })
   toColumnId?: number;
 }

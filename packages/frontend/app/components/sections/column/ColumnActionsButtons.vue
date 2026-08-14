@@ -17,6 +17,7 @@
       show-color-picker
       @click:action-button="updateColumn"
       @update:is-open="closeModal"
+      @update:field="update"
     />
 
     <UIConfirmationModal
@@ -66,31 +67,29 @@ const toast = useToast();
 const isUpdateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 
-const getInitialValue = (): TUpdateColumn => ({
+const getInitialValue = (): Omit<TUpdateColumn, 'id'> => ({
   title: props.column.title ?? '',
   description: props.column.description ?? '',
   color: props.column.color ?? '',
 });
 
-const { formData, formErrors, reset, isDirty, set } = useForm<TUpdateColumn>(getInitialValue());
+const { formData, formErrors, reset, isDirty, set, update } = useForm<Omit<TUpdateColumn, 'id'>>(getInitialValue());
 const { emitEvent: emitEventUpdate, isLoading: isLoadingUpdate } = useSocket();
 const { emitEvent: emitEventDelete, isLoading: isLoadingDelete } = useSocket();
 
 const updateColumn = () => {
   const body: TUpdateColumn = {
     id: props.column.id,
-    title: formData.value.title || undefined,
-    description: formData.value.description || null,
-    color: formData.value.color || undefined,
+    ...formData.value,
   };
 
-  emitEventUpdate({
+  emitEventUpdate<TUpdateColumn, TUpsertColumnResponse>({
     event: EColumnEvent.UPDATE,
     data: body,
     successCallback: (response: TUpsertColumnResponse) => {
       if (response.isSuccess && response.data) {
-        emit('update:column', response.data);
         toast.success({ message: COLUMN_MESSAGES.columnUpdated });
+        emit('update:column', response.data);
         closeModal();
       }
     },
@@ -102,13 +101,13 @@ const updateColumn = () => {
 };
 
 const deleteColumn = () => {
-  emitEventDelete({
+  emitEventDelete<number, TDeleteColumnResponse>({
     event: EColumnEvent.DELETE,
     data: props.column.id,
     successCallback: (response: TDeleteColumnResponse) => {
       if (response.isSuccess && response.data) {
-        emit('delete:column', response.data);
         toast.success({ message: COLUMN_MESSAGES.columnDeleted });
+        emit('delete:column', response.data);
         closeModal();
       }
     },

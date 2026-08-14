@@ -59,6 +59,7 @@ const addColumn = (column: TColumn) => {
 
 const updateColumn = (column: TColumn) => {
   if (!column || !data.value) return;
+
   const targetIndex = data.value.columns.findIndex(({ id }: TColumn) => id === column.id);
   if (targetIndex != -1) data.value.columns.splice(targetIndex, 1, column);
 };
@@ -80,7 +81,9 @@ const stopListenColumnUpdated = listen(EColumnEvent.UPDATED, (column: TColumn) =
 
 const stopListenColumnDeleted = listen(EColumnEvent.DELETED, (payload: TDeleteColumnEmitPayload) => {
   const deletedColumn = data.value?.columns?.find(({ id }) => id === payload.deletedColumnId);
+
   deleteColumn(payload);
+
   toast.info({
     message: deletedColumn
       ? COLUMN_MESSAGES.columnWasDeleted(deletedColumn.title)
@@ -90,20 +93,24 @@ const stopListenColumnDeleted = listen(EColumnEvent.DELETED, (payload: TDeleteCo
 
 const addIssue = (issue: TIssueBase) => {
   if (!issue || !data.value) return;
+
   const targetColumn = data.value.columns.find(({ id }) => id === issue.columnId);
   if (targetColumn) targetColumn.issues.push(issue);
 };
 
 const updateIssue = (issue: TIssueBase) => {
   if (!issue || !data.value) return;
+
   const targetColumn = data.value.columns.find(({ id }) => id === issue.columnId);
   if (!targetColumn) return;
+
   const targetIndex = targetColumn.issues.findIndex(({ id }) => id === issue.id);
   if (targetIndex != -1) targetColumn.issues.splice(targetIndex, 1, issue);
 };
 
 const deleteIssue = (payload: TDeleteIssueEmitPayload) => {
   if (!payload || !data.value) return;
+
   const targetColumn = data.value.columns.find(({ id }) => id === payload.columnId);
   if (targetColumn) targetColumn.issues = payload.issues;
 };
@@ -122,7 +129,9 @@ const stopListenIssueDeleted = listen(EIssueEvent.DELETED, (payload: TDeleteIssu
   const deletedIssue = data.value?.columns
     ?.flatMap(column => column.issues)
     .find(({ id }) => id === payload.deletedIssueId);
+
   deleteIssue(payload);
+
   toast.info({
     message: deletedIssue ? ISSUE_MESSAGES.issueWasDeleted(deletedIssue.title) : ISSUE_MESSAGES.namelessIssueWasDeleted,
   });

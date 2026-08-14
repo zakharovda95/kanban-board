@@ -1,5 +1,5 @@
 <template>
-  <UIModal v-model:is-open="isOpen">
+  <UIModal :is-open="isOpen" @update:is-open="closeModal">
     <template #header>
       <div class="flex flex-1 flex-col gap-8">
         <div v-if="!isUpdateMode" class="flex w-full justify-between gap-12">
@@ -28,6 +28,7 @@
             v-model="formData.title as string"
             name="issue-title"
             :size="ESize.MEDIUM"
+            :max-length="ISSUE_TITLE_MAXLENGTH"
             full
             placeholder="Введите название задачи"
           />
@@ -119,6 +120,7 @@ import {
   EColor,
   EIssueEvent,
   getErrorMessage,
+  ISSUE_TITLE_MAXLENGTH,
   isValidationError,
   type TDeleteIssueEmitPayload,
   type TDeleteIssueResponse,
@@ -165,20 +167,19 @@ const isUpdateMode = ref(false);
 const { issueString, daysPassedSinceCreation, daysPassedSinceUpdating, copyIssueId, copyIssueLink, copyIssueTitle } =
   useIssueInfo(issue);
 
-const getInitialValue = (): Partial<TUpdateIssue> => ({
+const getInitialValue = (): Omit<TUpdateIssue, 'id'> => ({
   title: props.issue?.title ?? '',
   description: props.issue?.description ?? '',
 });
 
-const { formData, formErrors, isDirty, reset, set } = useForm<Partial<TUpdateIssue>>(getInitialValue());
+const { formData, formErrors, isDirty, reset, set } = useForm<Omit<TUpdateIssue, 'id'>>(getInitialValue());
 const { emitEvent: emitEventUpdate, isLoading: isLoadingUpdate } = useSocket();
 const { emitEvent: emitEventDelete, isLoading: isLoadingDelete } = useSocket();
 
 const updateIssue = () => {
   const body: TUpdateIssue = {
     id: issue.value.id,
-    title: formData.value.title || undefined,
-    description: formData.value.description || null,
+    ...formData.value,
   };
 
   emitEventUpdate({
@@ -215,14 +216,15 @@ const deleteIssue = () => {
   });
 };
 
-const closeModal = () => {
-  isOpenDeleteModal.value = false;
-  isOpen.value = false;
-};
-
 const resetUpdating = () => {
   isUpdateMode.value = false;
   reset();
+};
+
+const closeModal = () => {
+  isOpenDeleteModal.value = false;
+  isOpen.value = false;
+  resetUpdating();
 };
 
 const startUpdateMode = () => {

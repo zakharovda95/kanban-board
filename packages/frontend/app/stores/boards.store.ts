@@ -34,12 +34,14 @@ export const useBoardsStore = defineStore('boards-store', () => {
 
   const updateBoard = (updatedBoard: TBoardBase) => {
     if (!updatedBoard) return;
+
     const targetIndex = boards.value.findIndex(({ id }: TBoardBase) => id === updatedBoard.id);
     if (targetIndex != -1) boards.value.splice(targetIndex, 1, updatedBoard);
   };
 
   const deleteBoard = (payload: TDeleteBoardEmitPayload) => {
     if (!payload) return;
+
     boards.value = payload.boards;
     if (payload.deletedBoardId === currentBoardId.value) navigateTo(`/boards`);
   };

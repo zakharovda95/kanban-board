@@ -16,6 +16,7 @@
       show-color-picker
       @click:action-button="createBoard"
       @update:is-open="closeModal"
+      @update:field="update"
     />
   </div>
 </template>
@@ -39,7 +40,6 @@ import { useSocket } from '~/composables/use-socket.composable.ts';
 import { COLUMN_MESSAGES } from '~/constants/column.constants.ts';
 import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
-import { toBody } from '~/utilities/object.utilities';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
@@ -53,7 +53,7 @@ const toast = useToast();
 
 const isModalOpen = ref(false);
 
-const { formData, formErrors, reset } = useForm<Partial<TCreateColumn>>({
+const { formData, formErrors, reset, update } = useForm<Omit<TCreateColumn, 'boardId'>>({
   title: '',
   description: '',
   color: ColorUtility.getRandomHexColor(),
@@ -61,16 +61,18 @@ const { formData, formErrors, reset } = useForm<Partial<TCreateColumn>>({
 const { emitEvent, isLoading } = useSocket();
 
 const createBoard = () => {
-  emitEvent({
+  const body: TCreateColumn = {
+    boardId: Number(route.params.id),
+    ...formData.value,
+  };
+
+  emitEvent<TCreateColumn, TUpsertColumnResponse>({
     event: EColumnEvent.CREATE,
-    data: {
-      boardId: Number(route.params.id),
-      ...toBody<Partial<TCreateColumn>>(formData.value),
-    },
+    data: body,
     successCallback: (response: TUpsertColumnResponse) => {
       if (response.isSuccess && response.data) {
-        emit('add:column', response.data);
         toast.success({ message: COLUMN_MESSAGES.columnCreated });
+        emit('add:column', response.data);
         closeModal();
       }
     },

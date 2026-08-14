@@ -20,7 +20,8 @@ export type TCreateColumn = Pick<TColumnBase, 'title' | 'color' | 'boardId'> &
   Partial<Pick<TColumnBase, 'description'>>;
 
 /** Тело запроса на обновление колонки. **/
-export type TUpdateColumn = Partial<Pick<TColumnBase, 'id' | 'title' | 'description' | 'color'>>;
+export type TUpdateColumn = Pick<TColumnBase, 'id'> &
+  Partial<Pick<TColumnBase, 'title' | 'description' | 'color'>>;
 
 /** Ответ ack после создания/обновления колонки. **/
 export type TUpsertColumnResponse = TSuccessResponse<TColumn>;

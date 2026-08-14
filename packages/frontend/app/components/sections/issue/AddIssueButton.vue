@@ -11,8 +11,11 @@
       :title-maxlength="ISSUE_TITLE_MAXLENGTH"
       :disabled="isLoading"
       description-component="editor"
+      body-class="w-640!"
+      buttons-position="row"
       @click:action-button="createIssue"
       @update:is-open="closeModal"
+      @update:field="update"
     />
   </div>
 </template>
@@ -33,7 +36,6 @@ import { useForm } from '~/composables/use-form.composable';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { ISSUE_MESSAGES } from '~/constants/issue.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types';
-import { toBody } from '~/utilities/object.utilities';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
@@ -51,21 +53,26 @@ const toast = useToast();
 
 const isModalOpen = ref(false);
 
-const { formData, formErrors, reset } = useForm<Partial<TCreateIssue>>({ title: '', description: '' });
+const { formData, formErrors, reset, update } = useForm<Omit<TCreateIssue, 'columnId' | 'boardId'>>({
+  title: '',
+  description: '',
+});
 const { emitEvent, isLoading } = useSocket();
 
 const createIssue = () => {
+  const body: TCreateIssue = {
+    columnId: props.columnId,
+    boardId: Number(route.params.id),
+    ...formData.value,
+  };
+
   emitEvent({
     event: EIssueEvent.CREATE,
-    data: {
-      columnId: props.columnId,
-      boardId: Number(route.params.id),
-      ...toBody<Partial<TCreateIssue>>(formData.value),
-    },
+    data: body,
     successCallback: (response: TUpsertIssueResponse) => {
       if (response.isSuccess && response.data) {
-        emit('add:issue', response.data);
         toast.success({ message: ISSUE_MESSAGES.issueCreated });
+        emit('add:issue', response.data);
         closeModal();
       }
     },

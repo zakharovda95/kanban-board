@@ -41,7 +41,7 @@ export class AppConfig {
       },
       validationOptions: {
         allowUnknown: false,
-        abortEarly: false, // прервать (и отобразить) только первую ошибку валидации
+        abortEarly: false,
       },
     };
   }

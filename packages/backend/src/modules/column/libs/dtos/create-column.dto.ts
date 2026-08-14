@@ -4,6 +4,7 @@ import {
   type TCreateColumn,
 } from '@kanban-board/common';
 import {
+  IsDefined,
   IsHexColor,
   IsInt,
   IsNotEmpty,
@@ -17,9 +18,10 @@ import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 
 export class CreateColumnDto implements TCreateColumn {
+  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeBigint },
+    { message: VALIDATION_MESSAGES.idMustBeNumber },
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })

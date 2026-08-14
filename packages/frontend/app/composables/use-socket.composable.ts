@@ -5,7 +5,7 @@ export function useSocket() {
 
   const isLoading = ref(false);
 
-  const emitEvent = <TAckReturnValue>({
+  const emitEvent = <TData, TAckReturnValue>({
     event,
     timeout = 10000,
     data,
@@ -14,7 +14,7 @@ export function useSocket() {
   }: {
     event: string;
     timeout?: number;
-    data: unknown;
+    data: TData;
     successCallback: (data: TAckReturnValue) => void;
     errorCallback?: (error: unknown) => void;
   }) => {

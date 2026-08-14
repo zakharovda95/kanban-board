@@ -58,6 +58,7 @@ const resolvedComponent = computed(() => (props.variant === 'card' ? 'div' : UIB
 
 const resolvedAttributes = computed(() => {
   if (props.variant === 'card') return { class: 'text-12 text-light-800 flex gap-2' };
+
   return {
     size: ESize.MEDIUM,
     backgroundColor: EColor.LIGHT_200,

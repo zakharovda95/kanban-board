@@ -8,7 +8,12 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{ showVersion?: boolean }>(), { showVersion: false });
+withDefaults(
+  defineProps<{
+    showVersion?: boolean;
+  }>(),
+  { showVersion: false },
+);
 
 const runtimeConfig = useRuntimeConfig();
 </script>

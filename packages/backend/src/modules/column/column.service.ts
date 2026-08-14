@@ -51,6 +51,7 @@ export class ColumnService {
       boardId,
     });
     if (!createdColumn) throw new WsException(EXCEPTION_MESSAGES.createFailed);
+
     return this.columnMapper.toModel({ ...createdColumn, issues: [] });
   }
 

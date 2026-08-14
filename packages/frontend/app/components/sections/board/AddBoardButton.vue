@@ -15,6 +15,7 @@
       :disabled="isLoading"
       @click:action-button="createBoard"
       @update:is-open="closeModal"
+      @update:field="update"
     />
   </div>
 </template>
@@ -37,7 +38,6 @@ import { useSocket } from '~/composables/use-socket.composable.ts';
 import { BOARD_MESSAGES } from '~/constants/board.constants.ts';
 import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
-import { toBody } from '~/utilities/object.utilities.ts';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
@@ -50,17 +50,17 @@ const toast = useToast();
 
 const isModalOpen = ref(false);
 
-const { formData, reset, formErrors } = useForm<TCreateBoard>({ title: '', description: '' });
+const { formData, reset, formErrors, update } = useForm<TCreateBoard>({ title: '', description: '' });
 const { emitEvent, isLoading } = useSocket();
 
 const createBoard = () => {
-  emitEvent<TUpsertBoardResponse>({
-    event: String(EBoardEvent.CREATE),
-    data: toBody<TCreateBoard>(formData.value),
+  emitEvent<TCreateBoard, TUpsertBoardResponse>({
+    event: EBoardEvent.CREATE,
+    data: formData.value,
     successCallback: (response: TUpsertBoardResponse) => {
       if (response.isSuccess && response.data) {
-        emit('add:board', response.data);
         toast.success({ message: BOARD_MESSAGES.boardCreated });
+        emit('add:board', response.data);
         navigateTo(`/boards/${response.data.id}`);
         closeModal();
       }

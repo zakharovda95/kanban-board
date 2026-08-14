@@ -30,3 +30,5 @@ export type TUIInputAutocomplete =
 export type TUIInputMode = 'text' | 'email' | 'tel' | 'none' | 'url' | 'numeric' | 'decimal' | 'search' | undefined;
 
 export type TUIAnimatedHeightHook = (element: Element) => void;
+
+export type TUIFormButtonsPosition = 'column' | 'row';

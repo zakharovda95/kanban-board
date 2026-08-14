@@ -1,5 +1,7 @@
 <template>
-  <div>Страница в разработке</div>
+  <div class="flex size-full items-center justify-center">
+    <span class="text-28 font-medium">Страница в разработке</span>
+  </div>
 </template>
 
 <script setup lang="ts"></script>

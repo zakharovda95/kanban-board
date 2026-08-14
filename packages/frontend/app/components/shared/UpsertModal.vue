@@ -5,19 +5,21 @@
         :disabled="disabled"
         :action-button-label="actionButtonLabel"
         :buttons-size="ESize.MEDIUM"
+        :buttons-position="buttonsPosition"
         full
         @submit:form="emit('click:action-button')"
         @reset:form="isOpen = false"
       >
         <UILabel text="Название">
           <UIInput
-            v-model="model.title"
+            :model-value="model.title"
             :size="ESize.MEDIUM"
             :max-length="titleMaxlength"
             :errors="formErrors.title"
             name="input-title"
             placeholder="Укажите название..."
             full
+            @update:model-value="updateModel('title', $event)"
           />
         </UILabel>
 
@@ -35,7 +37,11 @@
         </UILabel>
 
         <UILabel v-if="showColorPicker && model.color" text="Цвет">
-          <UIColorPicker v-model="model.color" :size="ESize.MEDIUM" />
+          <UIColorPicker
+            :model-value="model.color"
+            :size="ESize.MEDIUM"
+            @update:model-value="updateModel('color', $event)"
+          />
         </UILabel>
       </UIForm>
     </div>
@@ -48,6 +54,7 @@ import type { TValidationErrors } from '@kanban-board/common';
 import { ACTION_BUTTON_LABEL } from '~/constants/ui.constants';
 import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
+import type { TUIFormButtonsPosition } from '~/types/ui.types.ts';
 
 import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
@@ -70,6 +77,7 @@ const props = withDefaults(
     actionButtonLabel?: string;
     showColorPicker?: boolean;
     descriptionComponent?: 'input' | 'editor';
+    buttonsPosition?: TUIFormButtonsPosition;
   }>(),
   {
     bodyClass: null,
@@ -79,12 +87,18 @@ const props = withDefaults(
     actionButtonLabel: ACTION_BUTTON_LABEL,
     showColorPicker: false,
     descriptionComponent: 'input',
+    buttonsPosition: 'column',
   },
 );
 
 const emit = defineEmits<{
   'click:action-button': [];
+  'update:field': [field: keyof TUpsertFormData, value: TUpsertFormData[keyof TUpsertFormData]];
 }>();
 
 const resolvedDescriptionComponent = computed(() => (props.descriptionComponent === 'input' ? UIInput : UIRichEditor));
+
+const updateModel = (field: keyof TUpsertFormData, value: TUpsertFormData[keyof TUpsertFormData]) => {
+  emit('update:field', field, value);
+};
 </script>

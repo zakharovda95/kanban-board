@@ -15,6 +15,7 @@
       :disabled="isLoadingUpdate || !isDirty"
       @update:is-open="closeModal"
       @click:action-button="updateBoard"
+      @update:field="update"
     />
 
     <UIConfirmationModal
@@ -74,24 +75,23 @@ const getInitialValue = (): Omit<TUpdateBoard, 'id'> => ({
   description: props.board?.description ?? '',
 });
 
-const { formData, reset, formErrors, isDirty, set } = useForm<Omit<TUpdateBoard, 'id'>>(getInitialValue());
+const { formData, reset, formErrors, isDirty, set, update } = useForm<Omit<TUpdateBoard, 'id'>>(getInitialValue());
 const { isLoading: isLoadingUpdate, emitEvent: emitUpdate } = useSocket();
 const { isLoading: isLoadingDelete, emitEvent: emitDelete } = useSocket();
 
 const updateBoard = () => {
   const body: TUpdateBoard = {
     id: props.board.id,
-    title: formData.value.title || undefined,
-    description: formData.value.description || null,
+    ...formData.value,
   };
 
-  emitUpdate({
+  emitUpdate<TUpdateBoard, TUpsertBoardResponse>({
     event: EBoardEvent.UPDATE,
     data: body,
     successCallback: (response: TUpsertBoardResponse) => {
       if (response.isSuccess && response.data) {
-        emit('update:board', response.data);
         toast.success({ message: BOARD_MESSAGES.boardUpdated });
+        emit('update:board', response.data);
         closeModal();
       }
     },
@@ -103,13 +103,13 @@ const updateBoard = () => {
 };
 
 const deleteBoard = () => {
-  emitDelete({
+  emitDelete<number, TDeleteBoardResponse>({
     event: EBoardEvent.DELETE,
     data: props.board.id,
     successCallback: (response: TDeleteBoardResponse) => {
       if (response.isSuccess && response.data) {
-        emit('delete:board', response.data);
         toast.success({ message: BOARD_MESSAGES.boardDeleted });
+        emit('delete:board', response.data);
         closeModal();
       }
     },
