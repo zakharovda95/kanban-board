@@ -36,7 +36,7 @@
     </div>
 
     <div v-if="column.issues.length" class="size-full overflow-hidden">
-      <div class="flex h-[calc(100vh-368px)] w-full flex-col items-center gap-8 overflow-auto px-8">
+      <div class="flex h-[calc(100vh-356px)] w-full flex-col items-center gap-8 overflow-auto px-8">
         <IssueCard
           v-for="issue in column.issues"
           :key="issue.id"

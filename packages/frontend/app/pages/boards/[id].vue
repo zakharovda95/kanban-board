@@ -1,6 +1,7 @@
 <template>
   <div class="flex size-full items-center justify-center">
     <TheBoard
+      class="laptop:block hidden"
       :board="data ?? null"
       :is-loading="pending"
       :error-text="errorMessage"
@@ -11,6 +12,7 @@
       @update:issue="updateIssue"
       @delete:issue="deleteIssue"
     />
+    <TheBoardMobile class="laptop:hidden flex" />
   </div>
 </template>
 
@@ -32,6 +34,7 @@ import { COLUMN_MESSAGES } from '~/constants/column.constants.ts';
 import { ISSUE_MESSAGES } from '~/constants/issue.constants.ts';
 
 import TheBoard from '~/components/sections/board/TheBoard.vue';
+import TheBoardMobile from '~/components/sections/board/TheBoardMobile.vue';
 
 definePageMeta({
   layout: 'board',

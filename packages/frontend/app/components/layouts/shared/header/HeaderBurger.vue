@@ -11,7 +11,7 @@
     <Transition name="fade">
       <div
         v-if="isBurgerOpen"
-        class="absolute right-0 bottom-0 left-0 flex h-[calc(100vh-80px)] items-center justify-center p-12"
+        class="absolute right-0 bottom-0 left-0 z-2 flex h-[calc(100vh-80px)] items-center justify-center p-12"
       >
         <div class="bg-light-base rounded-12 flex size-full flex-col gap-24 p-12">
           <TheProfile />

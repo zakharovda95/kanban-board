@@ -2,7 +2,7 @@
   <div class="flex h-screen flex-col">
     <TheHeader />
 
-    <main class="flex flex-1">
+    <main class="laptop:flex-row flex flex-1 flex-col">
       <TheSidebar />
       <slot />
     </main>
