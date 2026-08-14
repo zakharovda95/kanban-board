@@ -25,8 +25,6 @@ export const useBoardsStore = defineStore('boards-store', () => {
     },
   });
 
-  /* BOARD */
-
   const addNewBoard = (newBoard: TBoardBase): void => {
     if (!newBoard) return;
     boards.value.push(newBoard);
@@ -82,5 +80,10 @@ export const useBoardsStore = defineStore('boards-store', () => {
     stopListenDeleted();
   };
 
-  return { isLoadingBoards, boards, fetchBoards, addNewBoard, updateBoard, deleteBoard, stopListen };
+  const resetStore = () => {
+    isLoadingBoards.value = false;
+    boards.value = [];
+  };
+
+  return { isLoadingBoards, boards, fetchBoards, addNewBoard, updateBoard, deleteBoard, stopListen, resetStore };
 });

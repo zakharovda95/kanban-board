@@ -6,7 +6,7 @@
       <slot />
     </main>
 
-    <TheFooter />
+    <TheFooter class="laptop:flex hidden" />
   </div>
 </template>
 

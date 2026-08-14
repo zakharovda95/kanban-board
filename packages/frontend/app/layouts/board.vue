@@ -7,14 +7,14 @@
       <slot />
     </main>
 
-    <TheFooter />
+    <TheFooter class="laptop:flex hidden" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useBoardsStore } from '~/stores/boards.store';
 
-import TheSidebar from '~/components/layouts/board/sidebar/TheSidebar.vue';
+import TheSidebar from '~/components/layouts/board/TheSidebar.vue';
 import TheHeader from '~/components/layouts/shared/header/TheHeader.vue';
 import TheFooter from '~/components/layouts/shared/TheFooter.vue';
 
@@ -31,6 +31,6 @@ if (error.value) {
 
 onBeforeUnmount(() => {
   boardsStore.stopListen();
-  boardsStore.$reset();
+  boardsStore.resetStore();
 });
 </script>

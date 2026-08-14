@@ -41,18 +41,18 @@
     </div>
 
     <div class="bg-light-base rounded-12 w-full p-12">
-      <SidebarProfileWidget />
+      <TheProfile />
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
-import { BOARD_MESSAGES } from '~/constants/board.constants';
-import { useBoardsStore } from '~/stores/boards.store';
+import { BOARD_MESSAGES } from '~/constants/board.constants.ts';
+import { useBoardsStore } from '~/stores/boards.store.ts';
 
-import SidebarProfileWidget from '~/components/layouts/board/sidebar/SidebarProfileWidget.vue';
 import AddBoardButton from '~/components/sections/board/AddBoardButton.vue';
 import BoardActionsButtons from '~/components/sections/board/BoardActionsButtons.vue';
+import TheProfile from '~/components/shared/TheProfile.vue';
 import UILink from '~/components/ui/UILink.vue';
 import UILoader from '~/components/ui/UILoader.vue';
 

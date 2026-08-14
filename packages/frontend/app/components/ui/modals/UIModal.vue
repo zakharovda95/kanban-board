@@ -18,7 +18,7 @@
       class="size-screen bg-light-black-opacity absolute inset-0 flex items-center justify-center overflow-hidden p-12"
       @click.self="onClickLayout"
     >
-      <div class="bg-light-base rounded-12 relative size-fit max-h-[80%] max-w-[80%] p-12">
+      <div class="bg-light-base rounded-12 laptop:max-w-[80%] relative size-fit max-h-[80%] max-w-full p-12">
         <header v-if="title || slots.header" class="mb-12 flex w-full items-center justify-between gap-8">
           <slot name="header">
             <h4 class="text-18 font-medium">{{ title }}</h4>
