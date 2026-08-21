@@ -6,7 +6,7 @@ const NODE_ENV = process.env.NODE_ENV;
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
 
-  // ssr: false,
+  ssr: false,
 
   devtools: { enabled: NODE_ENV === ENodeEnv.DEVELOPMENT },
 

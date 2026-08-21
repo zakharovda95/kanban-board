@@ -17,10 +17,10 @@
           @click="onClickBoard(board.id)"
         >
           <div class="w-[calc(100%-32px)] text-left">
-            <p class="text-14 block overflow-hidden font-medium text-ellipsis whitespace-nowrap">
+            <p class="text-14 block overflow-hidden leading-18 font-medium text-ellipsis whitespace-nowrap">
               {{ board.title }}
             </p>
-            <p class="text-12 block overflow-hidden font-light text-ellipsis whitespace-nowrap">
+            <p class="text-12 block overflow-hidden leading-16 font-light text-ellipsis whitespace-nowrap">
               {{ board.description }}
             </p>
           </div>

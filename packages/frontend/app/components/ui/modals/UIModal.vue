@@ -15,7 +15,7 @@
     class="flex items-center justify-center"
   >
     <div
-      class="size-screen bg-light-black-opacity absolute inset-0 flex items-center justify-center overflow-hidden p-12"
+      class="size-screen bg-light-black-opacity absolute inset-0 z-3 flex items-center justify-center overflow-hidden p-12"
       @click.self="onClickLayout"
     >
       <div class="bg-light-base rounded-12 laptop:max-w-[80%] relative size-fit max-h-[80%] max-w-full p-12">

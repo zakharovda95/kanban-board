@@ -3,7 +3,7 @@
     <TheHeader />
 
     <main class="laptop:flex-row flex flex-1 flex-col">
-      <TheSidebar />
+      <TheSidebar class="laptop:flex hidden" />
       <slot />
     </main>
 

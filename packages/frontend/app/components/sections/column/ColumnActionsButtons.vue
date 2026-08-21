@@ -14,6 +14,8 @@
       :model-value="formData as TUpsertFormData"
       :form-errors="formErrors as TValidationErrors<TUpsertFormData>"
       :disabled="isLoadingUpdate || !isDirty"
+      :title-maxlength="COLUMN_TITLE_MAXLENGTH"
+      :description-maxlength="COLUMN_DESCRIPTION_MAXLENGTH"
       show-color-picker
       @click:action-button="updateColumn"
       @update:is-open="closeModal"
@@ -34,6 +36,8 @@
 
 <script setup lang="ts">
 import {
+  COLUMN_DESCRIPTION_MAXLENGTH,
+  COLUMN_TITLE_MAXLENGTH,
   EColumnEvent,
   getErrorMessage,
   isValidationError,

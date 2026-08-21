@@ -1,6 +1,9 @@
 <template>
   <div class="w-fit">
-    <UIIconButton icon="add-line" @click:button="isModalOpen = true" />
+    <UIIconButton class="laptop:flex hidden" icon="add-line" @click:button="isModalOpen = true" />
+    <UIButton class="laptop:hidden flex" prepend-icon="add-line" @click:button="isModalOpen = true">
+      Добавить задачу
+    </UIButton>
 
     <UpsertModal
       :is-open="isModalOpen"
@@ -11,7 +14,7 @@
       :title-maxlength="ISSUE_TITLE_MAXLENGTH"
       :disabled="isLoading"
       description-component="editor"
-      body-class="w-640!"
+      body-class="w-auto laptop:w-640!"
       buttons-position="row"
       @click:action-button="createIssue"
       @update:is-open="closeModal"
@@ -38,6 +41,7 @@ import { ISSUE_MESSAGES } from '~/constants/issue.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
+import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 
 const props = defineProps<{

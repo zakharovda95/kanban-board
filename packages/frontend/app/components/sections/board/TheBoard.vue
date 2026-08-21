@@ -8,16 +8,37 @@
       <BoardFilter @add:column="emit('add:column', $event)" />
 
       <div class="flex h-full w-[calc(100vw-304px)] flex-1 flex-row gap-8 overflow-x-auto">
-        <TheColumn
+        <article
           v-for="column in board?.columns"
           :key="column.id"
-          :column="column"
-          @update:column="emit('update:column', $event)"
-          @delete:column="emit('delete:column', $event)"
-          @add:issue="emit('add:issue', $event)"
-          @update:issue="emit('update:issue', $event)"
-          @delete:issue="emit('delete:issue', $event)"
-        />
+          class="border-light-300 bg-light-200 rounded-12 flex size-full w-280 shrink-0 flex-col items-center gap-8 overflow-hidden border"
+        >
+          <header
+            class="bg-light-base flex h-54 w-full shrink-0 flex-col border-b-4 px-12 py-8 text-left select-none"
+            :style="{ borderBottomColor: column.color }"
+          >
+            <ColumnInfo
+              :column="column"
+              @update:column="emit('update:column', $event)"
+              @delete:column="emit('delete:column', $event)"
+            />
+          </header>
+
+          <ColumnTopPanel :column="column" @add:issue="emit('add:issue', $event)" />
+
+          <div class="size-full overflow-hidden">
+            <div class="flex h-[calc(100vh-360px)] w-full flex-col items-center gap-8 overflow-auto px-8">
+              <IssueCard
+                v-for="issue in column.issues"
+                :key="issue.id"
+                :issue="issue"
+                :color="column.color"
+                @update:issue="emit('update:issue', $event)"
+                @delete:issue="emit('delete:issue', $event)"
+              />
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </div>
@@ -33,7 +54,9 @@ import type {
 } from '@kanban-board/common';
 
 import BoardFilter from '~/components/sections/board/BoardFilter.vue';
-import TheColumn from '~/components/sections/column/TheColumn.vue';
+import ColumnInfo from '~/components/sections/column/ColumnInfo.vue';
+import ColumnTopPanel from '~/components/sections/column/ColumnTopPanel.vue';
+import IssueCard from '~/components/sections/issue/IssueCard.vue';
 import UILoader from '~/components/ui/UILoader.vue';
 
 withDefaults(

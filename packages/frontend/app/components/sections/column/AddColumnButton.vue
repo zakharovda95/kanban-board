@@ -1,8 +1,14 @@
 <template>
   <div class="w-fit">
-    <UIButton prepend-icon="add-line" :size="ESize.MEDIUM" @click:button="isModalOpen = true">
+    <UIButton
+      class="laptop:flex hidden"
+      prepend-icon="add-line"
+      :size="ESize.MEDIUM"
+      @click:button="isModalOpen = true"
+    >
       Добавить колонку
     </UIButton>
+    <UIIconButton class="laptop:hidden flex" icon="add-line" :size="ESize.MEDIUM" @click:button="isModalOpen = true" />
 
     <UpsertModal
       :is-open="isModalOpen"
@@ -43,6 +49,7 @@ import type { TUpsertFormData } from '~/types/shared.types';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
+import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 
 const emit = defineEmits<{
   'add:column': [column: TColumn];

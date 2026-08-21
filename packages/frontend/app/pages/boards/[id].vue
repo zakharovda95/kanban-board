@@ -12,7 +12,18 @@
       @update:issue="updateIssue"
       @delete:issue="deleteIssue"
     />
-    <TheBoardMobile class="laptop:hidden flex" />
+    <TheBoardMobile
+      class="laptop:hidden flex"
+      :board="data ?? null"
+      :is-loading="pending"
+      :error-text="errorMessage"
+      @add:column="addColumn"
+      @update:column="updateColumn"
+      @delete:column="deleteColumn"
+      @add:issue="addIssue"
+      @update:issue="updateIssue"
+      @delete:issue="deleteIssue"
+    />
   </div>
 </template>
 
