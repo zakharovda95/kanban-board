@@ -17,11 +17,14 @@
             class="bg-light-base flex h-54 w-full shrink-0 flex-col border-b-4 px-12 py-8 text-left select-none"
             :style="{ borderBottomColor: column.color }"
           >
-            <ColumnInfo
-              :column="column"
-              @update:column="emit('update:column', $event)"
-              @delete:column="emit('delete:column', $event)"
-            />
+            <div class="flex size-full items-center justify-between">
+              <ColumnInfo :column="column" class="w-[calc(100%-32px)]" />
+              <ColumnActionsButtons
+                :column="column"
+                @update:column="emit('update:column', $event)"
+                @delete:column="emit('delete:column', $event)"
+              />
+            </div>
           </header>
 
           <ColumnTopPanel :column="column" @add:issue="emit('add:issue', $event)" />
@@ -54,6 +57,7 @@ import type {
 } from '@kanban-board/common';
 
 import BoardFilter from '~/components/sections/board/BoardFilter.vue';
+import ColumnActionsButtons from '~/components/sections/column/ColumnActionsButtons.vue';
 import ColumnInfo from '~/components/sections/column/ColumnInfo.vue';
 import ColumnTopPanel from '~/components/sections/column/ColumnTopPanel.vue';
 import IssueCard from '~/components/sections/issue/IssueCard.vue';

@@ -5,7 +5,7 @@
       <h4 class="font-medium">Мои доски</h4>
       <nav
         v-if="!boardsStore.isLoadingBoards && boardsStore.boards?.length"
-        class="flex h-fit w-full flex-col gap-8 overflow-hidden"
+        class="hide-scrollbar flex h-fit w-full flex-col gap-8 overflow-auto"
       >
         <UILink
           v-for="board in boardsStore.boards"

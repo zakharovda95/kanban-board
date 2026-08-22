@@ -111,3 +111,7 @@
 @utility disabled-element {
   @apply pointer-events-none cursor-not-allowed! opacity-50 hover:border-transparent!;
 }
+
+@utility hide-scrollbar {
+  scrollbar-width: none;
+}
