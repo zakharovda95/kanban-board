@@ -1,11 +1,13 @@
-import type {
-  TBoard,
-  TBoardBase,
-  TCreateBoard,
-  TDeleteBoardEmitPayload,
-  TMoveParameters,
-  TSuccessResponse,
-  TUpdateBoard,
+import {
+  BOARDS_MAX_COUNT,
+  BOARDS_MAX_COUNT_ERROR_MESSAGE,
+  type TBoard,
+  type TBoardBase,
+  type TCreateBoard,
+  type TDeleteBoardEmitPayload,
+  type TMoveParameters,
+  type TSuccessResponse,
+  type TUpdateBoard,
 } from '@kanban-board/common';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
@@ -72,6 +74,7 @@ export class BoardService {
     const { manager } = this.dataSource;
 
     const boardsCount = await manager.count(BoardEntity);
+    if (boardsCount >= BOARDS_MAX_COUNT) throw new WsException(BOARDS_MAX_COUNT_ERROR_MESSAGE);
 
     const board = await manager.save(BoardEntity, {
       title: body.title,

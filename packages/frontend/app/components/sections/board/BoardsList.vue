@@ -36,12 +36,14 @@
         <p class="text-12">{{ BOARD_MESSAGES.noBoards }}</p>
       </div>
 
-      <AddBoardButton @add:board="boardsStore.addNewBoard" />
+      <AddBoardButton :disabled="boardsStore.boards.length >= BOARDS_MAX_COUNT" @add:board="boardsStore.addNewBoard" />
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { BOARDS_MAX_COUNT } from '@kanban-board/common';
+
 import { BOARD_MESSAGES } from '~/constants/board.constants.ts';
 import { useBoardsStore } from '~/stores/boards.store.ts';
 

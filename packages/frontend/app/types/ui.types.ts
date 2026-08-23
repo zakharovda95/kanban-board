@@ -7,7 +7,7 @@ export type TUIComputedSizeMap = {
 };
 
 export type TUIComputedSize = {
-  element: string;
+  element?: string;
   icon?: EIconSize | EIconSizeSmall | number;
 };
 

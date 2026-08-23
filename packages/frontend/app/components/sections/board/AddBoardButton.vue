@@ -1,8 +1,17 @@
 <template>
   <div class="w-full">
-    <UIButton prepend-icon="add-line" full :size="ESize.MEDIUM" @click:button="isModalOpen = true">
-      Добавить доску
-    </UIButton>
+    <div class="flex w-full gap-8">
+      <UIButton
+        class="flex-1"
+        prepend-icon="add-line"
+        :size="ESize.MEDIUM"
+        :disabled="disabled"
+        @click:button="isModalOpen = true"
+      >
+        Добавить доску
+      </UIButton>
+      <UITooltip v-if="disabled" :text="BOARDS_MAX_COUNT_ERROR_MESSAGE" :size="ESize.LARGE" />
+    </div>
 
     <UpsertModal
       :is-open="isModalOpen"
@@ -24,6 +33,7 @@
 import {
   BOARD_DESCRIPTION_MAXLENGTH,
   BOARD_TITLE_MAXLENGTH,
+  BOARDS_MAX_COUNT_ERROR_MESSAGE,
   EBoardEvent,
   getErrorMessage,
   isValidationError,
@@ -41,6 +51,16 @@ import type { TUpsertFormData } from '~/types/shared.types';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
+import UITooltip from '~/components/ui/UITooltip.vue';
+
+withDefaults(
+  defineProps<{
+    disabled?: boolean;
+  }>(),
+  {
+    disabled: false,
+  },
+);
 
 const emit = defineEmits<{
   'add:board': [payload: TBoardBase];
