@@ -1,5 +1,5 @@
 <template>
-  <header class="flex h-80 shrink-0 items-center justify-between gap-12 bg-transparent px-12 pt-12">
+  <header class="flex h-80 items-center justify-between gap-12 bg-transparent px-12 pt-12">
     <div
       class="bg-light-base rounded-12 laptop:max-w-268 flex size-full max-w-none shrink-0 items-center justify-between gap-12 px-12 py-8"
     >

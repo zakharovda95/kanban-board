@@ -1,6 +1,6 @@
 {
     "name": "kanban-board",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "Портфолио-проект kanban-доска.",
     "author": "zakharovda95 <zakharovda95@gmail.com>",
     "type": "module",

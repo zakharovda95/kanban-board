@@ -14,7 +14,7 @@
           class="border-light-300 bg-light-200 rounded-12 flex size-full w-280 shrink-0 flex-col items-center gap-8 overflow-hidden border"
         >
           <header
-            class="bg-light-base flex h-54 w-full shrink-0 flex-col border-b-4 px-12 py-8 text-left select-none"
+            class="bg-light-base flex h-54 w-full flex-col border-b-4 px-12 py-8 text-left select-none"
             :style="{ borderBottomColor: column.color }"
           >
             <div class="flex size-full items-center justify-between">
