@@ -14,7 +14,7 @@
       :title-maxlength="ISSUE_TITLE_MAXLENGTH"
       :disabled="isLoading"
       description-component="editor"
-      body-class="w-auto laptop:w-640!"
+      body-class="w-full! laptop:w-640!"
       buttons-position="row"
       @click:action-button="createIssue"
       @update:is-open="closeModal"

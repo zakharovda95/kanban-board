@@ -5,9 +5,7 @@
     <NuxtPage />
   </NuxtLayout>
 
-  <ClientOnly>
-    <ModalsContainer />
-  </ClientOnly>
+  <ModalsContainer />
 </template>
 
 <script setup lang="ts">

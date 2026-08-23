@@ -6,7 +6,7 @@ const NODE_ENV = process.env.NODE_ENV;
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
 
-  ssr: false,
+  ssr: true,
 
   devtools: { enabled: NODE_ENV === ENodeEnv.DEVELOPMENT },
 
@@ -42,7 +42,7 @@ export default defineNuxtConfig({
     host: process.env.FRONTEND_HOST,
   },
 
-  css: ['~/assets/styles/fonts.css', '~/assets/styles/tailwind.css', '~/assets/styles/toasts.css'],
+  css: ['~/assets/styles/fonts.css', '~/assets/styles/tailwind.css', '~/assets/styles/toasts.css', 'vue-final-modal/style.css'],
 
   vite: {
     plugins: [tailwindcss()],
@@ -77,7 +77,7 @@ export default defineNuxtConfig({
       titleColor: '#ffffff',
       titleSize: '16px',
       messageColor: '#ffffff',
-      messageSize: '16px',
+      messageSize: '14px',
       progressBar: false,
       icon: undefined,
       iconColor: '#ffffff',

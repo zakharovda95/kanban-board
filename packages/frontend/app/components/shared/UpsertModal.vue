@@ -1,50 +1,48 @@
 <template>
   <UIModal v-model:is-open="isOpen" :title="modalTitle" :body-class="bodyClass">
-    <div class="w-full min-w-320">
-      <UIForm
-        :disabled="disabled"
-        :action-button-label="actionButtonLabel"
-        :buttons-size="ESize.MEDIUM"
-        :buttons-position="buttonsPosition"
-        full
-        @submit:form="emit('click:action-button')"
-        @reset:form="isOpen = false"
-      >
-        <UILabel text="Название">
-          <UIInput
-            :model-value="model.title"
-            :size="ESize.MEDIUM"
-            :max-length="titleMaxlength"
-            :errors="formErrors.title"
-            name="input-title"
-            placeholder="Укажите название..."
-            full
-            @update:model-value="updateModel('title', $event)"
-          />
-        </UILabel>
+    <UIForm
+      :disabled="disabled"
+      :action-button-label="actionButtonLabel"
+      :buttons-size="ESize.MEDIUM"
+      :buttons-position="buttonsPosition"
+      full
+      @submit:form="emit('click:action-button')"
+      @reset:form="isOpen = false"
+    >
+      <UILabel text="Название">
+        <UIInput
+          :model-value="model.title"
+          :size="ESize.MEDIUM"
+          :max-length="titleMaxlength"
+          :errors="formErrors.title"
+          name="input-title"
+          placeholder="Укажите название..."
+          full
+          @update:model-value="updateModel('title', $event)"
+        />
+      </UILabel>
 
-        <UILabel text="Описание">
-          <Component
-            :is="resolvedDescriptionComponent"
-            v-model="model.description"
-            :size="ESize.MEDIUM"
-            :max-length="descriptionMaxlength"
-            :errors="formErrors.description"
-            name="input-description"
-            placeholder="Укажите описание..."
-            full
-          />
-        </UILabel>
+      <UILabel text="Описание">
+        <Component
+          :is="resolvedDescriptionComponent"
+          v-model="model.description"
+          :size="ESize.MEDIUM"
+          :max-length="descriptionMaxlength"
+          :errors="formErrors.description"
+          name="input-description"
+          placeholder="Укажите описание..."
+          full
+        />
+      </UILabel>
 
-        <UILabel v-if="showColorPicker && model.color" text="Цвет">
-          <UIColorPicker
-            :model-value="model.color"
-            :size="ESize.MEDIUM"
-            @update:model-value="updateModel('color', $event)"
-          />
-        </UILabel>
-      </UIForm>
-    </div>
+      <UILabel v-if="showColorPicker && model.color" text="Цвет">
+        <UIColorPicker
+          :model-value="model.color"
+          :size="ESize.MEDIUM"
+          @update:model-value="updateModel('color', $event)"
+        />
+      </UILabel>
+    </UIForm>
   </UIModal>
 </template>
 

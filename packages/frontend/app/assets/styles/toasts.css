@@ -2,22 +2,25 @@
   box-shadow: none !important;
 }
 
+.iziToast.iziToast-color-green,
+.iziToast.iziToast-color-red,
+.iziToast.iziToast-color-blue {
+  line-height: 145% !important;
+  color: var(--color-light-base) !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-all !important;
+}
+
 .iziToast.iziToast-color-green {
   background-color: var(--color-green) !important;
-  color: var(--color-light-base) !important;
-  line-height: 145% !important;
 }
 
 .iziToast.iziToast-color-red {
   background-color: var(--color-red) !important;
-  color: var(--color-light-base) !important;
-  line-height: 145% !important;
 }
 
 /*.iziToast.iziToast-color-yellow {}*/
 
 .iziToast.iziToast-color-blue {
   background-color: var(--color-blue) !important;
-  color: var(--color-light-base) !important;
-  line-height: 145% !important;
 }

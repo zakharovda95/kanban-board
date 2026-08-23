@@ -34,6 +34,16 @@
     transform: translateY(-20px);
     opacity: 0;
   }
+
+  .menu-fade-enter-active,
+  .menu-fade-leave-active {
+    transition: opacity 0.3s ease;
+  }
+
+  .menu-fade-enter-from,
+  .menu-fade-leave-to {
+    opacity: 0;
+  }
 }
 
 @theme {

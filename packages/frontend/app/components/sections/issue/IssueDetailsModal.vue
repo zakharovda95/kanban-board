@@ -1,11 +1,11 @@
 <template>
-  <UIModal :is-open="isOpen" @update:is-open="closeModal">
+  <UIModal :is-open="isOpen" body-class="laptop:w-640 w-full" @update:is-open="closeModal">
     <template #header>
       <div class="flex flex-1 flex-col gap-8">
         <div v-if="!isUpdateMode" class="flex w-full justify-between gap-12">
-          <h4 class="text-18 flex items-center gap-4">
+          <h4 class="text-18 flex flex-wrap items-center gap-4">
             <button
-              class="text-green cursor-pointer bg-none p-0 font-bold underline underline-offset-4 duration-300 outline-none hover:brightness-95"
+              class="text-green cursor-pointer bg-none p-0 font-bold whitespace-nowrap underline underline-offset-4 duration-300 outline-none hover:brightness-95"
               @click="copyIssueId"
             >
               {{ issueString }}:
@@ -44,10 +44,10 @@
       </div>
     </template>
 
-    <div class="w-640 py-12">
+    <div class="py-12">
       <div v-if="!isUpdateMode" class="border-light-200 rounded-8 border p-12">
-        <p v-if="issue.description">{{ issue.description }}</p>
-        <p v-else class="text-light-500 italic">(описание не добавлено)</p>
+        <div v-if="issue.description" class="text-14" v-html="issue.description" />
+        <p v-else class="text-light-500 text-14 italic">(описание не добавлено)</p>
       </div>
       <UILabel v-else text="Описание">
         <UIRichEditor
@@ -61,9 +61,10 @@
     </div>
 
     <template #footer>
-      <div class="flex justify-between gap-12">
+      <div class="laptop:gap-12 laptop:flex-row flex flex-col-reverse items-center justify-between gap-8">
         <template v-if="!isUpdateMode">
           <UIButton
+            class="laptop:w-fit w-full"
             :size="ESize.MEDIUM"
             :background-color="EColor.RED"
             prepend-icon="delete-2-line"
@@ -72,7 +73,7 @@
             Удалить задачу
           </UIButton>
           <UIButton
-            full
+            class="laptop:w-auto laptop:flex-1 w-full"
             :size="ESize.MEDIUM"
             :background-color="EColor.ORANGE"
             prepend-icon="pencil-line"
@@ -83,6 +84,7 @@
         </template>
         <template v-else>
           <UIButton
+            class="laptop:w-fit w-full"
             :size="ESize.MEDIUM"
             :background-color="EColor.RED"
             :disabled="isLoadingUpdate"
@@ -91,7 +93,7 @@
             Отменить
           </UIButton>
           <UIButton
-            full
+            class="laptop:w-auto laptop:flex-1 w-full"
             :size="ESize.MEDIUM"
             :background-color="EColor.ORANGE"
             :disabled="isLoadingUpdate || !isDirty"

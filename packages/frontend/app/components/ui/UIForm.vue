@@ -8,17 +8,23 @@
       <slot />
     </div>
 
-    <div class="flex w-full gap-8" :class="[isColButtonsPosition ? 'flex-col' : 'flex-row-reverse']">
+    <div
+      class="flex w-full flex-col gap-8"
+      :class="[isColButtonsPosition ? 'laptop:flex-col' : 'laptop:flex-row-reverse']"
+    >
       <slot name="bottom">
         <UIButton
-          :class="isColButtonsPosition ? 'w-full' : 'flex-1'"
+          class="w-full"
+          :class="isColButtonsPosition ? 'laptop:w-full' : 'laptop:flex-1 laptop:w-auto'"
           type="submit"
           :size="buttonsSize"
           :disabled="disabled"
-          >{{ actionButtonLabel }}</UIButton
         >
+          {{ actionButtonLabel }}
+        </UIButton>
         <UIButton
-          :class="isColButtonsPosition ? 'w-full' : 'w-fit'"
+          class="w-full"
+          :class="isColButtonsPosition ? 'laptop:w-full' : 'laptop:w-fit'"
           :size="buttonsSize"
           :background-color="EColor.RED"
           @click:button="emit('reset:form')"

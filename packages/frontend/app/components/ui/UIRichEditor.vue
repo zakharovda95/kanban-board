@@ -3,7 +3,7 @@
     <div class="flex size-full flex-col items-end gap-4">
       <textarea
         v-model="model"
-        class="bg-light-200 focus:border-green block max-h-320 min-h-150 w-auto max-w-640 min-w-150 border border-transparent outline-none"
+        class="bg-light-200 focus:border-green block max-h-320 min-h-150 w-full min-w-150 border border-transparent outline-none"
         :class="[{ 'w-full!': full }, computedSize.element]"
         :style="{ scrollbarWidth: 'none' }"
         :disabled="disabled"

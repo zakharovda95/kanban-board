@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-8">
+  <div class="flex flex-wrap items-center gap-8">
     <Component :is="resolvedComponent" v-if="createdAt" v-bind="resolvedAttributes">
       <span v-if="variant === 'details'">Создано: </span><NuxtTime :datetime="createdAt" />
       <span

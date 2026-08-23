@@ -14,6 +14,7 @@
     "type:check": "tsc --noEmit"
   },
   "dependencies": {
+    "@floating-ui/vue": "^2.0.1",
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/icon": "^2.4.1",
     "@nuxt/image": "^2.0.0",

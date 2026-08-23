@@ -1,20 +1,24 @@
 <template>
   <div ref="contextMenuRef" class="size-fit">
-    <UIIconButton
-      v-bind="$attrs"
-      :class="{ 'brightness-95': isContextMenuOpen }"
-      :icon="icon || 'more-1-fill'"
-      :size="size"
-      :icon-size="iconSize"
-      :background-color="backgroundColor"
-      :color="color"
-      :disabled="disabled"
-      @click:button="isContextMenuOpen = !isContextMenuOpen"
-    />
-    <Transition name="fade">
+    <div ref="buttonRef">
+      <UIIconButton
+        v-bind="$attrs"
+        :class="{ 'brightness-95': isContextMenuOpen }"
+        :icon="icon || 'more-1-fill'"
+        :size="size"
+        :icon-size="iconSize"
+        :background-color="backgroundColor"
+        :color="color"
+        :disabled="disabled"
+        @click:button="isContextMenuOpen = !isContextMenuOpen"
+      />
+    </div>
+    <Transition name="menu-fade">
       <div
         v-if="isContextMenuOpen"
-        class="border-light-200 bg-light-base rounded-6 max-size-200 absolute z-2 mt-8 size-fit border p-8"
+        ref="menuRef"
+        :style="{ ...floatingStyles }"
+        class="border-light-200 bg-light-base rounded-6 max-size-200 z-2 size-fit border p-8"
       >
         <slot />
       </div>
@@ -23,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/vue';
 import { EColor } from '@kanban-board/common';
 
 import { EIconSize, ESize } from '~/enums/global.enums';
@@ -51,6 +56,8 @@ withDefaults(
 );
 
 const contextMenuRef = useTemplateRef('contextMenuRef');
+const buttonRef = useTemplateRef('buttonRef');
+const menuRef = useTemplateRef('menuRef');
 const isContextMenuOpen = ref(false);
 
 const closeContextMenu = () => {
@@ -63,5 +70,11 @@ onClickOutside(contextMenuRef, () => {
 
 defineExpose({
   closeContextMenu,
+});
+
+const { floatingStyles } = useFloating(buttonRef, menuRef, {
+  placement: 'bottom-start',
+  whileElementsMounted: autoUpdate,
+  middleware: [offset(8), flip(), shift()],
 });
 </script>

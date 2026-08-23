@@ -12,37 +12,35 @@
     :lock-scroll="options.lockScroll"
     :reserve-scroll-bar-gap="options.reserveScrollBarGap"
     :swipe-to-close="options.swipeToClose"
-    class="flex items-center justify-center"
+    class="flex items-center justify-center p-12"
+    overlay-class="bg-light-black-opacity"
+    :content-class="[
+      'bg-light-base rounded-12 laptop:max-w-[80%] relative size-fit max-h-[80%] max-w-full p-12',
+      bodyClass,
+    ]"
   >
-    <div
-      class="size-screen bg-light-black-opacity absolute inset-0 z-3 flex items-center justify-center overflow-hidden p-12"
-      @click.self="onClickLayout"
-    >
-      <div class="bg-light-base rounded-12 laptop:max-w-[80%] relative size-fit max-h-[80%] max-w-full p-12">
-        <header v-if="title || slots.header" class="mb-12 flex w-full items-center justify-between gap-8">
-          <slot name="header">
-            <h4 class="text-18 font-medium">{{ title }}</h4>
-          </slot>
-        </header>
+    <header v-if="title || slots.header" class="mb-12 flex w-full items-center justify-between gap-8">
+      <slot name="header">
+        <h4 class="text-18 font-medium">{{ title }}</h4>
+      </slot>
+    </header>
 
-        <UIIconButton
-          v-if="!hideCloseButton"
-          :background-color="EColor.LIGHT_200"
-          :color="EColor.LIGHT_800"
-          class="absolute right-0 bottom-[calc(100%+8px)] duration-300 hover:scale-110"
-          icon="close-line"
-          @click:button="isOpen = false"
-        />
+    <UIIconButton
+      v-if="!hideCloseButton"
+      :background-color="EColor.LIGHT_200"
+      :color="EColor.LIGHT_800"
+      class="absolute right-0 bottom-[calc(100%+8px)] duration-300 hover:scale-110"
+      icon="close-line"
+      @click:button="isOpen = false"
+    />
 
-        <div class="h-fit w-auto" :class="[bodyClass]">
-          <slot />
-        </div>
-
-        <footer v-if="slots.footer" class="mt-12">
-          <slot name="footer" />
-        </footer>
-      </div>
+    <div class="flex-1">
+      <slot />
     </div>
+
+    <footer v-if="slots.footer" class="mt-12">
+      <slot name="footer" />
+    </footer>
   </VueFinalModal>
 </template>
 
@@ -86,9 +84,4 @@ const options = ref({
   reserveScrollBarGap: true,
   swipeToClose: 'none' as const,
 });
-
-const onClickLayout = () => {
-  if (!props.closeOnOverlay) return;
-  isOpen.value = false;
-};
 </script>
