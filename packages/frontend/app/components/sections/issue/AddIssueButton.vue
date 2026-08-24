@@ -1,7 +1,12 @@
 <template>
   <div class="w-fit">
-    <UIIconButton class="laptop:flex hidden" icon="add-line" @click:button="isModalOpen = true" />
-    <UIButton class="laptop:hidden flex" prepend-icon="add-line" @click:button="isModalOpen = true">
+    <UIIconButton class="laptop:flex hidden" icon="mingcute:add-line" size="small" @click:button="isModalOpen = true" />
+    <UIButton
+      class="laptop:hidden flex"
+      prepend-icon="mingcute:add-line"
+      size="small"
+      @click:button="isModalOpen = true"
+    >
       Добавить задачу
     </UIButton>
 

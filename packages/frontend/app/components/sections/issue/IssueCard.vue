@@ -12,14 +12,15 @@
               class="cursor-pointer"
               :background-color="color"
               :color="color ? ColorUtility.getTextColor(color, 170) : EColor.LIGHT_BASE"
-              append-icon="copy-line"
+              append-icon="mingcute:copy-line"
+              size="small"
               @click:badge="copyIssueId"
             >
               {{ issueString }}
             </UIBadge>
           </StopPreventWrapper>
 
-          <UIBadge v-if="false" :background-color="EColor.RED">Просрочена</UIBadge>
+          <UIBadge v-if="false" :background-color="EColor.RED" size="small">Просрочена</UIBadge>
         </div>
 
         <IssueDate :created-at="issue.createdAt" :days-passed-since-creation="daysPassedSinceCreation" />

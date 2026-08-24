@@ -2,8 +2,7 @@
   <div class="laptop:hidden block">
     <UIIconButton
       class="absolute top-104 left-24"
-      icon="grid-2-fill"
-      :size="ESize.MEDIUM"
+      icon="mingcute:grid-2-fill"
       :background-color="EColor.LIGHT_200"
       :color="EColor.LIGHT_700"
       @click:button="isBoardsMenuOpen = !isBoardsMenuOpen"
@@ -28,8 +27,6 @@
 
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
-
-import { ESize } from '~/enums/global.enums.ts';
 
 import BoardsList from '~/components/sections/board/BoardsList.vue';
 import TheProfile from '~/components/shared/TheProfile.vue';

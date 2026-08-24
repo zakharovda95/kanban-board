@@ -4,7 +4,7 @@
       <UIIconButton
         v-bind="$attrs"
         :class="{ 'brightness-95': isContextMenuOpen }"
-        :icon="icon || 'more-1-fill'"
+        :icon="icon || 'mingcute:more-1-fill'"
         :size="size"
         :icon-size="iconSize"
         :background-color="backgroundColor"
@@ -30,7 +30,8 @@
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/vue';
 import { EColor } from '@kanban-board/common';
 
-import { EIconSize, ESize } from '~/enums/global.enums';
+import { EIconSize } from '~/enums/global.enums';
+import type { TSize } from '~/types/ui.types.ts';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 
@@ -38,16 +39,16 @@ defineOptions({ inheritAttrs: false });
 
 withDefaults(
   defineProps<{
-    icon?: 'more-1-fill' | 'more-2-fill';
-    size?: ESize;
+    icon?: 'mingcute:more-1-fill' | 'mingcute:more-2-fill';
+    size?: TSize;
     iconSize?: number;
     backgroundColor?: EColor;
     color?: EColor;
     disabled?: boolean;
   }>(),
   {
-    icon: 'more-1-fill',
-    size: ESize.SMALL,
+    icon: 'mingcute:more-1-fill',
+    size: 'medium',
     iconSize: EIconSize.SMALL,
     backgroundColor: EColor.LIGHT_200,
     color: EColor.LIGHT_800,

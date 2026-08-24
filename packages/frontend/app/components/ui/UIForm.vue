@@ -40,8 +40,7 @@
 import { EColor } from '@kanban-board/common';
 
 import { ACTION_BUTTON_LABEL } from '~/constants/ui.constants';
-import { ESize } from '~/enums/global.enums';
-import type { TUIFormButtonsPosition } from '~/types/ui.types.ts';
+import type { TSize, TUIFormButtonsPosition } from '~/types/ui.types.ts';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
@@ -51,7 +50,7 @@ const props = withDefaults(
   defineProps<{
     title?: string | null;
     actionButtonLabel?: string;
-    buttonsSize?: ESize;
+    buttonsSize?: TSize;
     full?: boolean;
     disabled?: boolean;
     buttonsPosition?: TUIFormButtonsPosition;
@@ -59,7 +58,7 @@ const props = withDefaults(
   {
     title: null,
     actionButtonLabel: ACTION_BUTTON_LABEL,
-    buttonsSize: ESize.SMALL,
+    buttonsSize: 'medium',
     buttonsPosition: 'column',
     full: false,
     disabled: false,

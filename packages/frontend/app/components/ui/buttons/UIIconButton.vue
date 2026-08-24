@@ -8,20 +8,20 @@
     :type="type"
     @click="onClick"
   >
-    <NuxtIcon class="duration-300" :class="[iconClass]" :name="`mingcute:${icon}`" :size="computedSize.icon" />
+    <NuxtIcon class="duration-300" :class="[iconClass]" :name="icon" :size="computedSize.icon" />
   </Component>
 </template>
 
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import { EIconSize, ESize, ETag } from '~/enums/global.enums';
-import type { TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
+import { EIconSize } from '~/enums/global.enums';
+import type { TSize, TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
 
 const props = withDefaults(
   defineProps<{
-    tag?: ETag.BUTTON | ETag.DIV | ETag.SPAN;
-    size?: ESize;
+    tag?: 'button' | 'div' | 'span';
+    size?: TSize;
     type?: 'button' | 'submit';
     icon: string;
     disabled?: boolean;
@@ -30,8 +30,8 @@ const props = withDefaults(
     iconClass?: string | null;
   }>(),
   {
-    tag: ETag.BUTTON,
-    size: ESize.SMALL,
+    tag: 'button',
+    size: 'medium',
     type: 'button',
     disabled: false,
     backgroundColor: EColor.GREEN,

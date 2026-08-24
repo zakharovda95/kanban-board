@@ -1,8 +1,8 @@
 <template>
   <div>
     <UIIconButton
-      :icon="isBurgerOpen ? 'close-fill' : 'menu-fill'"
-      :size="ESize.LARGE"
+      :icon="isBurgerOpen ? 'mingcute:close-fill' : 'mingcute:menu-fill'"
+      size="large"
       :background-color="EColor.LIGHT_200"
       :color="EColor.LIGHT_700"
       @click:button="isBurgerOpen = !isBurgerOpen"
@@ -22,7 +22,7 @@
           </div>
 
           <div class="flex w-full justify-between">
-            <TheSettings :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_700" :size="ESize.LARGE" />
+            <TheSettings :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_700" size="large" />
             <TheSocial :size="40" />
           </div>
         </div>
@@ -33,8 +33,6 @@
 
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
-
-import { ESize } from '~/enums/global.enums.ts';
 
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import TheProfile from '~/components/shared/TheProfile.vue';

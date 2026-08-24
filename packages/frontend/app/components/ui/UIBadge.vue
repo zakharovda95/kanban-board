@@ -5,28 +5,27 @@
     :style="{ backgroundColor, color }"
     @click="emit('click:badge', $event)"
   >
-    <NuxtIcon v-if="prependIcon" :name="`mingcute:${prependIcon}`" :size="computedSize.icon" />
+    <NuxtIcon v-if="prependIcon" :name="prependIcon" :size="computedSize.icon" />
     <slot />
-    <NuxtIcon v-if="appendIcon" :name="`mingcute:${appendIcon}`" :size="computedSize.icon" />
+    <NuxtIcon v-if="appendIcon" :name="appendIcon" :size="computedSize.icon" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import { ESize } from '~/enums/global.enums';
-import type { TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
+import type { TSize, TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
 
 const props = withDefaults(
   defineProps<{
-    size?: ESize;
+    size?: TSize;
     prependIcon?: string | null;
     appendIcon?: string | null;
     backgroundColor?: EColor | string;
     color?: EColor;
   }>(),
   {
-    size: ESize.SMALL,
+    size: 'medium',
     prependIcon: null,
     appendIcon: null,
     backgroundColor: EColor.GREEN,

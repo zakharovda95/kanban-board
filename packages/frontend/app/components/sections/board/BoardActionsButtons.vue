@@ -13,6 +13,7 @@
       :title-maxlength="BOARD_TITLE_MAXLENGTH"
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
       :disabled="isLoadingUpdate || !isDirty"
+      body-class="w-320!"
       @update:is-open="closeModal"
       @click:action-button="updateBoard"
       @update:field="update"

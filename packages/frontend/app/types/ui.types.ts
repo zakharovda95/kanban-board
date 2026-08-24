@@ -32,3 +32,5 @@ export type TUIInputMode = 'text' | 'email' | 'tel' | 'none' | 'url' | 'numeric'
 export type TUIAnimatedHeightHook = (element: Element) => void;
 
 export type TUIFormButtonsPosition = 'column' | 'row';
+
+export type TSize = 'small' | 'medium' | 'large';

@@ -8,6 +8,14 @@ export default defineNuxtConfig({
 
   ssr: true,
 
+  routeRules: {
+    '/': { redirect: 'boards' },
+    '/boards': { ssr: true },
+    '/boards/*': { ssr: true },
+    '/about': { prerender: true },
+    '/docs': { prerender: true },
+  },
+
   devtools: { enabled: NODE_ENV === ENodeEnv.DEVELOPMENT },
 
   modules: [
@@ -17,7 +25,6 @@ export default defineNuxtConfig({
     '@nuxt/image',
     'dayjs-nuxt',
     '@pinia/nuxt',
-    'nuxt-tiptap-editor',
     'nuxt-toast',
     'nuxt-color-picker',
     '@vueuse/nuxt',
@@ -42,7 +49,13 @@ export default defineNuxtConfig({
     host: process.env.FRONTEND_HOST,
   },
 
-  css: ['~/assets/styles/fonts.css', '~/assets/styles/tailwind.css', '~/assets/styles/toasts.css', 'vue-final-modal/style.css'],
+  css: [
+    '~/assets/styles/fonts.css',
+    '~/assets/styles/tailwind.css',
+    '~/assets/styles/toasts.css',
+    'vue-final-modal/style.css',
+    'overlayscrollbars/overlayscrollbars.css',
+  ],
 
   vite: {
     plugins: [tailwindcss()],
@@ -52,7 +65,6 @@ export default defineNuxtConfig({
     componentName: 'NuxtIcon',
     mode: 'svg',
     cssLayer: 'base',
-    provider: 'iconify',
     class: 'ui-icon',
     clientBundle: {
       scan: true,
@@ -86,13 +98,5 @@ export default defineNuxtConfig({
       pauseOnHover: true,
       maxWidth: 300,
     },
-  },
-
-  routeRules: {
-    '/': { redirect: 'boards' },
-    '/boards': { ssr: true },
-    '/boards/*': { ssr: true },
-    '/about': { prerender: true },
-    '/docs': { prerender: true },
   },
 });

@@ -14,10 +14,7 @@
     :swipe-to-close="options.swipeToClose"
     class="flex items-center justify-center p-12"
     overlay-class="bg-light-black-opacity"
-    :content-class="[
-      'bg-light-base rounded-12 laptop:max-w-[80%] relative size-fit max-h-[80%] max-w-full p-12',
-      bodyClass,
-    ]"
+    :content-class="['bg-light-base rounded-12 relative size-fit max-w-full p-12 overflow-visible', bodyClass]"
   >
     <header v-if="title || slots.header" class="mb-12 flex w-full items-center justify-between gap-8">
       <slot name="header">
@@ -30,11 +27,12 @@
       :background-color="EColor.LIGHT_200"
       :color="EColor.LIGHT_800"
       class="absolute right-0 bottom-[calc(100%+8px)] duration-300 hover:scale-110"
-      icon="close-line"
+      icon="mingcute:close-line"
+      size="small"
       @click:button="isOpen = false"
     />
 
-    <div class="flex-1">
+    <div class="max-h-[60vh] flex-1 overflow-auto">
       <slot />
     </div>
 

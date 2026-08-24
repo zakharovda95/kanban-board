@@ -17,6 +17,7 @@
       :title-maxlength="COLUMN_TITLE_MAXLENGTH"
       :description-maxlength="COLUMN_DESCRIPTION_MAXLENGTH"
       show-color-picker
+      body-class="w-320!"
       @click:action-button="updateColumn"
       @update:is-open="closeModal"
       @update:field="update"

@@ -5,10 +5,6 @@
     scroll-behavior: smooth;
     scrollbar-color: var(--color-light-400) var(--color-light-300);
     scrollbar-width: thin;
-    font-family: Inter, sans-serif;
-    font-weight: normal;
-    line-height: normal;
-    letter-spacing: normal;
   }
 
   html {
@@ -19,6 +15,10 @@
     background-color: var(--color-light-200);
     color: var(--color-light-800);
     min-height: 100vh;
+    font-family: Inter, sans-serif;
+    font-weight: normal;
+    line-height: normal;
+    letter-spacing: normal;
   }
 
   .fade-enter-active {
@@ -54,6 +54,8 @@
   --color-*: initial;
 
   --color-light-base: #ffffff;
+  --color-light-50: #fafafa;
+  --color-light-100: #f5f5f5;
   --color-light-200: #e5e5e5;
   --color-light-300: #d4d4d4;
   --color-light-400: #a3a3a3;
@@ -124,4 +126,112 @@
 
 @utility hide-scrollbar {
   scrollbar-width: none;
+}
+
+@utility editor-ul {
+  list-style: none;
+  margin: 8px 0;
+  padding-left: 0;
+
+  & > li {
+    position: relative;
+    margin: 4px 0;
+    padding-left: 18px;
+  }
+
+  & > li::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 2px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--color-light-700);
+  }
+
+  & > li > p {
+    margin: 0;
+  }
+
+  & ul {
+    margin: 4px 0;
+  }
+
+  & ul > li::before {
+    width: 4px;
+    height: 4px;
+    background-color: transparent;
+    border: 1.5px solid var(--color-light-600);
+  }
+}
+
+@utility editor-ol {
+  list-style: none;
+  margin: 8px 0;
+  padding-left: 0;
+  counter-reset: editor-ol;
+
+  & > li {
+    position: relative;
+    margin: 4px 0;
+    padding-left: 18px;
+    counter-increment: editor-ol;
+  }
+
+  & > li::before {
+    content: counter(editor-ol) '.';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 18px;
+    text-align: left;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-light-600);
+  }
+
+  & > li > p {
+    margin: 0;
+  }
+
+  & ol {
+    margin: 4px 0;
+    counter-reset: editor-ol-nested;
+  }
+
+  & ol > li {
+    padding-left: 26px;
+    counter-increment: editor-ol-nested;
+  }
+
+  & ol > li::before {
+    content: counter(editor-ol-nested, lower-alpha) '.';
+    width: 20px;
+    color: var(--color-light-500);
+  }
+}
+
+@utility editor-blockquote {
+  & > p {
+    font-size: 12px !important;
+    line-height: 16px;
+    min-height: 16px;
+    display: block;
+  }
+}
+
+.CP-sandbox__component {
+  z-index: 1100 !important;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: var(--color-light-400);
+  content: attr(data-placeholder);
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  float: left;
+  height: 0;
+  pointer-events: none;
 }

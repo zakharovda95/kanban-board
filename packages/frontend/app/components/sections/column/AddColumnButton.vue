@@ -1,14 +1,9 @@
 <template>
   <div class="w-fit">
-    <UIButton
-      class="laptop:flex hidden"
-      prepend-icon="add-line"
-      :size="ESize.MEDIUM"
-      @click:button="isModalOpen = true"
-    >
+    <UIButton class="laptop:flex hidden" prepend-icon="mingcute:add-line" @click:button="isModalOpen = true">
       Добавить колонку
     </UIButton>
-    <UIIconButton class="laptop:hidden flex" icon="add-line" :size="ESize.MEDIUM" @click:button="isModalOpen = true" />
+    <UIIconButton class="laptop:hidden flex" icon="mingcute:add-line" @click:button="isModalOpen = true" />
 
     <UpsertModal
       :is-open="isModalOpen"
@@ -20,6 +15,7 @@
       :description-maxlength="COLUMN_DESCRIPTION_MAXLENGTH"
       :disabled="isLoading"
       show-color-picker
+      body-class="w-320!"
       @click:action-button="createBoard"
       @update:is-open="closeModal"
       @update:field="update"
@@ -44,7 +40,6 @@ import {
 import { useForm } from '~/composables/use-form.composable';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { COLUMN_MESSAGES } from '~/constants/column.constants.ts';
-import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';

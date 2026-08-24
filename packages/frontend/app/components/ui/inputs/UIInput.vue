@@ -4,7 +4,7 @@
       class="focus-within:border-green bg-light-200 flex w-full flex-nowrap items-center justify-between gap-4 border border-transparent duration-300"
       :class="[computedSize.element, { 'disabled-element': disabled }]"
     >
-      <NuxtIcon v-if="icon" :name="`mingcute:${icon}`" :size="computedSize.icon" />
+      <NuxtIcon v-if="icon" :name="icon" :size="computedSize.icon" />
       <UIInputBase
         v-model="model"
         :name="name"
@@ -21,8 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import { EIconSizeSmall, ESize } from '~/enums/global.enums';
-import type { TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode } from '~/types/ui.types';
+import { EIconSizeSmall } from '~/enums/global.enums';
+import type { TSize, TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode } from '~/types/ui.types';
 
 import UIInputBase from '~/components/ui/inputs/UIInputBase.vue';
 import UIMaxLengthCounter from '~/components/ui/UIMaxLengthCounter.vue';
@@ -34,7 +34,7 @@ const props = withDefaults(
   defineProps<{
     name: string;
     icon?: string | null;
-    size?: ESize;
+    size?: TSize;
     full?: boolean;
     disabled?: boolean;
     inputMode?: TUIInputMode;
@@ -45,7 +45,7 @@ const props = withDefaults(
   }>(),
   {
     icon: null,
-    size: ESize.SMALL,
+    size: 'medium',
     full: false,
     disabled: false,
     inputMode: 'text',

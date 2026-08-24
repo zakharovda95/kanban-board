@@ -1,5 +1,5 @@
 <template>
-  <UIButtonWithContextMenu ref="buttonWithContextMenuRef" :background-color="buttonBackgroundColor">
+  <UIButtonWithContextMenu ref="buttonWithContextMenuRef" :background-color="buttonBackgroundColor" size="small">
     <div class="grid gap-4" :style="{ gridTemplateColumns: computedGridCols }">
       <UIIconButton
         v-for="action in computedActions"
@@ -7,6 +7,7 @@
         :background-color="action.backgroundColor"
         :color="action.color"
         :icon="action.icon"
+        size="small"
         @click:button="onClick(action.action)"
       />
     </div>

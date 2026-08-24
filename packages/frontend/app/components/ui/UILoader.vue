@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-fit flex-row items-center justify-center gap-4 p-2" :class="{ 'size-full!': full }">
-    <NuxtIcon class="animate-spin" :name="`mingcute:${variant}`" :size="size" />
+    <NuxtIcon class="animate-spin" :name="variant ?? 'mingcute:loading-line'" :size="size" />
   </div>
 </template>
 
@@ -12,12 +12,12 @@ withDefaults(
   defineProps<{
     size?: EIconSize | EIconSizeSmall | number;
     full?: boolean;
-    variant?: 'loading-3-line' | 'loading-line';
+    variant?: 'mingcute:loading-3-line' | 'mingcute:loading-line';
   }>(),
   {
     size: EIconSize.LARGE,
     full: false,
-    variant: 'loading-line',
+    variant: 'mingcute:loading-line',
   },
 );
 </script>

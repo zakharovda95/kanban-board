@@ -5,7 +5,12 @@
 </template>
 
 <script setup lang="ts">
-import { ETag } from '~/enums/global.enums';
-
-withDefaults(defineProps<{ tag?: ETag.DIV | ETag.SPAN }>(), { tag: ETag.DIV });
+withDefaults(
+  defineProps<{
+    tag?: 'div' | 'span';
+  }>(),
+  {
+    tag: 'div',
+  },
+);
 </script>

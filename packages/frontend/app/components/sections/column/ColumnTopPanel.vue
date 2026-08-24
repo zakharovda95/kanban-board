@@ -1,10 +1,10 @@
 <template>
   <div class="laptop:px-8 flex w-full items-center justify-between px-0">
     <div class="flex w-fit gap-4">
-      <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800" :size="ESize.MEDIUM">
+      <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
         {{ computedIssuesLength }}
       </UIBadge>
-      <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800" :size="ESize.MEDIUM"> WIP ∞ </UIBadge>
+      <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800"> WIP ∞ </UIBadge>
     </div>
 
     <AddIssueButton :column-id="column.id" @add:issue="emit('add:issue', $event)" />
@@ -13,8 +13,6 @@
 
 <script setup lang="ts">
 import { EColor, StringUtility, type TColumn, type TIssueBase } from '@kanban-board/common';
-
-import { ESize } from '~/enums/global.enums.ts';
 
 import AddIssueButton from '~/components/sections/issue/AddIssueButton.vue';
 import UIBadge from '~/components/ui/UIBadge.vue';

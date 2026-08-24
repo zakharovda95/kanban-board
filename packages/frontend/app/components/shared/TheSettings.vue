@@ -4,7 +4,7 @@
       :background-color="backgroundColor"
       :color="color"
       :size="size"
-      icon="settings-5-line"
+      icon="mingcute:settings-5-line"
       icon-class="rotate-0 scale-100 group-hover:rotate-45 group-hover:scale-120"
       @click="isModalOpen = true"
     />
@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import { ESize } from '~/enums/global.enums.ts';
+import type { TSize } from '~/types/ui.types.ts';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
@@ -29,12 +29,12 @@ withDefaults(
   defineProps<{
     backgroundColor?: EColor;
     color?: EColor;
-    size?: ESize;
+    size?: TSize;
   }>(),
   {
     backgroundColor: EColor.LIGHT_BASE,
     color: EColor.LIGHT_500,
-    size: ESize.MEDIUM,
+    size: 'medium',
   },
 );
 

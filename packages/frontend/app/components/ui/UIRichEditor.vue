@@ -1,27 +1,112 @@
 <template>
-  <UIValidationErrors :full="full" :errors="errors">
-    <div class="flex size-full flex-col items-end gap-4">
-      <textarea
-        v-model="model"
-        class="bg-light-200 focus:border-green block max-h-320 min-h-150 w-full min-w-150 border border-transparent outline-none"
-        :class="[{ 'w-full!': full }, computedSize.element]"
-        :style="{ scrollbarWidth: 'none' }"
-        :disabled="disabled"
-        :placeholder="placeholder"
-        :autocomplete="autocomplete"
-        :maxlength="maxLength ?? undefined"
-        :inputmode="inputMode"
-        :name="name"
-      />
-      <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
-    </div>
-  </UIValidationErrors>
+  <ClientOnly>
+    <UIValidationErrors :full="full" :errors="errors">
+      <div class="flex size-full flex-col items-end gap-8">
+        <div v-if="editor" class="flex w-full items-center gap-24">
+          <div class="flex items-center justify-center gap-4">
+            <UIIconButton
+              icon="mingcute:back-2-line"
+              icon-class="scale-110"
+              :color="EColor.LIGHT_700"
+              :background-color="EColor.LIGHT_200"
+              size="small"
+              @click:button="editor.chain().focus().undo().run()"
+            />
+            <UIIconButton
+              icon="mingcute:forward-2-line"
+              icon-class="scale-110"
+              :color="EColor.LIGHT_700"
+              :background-color="EColor.LIGHT_200"
+              size="small"
+              @click:button="editor.chain().focus().redo().run()"
+            />
+          </div>
+
+          <div class="flex items-center justify-center gap-4">
+            <UIIconButton
+              icon="mingcute:bold-line"
+              icon-class="scale-110"
+              :color="editor.isActive('bold') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+              :background-color="editor.isActive('bold') ? EColor.GREEN : EColor.LIGHT_200"
+              size="small"
+              @click:button="editor.chain().focus().toggleBold().run()"
+            />
+            <UIIconButton
+              icon="mingcute:italic-line"
+              icon-class="scale-110"
+              :color="editor.isActive('italic') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+              :background-color="editor.isActive('italic') ? EColor.GREEN : EColor.LIGHT_200"
+              size="small"
+              @click:button="editor.chain().focus().toggleItalic().run()"
+            />
+            <UIIconButton
+              icon="mingcute:underline-line"
+              icon-class="scale-110"
+              :color="editor.isActive('underline') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+              :background-color="editor.isActive('underline') ? EColor.GREEN : EColor.LIGHT_200"
+              size="small"
+              @click:button="editor.chain().focus().toggleUnderline().run()"
+            />
+            <UIIconButton
+              icon="mingcute:strikethrough-line"
+              icon-class="scale-110"
+              :color="editor.isActive('strike') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+              :background-color="editor.isActive('strike') ? EColor.GREEN : EColor.LIGHT_200"
+              size="small"
+              @click:button="editor.chain().focus().toggleStrike().run()"
+            />
+          </div>
+
+          <div class="flex items-center justify-center gap-4">
+            <UIIconButton
+              icon="mingcute:list-ordered-line"
+              icon-class="scale-110"
+              :color="editor.isActive('orderedList') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+              :background-color="editor.isActive('orderedList') ? EColor.GREEN : EColor.LIGHT_200"
+              size="small"
+              @click:button="editor.chain().focus().toggleOrderedList().run()"
+            />
+            <UIIconButton
+              icon="mingcute:list-check-line"
+              icon-class="scale-110"
+              :color="editor.isActive('bulletList') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+              :background-color="editor.isActive('bulletList') ? EColor.GREEN : EColor.LIGHT_200"
+              size="small"
+              @click:button="editor.chain().focus().toggleBulletList().run()"
+            />
+          </div>
+
+          <div class="flex items-center justify-center gap-4">
+            <UIIconButton
+              icon="mingcute:blockquote-line"
+              icon-class="scale-110"
+              :color="editor.isActive('blockquote') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+              :background-color="editor.isActive('blockquote') ? EColor.GREEN : EColor.LIGHT_200"
+              size="small"
+              @click:button="editor.chain().focus().toggleBlockquote().run()"
+            />
+          </div>
+        </div>
+        <EditorContent
+          :editor="editor"
+          :name="name"
+          class="rounded-12 bg-light-200 focus-within:border-green max-h-400 w-full overflow-y-auto border border-transparent p-12 duration-300"
+          :class="[editorWrapperClass]"
+        />
+        <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
+      </div>
+    </UIValidationErrors>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { ESize } from '~/enums/global.enums';
-import type { TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode } from '~/types/ui.types';
+import { EColor } from '@kanban-board/common';
+import { Placeholder } from '@tiptap/extensions';
+import { Markdown } from '@tiptap/markdown';
+import StarterKit from '@tiptap/starter-kit';
+import { EditorContent, useEditor } from '@tiptap/vue-3';
 
+import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIValidationErrors from '~/components/ui/UIValidationErrors.vue';
 
 const model = defineModel<string>({ required: true });
@@ -30,39 +115,99 @@ const props = withDefaults(
   defineProps<{
     name: string;
     full?: boolean;
-    size?: ESize;
     disabled?: boolean;
-    inputMode?: TUIInputMode;
-    autocomplete?: TUIInputAutocomplete;
     placeholder?: string | undefined;
     maxLength?: number | null;
     errors?: string[] | null;
+    editorWrapperClass?: string | null;
+    editorClass?: string | null;
   }>(),
   {
     full: false,
-    size: ESize.SMALL,
     disabled: false,
-    inputMode: 'text',
-    autocomplete: 'off',
     placeholder: undefined,
     maxLength: null,
     errors: null,
+    editorWrapperClass: null,
+    editorClass: null,
   },
 );
 
-const computedSize = computed(() => {
-  const size: TUIComputedSizeMap = {
-    small: {
-      element: 'p-8 text-14 rounded-4',
+const editor = useEditor({
+  content: model.value,
+  autofocus: true,
+  editable: true,
+  injectCSS: true,
+  editorProps: {
+    attributes: {
+      id: props.name,
+      class: `size-full min-h-240 outline-none overflow-y-auto ${props.editorClass} text-14 leading-18`,
     },
-    medium: {
-      element: 'p-12 rounded-6 text-16',
-    },
-    large: {
-      element: 'p-16 rounded-6 text-18',
-    },
-  };
+  },
+  extensions: [
+    StarterKit.configure({
+      undoRedo: {},
+      bold: {
+        HTMLAttributes: {
+          class: 'font-bold!',
+        },
+      },
+      italic: {
+        HTMLAttributes: {
+          class: 'italic',
+        },
+      },
+      underline: {
+        HTMLAttributes: {
+          class: 'underline underline-offset-4',
+        },
+      },
+      strike: {
+        HTMLAttributes: {
+          class: 'strike',
+        },
+      },
+      orderedList: {
+        HTMLAttributes: {
+          class: 'editor-ol',
+        },
+      },
+      bulletList: {
+        HTMLAttributes: {
+          class: 'editor-ul',
+        },
+      },
+      listItem: {
+        HTMLAttributes: {
+          class: '',
+        },
+      },
+      listKeymap: {},
+      paragraph: {
+        HTMLAttributes: {
+          class: 'text-14 leading-18 block min-h-18',
+        },
+      },
+      link: {},
+      blockquote: {
+        HTMLAttributes: {
+          class: 'editor-blockquote border-l-3 border-l-light-400 pl-8 italic! bg-light-100 p-8',
+        },
+      },
+    }),
+    Markdown,
+    Placeholder.configure({ placeholder: props.placeholder }),
+  ],
+  onCreate: () => {
+    console.log('editor created');
+  },
+  onUpdate: () => {
+    if (props.disabled) return;
+    model.value = editor.value?.getHTML() ?? model.value;
+  },
+});
 
-  return size[props.size];
+onBeforeUnmount(() => {
+  editor.value?.destroy();
 });
 </script>

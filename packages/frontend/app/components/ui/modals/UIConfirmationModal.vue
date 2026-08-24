@@ -6,12 +6,10 @@
 
     <template #footer>
       <div class="flex w-full flex-col gap-8">
-        <UIButton full :size="ESize.MEDIUM" :disabled="disabled" @click:button="emit('click:confirm')">
+        <UIButton full :disabled="disabled" @click:button="emit('click:confirm')">
           {{ actionButtonLabel }}
         </UIButton>
-        <UIButton full :size="ESize.MEDIUM" :background-color="EColor.RED" :disabled="disabled" @click:button="reset">
-          Отмена
-        </UIButton>
+        <UIButton full :background-color="EColor.RED" :disabled="disabled" @click:button="reset"> Отмена </UIButton>
       </div>
     </template>
   </UIModal>
@@ -21,7 +19,6 @@
 import { EColor } from '@kanban-board/common';
 
 import { ACTION_BUTTON_LABEL } from '~/constants/ui.constants';
-import { ESize } from '~/enums/global.enums';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';

@@ -14,20 +14,14 @@
           </h4>
 
           <div class="flex gap-8">
-            <UIIconButton icon="copy-line" :size="ESize.MEDIUM" @click:button="copyIssueTitle" />
-            <UIIconButton
-              icon="share-2-line"
-              :size="ESize.MEDIUM"
-              :background-color="EColor.BLUE"
-              @click:button="copyIssueLink"
-            />
+            <UIIconButton icon="mingcute:copy-line" @click:button="copyIssueTitle" />
+            <UIIconButton icon="mingcute:share-2-line" :background-color="EColor.BLUE" @click:button="copyIssueLink" />
           </div>
         </div>
         <UILabel v-else text="Название задачи" required>
           <UIInput
             v-model="formData.title as string"
             name="issue-title"
-            :size="ESize.MEDIUM"
             :max-length="ISSUE_TITLE_MAXLENGTH"
             full
             placeholder="Введите название задачи"
@@ -44,18 +38,17 @@
       </div>
     </template>
 
-    <div class="py-12">
-      <div v-if="!isUpdateMode" class="border-light-200 rounded-8 border p-12">
-        <div v-if="issue.description" class="text-14" v-html="issue.description" />
+    <div class="border-light-200 rounded-8 border p-12">
+      <template v-if="!isUpdateMode">
+        <div v-if="issue.description" v-html="issue.description" />
         <p v-else class="text-light-500 text-14 italic">(описание не добавлено)</p>
-      </div>
-      <UILabel v-else text="Описание">
+      </template>
+      <UILabel v-else text="Описание" tag="div">
         <UIRichEditor
           v-model="formData.description as string"
           name="issue-description"
           full
-          placeholder="Введите описание задачи"
-          :size="ESize.MEDIUM"
+          placeholder="Введите описание задачи..."
         />
       </UILabel>
     </div>
@@ -65,18 +58,16 @@
         <template v-if="!isUpdateMode">
           <UIButton
             class="laptop:w-fit w-full"
-            :size="ESize.MEDIUM"
             :background-color="EColor.RED"
-            prepend-icon="delete-2-line"
+            prepend-icon="mingcute:delete-2-line"
             @click:button="isOpenDeleteModal = true"
           >
             Удалить задачу
           </UIButton>
           <UIButton
             class="laptop:w-auto laptop:flex-1 w-full"
-            :size="ESize.MEDIUM"
             :background-color="EColor.ORANGE"
-            prepend-icon="pencil-line"
+            prepend-icon="mingcute:pencil-line"
             @click:button="startUpdateMode"
           >
             Редактировать задачу
@@ -85,7 +76,6 @@
         <template v-else>
           <UIButton
             class="laptop:w-fit w-full"
-            :size="ESize.MEDIUM"
             :background-color="EColor.RED"
             :disabled="isLoadingUpdate"
             @click:button="resetUpdating"
@@ -94,7 +84,6 @@
           </UIButton>
           <UIButton
             class="laptop:w-auto laptop:flex-1 w-full"
-            :size="ESize.MEDIUM"
             :background-color="EColor.ORANGE"
             :disabled="isLoadingUpdate || !isDirty"
             @click:button="updateIssue"
@@ -137,7 +126,6 @@ import { useForm } from '~/composables/use-form.composable';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { ISSUE_MESSAGES } from '~/constants/issue.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants';
-import { ESize } from '~/enums/global.enums';
 
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';

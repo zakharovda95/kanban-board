@@ -3,16 +3,14 @@
     <UIForm
       :disabled="disabled"
       :action-button-label="actionButtonLabel"
-      :buttons-size="ESize.MEDIUM"
       :buttons-position="buttonsPosition"
       full
       @submit:form="emit('click:action-button')"
       @reset:form="isOpen = false"
     >
-      <UILabel text="Название">
+      <UILabel text="Название" required>
         <UIInput
           :model-value="model.title"
-          :size="ESize.MEDIUM"
           :max-length="titleMaxlength"
           :errors="formErrors.title"
           name="input-title"
@@ -22,11 +20,10 @@
         />
       </UILabel>
 
-      <UILabel text="Описание">
+      <UILabel text="Описание" :tag="descriptionComponent === 'editor' ? 'div' : 'label'">
         <Component
           :is="resolvedDescriptionComponent"
           v-model="model.description"
-          :size="ESize.MEDIUM"
           :max-length="descriptionMaxlength"
           :errors="formErrors.description"
           name="input-description"
@@ -35,12 +32,8 @@
         />
       </UILabel>
 
-      <UILabel v-if="showColorPicker && model.color" text="Цвет">
-        <UIColorPicker
-          :model-value="model.color"
-          :size="ESize.MEDIUM"
-          @update:model-value="updateModel('color', $event)"
-        />
+      <UILabel v-if="showColorPicker && model.color" text="Цвет" required>
+        <UIColorPicker :model-value="model.color" @update:model-value="updateModel('color', $event)" />
       </UILabel>
     </UIForm>
   </UIModal>
@@ -50,7 +43,6 @@
 import type { TValidationErrors } from '@kanban-board/common';
 
 import { ACTION_BUTTON_LABEL } from '~/constants/ui.constants';
-import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 import type { TUIFormButtonsPosition } from '~/types/ui.types.ts';
 

@@ -8,18 +8,18 @@
 import { type TippyOptions, useTippy } from 'vue-tippy';
 import { EColor } from '@kanban-board/common';
 
-import { EIconSize, ESize } from '~/enums/global.enums.ts';
-import type { TUIComputedSizeMap } from '~/types/ui.types.ts';
+import { EIconSize } from '~/enums/global.enums.ts';
+import type { TSize, TUIComputedSizeMap } from '~/types/ui.types.ts';
 
 const props = withDefaults(
   defineProps<{
     text: string | null | undefined;
-    size?: ESize;
+    size?: TSize;
     color?: EColor;
     options?: TippyOptions | null;
   }>(),
   {
-    size: ESize.SMALL,
+    size: 'medium',
     color: EColor.GREEN,
     options: null,
   },

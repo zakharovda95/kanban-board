@@ -1,16 +1,10 @@
 <template>
   <div class="w-full">
     <div class="flex w-full gap-8">
-      <UIButton
-        class="flex-1"
-        prepend-icon="add-line"
-        :size="ESize.MEDIUM"
-        :disabled="disabled"
-        @click:button="isModalOpen = true"
-      >
+      <UIButton class="flex-1" prepend-icon="mingcute:add-line" :disabled="disabled" @click:button="isModalOpen = true">
         Добавить доску
       </UIButton>
-      <UITooltip v-if="disabled" :text="BOARDS_MAX_COUNT_ERROR_MESSAGE" :size="ESize.LARGE" />
+      <UITooltip v-if="disabled" :text="BOARDS_MAX_COUNT_ERROR_MESSAGE" size="large" />
     </div>
 
     <UpsertModal
@@ -22,6 +16,7 @@
       :title-maxlength="BOARD_TITLE_MAXLENGTH"
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
       :disabled="isLoading"
+      body-class="w-320!"
       @click:action-button="createBoard"
       @update:is-open="closeModal"
       @update:field="update"
@@ -46,7 +41,6 @@ import {
 import { useForm } from '~/composables/use-form.composable';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { BOARD_MESSAGES } from '~/constants/board.constants.ts';
-import { ESize } from '~/enums/global.enums';
 import type { TUpsertFormData } from '~/types/shared.types';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';

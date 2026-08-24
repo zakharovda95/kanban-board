@@ -13,15 +13,14 @@
 </template>
 
 <script setup lang="ts">
-import { ESize } from '~/enums/global.enums';
-import type { TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode } from '~/types/ui.types';
+import type { TSize, TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode } from '~/types/ui.types';
 
 const model = defineModel<string>({ required: true });
 
 const props = withDefaults(
   defineProps<{
     name: string;
-    size?: ESize;
+    size?: TSize;
     disabled?: boolean;
     inputMode?: TUIInputMode;
     autocomplete?: TUIInputAutocomplete;
@@ -29,7 +28,7 @@ const props = withDefaults(
     maxLength?: number | null;
   }>(),
   {
-    size: ESize.SMALL,
+    size: 'medium',
     disabled: false,
     inputMode: 'text',
     autocomplete: 'off',

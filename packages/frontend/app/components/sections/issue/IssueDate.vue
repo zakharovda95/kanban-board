@@ -33,8 +33,6 @@
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import { ESize } from '~/enums/global.enums';
-
 import UIBadge from '~/components/ui/UIBadge.vue';
 
 const props = withDefaults(
@@ -60,7 +58,7 @@ const resolvedAttributes = computed(() => {
   if (props.variant === 'card') return { class: 'text-12 text-light-800 flex gap-2' };
 
   return {
-    size: ESize.MEDIUM,
+    size: 'medium',
     backgroundColor: EColor.LIGHT_200,
     color: EColor.LIGHT_800,
   };

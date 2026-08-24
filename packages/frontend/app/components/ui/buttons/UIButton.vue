@@ -8,22 +8,22 @@
     :style="{ backgroundColor, color }"
     @click="onClick"
   >
-    <NuxtIcon v-if="prependIcon" :name="`mingcute:${prependIcon}`" :size="computedSize.icon" />
+    <NuxtIcon v-if="prependIcon" :name="prependIcon" :size="computedSize.icon" />
     <slot />
-    <NuxtIcon v-if="appendIcon" :name="`mingcute:${appendIcon}`" :size="computedSize.icon" />
+    <NuxtIcon v-if="appendIcon" :name="appendIcon" :size="computedSize.icon" />
   </Component>
 </template>
 
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import { EIconSizeSmall, ESize, ETag } from '~/enums/global.enums';
-import type { TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
+import { EIconSizeSmall } from '~/enums/global.enums';
+import type { TSize, TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
 
 const props = withDefaults(
   defineProps<{
-    tag?: ETag.BUTTON | ETag.DIV | ETag.SPAN;
-    size?: ESize;
+    tag?: 'button' | 'div' | 'span';
+    size?: TSize;
     type?: 'button' | 'submit';
     prependIcon?: string | null;
     appendIcon?: string | null;
@@ -34,8 +34,8 @@ const props = withDefaults(
     color?: EColor;
   }>(),
   {
-    tag: ETag.BUTTON,
-    size: ESize.SMALL,
+    tag: 'button',
+    size: 'medium',
     type: 'button',
     prependIcon: null,
     appendIcon: null,

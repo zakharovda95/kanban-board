@@ -9,24 +9,23 @@
       />
       <div class="flex cursor-pointer items-center gap-4" @click="copyColor">
         <span class="font-medium underline underline-offset-5">{{ model.toUpperCase() }}</span>
-        <NuxtIcon class="text-green" :name="`mingcute:copy-line`" :size="16" />
+        <NuxtIcon class="text-green" name="mingcute:copy-line" :size="16" />
       </div>
     </div>
   </ColorPicker>
 </template>
 
 <script setup lang="ts">
-import { ESize } from '~/enums/global.enums';
-import type { TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
+import type { TSize, TUIComputedSize, TUIComputedSizeMap } from '~/types/ui.types';
 
 const model = defineModel<string>({ required: true });
 
 const props = withDefaults(
   defineProps<{
-    size?: ESize;
+    size?: TSize;
   }>(),
   {
-    size: ESize.SMALL,
+    size: 'medium',
   },
 );
 
