@@ -8,7 +8,7 @@
               <UIIconButton
                 icon="mingcute:back-2-line"
                 icon-class="scale-110"
-                :color="EColor.LIGHT_700"
+                :color="EColor.LIGHT_800"
                 :background-color="EColor.LIGHT_200"
                 size="small"
                 @click:button="editor.chain().focus().undo().run()"
@@ -16,7 +16,7 @@
               <UIIconButton
                 icon="mingcute:forward-2-line"
                 icon-class="scale-110"
-                :color="EColor.LIGHT_700"
+                :color="EColor.LIGHT_800"
                 :background-color="EColor.LIGHT_200"
                 size="small"
                 @click:button="editor.chain().focus().redo().run()"
@@ -27,7 +27,7 @@
               <UIIconButton
                 icon="mingcute:bold-line"
                 icon-class="scale-110"
-                :color="editor.isActive('bold') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :color="editor.isActive('bold') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
                 :background-color="editor.isActive('bold') ? EColor.GREEN : EColor.LIGHT_200"
                 size="small"
                 @click:button="editor.chain().focus().toggleBold().run()"
@@ -35,7 +35,7 @@
               <UIIconButton
                 icon="mingcute:italic-line"
                 icon-class="scale-110"
-                :color="editor.isActive('italic') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :color="editor.isActive('italic') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
                 :background-color="editor.isActive('italic') ? EColor.GREEN : EColor.LIGHT_200"
                 size="small"
                 @click:button="editor.chain().focus().toggleItalic().run()"
@@ -43,7 +43,7 @@
               <UIIconButton
                 icon="mingcute:underline-line"
                 icon-class="scale-110"
-                :color="editor.isActive('underline') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :color="editor.isActive('underline') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
                 :background-color="editor.isActive('underline') ? EColor.GREEN : EColor.LIGHT_200"
                 size="small"
                 @click:button="editor.chain().focus().toggleUnderline().run()"
@@ -51,7 +51,7 @@
               <UIIconButton
                 icon="mingcute:strikethrough-line"
                 icon-class="scale-110"
-                :color="editor.isActive('strike') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :color="editor.isActive('strike') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
                 :background-color="editor.isActive('strike') ? EColor.GREEN : EColor.LIGHT_200"
                 size="small"
                 @click:button="editor.chain().focus().toggleStrike().run()"
@@ -62,7 +62,7 @@
               <UIIconButton
                 icon="mingcute:list-ordered-line"
                 icon-class="scale-110"
-                :color="editor.isActive('orderedList') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :color="editor.isActive('orderedList') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
                 :background-color="editor.isActive('orderedList') ? EColor.GREEN : EColor.LIGHT_200"
                 size="small"
                 @click:button="editor.chain().focus().toggleOrderedList().run()"
@@ -70,7 +70,7 @@
               <UIIconButton
                 icon="mingcute:list-check-line"
                 icon-class="scale-110"
-                :color="editor.isActive('bulletList') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :color="editor.isActive('bulletList') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
                 :background-color="editor.isActive('bulletList') ? EColor.GREEN : EColor.LIGHT_200"
                 size="small"
                 @click:button="editor.chain().focus().toggleBulletList().run()"
@@ -81,7 +81,7 @@
               <UIIconButton
                 icon="mingcute:blockquote-line"
                 icon-class="scale-110"
-                :color="editor.isActive('blockquote') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :color="editor.isActive('blockquote') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
                 :background-color="editor.isActive('blockquote') ? EColor.GREEN : EColor.LIGHT_200"
                 size="small"
                 @click:button="editor.chain().focus().toggleBlockquote().run()"

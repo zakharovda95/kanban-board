@@ -1,5 +1,5 @@
 <template>
-  <div class="laptop:justify-start flex flex-col items-stretch justify-center text-left">
+  <div class="laptop:justify-start flex h-full flex-col items-stretch justify-center text-left">
     <p class="text-14 block overflow-hidden leading-18 font-medium text-ellipsis whitespace-nowrap">
       {{ column.title }}
     </p>

@@ -4,13 +4,13 @@
       class="absolute top-104 left-24"
       icon="mingcute:grid-2-fill"
       :background-color="EColor.LIGHT_200"
-      :color="EColor.LIGHT_700"
+      :color="EColor.LIGHT_800"
       @click:button="isBoardsMenuOpen = !isBoardsMenuOpen"
     />
     <Transition name="fade">
       <div
         v-if="isBoardsMenuOpen"
-        class="bg-light-200 absolute right-0 bottom-0 left-0 z-1 h-[calc(100vh-148px)] w-full p-12"
+        class="bg-light-100 absolute right-0 bottom-0 left-0 z-1 h-[calc(100vh-148px)] w-full p-12"
       >
         <BoardsList @click:board="isBoardsMenuOpen = false" />
       </div>

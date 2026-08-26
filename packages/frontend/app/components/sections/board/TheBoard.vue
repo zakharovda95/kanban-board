@@ -8,11 +8,11 @@
       <BoardFilter @add:column="emit('add:column', $event)" />
 
       <OverlayScrollbarsComponent class="w-[calc(100vw-304px)]" :options="SCROLLBAR_OPTIONS_X">
-        <div class="flex h-full flex-1 flex-row gap-8">
+        <div class="flex h-full flex-1 flex-row gap-12">
           <article
             v-for="column in board?.columns"
             :key="column.id"
-            class="border-light-300 bg-light-200 rounded-12 flex size-full w-280 shrink-0 flex-col items-center gap-8 overflow-hidden border"
+            class="border-light-200 bg-light-100 rounded-12 flex size-full w-280 shrink-0 flex-col items-center gap-8 overflow-hidden border"
           >
             <header
               class="bg-light-base flex h-54 w-full flex-col border-b-4 px-12 py-8 text-left select-none"
@@ -30,8 +30,8 @@
 
             <ColumnTopPanel :column="column" @add:issue="emit('add:issue', $event)" />
 
-            <div class="size-full overflow-hidden">
-              <OverlayScrollbarsComponent class="h-[calc(100vh-348px)]" :options="SCROLLBAR_OPTIONS_Y">
+            <div class="size-full overflow-hidden pb-8">
+              <OverlayScrollbarsComponent class="size-full h-[calc(100vh-348px)]" :options="SCROLLBAR_OPTIONS_Y">
                 <div class="flex w-full flex-col items-center gap-8 px-8">
                   <IssueCard
                     v-for="issue in column.issues"

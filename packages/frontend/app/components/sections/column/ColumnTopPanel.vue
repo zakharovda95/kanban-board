@@ -1,10 +1,10 @@
 <template>
   <div class="laptop:px-8 flex w-full items-center justify-between px-0">
     <div class="flex w-fit gap-4">
-      <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
+      <UIBadge :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_800">
         {{ computedIssuesLength }}
       </UIBadge>
-      <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800"> WIP ∞ </UIBadge>
+      <UIBadge :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_800"> WIP ∞ </UIBadge>
     </div>
 
     <AddIssueButton :column-id="column.id" @add:issue="emit('add:issue', $event)" />

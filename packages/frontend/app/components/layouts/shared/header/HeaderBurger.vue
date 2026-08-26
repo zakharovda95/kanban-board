@@ -4,14 +4,14 @@
       :icon="isBurgerOpen ? 'mingcute:close-fill' : 'mingcute:menu-fill'"
       size="large"
       :background-color="EColor.LIGHT_200"
-      :color="EColor.LIGHT_700"
+      :color="EColor.LIGHT_800"
       @click:button="isBurgerOpen = !isBurgerOpen"
     />
 
     <Transition name="fade">
       <div
         v-if="isBurgerOpen"
-        class="bg-light-200 absolute right-0 bottom-0 left-0 z-2 flex h-[calc(100vh-80px)] items-center justify-center p-12"
+        class="bg-light-100 absolute right-0 bottom-0 left-0 z-2 flex h-[calc(100vh-80px)] items-center justify-center p-12"
       >
         <div class="bg-light-base rounded-12 flex size-full flex-col gap-24 p-12">
           <TheProfile />
@@ -22,7 +22,7 @@
           </div>
 
           <div class="flex w-full justify-between">
-            <TheSettings :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_700" size="large" />
+            <TheSettings :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_800" size="large" />
             <TheSocial :size="40" />
           </div>
         </div>
