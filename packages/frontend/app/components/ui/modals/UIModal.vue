@@ -14,29 +14,30 @@
     :swipe-to-close="options.swipeToClose"
     class="flex items-center justify-center p-12"
     overlay-class="bg-light-black-opacity"
-    :content-class="['bg-light-base rounded-12 relative size-fit max-w-full p-12 overflow-visible', bodyClass]"
+    :content-class="[
+      'bg-light-base rounded-12 relative flex w-fit max-h-[calc(100dvh-24px)] max-w-full flex-col overflow-hidden p-12',
+      bodyClass,
+    ]"
   >
-    <header v-if="title || slots.header" class="mb-12 flex w-full items-center justify-between gap-8">
+    <header v-if="title || slots.header" class="mb-12 flex w-full shrink-0 items-start justify-between gap-8">
       <slot name="header">
         <h4 class="text-18 font-medium">{{ title }}</h4>
       </slot>
+      <UIIconButton
+        v-if="!hideCloseButton"
+        :background-color="EColor.LIGHT_200"
+        :color="EColor.LIGHT_800"
+        icon="mingcute:close-line"
+        size="small"
+        @click:button="isOpen = false"
+      />
     </header>
 
-    <UIIconButton
-      v-if="!hideCloseButton"
-      :background-color="EColor.LIGHT_200"
-      :color="EColor.LIGHT_800"
-      class="absolute right-0 bottom-[calc(100%+8px)] duration-300 hover:scale-110"
-      icon="mingcute:close-line"
-      size="small"
-      @click:button="isOpen = false"
-    />
-
-    <div class="max-h-[60vh] flex-1 overflow-auto">
+    <OverlayScrollbarsComponent defer :options="SCROLLBAR_OPTIONS_Y">
       <slot />
-    </div>
+    </OverlayScrollbarsComponent>
 
-    <footer v-if="slots.footer" class="mt-12">
+    <footer v-if="slots.footer" class="mt-12 shrink-0">
       <slot name="footer" />
     </footer>
   </VueFinalModal>
@@ -45,6 +46,9 @@
 <script setup lang="ts">
 import { VueFinalModal } from 'vue-final-modal';
 import { EColor } from '@kanban-board/common';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
+
+import { SCROLLBAR_OPTIONS_Y } from '~/constants/ui.constants.ts';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 

@@ -1,101 +1,103 @@
 <template>
   <ClientOnly>
-    <UIValidationErrors :full="full" :errors="errors">
-      <div class="flex size-full flex-col items-end gap-8">
-        <div v-if="editor" class="flex w-full items-center gap-24">
-          <div class="flex items-center justify-center gap-4">
-            <UIIconButton
-              icon="mingcute:back-2-line"
-              icon-class="scale-110"
-              :color="EColor.LIGHT_700"
-              :background-color="EColor.LIGHT_200"
-              size="small"
-              @click:button="editor.chain().focus().undo().run()"
-            />
-            <UIIconButton
-              icon="mingcute:forward-2-line"
-              icon-class="scale-110"
-              :color="EColor.LIGHT_700"
-              :background-color="EColor.LIGHT_200"
-              size="small"
-              @click:button="editor.chain().focus().redo().run()"
-            />
-          </div>
+    <div class="bg-light-100 rounded-12 border-light-200 size-full border p-12">
+      <UIValidationErrors :full="full" :errors="errors">
+        <div class="flex size-full flex-col items-end gap-12">
+          <div v-if="editor" class="flex w-full items-center gap-24">
+            <div class="flex items-center justify-center gap-4">
+              <UIIconButton
+                icon="mingcute:back-2-line"
+                icon-class="scale-110"
+                :color="EColor.LIGHT_700"
+                :background-color="EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().undo().run()"
+              />
+              <UIIconButton
+                icon="mingcute:forward-2-line"
+                icon-class="scale-110"
+                :color="EColor.LIGHT_700"
+                :background-color="EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().redo().run()"
+              />
+            </div>
 
-          <div class="flex items-center justify-center gap-4">
-            <UIIconButton
-              icon="mingcute:bold-line"
-              icon-class="scale-110"
-              :color="editor.isActive('bold') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
-              :background-color="editor.isActive('bold') ? EColor.GREEN : EColor.LIGHT_200"
-              size="small"
-              @click:button="editor.chain().focus().toggleBold().run()"
-            />
-            <UIIconButton
-              icon="mingcute:italic-line"
-              icon-class="scale-110"
-              :color="editor.isActive('italic') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
-              :background-color="editor.isActive('italic') ? EColor.GREEN : EColor.LIGHT_200"
-              size="small"
-              @click:button="editor.chain().focus().toggleItalic().run()"
-            />
-            <UIIconButton
-              icon="mingcute:underline-line"
-              icon-class="scale-110"
-              :color="editor.isActive('underline') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
-              :background-color="editor.isActive('underline') ? EColor.GREEN : EColor.LIGHT_200"
-              size="small"
-              @click:button="editor.chain().focus().toggleUnderline().run()"
-            />
-            <UIIconButton
-              icon="mingcute:strikethrough-line"
-              icon-class="scale-110"
-              :color="editor.isActive('strike') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
-              :background-color="editor.isActive('strike') ? EColor.GREEN : EColor.LIGHT_200"
-              size="small"
-              @click:button="editor.chain().focus().toggleStrike().run()"
-            />
-          </div>
+            <div class="flex items-center justify-center gap-4">
+              <UIIconButton
+                icon="mingcute:bold-line"
+                icon-class="scale-110"
+                :color="editor.isActive('bold') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :background-color="editor.isActive('bold') ? EColor.GREEN : EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().toggleBold().run()"
+              />
+              <UIIconButton
+                icon="mingcute:italic-line"
+                icon-class="scale-110"
+                :color="editor.isActive('italic') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :background-color="editor.isActive('italic') ? EColor.GREEN : EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().toggleItalic().run()"
+              />
+              <UIIconButton
+                icon="mingcute:underline-line"
+                icon-class="scale-110"
+                :color="editor.isActive('underline') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :background-color="editor.isActive('underline') ? EColor.GREEN : EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().toggleUnderline().run()"
+              />
+              <UIIconButton
+                icon="mingcute:strikethrough-line"
+                icon-class="scale-110"
+                :color="editor.isActive('strike') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :background-color="editor.isActive('strike') ? EColor.GREEN : EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().toggleStrike().run()"
+              />
+            </div>
 
-          <div class="flex items-center justify-center gap-4">
-            <UIIconButton
-              icon="mingcute:list-ordered-line"
-              icon-class="scale-110"
-              :color="editor.isActive('orderedList') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
-              :background-color="editor.isActive('orderedList') ? EColor.GREEN : EColor.LIGHT_200"
-              size="small"
-              @click:button="editor.chain().focus().toggleOrderedList().run()"
-            />
-            <UIIconButton
-              icon="mingcute:list-check-line"
-              icon-class="scale-110"
-              :color="editor.isActive('bulletList') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
-              :background-color="editor.isActive('bulletList') ? EColor.GREEN : EColor.LIGHT_200"
-              size="small"
-              @click:button="editor.chain().focus().toggleBulletList().run()"
-            />
-          </div>
+            <div class="flex items-center justify-center gap-4">
+              <UIIconButton
+                icon="mingcute:list-ordered-line"
+                icon-class="scale-110"
+                :color="editor.isActive('orderedList') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :background-color="editor.isActive('orderedList') ? EColor.GREEN : EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().toggleOrderedList().run()"
+              />
+              <UIIconButton
+                icon="mingcute:list-check-line"
+                icon-class="scale-110"
+                :color="editor.isActive('bulletList') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :background-color="editor.isActive('bulletList') ? EColor.GREEN : EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().toggleBulletList().run()"
+              />
+            </div>
 
-          <div class="flex items-center justify-center gap-4">
-            <UIIconButton
-              icon="mingcute:blockquote-line"
-              icon-class="scale-110"
-              :color="editor.isActive('blockquote') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
-              :background-color="editor.isActive('blockquote') ? EColor.GREEN : EColor.LIGHT_200"
-              size="small"
-              @click:button="editor.chain().focus().toggleBlockquote().run()"
-            />
+            <div class="flex items-center justify-center gap-4">
+              <UIIconButton
+                icon="mingcute:blockquote-line"
+                icon-class="scale-110"
+                :color="editor.isActive('blockquote') ? EColor.LIGHT_BASE : EColor.LIGHT_700"
+                :background-color="editor.isActive('blockquote') ? EColor.GREEN : EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().toggleBlockquote().run()"
+              />
+            </div>
           </div>
+          <EditorContent
+            :editor="editor"
+            :name="name"
+            class="rounded-8 bg-light-100 focus-within:border-green border-light-200 w-full border p-12 duration-300"
+            :class="[editorWrapperClass]"
+          />
+          <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
         </div>
-        <EditorContent
-          :editor="editor"
-          :name="name"
-          class="rounded-12 bg-light-200 focus-within:border-green max-h-400 w-full overflow-y-auto border border-transparent p-12 duration-300"
-          :class="[editorWrapperClass]"
-        />
-        <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
-      </div>
-    </UIValidationErrors>
+      </UIValidationErrors>
+    </div>
   </ClientOnly>
 </template>
 
@@ -141,7 +143,7 @@ const editor = useEditor({
   editorProps: {
     attributes: {
       id: props.name,
-      class: `size-full min-h-240 outline-none overflow-y-auto ${props.editorClass} text-14 leading-18`,
+      class: `size-full min-h-240 outline-none overflow-y-auto ${props.editorClass} text-14 leading-18 resize-y hide-scrollbar`,
     },
   },
   extensions: [

@@ -1,7 +1,7 @@
 <template>
   <UIModal :is-open="isOpen" body-class="laptop:w-640 w-full" @update:is-open="closeModal">
     <template #header>
-      <div class="flex flex-1 flex-col gap-8">
+      <div class="mr-12 flex flex-1 flex-col gap-8">
         <div v-if="!isUpdateMode" class="flex w-full justify-between gap-12">
           <h4 class="text-18 flex flex-wrap items-center gap-4">
             <button
@@ -13,9 +13,14 @@
             <span class="font-bold">{{ issue.title }}</span>
           </h4>
 
-          <div class="flex gap-8">
-            <UIIconButton icon="mingcute:copy-line" @click:button="copyIssueTitle" />
-            <UIIconButton icon="mingcute:share-2-line" :background-color="EColor.BLUE" @click:button="copyIssueLink" />
+          <div class="flex gap-4">
+            <UIIconButton icon="mingcute:copy-line" size="small" @click:button="copyIssueTitle" />
+            <UIIconButton
+              icon="mingcute:share-2-line"
+              :background-color="EColor.BLUE"
+              size="small"
+              @click:button="copyIssueLink"
+            />
           </div>
         </div>
         <UILabel v-else text="Название задачи" required>
@@ -29,6 +34,7 @@
         </UILabel>
 
         <IssueDate
+          v-if="!isUpdateMode"
           variant="details"
           :created-at="issue.createdAt"
           :updated-at="issue.updatedAt"
@@ -38,20 +44,21 @@
       </div>
     </template>
 
-    <div class="border-light-200 rounded-8 border p-12">
-      <template v-if="!isUpdateMode">
-        <div v-if="issue.description" v-html="issue.description" />
-        <p v-else class="text-light-500 text-14 italic">(описание не добавлено)</p>
-      </template>
-      <UILabel v-else text="Описание" tag="div">
-        <UIRichEditor
-          v-model="formData.description as string"
-          name="issue-description"
-          full
-          placeholder="Введите описание задачи..."
-        />
-      </UILabel>
+    <div v-if="!isUpdateMode" class="bg-light-100 rounded-8 p-12">
+      <OverlayScrollbarsComponent v-if="issue.description" :options="SCROLLBAR_OPTIONS_Y">
+        <div v-html="issue.description" />
+      </OverlayScrollbarsComponent>
+      <p v-else class="text-light-500 text-14 italic">(описание не добавлено)</p>
     </div>
+    <UILabel v-else text="Описание" tag="div">
+      <UIRichEditor
+        v-model="formData.description as string"
+        name="issue-description"
+        full
+        placeholder="Введите описание задачи..."
+        editor-class="max-h-[50vh]"
+      />
+    </UILabel>
 
     <template #footer>
       <div class="laptop:gap-12 laptop:flex-row flex flex-col-reverse items-center justify-between gap-8">
@@ -120,12 +127,13 @@ import {
   type TUpdateIssue,
   type TUpsertIssueResponse,
 } from '@kanban-board/common';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
 
 import { useIssueInfo } from '~/composables/app/use-issue-info.composable';
 import { useForm } from '~/composables/use-form.composable';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { ISSUE_MESSAGES } from '~/constants/issue.constants.ts';
-import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants';
+import { CONFIRMATION_MODAL_TEXT, SCROLLBAR_OPTIONS_Y } from '~/constants/ui.constants';
 
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';

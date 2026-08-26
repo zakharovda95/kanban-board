@@ -7,42 +7,46 @@
     <div v-else class="flex size-full flex-col items-center gap-12 p-12">
       <BoardFilter @add:column="emit('add:column', $event)" />
 
-      <div class="flex h-full w-[calc(100vw-304px)] flex-1 flex-row gap-8 overflow-x-auto">
-        <article
-          v-for="column in board?.columns"
-          :key="column.id"
-          class="border-light-300 bg-light-200 rounded-12 flex size-full w-280 shrink-0 flex-col items-center gap-8 overflow-hidden border"
-        >
-          <header
-            class="bg-light-base flex h-54 w-full flex-col border-b-4 px-12 py-8 text-left select-none"
-            :style="{ borderBottomColor: column.color }"
+      <OverlayScrollbarsComponent class="w-[calc(100vw-304px)]" :options="SCROLLBAR_OPTIONS_X">
+        <div class="flex h-full flex-1 flex-row gap-8">
+          <article
+            v-for="column in board?.columns"
+            :key="column.id"
+            class="border-light-300 bg-light-200 rounded-12 flex size-full w-280 shrink-0 flex-col items-center gap-8 overflow-hidden border"
           >
-            <div class="flex size-full items-center justify-between">
-              <ColumnInfo :column="column" class="w-[calc(100%-32px)]" />
-              <ColumnActionsButtons
-                :column="column"
-                @update:column="emit('update:column', $event)"
-                @delete:column="emit('delete:column', $event)"
-              />
-            </div>
-          </header>
+            <header
+              class="bg-light-base flex h-54 w-full flex-col border-b-4 px-12 py-8 text-left select-none"
+              :style="{ borderBottomColor: column.color }"
+            >
+              <div class="flex size-full items-center justify-between">
+                <ColumnInfo :column="column" class="w-[calc(100%-32px)]" />
+                <ColumnActionsButtons
+                  :column="column"
+                  @update:column="emit('update:column', $event)"
+                  @delete:column="emit('delete:column', $event)"
+                />
+              </div>
+            </header>
 
-          <ColumnTopPanel :column="column" @add:issue="emit('add:issue', $event)" />
+            <ColumnTopPanel :column="column" @add:issue="emit('add:issue', $event)" />
 
-          <div class="size-full overflow-hidden">
-            <div class="flex h-[calc(100vh-360px)] w-full flex-col items-center gap-8 overflow-auto px-8">
-              <IssueCard
-                v-for="issue in column.issues"
-                :key="issue.id"
-                :issue="issue"
-                :color="column.color"
-                @update:issue="emit('update:issue', $event)"
-                @delete:issue="emit('delete:issue', $event)"
-              />
+            <div class="size-full overflow-hidden">
+              <OverlayScrollbarsComponent class="h-[calc(100vh-348px)]" :options="SCROLLBAR_OPTIONS_Y">
+                <div class="flex w-full flex-col items-center gap-8 px-8">
+                  <IssueCard
+                    v-for="issue in column.issues"
+                    :key="issue.id"
+                    :issue="issue"
+                    :color="column.color"
+                    @update:issue="emit('update:issue', $event)"
+                    @delete:issue="emit('delete:issue', $event)"
+                  />
+                </div>
+              </OverlayScrollbarsComponent>
             </div>
-          </div>
-        </article>
-      </div>
+          </article>
+        </div>
+      </OverlayScrollbarsComponent>
     </div>
   </div>
 </template>
@@ -55,6 +59,9 @@ import type {
   TDeleteIssueEmitPayload,
   TIssueBase,
 } from '@kanban-board/common';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
+
+import { SCROLLBAR_OPTIONS_X, SCROLLBAR_OPTIONS_Y } from '~/constants/ui.constants.ts';
 
 import BoardFilter from '~/components/sections/board/BoardFilter.vue';
 import ColumnActionsButtons from '~/components/sections/column/ColumnActionsButtons.vue';

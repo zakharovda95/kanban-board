@@ -28,6 +28,7 @@
           :errors="formErrors.description"
           name="input-description"
           placeholder="Укажите описание..."
+          editor-class="max-h-[50vh]"
           full
         />
       </UILabel>

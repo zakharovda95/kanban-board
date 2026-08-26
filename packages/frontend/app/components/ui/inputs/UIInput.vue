@@ -1,7 +1,7 @@
 <template>
   <UIValidationErrors :full="full" :errors="errors">
     <div
-      class="focus-within:border-green bg-light-200 flex w-full flex-nowrap items-center justify-between gap-4 border border-transparent duration-300"
+      class="focus-within:border-green bg-light-100 border-light-200 flex w-full flex-nowrap items-center justify-between gap-4 border duration-300"
       :class="[computedSize.element, { 'disabled-element': disabled }]"
     >
       <NuxtIcon v-if="icon" :name="icon" :size="computedSize.icon" />
@@ -59,15 +59,15 @@ const props = withDefaults(
 const computedSize = computed(() => {
   const size: TUIComputedSizeMap = {
     small: {
-      element: 'h-24 py-4 px-8 text-14 rounded-4',
+      element: 'h-24 py-4 px-8 text-12 rounded-4',
       icon: EIconSizeSmall.SMALL,
     },
     medium: {
-      element: 'h-32 py-6 rounded-6 px-12 text-16',
+      element: 'h-32 py-6 rounded-6 px-12 text-14',
       icon: EIconSizeSmall.MEDIUM,
     },
     large: {
-      element: 'h-40 py-8 px-16 rounded-6 text-18',
+      element: 'h-40 py-8 px-16 rounded-6 text-16',
       icon: EIconSizeSmall.LARGE,
     },
   };

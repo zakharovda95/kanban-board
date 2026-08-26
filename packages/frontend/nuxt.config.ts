@@ -54,7 +54,8 @@ export default defineNuxtConfig({
     '~/assets/styles/tailwind.css',
     '~/assets/styles/toasts.css',
     'vue-final-modal/style.css',
-    'overlayscrollbars/overlayscrollbars.css',
+    'overlayscrollbars/styles/overlayscrollbars.css',
+    '~/assets/styles/scrollbars.css',
   ],
 
   vite: {
