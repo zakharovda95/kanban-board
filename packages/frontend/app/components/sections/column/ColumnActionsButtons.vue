@@ -52,7 +52,7 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { COLUMN_MESSAGES } from '~/constants/column.constants.ts';
+import { COLUMN_MESSAGES } from '~/constants/messages.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 

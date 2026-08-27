@@ -48,7 +48,7 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { BOARD_MESSAGES } from '~/constants/board.constants.ts';
+import { BOARD_MESSAGES } from '~/constants/messages.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 

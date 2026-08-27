@@ -258,7 +258,8 @@
 }
 
 .os-theme-modal,
-.os-theme-board {
+.os-theme-column,
+.os-theme-editor .os-theme-board {
   --os-track-bg: transparent;
   --os-track-bg-hover: transparent;
   --os-track-bg-active: transparent;
@@ -270,10 +271,15 @@
   --os-handle-min-size: 24px;
 }
 
-.os-theme-modal {
+.os-theme-modal,
+.os-theme-column {
   --os-size: 4px;
 }
 
 .os-theme-board {
   --os-size: 6px;
+}
+
+.os-theme-editor {
+  --os-size: 2px;
 }

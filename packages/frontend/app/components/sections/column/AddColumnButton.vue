@@ -47,10 +47,10 @@ import {
   type TValidationErrors,
 } from '@kanban-board/common';
 
-import { useForm } from '~/composables/use-form.composable';
+import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { COLUMN_MESSAGES } from '~/constants/column.constants.ts';
-import type { TUpsertFormData } from '~/types/shared.types';
+import { COLUMN_MESSAGES } from '~/constants/messages.constants.ts';
+import type { TUpsertFormData } from '~/types/shared.types.ts';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';

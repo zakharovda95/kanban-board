@@ -45,7 +45,7 @@
     </template>
 
     <div v-if="!isUpdateMode" class="bg-light-100 rounded-8 p-12">
-      <OverlayScrollbarsComponent v-if="issue.description" :options="SCROLLBAR_OPTIONS_Y">
+      <OverlayScrollbarsComponent v-if="issue.description" :options="scrollbarOptions">
         <div v-html="issue.description" />
       </OverlayScrollbarsComponent>
       <p v-else class="text-light-500 text-14 italic">(описание не добавлено)</p>
@@ -127,13 +127,13 @@ import {
   type TUpdateIssue,
   type TUpsertIssueResponse,
 } from '@kanban-board/common';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
+import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
 
-import { useIssueInfo } from '~/composables/app/use-issue-info.composable';
-import { useForm } from '~/composables/use-form.composable';
+import { useIssueInfo } from '~/composables/app/use-issue-info.composable.ts';
+import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { ISSUE_MESSAGES } from '~/constants/issue.constants.ts';
-import { CONFIRMATION_MODAL_TEXT, SCROLLBAR_OPTIONS_Y } from '~/constants/ui.constants';
+import { ISSUE_MESSAGES } from '~/constants/messages.constants.ts';
+import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
@@ -158,6 +158,15 @@ const emit = defineEmits<{
 const { issue } = toRefs(props);
 
 const toast = useToast();
+
+const scrollbarOptions: OverlayScrollbarsComponentProps['options'] = {
+  overflow: { x: 'hidden' },
+  scrollbars: {
+    autoHide: 'leave',
+    autoHideDelay: 300,
+    theme: 'os-theme-modal',
+  },
+};
 
 const isOpenDeleteModal = ref(false);
 const isUpdateMode = ref(false);

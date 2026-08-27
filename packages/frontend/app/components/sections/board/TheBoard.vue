@@ -7,7 +7,7 @@
     <div v-else class="flex size-full flex-col items-center gap-12 p-12">
       <BoardFilter @add:column="emit('add:column', $event)" />
 
-      <OverlayScrollbarsComponent class="w-[calc(100vw-304px)]" :options="SCROLLBAR_OPTIONS_X">
+      <OverlayScrollbarsComponent class="w-[calc(100vw-304px)]" :options="scrollbarOptionsBoard">
         <div class="flex h-full flex-1 flex-row gap-12">
           <article
             v-for="column in board?.columns"
@@ -31,7 +31,7 @@
             <ColumnTopPanel :column="column" @add:issue="emit('add:issue', $event)" />
 
             <div class="size-full overflow-hidden pb-8">
-              <OverlayScrollbarsComponent class="size-full h-[calc(100vh-348px)]" :options="SCROLLBAR_OPTIONS_Y">
+              <OverlayScrollbarsComponent class="size-full h-[calc(100vh-348px)]" :options="scrollbarOptionsColumn">
                 <div class="flex w-full flex-col items-center gap-8 px-8">
                   <IssueCard
                     v-for="issue in column.issues"
@@ -59,9 +59,7 @@ import type {
   TDeleteIssueEmitPayload,
   TIssueBase,
 } from '@kanban-board/common';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
-
-import { SCROLLBAR_OPTIONS_X, SCROLLBAR_OPTIONS_Y } from '~/constants/ui.constants.ts';
+import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
 
 import BoardFilter from '~/components/sections/board/BoardFilter.vue';
 import ColumnActionsButtons from '~/components/sections/column/ColumnActionsButtons.vue';
@@ -90,4 +88,22 @@ const emit = defineEmits<{
   'update:issue': [payload: TIssueBase];
   'delete:issue': [payload: TDeleteIssueEmitPayload];
 }>();
+
+const scrollbarOptionsBoard: OverlayScrollbarsComponentProps['options'] = {
+  overflow: { y: 'hidden' },
+  scrollbars: {
+    autoHide: 'leave',
+    autoHideDelay: 500,
+    theme: 'os-theme-board',
+  },
+};
+
+const scrollbarOptionsColumn: OverlayScrollbarsComponentProps['options'] = {
+  overflow: { x: 'hidden' },
+  scrollbars: {
+    autoHide: 'leave',
+    autoHideDelay: 300,
+    theme: 'os-theme-column',
+  },
+};
 </script>

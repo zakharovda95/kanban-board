@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
-import { BOARD_MESSAGES } from '~/constants/board.constants.ts';
+import { BOARD_MESSAGES } from '~/constants/messages.constants.ts';
 
 export const useBoardsStore = defineStore('boards-store', () => {
   const { listen } = useSocket();

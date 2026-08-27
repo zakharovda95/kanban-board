@@ -32,8 +32,9 @@
           />
         </UILink>
       </nav>
-      <div v-else class="p-8">
-        <p class="text-12">{{ BOARD_MESSAGES.noBoards }}</p>
+      <div v-else class="text-12 p-8">
+        <p>Вы еще не добавили ни одной доски.</p>
+        <p>Добавьте новую доску для начала работы.</p>
       </div>
 
       <AddBoardButton
@@ -48,7 +49,6 @@
 <script setup lang="ts">
 import { BOARDS_MAX_COUNT } from '@kanban-board/common';
 
-import { BOARD_MESSAGES } from '~/constants/board.constants.ts';
 import { useBoardsStore } from '~/stores/boards.store.ts';
 
 import AddBoardButton from '~/components/sections/board/AddBoardButton.vue';

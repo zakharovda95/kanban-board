@@ -33,7 +33,7 @@
       />
     </header>
 
-    <OverlayScrollbarsComponent defer :options="SCROLLBAR_OPTIONS_Y">
+    <OverlayScrollbarsComponent defer :options="scrollbarOptions">
       <slot />
     </OverlayScrollbarsComponent>
 
@@ -46,9 +46,7 @@
 <script setup lang="ts">
 import { VueFinalModal } from 'vue-final-modal';
 import { EColor } from '@kanban-board/common';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue';
-
-import { SCROLLBAR_OPTIONS_Y } from '~/constants/ui.constants.ts';
+import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 
@@ -86,4 +84,13 @@ const options = ref({
   reserveScrollBarGap: true,
   swipeToClose: 'none' as const,
 });
+
+const scrollbarOptions: OverlayScrollbarsComponentProps['options'] = {
+  overflow: { x: 'hidden' },
+  scrollbars: {
+    autoHide: 'leave',
+    autoHideDelay: 300,
+    theme: 'os-theme-modal',
+  },
+};
 </script>

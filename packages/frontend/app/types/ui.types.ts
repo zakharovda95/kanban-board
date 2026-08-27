@@ -34,3 +34,14 @@ export type TUIAnimatedHeightHook = (element: Element) => void;
 export type TUIFormButtonsPosition = 'column' | 'row';
 
 export type TSize = 'small' | 'medium' | 'large';
+
+export type TImageMimeType = 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp' | string;
+
+export interface IUIImageUploaderData {
+  src: string | null;
+  type: TImageMimeType | null;
+}
+
+export interface IUIImageUploaderFile {
+  file: File | null;
+}

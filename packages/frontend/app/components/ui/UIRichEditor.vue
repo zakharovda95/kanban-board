@@ -2,108 +2,124 @@
   <ClientOnly>
     <div class="bg-light-100 rounded-12 border-light-200 size-full border p-12">
       <UIValidationErrors :full="full" :errors="errors">
-        <div class="flex size-full flex-col items-end gap-12">
-          <div v-if="editor" class="flex w-full items-center gap-24">
-            <div class="flex items-center justify-center gap-4">
-              <UIIconButton
-                icon="mingcute:back-2-line"
-                icon-class="scale-110"
-                :color="EColor.LIGHT_800"
-                :background-color="EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().undo().run()"
-              />
-              <UIIconButton
-                icon="mingcute:forward-2-line"
-                icon-class="scale-110"
-                :color="EColor.LIGHT_800"
-                :background-color="EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().redo().run()"
-              />
-            </div>
+        <div v-if="editor" class="flex size-full flex-col items-end gap-12">
+          <OverlayScrollbarsComponent class="w-full max-w-full" :options="scrollbarOptions">
+            <div class="flex w-full items-center gap-24">
+              <div class="flex items-center justify-center gap-4">
+                <UIIconButton
+                  icon="mingcute:back-2-line"
+                  icon-class="scale-110"
+                  :color="EColor.LIGHT_800"
+                  :background-color="EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().undo().run()"
+                />
+                <UIIconButton
+                  icon="mingcute:forward-2-line"
+                  icon-class="scale-110"
+                  :color="EColor.LIGHT_800"
+                  :background-color="EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().redo().run()"
+                />
+              </div>
 
-            <div class="flex items-center justify-center gap-4">
-              <UIIconButton
-                icon="mingcute:bold-line"
-                icon-class="scale-110"
-                :color="editor.isActive('bold') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
-                :background-color="editor.isActive('bold') ? EColor.GREEN : EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().toggleBold().run()"
-              />
-              <UIIconButton
-                icon="mingcute:italic-line"
-                icon-class="scale-110"
-                :color="editor.isActive('italic') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
-                :background-color="editor.isActive('italic') ? EColor.GREEN : EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().toggleItalic().run()"
-              />
-              <UIIconButton
-                icon="mingcute:underline-line"
-                icon-class="scale-110"
-                :color="editor.isActive('underline') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
-                :background-color="editor.isActive('underline') ? EColor.GREEN : EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().toggleUnderline().run()"
-              />
-              <UIIconButton
-                icon="mingcute:strikethrough-line"
-                icon-class="scale-110"
-                :color="editor.isActive('strike') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
-                :background-color="editor.isActive('strike') ? EColor.GREEN : EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().toggleStrike().run()"
-              />
-            </div>
+              <div class="flex items-center justify-center gap-4">
+                <UIIconButton
+                  icon="mingcute:bold-line"
+                  icon-class="scale-110"
+                  :color="editor.isActive('bold') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
+                  :background-color="editor.isActive('bold') ? EColor.GREEN : EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().toggleBold().run()"
+                />
+                <UIIconButton
+                  icon="mingcute:italic-line"
+                  icon-class="scale-110"
+                  :color="editor.isActive('italic') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
+                  :background-color="editor.isActive('italic') ? EColor.GREEN : EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().toggleItalic().run()"
+                />
+                <UIIconButton
+                  icon="mingcute:underline-line"
+                  icon-class="scale-110"
+                  :color="editor.isActive('underline') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
+                  :background-color="editor.isActive('underline') ? EColor.GREEN : EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().toggleUnderline().run()"
+                />
+                <UIIconButton
+                  icon="mingcute:strikethrough-line"
+                  icon-class="scale-110"
+                  :color="editor.isActive('strike') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
+                  :background-color="editor.isActive('strike') ? EColor.GREEN : EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().toggleStrike().run()"
+                />
+              </div>
 
-            <div class="flex items-center justify-center gap-4">
-              <UIIconButton
-                icon="mingcute:list-ordered-line"
-                icon-class="scale-110"
-                :color="editor.isActive('orderedList') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
-                :background-color="editor.isActive('orderedList') ? EColor.GREEN : EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().toggleOrderedList().run()"
-              />
-              <UIIconButton
-                icon="mingcute:list-check-line"
-                icon-class="scale-110"
-                :color="editor.isActive('bulletList') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
-                :background-color="editor.isActive('bulletList') ? EColor.GREEN : EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().toggleBulletList().run()"
-              />
-              <UIIconButton
-                icon="mingcute:list-check-2-line"
-                icon-class="scale-110"
-                :color="editor.isActive('taskList') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
-                :background-color="editor.isActive('taskList') ? EColor.GREEN : EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().toggleTaskList().run()"
-              />
-            </div>
+              <div class="flex items-center justify-center gap-4">
+                <UIIconButton
+                  icon="mingcute:list-ordered-line"
+                  icon-class="scale-110"
+                  :color="editor.isActive('orderedList') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
+                  :background-color="editor.isActive('orderedList') ? EColor.GREEN : EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().toggleOrderedList().run()"
+                />
+                <UIIconButton
+                  icon="mingcute:list-check-line"
+                  icon-class="scale-110"
+                  :color="editor.isActive('bulletList') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
+                  :background-color="editor.isActive('bulletList') ? EColor.GREEN : EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().toggleBulletList().run()"
+                />
+                <UIIconButton
+                  icon="mingcute:list-check-2-line"
+                  icon-class="scale-110"
+                  :color="editor.isActive('taskList') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
+                  :background-color="editor.isActive('taskList') ? EColor.GREEN : EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().toggleTaskList().run()"
+                />
+              </div>
 
-            <div class="flex items-center justify-center gap-4">
-              <UIIconButton
-                icon="mingcute:blockquote-line"
-                icon-class="scale-110"
-                :color="editor.isActive('blockquote') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
-                :background-color="editor.isActive('blockquote') ? EColor.GREEN : EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().toggleBlockquote().run()"
-              />
-              <UIIconButton
-                icon="mingcute:dividing-line-line"
-                icon-class="scale-110"
-                :color="EColor.LIGHT_800"
-                :background-color="EColor.LIGHT_200"
-                size="small"
-                @click:button="editor.chain().focus().setHorizontalRule().run()"
-              />
+              <div class="flex items-center justify-center gap-4">
+                <UIIconButton
+                  icon="mingcute:blockquote-line"
+                  icon-class="scale-110"
+                  :color="editor.isActive('blockquote') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
+                  :background-color="editor.isActive('blockquote') ? EColor.GREEN : EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().toggleBlockquote().run()"
+                />
+                <UIIconButton
+                  icon="mingcute:dividing-line-line"
+                  icon-class="scale-110"
+                  :color="EColor.LIGHT_800"
+                  :background-color="EColor.LIGHT_200"
+                  size="small"
+                  @click:button="editor.chain().focus().setHorizontalRule().run()"
+                />
+                <UIImageUploader name="image-uploader" @update:file="uploadImage">
+                  <template #default="payload">
+                    <UIIconButton
+                      tag="div"
+                      icon="mingcute:photo-album-line"
+                      icon-class="scale-110"
+                      :color="EColor.LIGHT_800"
+                      :background-color="EColor.LIGHT_200"
+                      size="small"
+                      @click:button="payload?.open()"
+                    />
+                  </template>
+                </UIImageUploader>
+              </div>
             </div>
-          </div>
+          </OverlayScrollbarsComponent>
+
           <EditorContent
             :editor="editor"
             :name="name"
@@ -119,12 +135,19 @@
 
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
+import { FileHandler } from '@tiptap/extension-file-handler';
+import { Image } from '@tiptap/extension-image';
 import { TaskItem, TaskList } from '@tiptap/extension-list';
 import { Placeholder } from '@tiptap/extensions';
 import { StarterKit } from '@tiptap/starter-kit';
 import { EditorContent, useEditor } from '@tiptap/vue-3';
+import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
+
+import type { IUIImageUploaderFile } from '~/types/ui.types';
+import { ImageUtility } from '~/utilities/image.utility.ts';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
+import UIImageUploader from '~/components/ui/UIImageUploader.vue';
 import UIValidationErrors from '~/components/ui/UIValidationErrors.vue';
 
 const model = defineModel<string>({ required: true });
@@ -150,6 +173,17 @@ const props = withDefaults(
     editorClass: null,
   },
 );
+
+const toast = useToast();
+
+const scrollbarOptions: OverlayScrollbarsComponentProps['options'] = {
+  overflow: { y: 'hidden' },
+  scrollbars: {
+    autoHide: 'leave',
+    autoHideDelay: 200,
+    theme: 'os-theme-editor',
+  },
+};
 
 const editor = useEditor({
   content: model.value,
@@ -240,6 +274,34 @@ const editor = useEditor({
         class: '',
       },
     }),
+    Image.configure({
+      // TODO: base64 пока не прикручу S3.
+      allowBase64: true,
+      HTMLAttributes: {
+        class: 'max-w-250 h-auto rounded-8',
+      },
+    }),
+    FileHandler.configure({
+      allowedMimeTypes: ImageUtility.imageMimeTypes,
+      onPaste: (currentEditor, files, htmlContent) => {
+        if (htmlContent || !files?.length || props.disabled) return;
+
+        files.forEach(async file => {
+          if (!canInsertImage(file)) return;
+          const src = await ImageUtility.readImageAsDataUrl(file);
+          currentEditor.chain().focus().setImage({ src }).run();
+        });
+      },
+      onDrop: (currentEditor, files, pos) => {
+        if (!files?.length || props.disabled) return;
+
+        files.forEach(async file => {
+          if (!canInsertImage(file)) return;
+          const src = await ImageUtility.readImageAsDataUrl(file);
+          currentEditor.chain().insertContentAt(pos, { type: 'image', attrs: { src } }).focus().run();
+        });
+      },
+    }),
   ],
   onCreate: () => {
     console.log('editor created');
@@ -249,6 +311,29 @@ const editor = useEditor({
     model.value = editor.value?.getHTML() ?? model.value;
   },
 });
+
+// TODO: ограничение по размеру пока не прикручу S3.
+const canInsertImage = (file: File): boolean => {
+  const IMAGE_MAX_SIZE_BYTES = 500 * 1024;
+
+  if (!ImageUtility.imageMimeTypes.includes(file.type)) {
+    toast.error({ message: 'Данный формат не поддерживается' });
+    return false;
+  }
+
+  if (file.size > IMAGE_MAX_SIZE_BYTES) {
+    toast.error({ message: 'Размер изображения не должен превышать 500 КБ' });
+    return false;
+  }
+
+  return true;
+};
+
+const uploadImage = async ({ file }: IUIImageUploaderFile): Promise<void> => {
+  if (!file || !editor.value || props.disabled || !canInsertImage(file)) return;
+  const src = await ImageUtility.readImageAsDataUrl(file);
+  editor.value.chain().focus().setImage({ src }).run();
+};
 
 onBeforeUnmount(() => {
   editor.value?.destroy();

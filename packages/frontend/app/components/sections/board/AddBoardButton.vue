@@ -1,10 +1,11 @@
 <template>
-  <div class="w-full">
+  <div :class="[full ? 'w-full' : 'w-fit']">
     <div class="flex w-full gap-8">
       <UIButton
         class="flex-1"
         prepend-icon="mingcute:add-line"
         :disabled="disabled || isModalOpen"
+        :full="full"
         @click:button="isModalOpen = true"
       >
         Добавить доску
@@ -45,7 +46,7 @@ import {
 
 import { useForm } from '~/composables/use-form.composable';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { BOARD_MESSAGES } from '~/constants/board.constants.ts';
+import { BOARD_MESSAGES } from '~/constants/messages.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
@@ -56,10 +57,12 @@ withDefaults(
   defineProps<{
     disabled?: boolean;
     showTooltip?: boolean;
+    full?: boolean;
   }>(),
   {
     disabled: false,
     showTooltip: false,
+    full: true,
   },
 );
 

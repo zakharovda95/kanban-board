@@ -40,9 +40,7 @@ import {
 } from '@kanban-board/common';
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { BOARD_MESSAGES } from '~/constants/board.constants';
-import { COLUMN_MESSAGES } from '~/constants/column.constants.ts';
-import { ISSUE_MESSAGES } from '~/constants/issue.constants.ts';
+import { COLUMN_MESSAGES, ISSUE_MESSAGES } from '~/constants/messages.constants.ts';
 
 import TheBoard from '~/components/sections/board/TheBoard.vue';
 import TheBoardMobile from '~/components/sections/board/TheBoardMobile.vue';
@@ -62,8 +60,9 @@ const errorMessage = ref<string | null>(null);
 const { data, pending, error } = await useFetch<TBoard>(`/api/boards/${boardId.value}`, { deep: true });
 
 if (error.value) {
-  toast.error({ message: BOARD_MESSAGES.errorLoading });
-  errorMessage.value = BOARD_MESSAGES.errorLoading;
+  const message = 'Произошла ошибка при загрузке доски.';
+  toast.error({ message });
+  errorMessage.value = message;
 }
 
 const addColumn = (column: TColumn) => {
