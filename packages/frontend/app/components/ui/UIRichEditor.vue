@@ -75,6 +75,14 @@
                 size="small"
                 @click:button="editor.chain().focus().toggleBulletList().run()"
               />
+              <UIIconButton
+                icon="mingcute:list-check-2-line"
+                icon-class="scale-110"
+                :color="editor.isActive('taskList') ? EColor.LIGHT_BASE : EColor.LIGHT_800"
+                :background-color="editor.isActive('taskList') ? EColor.GREEN : EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().toggleTaskList().run()"
+              />
             </div>
 
             <div class="flex items-center justify-center gap-4">
@@ -85,6 +93,14 @@
                 :background-color="editor.isActive('blockquote') ? EColor.GREEN : EColor.LIGHT_200"
                 size="small"
                 @click:button="editor.chain().focus().toggleBlockquote().run()"
+              />
+              <UIIconButton
+                icon="mingcute:dividing-line-line"
+                icon-class="scale-110"
+                :color="EColor.LIGHT_800"
+                :background-color="EColor.LIGHT_200"
+                size="small"
+                @click:button="editor.chain().focus().setHorizontalRule().run()"
               />
             </div>
           </div>
@@ -103,9 +119,9 @@
 
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
+import { TaskItem, TaskList } from '@tiptap/extension-list';
 import { Placeholder } from '@tiptap/extensions';
-import { Markdown } from '@tiptap/markdown';
-import StarterKit from '@tiptap/starter-kit';
+import { StarterKit } from '@tiptap/starter-kit';
 import { EditorContent, useEditor } from '@tiptap/vue-3';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
@@ -190,15 +206,40 @@ const editor = useEditor({
           class: 'text-14 leading-18 block min-h-18',
         },
       },
-      link: {},
+      link: {
+        autolink: true,
+        markdownLinks: true,
+        defaultProtocol: 'https',
+        openOnClick: false,
+        linkOnPaste: true,
+        shouldAutoLink: url => url.startsWith('https://'),
+        HTMLAttributes: {
+          class: 'text-14 leading-18 block min-h-18 text-green underline underline-offset-4',
+        },
+      },
       blockquote: {
         HTMLAttributes: {
           class: 'editor-blockquote border-l-3 border-l-light-400 pl-8 italic! bg-light-100 p-8',
         },
       },
+      horizontalRule: {
+        HTMLAttributes: {
+          class: 'border-t border-t-light-300 my-36',
+        },
+      },
     }),
-    Markdown,
     Placeholder.configure({ placeholder: props.placeholder }),
+    TaskList.configure({
+      HTMLAttributes: {
+        class: 'editor-todo',
+      },
+    }),
+    TaskItem.configure({
+      nested: false,
+      HTMLAttributes: {
+        class: '',
+      },
+    }),
   ],
   onCreate: () => {
     console.log('editor created');

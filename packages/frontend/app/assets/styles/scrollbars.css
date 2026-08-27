@@ -1,6 +1,5 @@
-.os-theme-modal {
-  --os-size: 4px;
-
+.os-theme-modal,
+.os-theme-board {
   --os-track-bg: transparent;
   --os-track-bg-hover: transparent;
   --os-track-bg-active: transparent;
@@ -8,6 +7,14 @@
   --os-handle-bg: var(--color-light-300);
   --os-handle-bg-hover: var(--color-light-300);
   --os-handle-bg-active: var(--color-light-300);
-  --os-handle-border-radius: 8px;
+  --os-handle-border-radius: 2px;
   --os-handle-min-size: 24px;
+}
+
+.os-theme-modal {
+  --os-size: 4px;
+}
+
+.os-theme-board {
+  --os-size: 6px;
 }

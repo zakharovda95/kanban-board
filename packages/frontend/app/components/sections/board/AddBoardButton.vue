@@ -1,10 +1,15 @@
 <template>
   <div class="w-full">
     <div class="flex w-full gap-8">
-      <UIButton class="flex-1" prepend-icon="mingcute:add-line" :disabled="disabled" @click:button="isModalOpen = true">
+      <UIButton
+        class="flex-1"
+        prepend-icon="mingcute:add-line"
+        :disabled="disabled || isModalOpen"
+        @click:button="isModalOpen = true"
+      >
         Добавить доску
       </UIButton>
-      <UITooltip v-if="disabled" :text="BOARDS_MAX_COUNT_ERROR_MESSAGE" size="large" />
+      <UITooltip v-if="showTooltip" :text="BOARDS_MAX_COUNT_ERROR_MESSAGE" size="large" />
     </div>
 
     <UpsertModal
@@ -50,9 +55,11 @@ import UITooltip from '~/components/ui/UITooltip.vue';
 withDefaults(
   defineProps<{
     disabled?: boolean;
+    showTooltip?: boolean;
   }>(),
   {
     disabled: false,
+    showTooltip: false,
   },
 );
 

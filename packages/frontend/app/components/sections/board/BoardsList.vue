@@ -36,7 +36,11 @@
         <p class="text-12">{{ BOARD_MESSAGES.noBoards }}</p>
       </div>
 
-      <AddBoardButton :disabled="boardsStore.boards.length >= BOARDS_MAX_COUNT" @add:board="boardsStore.addNewBoard" />
+      <AddBoardButton
+        :disabled="isTooMuchBoards"
+        :show-tooltip="isTooMuchBoards"
+        @add:board="boardsStore.addNewBoard"
+      />
     </template>
   </div>
 </template>
@@ -60,6 +64,7 @@ const route = useRoute();
 const boardsStore = useBoardsStore();
 
 const boardId = computed(() => Number(route.params.id));
+const isTooMuchBoards = computed(() => boardsStore.boards.length >= BOARDS_MAX_COUNT);
 
 const onClickBoard = (id: number) => {
   if (id === boardId.value) return;

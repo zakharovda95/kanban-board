@@ -40,13 +40,13 @@ const props = withDefaults(
 const computedSize = computed(() => {
   const sizes: TUIComputedSizeMap = {
     small: {
-      element: 'text-14',
+      element: 'text-12',
     },
     medium: {
-      element: 'text-16',
+      element: 'text-14',
     },
     large: {
-      element: 'text-18',
+      element: 'text-16',
     },
   };
 

@@ -1,9 +1,19 @@
 <template>
   <div class="w-fit">
-    <UIButton class="laptop:flex hidden" prepend-icon="mingcute:add-line" @click:button="isModalOpen = true">
+    <UIButton
+      class="laptop:flex hidden"
+      :disabled="isModalOpen"
+      prepend-icon="mingcute:add-line"
+      @click:button="openModal"
+    >
       Добавить колонку
     </UIButton>
-    <UIIconButton class="laptop:hidden flex" icon="mingcute:add-line" @click:button="isModalOpen = true" />
+    <UIIconButton
+      class="laptop:hidden flex"
+      :disabled="isModalOpen"
+      icon="mingcute:add-line"
+      @click:button="openModal"
+    />
 
     <UpsertModal
       :is-open="isModalOpen"
@@ -55,11 +65,13 @@ const toast = useToast();
 
 const isModalOpen = ref(false);
 
-const { formData, formErrors, reset, update } = useForm<Omit<TCreateColumn, 'boardId'>>({
+const getInitialValue = (): Omit<TCreateColumn, 'boardId'> => ({
   title: '',
   description: '',
   color: ColorUtility.getRandomHexColor(),
 });
+
+const { formData, formErrors, reset, update, set } = useForm<Omit<TCreateColumn, 'boardId'>>(getInitialValue());
 const { emitEvent, isLoading } = useSocket();
 
 const createBoard = () => {
@@ -83,6 +95,11 @@ const createBoard = () => {
       else toast.error({ message: getErrorMessage(error) });
     },
   });
+};
+
+const openModal = () => {
+  set(getInitialValue(), { setAsInitial: true, clearErrors: true });
+  isModalOpen.value = true;
 };
 
 const closeModal = () => {
