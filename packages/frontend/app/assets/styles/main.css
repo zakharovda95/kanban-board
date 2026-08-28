@@ -218,6 +218,10 @@
   }
 }
 
+@utility drag-ghost {
+  @apply border-green border border-dashed;
+}
+
 .CP-sandbox__component {
   z-index: 1100 !important;
 }
