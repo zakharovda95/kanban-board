@@ -3,17 +3,18 @@ import {
   type TColumn,
   type TCreateColumn,
   type TDeleteColumnEmitPayload,
+  type TMoveColumn,
+  type TMoveColumnEmitPayload,
   type TMoveParameters,
-  type TSuccessResponse,
   type TUpdateColumn,
 } from '@kanban-board/common';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { OrderUtility } from '@/libs/utilities/order.utility';
-import { getSuccessResponse } from '@/libs/utilities/response.utilities';
+import { BoardMapper } from '@/modules/board/board.mapper';
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
 import { ColumnMapper } from '@/modules/column/column.mapper';
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
@@ -25,6 +26,7 @@ export class ColumnService {
     private dataSource: DataSource,
     private moveService: MoveService<ColumnEntity>,
     private columnMapper: ColumnMapper,
+    private boardMapper: BoardMapper,
   ) {}
 
   /**
@@ -58,36 +60,42 @@ export class ColumnService {
   /**
    * Изменить порядок колонок на доске.
    * Правила перемещения:
-   * - Должен быть указан только previousId или nextId, но не оба сразу.
+   * - Должен быть указан previousId - id колонки после которой будет перемещаемая колонка (может быть null).
    * - Если previousId - null - колонка помещается в начало.
-   * - Если nextId - null - колонка помещается в конец.
    * - Если существует только одна колонка, то она не может быть перемещена.
    * - Если при перемещении колонки ее позиция на доске не меняется, то она не может быть перемещена.
    * - Колонка не может быть перемещена на другую доску.
-   * @param boardId - id текущей доски.
-   * @param columnId - id перемещаемой колонки.
-   * @param body - параметры перемещения (previousId / nextId).
-   * @returns стандартный успешный ответ.
+   * @param body - параметры перемещения (previousId, targetId, boardId).
+   * @returns id gtеремещенной колонки и обновленная доска.
    * **/
-  public async moveColumn(
-    boardId: number,
-    columnId: number,
-    body: TMoveParameters,
-  ): Promise<TSuccessResponse> {
-    if (!boardId || !columnId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+  public async moveColumn(body: TMoveColumn): Promise<TMoveColumnEmitPayload> {
+    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
+    const { boardId, targetId, previousId } = body;
     const { manager } = this.dataSource;
+
     return manager.transaction(async transactionalManager => {
       const columns = await transactionalManager.find(ColumnEntity, {
         where: { boardId },
         order: { order: 'ASC' },
       });
 
-      this.moveService.tryToMove(columns, columnId, body);
+      const moveParameters: TMoveParameters = { targetId, previousId };
+      this.moveService.tryToMove(columns, moveParameters);
       await transactionalManager.save(ColumnEntity, columns);
 
-      return getSuccessResponse();
+      const boardAfterMove = await transactionalManager.findOne(BoardEntity, {
+        where: { id: boardId },
+        order: { order: 'ASC', columns: { order: 'ASC', issues: { order: 'ASC' } } },
+        relations: { columns: { issues: true } },
+      });
+      if (!boardAfterMove) throw new WsException(EXCEPTION_MESSAGES.notFound);
+
+      return {
+        boardId,
+        movedColumnId: targetId,
+        board: this.boardMapper.toModel(boardAfterMove, { withRelations: true }),
+      };
     });
   }
 

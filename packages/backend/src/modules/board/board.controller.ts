@@ -1,10 +1,8 @@
-import type { TBoard, TBoardBase, TSuccessResponse } from '@kanban-board/common';
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import type { TBoard, TBoardBase } from '@kanban-board/common';
+import { Controller, Get, Param } from '@nestjs/common';
 
 import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
 import { BoardService } from '@/modules/board/board.service';
-import { MoveParametersDto } from '@/modules/shared/move/libs/dto/move-parameters.dto';
-import { MovePipe } from '@/modules/shared/move/libs/pipes/move.pipe';
 
 @Controller('boards')
 export class BoardController {
@@ -20,14 +18,5 @@ export class BoardController {
     @Param('boardId', new ParameterIdPipe('http')) boardId: number,
   ): Promise<TBoard> {
     return await this.boardService.getBoardById(boardId);
-  }
-
-  @Post(':boardId/move')
-  @HttpCode(HttpStatus.OK)
-  public async moveBoard(
-    @Param('boardId', new ParameterIdPipe('http')) boardId: number,
-    @Body(MovePipe) body: MoveParametersDto,
-  ): Promise<TSuccessResponse> {
-    return await this.boardService.moveBoard(boardId, body);
   }
 }

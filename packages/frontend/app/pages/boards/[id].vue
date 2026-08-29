@@ -40,7 +40,6 @@ import {
 } from '@kanban-board/common';
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { COLUMN_MESSAGES, ISSUE_MESSAGES } from '~/constants/messages.constants.ts';
 
 import TheBoard from '~/components/sections/board/TheBoard.vue';
 import TheBoardMobile from '~/components/sections/board/TheBoardMobile.vue';
@@ -84,12 +83,12 @@ const deleteColumn = (payload: TDeleteColumnEmitPayload) => {
 
 const stopListenColumnCreated = listen(EColumnEvent.CREATED, (column: TColumn) => {
   addColumn(column);
-  toast.info({ message: COLUMN_MESSAGES.newColumnAdded(column.title) });
+  toast.info({ message: `Добавлена новая колонка «${column.title}»` });
 });
 
 const stopListenColumnUpdated = listen(EColumnEvent.UPDATED, (column: TColumn) => {
   updateColumn(column);
-  toast.info({ message: COLUMN_MESSAGES.columnWasUpdated(column.title) });
+  toast.info({ message: `Обновлена колонка «${column.title}»` });
 });
 
 const stopListenColumnDeleted = listen(EColumnEvent.DELETED, (payload: TDeleteColumnEmitPayload) => {
@@ -98,9 +97,7 @@ const stopListenColumnDeleted = listen(EColumnEvent.DELETED, (payload: TDeleteCo
   deleteColumn(payload);
 
   toast.info({
-    message: deletedColumn
-      ? COLUMN_MESSAGES.columnWasDeleted(deletedColumn.title)
-      : COLUMN_MESSAGES.namelessColumnWasDeleted,
+    message: deletedColumn ? `Колонка «${deletedColumn.title}» была удалена` : 'Колонка была удалена',
   });
 });
 
@@ -130,12 +127,12 @@ const deleteIssue = (payload: TDeleteIssueEmitPayload) => {
 
 const stopListenIssueCreated = listen(EIssueEvent.CREATED, (issue: TIssueBase) => {
   addIssue(issue);
-  toast.info({ message: ISSUE_MESSAGES.newIssueAdded(issue.title) });
+  toast.info({ message: `Добавлена новая задача «${issue.title}»` });
 });
 
 const stopListenIssueUpdated = listen(EIssueEvent.UPDATED, (issue: TIssueBase) => {
   updateIssue(issue);
-  toast.info({ message: ISSUE_MESSAGES.issueWasUpdated(issue.title) });
+  toast.info({ message: `Обновлена задача «${issue.title}»` });
 });
 
 const stopListenIssueDeleted = listen(EIssueEvent.DELETED, (payload: TDeleteIssueEmitPayload) => {
@@ -146,7 +143,7 @@ const stopListenIssueDeleted = listen(EIssueEvent.DELETED, (payload: TDeleteIssu
   deleteIssue(payload);
 
   toast.info({
-    message: deletedIssue ? ISSUE_MESSAGES.issueWasDeleted(deletedIssue.title) : ISSUE_MESSAGES.namelessIssueWasDeleted,
+    message: deletedIssue ? `Задача «${deletedIssue.title}» была удалена` : 'Задача была удалена',
   });
 });
 

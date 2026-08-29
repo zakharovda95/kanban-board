@@ -4,9 +4,9 @@ import type {
   TIssue,
   TIssueBase,
   TMoveIssue,
+  TMoveIssueEmitPayload,
   TMoveOptions,
   TMoveParameters,
-  TSuccessResponse,
   TUpdateIssue,
 } from '@kanban-board/common';
 import {
@@ -20,7 +20,7 @@ import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { OrderUtility } from '@/libs/utilities/order.utility';
-import { getSuccessResponse } from '@/libs/utilities/response.utilities';
+import { ColumnMapper } from '@/modules/column/column.mapper';
 import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
 import { IssueMapper } from '@/modules/issue/issue.mapper';
 import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
@@ -31,6 +31,7 @@ export class IssueService {
   constructor(
     private dataSource: DataSource,
     private issueMapper: IssueMapper,
+    private columnMapper: ColumnMapper,
     private moveService: MoveService<IssueEntity>,
   ) {}
 
@@ -81,64 +82,64 @@ export class IssueService {
    * Правила перемещения:
    * - Если указан toColumnId - задача перемещается в указанную колонку.
    * - Если не указан toColumnId - перемещение в рамках текущей колонки.
-   * - Должен быть указаны только previousId или nextId, но не оба сразу.
+   * - Должен быть указан previousId - id задачи перед которой будет помещена целевая задача.
    * - Если previousId - null - задача помещается в начало.
-   * - Если nextId - null - задача помещается в конец.
-   * - При перемещении задачи в другую ПУСТУЮ колонку необходимо указать previousId или nextId в значении null (иначе ошибка).
-   * - Если существует только одна задача, то она не может быть перемещена.
+   * - При перемещении задачи в другую ПУСТУЮ колонку необходимо указать previousId в значении null (иначе ошибка).
    * - Если при перемещении задачи ее позиция на доске не меняется (та же колонка та же позиция), то она не может быть перемещена.
    * - Задача не может быть перемещена на другую доску.
-   * @param boardId - id текущей доски.
-   * @param fromColumnId - id текущей колонки.
-   * @param issueId - id текущей задачи.
-   * @param body - параметры перемещения (previousId / nextId), toColumnId (опциональный) - целевая колонка.
-   * @returns стандартный успешный ответ.
+   * @param body - параметры перемещения (previousId, targetId, fromColumnId, toColumnId, boardId).
+   * @returns id перемещенной задачи и колонка, куда была перемещена задача.
    * **/
-  public async moveIssue(
-    boardId: number,
-    fromColumnId: number,
-    issueId: number,
-    body: TMoveIssue,
-  ): Promise<TSuccessResponse> {
-    if (!boardId || !fromColumnId || !issueId)
-      throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+  public async moveIssue(body: TMoveIssue): Promise<TMoveIssueEmitPayload> {
+    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
-    const { toColumnId, nextId, previousId } = body;
+    const { toColumnId, previousId, targetId, boardId, fromColumnId } = body;
     const { manager } = this.dataSource;
 
     return await manager.transaction(async transactionalManager => {
       const targetIssue = await transactionalManager.findOne(IssueEntity, {
-        where: { boardId: boardId, id: issueId, columnId: fromColumnId },
+        where: { boardId, id: targetId, columnId: fromColumnId },
       });
-      if (!targetIssue) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+      if (!targetIssue) throw new WsException(EXCEPTION_MESSAGES.notFound);
 
       const isCurrentBoard = Boolean(targetIssue.boardId === boardId);
       const isCurrentColumn = Boolean(!toColumnId || toColumnId === targetIssue.columnId);
       const actualColumnId = toColumnId || targetIssue.columnId;
 
-      if (!isCurrentBoard) throw new BadRequestException(EXCEPTION_MESSAGES.moveFailed);
+      if (!isCurrentBoard) throw new WsException(EXCEPTION_MESSAGES.moveFailed);
 
       const targetColumn = await transactionalManager.findOne(ColumnEntity, {
         relations: { issues: true },
         where: { id: actualColumnId, boardId },
         order: { issues: { order: 'ASC' } },
       });
-      if (!targetColumn) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+      if (!targetColumn) throw new WsException(EXCEPTION_MESSAGES.notFound);
 
-      const moveParameters: TMoveParameters = { nextId, previousId };
+      const moveParameters: TMoveParameters = { previousId, targetId };
       const moveOptions: TMoveOptions = { allowForceMove: !isCurrentColumn };
 
       const issuesWithTarget = isCurrentColumn
         ? targetColumn.issues
         : [...targetColumn.issues, targetIssue];
 
-      if (!isCurrentColumn && toColumnId) targetIssue.columnId = toColumnId;
+      if (!isCurrentColumn) targetIssue.columnId = actualColumnId;
 
-      this.moveService.tryToMove(issuesWithTarget, issueId, moveParameters, moveOptions);
+      this.moveService.tryToMove(issuesWithTarget, moveParameters, moveOptions);
       await transactionalManager.save(IssueEntity, issuesWithTarget);
 
-      return getSuccessResponse();
+      const targetColumnAfterMove = await transactionalManager.findOne(ColumnEntity, {
+        relations: { issues: true },
+        where: { id: actualColumnId, boardId },
+        order: { issues: { order: 'ASC' } },
+      });
+      if (!targetColumnAfterMove) throw new WsException(EXCEPTION_MESSAGES.notFound);
+
+      return {
+        boardId,
+        columnId: actualColumnId,
+        movedIssueId: targetId,
+        column: this.columnMapper.toModel(targetColumnAfterMove),
+      };
     });
   }
 

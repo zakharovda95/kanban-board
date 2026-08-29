@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ColumnController } from '@/modules/column/column.controller';
 import ColumnGateway from '@/modules/column/column.gateway';
 import { ColumnMapper } from '@/modules/column/column.mapper';
 import { ColumnService } from '@/modules/column/column.service';
@@ -11,7 +10,7 @@ import { MoveModule } from '@/modules/shared/move/move.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ColumnEntity]), IssueModule, MoveModule],
-  controllers: [ColumnController],
+  controllers: [],
   providers: [ColumnService, ColumnMapper, ColumnGateway],
   exports: [ColumnService, ColumnMapper],
 })

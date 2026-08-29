@@ -1,6 +1,6 @@
 import type { TColumn } from './column.types.js';
 import type { IMovable } from './move.types.js';
-import { TSuccessResponse } from './response.types';
+import type { TSuccessResponse } from './response.types';
 
 /** Базовые данные для бокового меню. **/
 export type TBoardBase = IMovable & {
@@ -26,8 +26,17 @@ export type TUpsertBoardResponse = TSuccessResponse<TBoardBase>;
 /** Ответ ack после удаления доски. **/
 export type TDeleteBoardResponse = TSuccessResponse<TDeleteBoardEmitPayload>;
 
+/** Ответ ack после перемещения доски. **/
+export type TMoveBoardResponse = TSuccessResponse<TMoveBoardEmitPayload>;
+
 /** Полезная нагрузка эмита удаления доски. **/
 export type TDeleteBoardEmitPayload = {
   boards: TBoardBase[];
   deletedBoardId: number;
+};
+
+/** Полезная нагрузка эмита перемещения доски. **/
+export type TMoveBoardEmitPayload = {
+  boards: TBoardBase[];
+  movedBoardId: number;
 };

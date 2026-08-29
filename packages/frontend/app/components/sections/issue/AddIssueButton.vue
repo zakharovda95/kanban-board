@@ -42,7 +42,6 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { ISSUE_MESSAGES } from '~/constants/messages.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
@@ -80,7 +79,7 @@ const createIssue = () => {
     data: body,
     successCallback: (response: TUpsertIssueResponse) => {
       if (response.isSuccess && response.data) {
-        toast.success({ message: ISSUE_MESSAGES.issueCreated });
+        toast.success({ message: 'Задача создана' });
         emit('add:issue', response.data);
         closeModal();
       }

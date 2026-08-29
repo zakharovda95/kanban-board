@@ -49,7 +49,6 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { COLUMN_MESSAGES } from '~/constants/messages.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
@@ -85,7 +84,7 @@ const createBoard = () => {
     data: body,
     successCallback: (response: TUpsertColumnResponse) => {
       if (response.isSuccess && response.data) {
-        toast.success({ message: COLUMN_MESSAGES.columnCreated });
+        toast.success({ message: 'Колонка создана' });
         emit('add:column', response.data);
         closeModal();
       }

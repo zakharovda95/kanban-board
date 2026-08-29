@@ -1,8 +1,12 @@
 import {
   EColumnEvent,
   getWsBoardRoomName,
-  TDeleteColumnResponse,
-  TUpsertColumnResponse,
+  type TColumn,
+  type TDeleteColumnEmitPayload,
+  type TDeleteColumnResponse,
+  type TMoveColumnEmitPayload,
+  type TMoveColumnResponse,
+  type TUpsertColumnResponse,
 } from '@kanban-board/common';
 import { UseFilters } from '@nestjs/common';
 import {
@@ -20,6 +24,7 @@ import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import { ColumnService } from '@/modules/column/column.service';
 import { CreateColumnDto } from '@/modules/column/libs/dtos/create-column.dto';
+import { MoveColumnDto } from '@/modules/column/libs/dtos/move-column.dto';
 import { UpdateColumnDto } from '@/modules/column/libs/dtos/update-column.dto';
 
 @WebSocketGateway({ cors: { origin: true } })
@@ -34,7 +39,7 @@ export default class ColumnGateway {
   ): Promise<TUpsertColumnResponse> {
     const createdColumn = await this.columnService.createColumn(body);
     client.to(getWsBoardRoomName(createdColumn.boardId)).emit(EColumnEvent.CREATED, createdColumn);
-    return getSuccessResponseWithData(createdColumn);
+    return getSuccessResponseWithData<TColumn>(createdColumn);
   }
 
   @SubscribeMessage(EColumnEvent.UPDATE)
@@ -48,7 +53,7 @@ export default class ColumnGateway {
   ): Promise<TUpsertColumnResponse> {
     const updatedColumn = await this.columnService.updateColumn(body);
     client.to(getWsBoardRoomName(updatedColumn.boardId)).emit(EColumnEvent.UPDATED, updatedColumn);
-    return getSuccessResponseWithData(updatedColumn);
+    return getSuccessResponseWithData<TColumn>(updatedColumn);
   }
 
   @SubscribeMessage(EColumnEvent.DELETE)
@@ -56,10 +61,18 @@ export default class ColumnGateway {
     @MessageBody(new ParameterIdPipe('ws')) columnId: number,
     @ConnectedSocket() client: Socket,
   ): Promise<TDeleteColumnResponse> {
-    const columnsAfterDeleting = await this.columnService.deleteColumn(columnId);
-    client
-      .to(getWsBoardRoomName(columnsAfterDeleting.boardId))
-      .emit(EColumnEvent.DELETED, columnsAfterDeleting);
-    return getSuccessResponseWithData(columnsAfterDeleting);
+    const payload = await this.columnService.deleteColumn(columnId);
+    client.to(getWsBoardRoomName(payload.boardId)).emit(EColumnEvent.DELETED, payload);
+    return getSuccessResponseWithData<TDeleteColumnEmitPayload>(payload);
+  }
+
+  @SubscribeMessage(EColumnEvent.MOVE)
+  public async moveColumn(
+    @MessageBody(CustomValidationPipe.wsValidationPipe) body: MoveColumnDto,
+    @ConnectedSocket() client: Socket,
+  ): Promise<TMoveColumnResponse> {
+    const payload = await this.columnService.moveColumn(body);
+    client.to(getWsBoardRoomName(payload.boardId)).emit(EColumnEvent.MOVED, payload);
+    return getSuccessResponseWithData<TMoveColumnEmitPayload>(payload);
   }
 }

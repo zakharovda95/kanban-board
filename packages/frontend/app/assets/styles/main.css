@@ -219,7 +219,7 @@
 }
 
 @utility drag-ghost {
-  @apply border-green border border-dashed;
+  @apply border-green! rounded-8 cursor-move! border border-dashed;
 }
 
 .CP-sandbox__component {

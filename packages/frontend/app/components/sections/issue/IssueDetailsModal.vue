@@ -132,7 +132,6 @@ import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from
 import { useIssueInfo } from '~/composables/app/use-issue-info.composable.ts';
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { ISSUE_MESSAGES } from '~/constants/messages.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
@@ -195,7 +194,7 @@ const updateIssue = () => {
     successCallback: (response: TUpsertIssueResponse) => {
       if (response.isSuccess && response.data) {
         emit('update:issue', response.data);
-        toast.success({ message: ISSUE_MESSAGES.issueUpdated });
+        toast.success({ message: 'Задача обновлена' });
         resetUpdating();
       }
     },
@@ -213,7 +212,7 @@ const deleteIssue = () => {
     successCallback: (response: TDeleteIssueResponse) => {
       if (response.isSuccess && response.data) {
         emit('delete:issue', response.data);
-        toast.success({ message: ISSUE_MESSAGES.issueDeleted });
+        toast.success({ message: 'Задача удалена' });
         closeModal();
       }
     },

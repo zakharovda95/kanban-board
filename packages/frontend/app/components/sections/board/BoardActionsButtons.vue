@@ -48,7 +48,6 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { BOARD_MESSAGES } from '~/constants/messages.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 
@@ -91,7 +90,7 @@ const updateBoard = () => {
     data: body,
     successCallback: (response: TUpsertBoardResponse) => {
       if (response.isSuccess && response.data) {
-        toast.success({ message: BOARD_MESSAGES.boardUpdated });
+        toast.success({ message: 'Доска обновлена' });
         emit('update:board', response.data);
         closeModal();
       }
@@ -109,7 +108,7 @@ const deleteBoard = () => {
     data: props.board.id,
     successCallback: (response: TDeleteBoardResponse) => {
       if (response.isSuccess && response.data) {
-        toast.success({ message: BOARD_MESSAGES.boardDeleted });
+        toast.success({ message: 'Доска удалена' });
         emit('delete:board', response.data);
         closeModal();
       }

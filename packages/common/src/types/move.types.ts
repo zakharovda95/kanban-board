@@ -4,13 +4,11 @@ export interface IMovable {
 }
 
 export type TMoveParameters = {
+  targetId: number;
   previousId?: number | null;
-  nextId?: number | null;
 };
 
 export type TMoveOptions = {
   /** Разрешает переместить объект, даже если он один в контейнере. **/
   allowForceMove?: boolean;
 };
-
-export type TMoveDirection = 'previous' | 'next';

@@ -16,3 +16,11 @@ export type TActionButtonData = {
   color: EColor;
   iconClass?: string;
 };
+
+export type TMovedDetails<T> = {
+  moved: {
+    element: T;
+    oldIndex: number;
+    newIndex: number;
+  };
+};

@@ -1,15 +1,10 @@
-import type { TMoveParameters } from '@kanban-board/common';
+import { type TMoveColumn } from '@kanban-board/common';
 import { IsDefined, IsInt, IsNumber, IsPositive } from 'class-validator';
 
 import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
-import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
+import { MoveParametersDto } from '@/modules/shared/move/libs/dto/move-parameters.dto';
 
-export class MoveParametersDto implements TMoveParameters {
-  @ValidateIfDefinedAndNotNull()
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
-  @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  previousId?: number;
-
+export class MoveColumnDto extends MoveParametersDto implements TMoveColumn {
   @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
@@ -17,5 +12,5 @@ export class MoveParametersDto implements TMoveParameters {
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  targetId: number;
+  boardId: number;
 }

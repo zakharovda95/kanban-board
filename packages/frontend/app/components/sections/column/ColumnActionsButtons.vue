@@ -52,7 +52,6 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { COLUMN_MESSAGES } from '~/constants/messages.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 
@@ -93,7 +92,7 @@ const updateColumn = () => {
     data: body,
     successCallback: (response: TUpsertColumnResponse) => {
       if (response.isSuccess && response.data) {
-        toast.success({ message: COLUMN_MESSAGES.columnUpdated });
+        toast.success({ message: 'Колонка обновлена' });
         emit('update:column', response.data);
         closeModal();
       }
@@ -111,7 +110,7 @@ const deleteColumn = () => {
     data: props.column.id,
     successCallback: (response: TDeleteColumnResponse) => {
       if (response.isSuccess && response.data) {
-        toast.success({ message: COLUMN_MESSAGES.columnDeleted });
+        toast.success({ message: 'Колонка удалена' });
         emit('delete:column', response.data);
         closeModal();
       }

@@ -1,9 +1,13 @@
-import { EBoardEvent, type TBoardBase, type TDeleteBoardEmitPayload } from '@kanban-board/common';
+import {
+  EBoardEvent,
+  type TBoardBase,
+  type TDeleteBoardEmitPayload,
+  type TMoveBoardEmitPayload,
+} from '@kanban-board/common';
 import { defineStore } from 'pinia';
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
-import { BOARD_MESSAGES } from '~/constants/messages.constants.ts';
 
 export const useBoardsStore = defineStore('boards-store', () => {
   const { listen } = useSocket();
@@ -12,6 +16,7 @@ export const useBoardsStore = defineStore('boards-store', () => {
 
   const isLoadingBoards = ref(false);
   const boards = ref<TBoardBase[]>([]);
+  const snapshot = ref<TBoardBase[] | null>(null);
 
   const currentBoardId = computed(() => Number(route.params.id));
 
@@ -47,14 +52,14 @@ export const useBoardsStore = defineStore('boards-store', () => {
   const stopListenCreated = listen(EBoardEvent.CREATED, (newBoard: TBoardBase) => {
     if (newBoard.id) {
       addNewBoard(newBoard);
-      toast.info({ message: BOARD_MESSAGES.newBoardAdded(newBoard.title) });
+      toast.info({ message: `Добавлена новая доска «${newBoard.title}»` });
     }
   });
 
   const stopListenUpdated = listen(EBoardEvent.UPDATED, (updatedBoard: TBoardBase) => {
     if (updatedBoard.id) {
       updateBoard(updatedBoard);
-      toast.info({ message: BOARD_MESSAGES.boardWasUpdated(updatedBoard.title) });
+      toast.info({ message: `Обновлена доска «${updatedBoard.title}»` });
     }
   });
 
@@ -64,13 +69,21 @@ export const useBoardsStore = defineStore('boards-store', () => {
       deleteBoard(payload);
 
       if (payload.deletedBoardId === currentBoardId.value) {
-        toast.info({ message: BOARD_MESSAGES.activeBoardWasDeleted });
+        toast.info({ message: 'Активная доска была удалена и больше недоступна' });
       } else
         toast.info({
-          message: deletedBoard
-            ? BOARD_MESSAGES.boardWasDeleted(deletedBoard.title)
-            : BOARD_MESSAGES.namelessBoardWasDeleted,
+          message: deletedBoard ? `Доска «${deletedBoard.title}» была удалена` : 'Доска была удалена',
         });
+    }
+  });
+
+  const stopListenMove = listen(EBoardEvent.MOVED, (payload: TMoveBoardEmitPayload) => {
+    if (payload.movedBoardId) {
+      boards.value = [...payload.boards];
+      const movedBoard = boards.value.find(({ id }: TBoardBase) => id === payload.movedBoardId);
+      toast.info({
+        message: movedBoard ? `Доска «${movedBoard.title}» была перемещена` : 'Доска была перемещена',
+      });
     }
   });
 
@@ -78,6 +91,7 @@ export const useBoardsStore = defineStore('boards-store', () => {
     stopListenCreated();
     stopListenUpdated();
     stopListenDeleted();
+    stopListenMove();
   };
 
   const resetStore = () => {
@@ -85,5 +99,24 @@ export const useBoardsStore = defineStore('boards-store', () => {
     boards.value = [];
   };
 
-  return { isLoadingBoards, boards, fetchBoards, addNewBoard, updateBoard, deleteBoard, stopListen, resetStore };
+  const takeSnapshot = () => {
+    snapshot.value = structuredClone(boards.value.map(elem => toRaw(elem)));
+  };
+
+  const deleteSnapshot = () => {
+    snapshot.value = null;
+  };
+
+  return {
+    isLoadingBoards,
+    boards,
+    fetchBoards,
+    addNewBoard,
+    updateBoard,
+    deleteBoard,
+    stopListen,
+    resetStore,
+    takeSnapshot,
+    deleteSnapshot,
+  };
 });

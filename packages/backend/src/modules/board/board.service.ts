@@ -5,8 +5,8 @@ import {
   type TBoardBase,
   type TCreateBoard,
   type TDeleteBoardEmitPayload,
+  type TMoveBoardEmitPayload,
   type TMoveParameters,
-  type TSuccessResponse,
   type TUpdateBoard,
 } from '@kanban-board/common';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
@@ -16,7 +16,6 @@ import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import { OrderUtility } from '@/libs/utilities/order.utility';
-import { getSuccessResponse } from '@/libs/utilities/response.utilities';
 import { BoardMapper } from '@/modules/board/board.mapper';
 import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
 import { DEFAULT_COLUMNS } from '@/modules/column/libs/constants/column.constants';
@@ -90,18 +89,15 @@ export class BoardService {
   /**
    * Изменить порядок досок в "пространстве".
    * Правила перемещения:
-   * - Должен быть указан только previousId или nextId, но не оба сразу.
+   * - Должен быть указан previousId - id доски после которой будет перемещаемая доска (может быть null).
    * - Если previousId - null - доска помещается в начало списка.
-   * - Если nextId - null - доска помещается в конец списка.
    * - Если существует только одна доска, то она не может быть перемещена.
    * - Если при перемещении доски ее позиция не меняется, то доска не может быть перемещена.
-   * @param boardId - id целевой (перемещаемой) доски.
-   * @param body - параметры перемещения (previousId / nextId).
-   * @returns стандартный успешный ответ.
+   * @param body - параметры перемещения (targetId, previousId).
+   * @returns id перемещаемой доски и обновленный список досок.
    * **/
-  public async moveBoard(boardId: number, body: TMoveParameters): Promise<TSuccessResponse> {
-    if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+  public async moveBoard(body: TMoveParameters): Promise<TMoveBoardEmitPayload> {
+    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { manager } = this.dataSource;
 
@@ -110,10 +106,17 @@ export class BoardService {
         order: { order: 'ASC' },
       });
 
-      this.moveService.tryToMove(boards, boardId, body);
+      this.moveService.tryToMove(boards, body);
       await transactionalManager.save(BoardEntity, boards);
 
-      return getSuccessResponse();
+      const boardsAfterMoving = await transactionalManager.find(BoardEntity, {
+        order: { order: 'ASC' },
+      });
+
+      return {
+        movedBoardId: body.targetId,
+        boards: this.boardMapper.toModel(boardsAfterMoving, { withRelations: false }),
+      };
     });
   }
 

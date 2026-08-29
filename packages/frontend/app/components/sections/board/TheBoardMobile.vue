@@ -8,7 +8,7 @@
       <div class="bg-light-base rounded-12 flex h-56 w-full items-center justify-between gap-12 py-12 pr-12 pl-56">
         <button
           v-if="selectedColumn"
-          class="m-auto flex w-[calc(100%-56px)] flex-row items-center justify-start gap-4 bg-none p-0 outline-none"
+          class="bg-light-200 rounded-6 m-auto flex h-32 w-[calc(100%-56px)] flex-row items-center justify-start gap-4 p-4 outline-none"
           @click="isColumnsMenuOpen = !isColumnsMenuOpen"
         >
           <NuxtIcon

@@ -46,7 +46,6 @@ import {
 
 import { useForm } from '~/composables/use-form.composable';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { BOARD_MESSAGES } from '~/constants/messages.constants.ts';
 import type { TUpsertFormData } from '~/types/shared.types';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
@@ -83,7 +82,7 @@ const createBoard = () => {
     data: formData.value,
     successCallback: (response: TUpsertBoardResponse) => {
       if (response.isSuccess && response.data) {
-        toast.success({ message: BOARD_MESSAGES.boardCreated });
+        toast.success({ message: 'Доска создана' });
         emit('add:board', response.data);
         navigateTo(`/boards/${response.data.id}`);
         closeModal();

@@ -1,3 +1,4 @@
+import type { TColumn } from './column.types';
 import type { IMovable, TMoveParameters } from './move.types.js';
 import type { TSuccessResponse } from './response.types.js';
 
@@ -19,14 +20,24 @@ export type TIssue = TIssueBase & {
 export type TCreateIssue = Pick<TIssue, 'boardId' | 'columnId' | 'title'> &
   Partial<Pick<TIssue, 'description'>>;
 
-/** Тело запроса на создание задачи. **/
+/** Тело запроса на обновление задачи. **/
 export type TUpdateIssue = Pick<TIssueBase, 'id'> & Partial<Pick<TIssue, 'title' | 'description'>>;
+
+/** Тело запроса на перемещение задачи. **/
+export type TMoveIssue = TMoveParameters & {
+  boardId: number;
+  fromColumnId: number;
+  toColumnId?: number;
+};
 
 /** Ответ ack после создания/обновления задачи. **/
 export type TUpsertIssueResponse = TSuccessResponse<TIssueBase>;
 
 /** Ответ ack после удаления задачи. **/
 export type TDeleteIssueResponse = TSuccessResponse<TDeleteIssueEmitPayload>;
+
+/** Ответ ack после перемещения задачи. **/
+export type TMoveIssueResponse = TSuccessResponse<TMoveIssueEmitPayload>;
 
 /** Полезная нагрузка эмита удаления задачи. **/
 export type TDeleteIssueEmitPayload = {
@@ -36,4 +47,10 @@ export type TDeleteIssueEmitPayload = {
   deletedIssueId: number;
 };
 
-export type TMoveIssue = TMoveParameters & { toColumnId?: number };
+/** Полезная нагрузка эмита перемещения задачи. **/
+export type TMoveIssueEmitPayload = {
+  movedIssueId: number;
+  boardId: number;
+  columnId: number;
+  column: TColumn;
+};

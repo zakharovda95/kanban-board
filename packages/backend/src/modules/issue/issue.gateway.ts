@@ -1,7 +1,11 @@
 import {
   EIssueEvent,
   getWsBoardRoomName,
+  type TDeleteIssueEmitPayload,
   type TDeleteIssueResponse,
+  type TIssueBase,
+  type TMoveIssueEmitPayload,
+  type TMoveIssueResponse,
   type TUpsertIssueResponse,
 } from '@kanban-board/common';
 import { UseFilters } from '@nestjs/common';
@@ -20,6 +24,7 @@ import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import { IssueService } from '@/modules/issue/issue.service';
 import { CreateIssueDto } from '@/modules/issue/libs/dtos/create-issue.dto';
+import { MoveIssueDto } from '@/modules/issue/libs/dtos/move-issue.dto';
 import { UpdateIssueDto } from '@/modules/issue/libs/dtos/update-issue.dto';
 
 @WebSocketGateway({ cors: { origin: true } })
@@ -34,7 +39,7 @@ export default class IssueGateway {
   ): Promise<TUpsertIssueResponse> {
     const createdIssue = await this.issueService.createIssue(body);
     client.to(getWsBoardRoomName(createdIssue.boardId)).emit(EIssueEvent.CREATED, createdIssue);
-    return getSuccessResponseWithData(createdIssue);
+    return getSuccessResponseWithData<TIssueBase>(createdIssue);
   }
 
   @SubscribeMessage(EIssueEvent.UPDATE)
@@ -48,7 +53,7 @@ export default class IssueGateway {
   ): Promise<TUpsertIssueResponse> {
     const updatedIssue = await this.issueService.updateIssue(body);
     client.to(getWsBoardRoomName(updatedIssue.boardId)).emit(EIssueEvent.UPDATED, updatedIssue);
-    return getSuccessResponseWithData(updatedIssue);
+    return getSuccessResponseWithData<TIssueBase>(updatedIssue);
   }
 
   @SubscribeMessage(EIssueEvent.DELETE)
@@ -56,10 +61,18 @@ export default class IssueGateway {
     @MessageBody(new ParameterIdPipe('ws')) issueId: number,
     @ConnectedSocket() client: Socket,
   ): Promise<TDeleteIssueResponse> {
-    const issuesAfterDeleting = await this.issueService.deleteIssue(issueId);
-    client
-      .to(getWsBoardRoomName(issuesAfterDeleting.boardId))
-      .emit(EIssueEvent.DELETED, issuesAfterDeleting);
-    return getSuccessResponseWithData(issuesAfterDeleting);
+    const payload = await this.issueService.deleteIssue(issueId);
+    client.to(getWsBoardRoomName(payload.boardId)).emit(EIssueEvent.DELETED, payload);
+    return getSuccessResponseWithData<TDeleteIssueEmitPayload>(payload);
+  }
+
+  @SubscribeMessage(EIssueEvent.MOVE)
+  public async moveIssue(
+    @MessageBody(CustomValidationPipe.wsValidationPipe) body: MoveIssueDto,
+    @ConnectedSocket() client: Socket,
+  ): Promise<TMoveIssueResponse> {
+    const payload = await this.issueService.moveIssue(body);
+    client.to(getWsBoardRoomName(payload.boardId)).emit(EIssueEvent.MOVED, payload);
+    return getSuccessResponseWithData<TMoveIssueEmitPayload>(payload);
   }
 }
