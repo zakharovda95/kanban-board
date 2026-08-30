@@ -13,15 +13,15 @@ import { WsException } from '@nestjs/websockets';
 import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import { OrderUtility } from '@/libs/utilities/order.utility';
-import { BoardMapper } from '@/modules/board/board.mapper';
-import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
-import { ColumnMapper } from '@/modules/column/column.mapper';
-import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
-import { MoveService } from '@/modules/shared/move/move.service';
+import OrderUtility from '@/libs/utilities/order.utility';
+import BoardEntity from '@/modules/board/libs/entities/board.entity';
+import BoardMapper from '@/modules/board/libs/mappers/board.mapper';
+import ColumnEntity from '@/modules/column/libs/entities/column.entity';
+import ColumnMapper from '@/modules/column/libs/mappers/column.mapper';
+import MoveService from '@/modules/shared/move/move.service';
 
 @Injectable()
-export class ColumnService {
+export default class ColumnService {
   constructor(
     private dataSource: DataSource,
     private moveService: MoveService<ColumnEntity>,

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { MoveService } from '@/modules/shared/move/move.service';
+import MoveService from '@/modules/shared/move/move.service';
 
 @Module({
   providers: [MoveService],
   exports: [MoveService],
 })
-export class MoveModule {}
+export default class MoveModule {}

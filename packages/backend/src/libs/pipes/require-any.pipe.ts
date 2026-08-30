@@ -11,7 +11,7 @@ import { WsException } from '@nestjs/websockets';
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 
 @Injectable()
-export class RequireAnyPipe<T> implements PipeTransform {
+export default class RequireAnyPipe<T> implements PipeTransform {
   constructor(
     private fields: Array<keyof T>,
     private context: TExecutionContextType = 'http',

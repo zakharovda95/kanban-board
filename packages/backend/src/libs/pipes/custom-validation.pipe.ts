@@ -5,7 +5,7 @@ import { ValidationError } from 'class-validator';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 
-export class CustomValidationPipe {
+export default class CustomValidationPipe {
   private static BASE_SETTINGS: ValidationPipeOptions = {
     whitelist: true,
     transform: true,

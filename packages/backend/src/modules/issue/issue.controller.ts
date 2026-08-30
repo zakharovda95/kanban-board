@@ -2,10 +2,10 @@ import type { TIssue } from '@kanban-board/common';
 import { Controller, Get, Param } from '@nestjs/common';
 
 import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
-import { IssueService } from '@/modules/issue/issue.service';
+import IssueService from '@/modules/issue/issue.service';
 
 @Controller()
-export class IssueController {
+export default class IssueController {
   constructor(private issueService: IssueService) {}
 
   @Get('issues/:issueId')

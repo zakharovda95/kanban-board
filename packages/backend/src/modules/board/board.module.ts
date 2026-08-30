@@ -1,18 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { BoardController } from '@/modules/board/board.controller';
+import BoardController from '@/modules/board/board.controller';
 import BoardGateway from '@/modules/board/board.gateway';
-import { BoardMapper } from '@/modules/board/board.mapper';
-import { BoardService } from '@/modules/board/board.service';
-import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
-import { ColumnModule } from '@/modules/column/column.module';
-import { MoveModule } from '@/modules/shared/move/move.module';
+import BoardService from '@/modules/board/board.service';
+import BoardEntity from '@/modules/board/libs/entities/board.entity';
+import BoardMapperModule from '@/modules/board/libs/mappers/board-mapper.module';
+import MoveModule from '@/modules/shared/move/move.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BoardEntity]), ColumnModule, MoveModule],
+  imports: [TypeOrmModule.forFeature([BoardEntity]), MoveModule, BoardMapperModule],
   controllers: [BoardController],
-  providers: [BoardService, BoardMapper, BoardGateway],
+  providers: [BoardService, BoardGateway],
   exports: [BoardService],
 })
-export class BoardModule {}
+export default class BoardModule {}

@@ -1,11 +1,11 @@
 import type { TColumn } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 
-import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
-import { IssueMapper } from '@/modules/issue/issue.mapper';
+import ColumnEntity from '@/modules/column/libs/entities/column.entity';
+import IssueMapper from '@/modules/issue/libs/mappers/issue.mapper';
 
 @Injectable()
-export class ColumnMapper {
+export default class ColumnMapper {
   constructor(private issueMapper: IssueMapper) {}
 
   public toModel(entity: ColumnEntity): TColumn;

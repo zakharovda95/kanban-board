@@ -1,12 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 
-import { AppModule } from '@/app.module';
+import AppModule from '@/app.module';
 import {
   GLOBAL_API_PREFIX,
   VERSIONING_OPTIONS,
 } from '@/config/libs/constants/app-config.constants';
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import { CustomValidationPipe } from '@/libs/pipes/custom-validation.pipe';
+import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 
 async function bootstrap() {
   const host = process.env.BACKEND_HOST;

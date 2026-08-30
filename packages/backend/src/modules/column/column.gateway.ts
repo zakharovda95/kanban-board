@@ -18,14 +18,14 @@ import {
 import type { Socket } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
-import { CustomValidationPipe } from '@/libs/pipes/custom-validation.pipe';
+import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
-import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
+import RequireAnyPipe from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
-import { ColumnService } from '@/modules/column/column.service';
-import { CreateColumnDto } from '@/modules/column/libs/dtos/create-column.dto';
-import { MoveColumnDto } from '@/modules/column/libs/dtos/move-column.dto';
-import { UpdateColumnDto } from '@/modules/column/libs/dtos/update-column.dto';
+import ColumnService from '@/modules/column/column.service';
+import CreateColumnDto from '@/modules/column/libs/dtos/create-column.dto';
+import MoveColumnDto from '@/modules/column/libs/dtos/move-column.dto';
+import UpdateColumnDto from '@/modules/column/libs/dtos/update-column.dto';
 
 @WebSocketGateway({ cors: { origin: true } })
 @UseFilters(WsExceptionFilter)

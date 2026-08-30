@@ -3,9 +3,9 @@ import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { IsDefined, IsInt, IsNumber, IsPositive } from 'class-validator';
 
 import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
-import { CreateColumnDto } from '@/modules/column/libs/dtos/create-column.dto';
+import CreateColumnDto from '@/modules/column/libs/dtos/create-column.dto';
 
-export class UpdateColumnDto
+export default class UpdateColumnDto
   extends PartialType(OmitType(CreateColumnDto, ['boardId'] as const))
   implements TUpdateColumn
 {

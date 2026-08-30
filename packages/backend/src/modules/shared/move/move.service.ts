@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import { OrderUtility } from '@/libs/utilities/order.utility';
+import OrderUtility from '@/libs/utilities/order.utility';
 
 @Injectable()
-export class MoveService<T extends IMovable> {
+export default class MoveService<T extends IMovable> {
   /**
    * Изменить порядок элемента в списке.
    * Правила перемещения:

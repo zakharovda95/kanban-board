@@ -4,7 +4,7 @@ import { IsDefined, IsInt, IsNumber, IsPositive } from 'class-validator';
 import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 
-export class MoveParametersDto implements TMoveParameters {
+export default class MoveParametersDto implements TMoveParameters {
   @ValidateIfDefinedAndNotNull()
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })

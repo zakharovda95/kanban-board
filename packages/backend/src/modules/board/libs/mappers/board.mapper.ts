@@ -1,11 +1,11 @@
 import type { TBoard, TBoardBase } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 
-import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
-import { ColumnMapper } from '@/modules/column/column.mapper';
+import BoardEntity from '@/modules/board/libs/entities/board.entity';
+import ColumnMapper from '@/modules/column/libs/mappers/column.mapper';
 
 @Injectable()
-export class BoardMapper {
+export default class BoardMapper {
   constructor(private columnMapper: ColumnMapper) {}
 
   toModel(entity: BoardEntity, options?: { withRelations?: false }): TBoardBase;

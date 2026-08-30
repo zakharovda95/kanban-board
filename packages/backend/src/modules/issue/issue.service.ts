@@ -19,15 +19,15 @@ import { WsException } from '@nestjs/websockets';
 import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import { OrderUtility } from '@/libs/utilities/order.utility';
-import { ColumnMapper } from '@/modules/column/column.mapper';
-import { ColumnEntity } from '@/modules/column/libs/entities/column.entity';
-import { IssueMapper } from '@/modules/issue/issue.mapper';
-import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
-import { MoveService } from '@/modules/shared/move/move.service';
+import OrderUtility from '@/libs/utilities/order.utility';
+import ColumnEntity from '@/modules/column/libs/entities/column.entity';
+import ColumnMapper from '@/modules/column/libs/mappers/column.mapper';
+import IssueEntity from '@/modules/issue/libs/entities/issue.entity';
+import IssueMapper from '@/modules/issue/libs/mappers/issue.mapper';
+import MoveService from '@/modules/shared/move/move.service';
 
 @Injectable()
-export class IssueService {
+export default class IssueService {
   constructor(
     private dataSource: DataSource,
     private issueMapper: IssueMapper,

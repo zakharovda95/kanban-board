@@ -12,7 +12,7 @@ import {
 import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 
-export class CreateIssueDto implements TCreateIssue {
+export default class CreateIssueDto implements TCreateIssue {
   @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },

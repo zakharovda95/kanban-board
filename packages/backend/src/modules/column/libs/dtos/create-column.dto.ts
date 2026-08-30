@@ -17,7 +17,7 @@ import {
 import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 
-export class CreateColumnDto implements TCreateColumn {
+export default class CreateColumnDto implements TCreateColumn {
   @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },

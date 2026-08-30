@@ -3,9 +3,9 @@ import { PartialType, PickType } from '@nestjs/mapped-types';
 import { IsDefined, IsInt, IsNumber, IsPositive } from 'class-validator';
 
 import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
-import { CreateIssueDto } from '@/modules/issue/libs/dtos/create-issue.dto';
+import CreateIssueDto from '@/modules/issue/libs/dtos/create-issue.dto';
 
-export class UpdateIssueDto
+export default class UpdateIssueDto
   extends PartialType(PickType(CreateIssueDto, ['description', 'title'] as const))
   implements TUpdateIssue
 {

@@ -1,12 +1,12 @@
 import { COLUMN_TITLE_MAXLENGTH } from '@kanban-board/common';
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
-import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
-import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
-import { MovableEntity } from '@/modules/shared/move/libs/entities/movable.entity';
+import BoardEntity from '@/modules/board/libs/entities/board.entity';
+import IssueEntity from '@/modules/issue/libs/entities/issue.entity';
+import MovableEntity from '@/modules/shared/move/libs/entities/movable.entity';
 
 @Entity('columns')
-export class ColumnEntity extends MovableEntity {
+export default class ColumnEntity extends MovableEntity {
   @Column({ type: 'varchar', length: COLUMN_TITLE_MAXLENGTH })
   title: string;
 

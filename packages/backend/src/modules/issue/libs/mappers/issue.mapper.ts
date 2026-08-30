@@ -1,10 +1,10 @@
 import type { TIssue, TIssueBase } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 
-import { IssueEntity } from '@/modules/issue/libs/entities/issue.entity';
+import IssueEntity from '@/modules/issue/libs/entities/issue.entity';
 
 @Injectable()
-export class IssueMapper {
+export default class IssueMapper {
   public toModel(entity: IssueEntity, options?: { base: true }): TIssueBase;
   public toModel(entity: IssueEntity, options?: { base?: false }): TIssue;
   public toModel(entity: IssueEntity[], options?: { base: true }): TIssueBase[];

@@ -18,14 +18,14 @@ import {
 import type { Socket } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
-import { CustomValidationPipe } from '@/libs/pipes/custom-validation.pipe';
+import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
-import { RequireAnyPipe } from '@/libs/pipes/require-any.pipe';
+import RequireAnyPipe from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
-import { BoardService } from '@/modules/board/board.service';
-import { CreateBoardDto } from '@/modules/board/libs/dtos/create-board.dto';
-import { UpdateBoardDto } from '@/modules/board/libs/dtos/update-board.dto';
-import { MoveParametersDto } from '@/modules/shared/move/libs/dto/move-parameters.dto';
+import BoardService from '@/modules/board/board.service';
+import CreateBoardDto from '@/modules/board/libs/dtos/create-board.dto';
+import UpdateBoardDto from '@/modules/board/libs/dtos/update-board.dto';
+import MoveParametersDto from '@/modules/shared/move/libs/dto/move-parameters.dto';
 
 @WebSocketGateway({ cors: { origin: true } })
 @UseFilters(WsExceptionFilter)

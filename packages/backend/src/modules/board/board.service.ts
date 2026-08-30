@@ -15,14 +15,14 @@ import { cloneDeep } from 'lodash';
 import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-import { OrderUtility } from '@/libs/utilities/order.utility';
-import { BoardMapper } from '@/modules/board/board.mapper';
-import { BoardEntity } from '@/modules/board/libs/entities/board.entity';
+import OrderUtility from '@/libs/utilities/order.utility';
+import BoardEntity from '@/modules/board/libs/entities/board.entity';
+import BoardMapper from '@/modules/board/libs/mappers/board.mapper';
 import { DEFAULT_COLUMNS } from '@/modules/column/libs/constants/column.constants';
-import { MoveService } from '@/modules/shared/move/move.service';
+import MoveService from '@/modules/shared/move/move.service';
 
 @Injectable()
-export class BoardService {
+export default class BoardService {
   constructor(
     private dataSource: DataSource,
     private boardMapper: BoardMapper,

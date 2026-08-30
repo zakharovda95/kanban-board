@@ -12,7 +12,7 @@ import {
   MIN_PORT,
 } from '@/config/libs/constants/app-config.constants';
 
-export class AppConfig {
+export default class AppConfig {
   private static MONOREPO_ROOT: string = resolve(__dirname, '../../../..');
 
   public static get appConfigSchema() {
