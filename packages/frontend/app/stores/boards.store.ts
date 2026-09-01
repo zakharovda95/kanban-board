@@ -110,6 +110,7 @@ export const useBoardsStore = defineStore('boards-store', () => {
   return {
     isLoadingBoards,
     boards,
+    snapshot,
     fetchBoards,
     addNewBoard,
     updateBoard,

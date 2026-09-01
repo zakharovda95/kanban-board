@@ -11,7 +11,7 @@
           group="border-list"
           tag="nav"
           ghost-class="drag-ghost"
-          :disabled="boardsStore.boards.length <= 1"
+          :disabled="boardsStore.boards.length <= 1 || isLoading"
           :animation="200"
           @start="boardsStore.takeSnapshot"
           @change="onBoardMove"
@@ -87,7 +87,7 @@ const emit = defineEmits<{
 const route = useRoute();
 const boardsStore = useBoardsStore();
 const toast = useToast();
-const { emitEvent } = useSocket();
+const { emitEvent, isLoading } = useSocket();
 
 const boardId = computed(() => Number(route.params.id));
 const isTooMuchBoards = computed(() => boardsStore.boards.length >= BOARDS_MAX_COUNT);
@@ -114,7 +114,10 @@ const onBoardMove = (details: TMovedDetails<TBoardBase>) => {
     },
     errorCallback: (error: unknown) => {
       toast.error({ message: getErrorMessage(error) });
-      boardsStore.deleteSnapshot();
+      if (boardsStore.snapshot) {
+        boardsStore.boards = [...boardsStore.snapshot];
+        boardsStore.deleteSnapshot();
+      }
     },
   });
 };
