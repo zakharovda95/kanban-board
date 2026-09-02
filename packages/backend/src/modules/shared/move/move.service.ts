@@ -1,4 +1,4 @@
-import type { IMovable, TMoveOptions, TMoveParameters } from '@kanban-board/common';
+import type { IMovable, TMoveOptions, TMoveParameters, TMoveResult } from '@kanban-board/common';
 import { isNull } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
@@ -21,14 +21,20 @@ export default class MoveService<T extends IMovable> {
    * @param entities - список элементов контейнера, отсортированный по order.
    * @param parameters - параметры перемещения (previousId, columnId, targetId).
    * @param options - дополнительные опции (allowForceMove).
-   * @returns void. Изменения применяются к переданным entities.
+   * @returns признак был ли .
    * **/
-  public tryToMove(entities: T[], parameters: TMoveParameters, options?: TMoveOptions): void {
+  public tryToMove(
+    entities: T[],
+    parameters: TMoveParameters,
+    options?: TMoveOptions,
+  ): TMoveResult {
     const { previousId, targetId } = parameters;
     if (!targetId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
 
     const target = entities.find(({ id }) => id === targetId);
     if (!target) throw new WsException(EXCEPTION_MESSAGES.notFound);
+
+    const moveResult: TMoveResult = { isOrderWasNormalized: false };
 
     // Убрали перемещаемый объект, для простоты взаимодействия с order других элементов.
     const withoutTarget = entities.filter(({ id }) => id !== targetId);
@@ -37,7 +43,7 @@ export default class MoveService<T extends IMovable> {
       // allowForceMove Разрешает перемещать, если нет других элементов (например задачу в пустую колонку).
       if (options?.allowForceMove && isNull(previousId)) {
         target.order = OrderUtility.calculateNextOrder(0);
-        return;
+        return moveResult;
       } else throw new WsException(EXCEPTION_MESSAGES.moveFailed);
     }
 
@@ -57,17 +63,24 @@ export default class MoveService<T extends IMovable> {
       // если нет adjacentElement, значит помещается в конец (к order последнего элемента в списке прибавляем 1000).
       if (!adjacentElement) {
         target.order = OrderUtility.calculateNextOrder(previousElement.order);
-        return;
+        return moveResult;
       }
 
       // Если между previous и next значение order <= 1 - нормализуем порядок.
-      if (OrderUtility.needResetOrders(previousElement.order, adjacentElement.order))
+      const needResetOrder = OrderUtility.needResetOrders(
+        previousElement.order,
+        adjacentElement.order,
+      );
+      if (needResetOrder) {
         this.resetOrders(withoutTarget);
+        moveResult.isOrderWasNormalized = true;
+      }
       target.order = OrderUtility.calculateIntermediateOrder(
         previousElement.order,
         adjacentElement.order,
       );
-      return;
+
+      return moveResult;
     }
 
     // если previousId - null - помещаем в начало.
@@ -76,10 +89,16 @@ export default class MoveService<T extends IMovable> {
         throw new WsException(EXCEPTION_MESSAGES.moveFailed);
 
       const first = withoutTarget[0];
-      if (OrderUtility.needResetOrders(0, first.order)) this.resetOrders(withoutTarget);
+      if (OrderUtility.needResetOrders(0, first.order)) {
+        this.resetOrders(withoutTarget);
+        moveResult.isOrderWasNormalized = true;
+      }
       target.order = OrderUtility.calculateIntermediateOrder(0, first.order);
-      return;
+
+      return moveResult;
     }
+
+    throw new WsException(EXCEPTION_MESSAGES.moveFailed);
   }
 
   /**

@@ -10,10 +10,10 @@ export function useTryCatchFinally<TReturnData, TParams = undefined>(options: {
   const isLoading = ref(false);
   const data: Ref<TReturnData | null> = ref(null);
 
-  const call = async (): Promise<void> => {
+  const call = async (params?: TParams): Promise<void> => {
     try {
       isLoading.value = true;
-      data.value = await options.callback();
+      data.value = await options.callback(params);
     } catch (error: unknown) {
       const errorData = (error as FetchError)?.response?._data?.data ?? null;
 

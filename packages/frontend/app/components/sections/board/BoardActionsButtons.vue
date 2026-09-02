@@ -39,7 +39,6 @@ import {
   getErrorMessage,
   isValidationError,
   type TBoardBase,
-  type TDeleteBoardEmitPayload,
   type TDeleteBoardResponse,
   type TUpdateBoard,
   type TUpsertBoardResponse,
@@ -49,6 +48,7 @@ import {
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
+import { useBoardsStore } from '~/stores/boards.store.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
@@ -60,11 +60,7 @@ const props = defineProps<{
   board: TBoardBase;
 }>();
 
-const emit = defineEmits<{
-  'update:board': [payload: TBoardBase];
-  'delete:board': [payload: TDeleteBoardEmitPayload];
-}>();
-
+const boardsStore = useBoardsStore();
 const toast = useToast();
 
 const isUpdateModalOpen = ref(false);
@@ -91,7 +87,7 @@ const updateBoard = () => {
     successCallback: (response: TUpsertBoardResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Доска обновлена' });
-        emit('update:board', response.data);
+        boardsStore.updateBoard(response.data);
         closeModal();
       }
     },
@@ -109,7 +105,7 @@ const deleteBoard = () => {
     successCallback: (response: TDeleteBoardResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Доска удалена' });
-        emit('delete:board', response.data);
+        boardsStore.deleteBoard(response.data);
         closeModal();
       }
     },

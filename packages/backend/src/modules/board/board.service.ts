@@ -75,10 +75,17 @@ export default class BoardService {
     const boardsCount = await manager.count(BoardEntity);
     if (boardsCount >= BOARDS_MAX_COUNT) throw new WsException(BOARDS_MAX_COUNT_ERROR_MESSAGE);
 
+    // Получаем максимальный order, чтобы при создании прибавить ORDER_STEP
+    const result = await manager
+      .createQueryBuilder()
+      .select('MAX(board.order)', 'maxOrder')
+      .from(BoardEntity, 'board')
+      .getRawOne<{ maxOrder: number | null }>();
+
     const board = await manager.save(BoardEntity, {
       title: body.title,
       description: body.description ?? null,
-      order: OrderUtility.calculateOrderByIndex(boardsCount),
+      order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
       columns: cloneDeep(DEFAULT_COLUMNS),
     });
     if (!board?.id) throw new WsException(EXCEPTION_MESSAGES.createFailed);
@@ -94,7 +101,7 @@ export default class BoardService {
    * - Если существует только одна доска, то она не может быть перемещена.
    * - Если при перемещении доски ее позиция не меняется, то доска не может быть перемещена.
    * @param body - параметры перемещения (targetId, previousId).
-   * @returns id перемещаемой доски и обновленный список досок.
+   * @returns объект перемещаемой доски, если order не был нормализован (точечная замена + сортировка по order на фронте, дешевле чем refetch), если был - null (если null - на фронте refetch досок тк меняется order всех досок).
    * **/
   public async moveBoard(body: TMoveParameters): Promise<TMoveBoardEmitPayload> {
     if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
@@ -106,17 +113,19 @@ export default class BoardService {
         order: { order: 'ASC' },
       });
 
-      this.moveService.tryToMove(boards, body);
+      const moveResult = this.moveService.tryToMove(boards, body);
       await transactionalManager.save(BoardEntity, boards);
 
-      const boardsAfterMoving = await transactionalManager.find(BoardEntity, {
-        order: { order: 'ASC' },
-      });
+      let movedBoard: TBoardBase | null = null;
 
-      return {
-        movedBoardId: body.targetId,
-        boards: this.boardMapper.toModel(boardsAfterMoving, { withRelations: false }),
-      };
+      if (!moveResult.isOrderWasNormalized) {
+        const movedBoardEntity = await transactionalManager.findOne(BoardEntity, {
+          where: { id: body.targetId },
+        });
+        if (movedBoardEntity) movedBoard = this.boardMapper.toModel(movedBoardEntity);
+      }
+
+      return { movedBoard, movedBoardId: body.targetId };
     });
   }
 
@@ -140,9 +149,9 @@ export default class BoardService {
   }
 
   /**
-   * Удалить доску. После удаления нужно нормализовать order.
+   * Удалить доску.
    * @param boardId - id доски.
-   * @returns массив досок после reorder и ID удаленной доски (для оповещения всех подписчиков доски).
+   * @returns ID удаленной доски.
    * **/
   public async deleteBoard(boardId: number): Promise<TDeleteBoardEmitPayload> {
     if (!boardId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
@@ -160,15 +169,7 @@ export default class BoardService {
       const { affected } = await transactionalManager.delete(BoardEntity, { id: boardId });
       if (!affected || affected <= 0) throw new WsException(EXCEPTION_MESSAGES.deleteFailed);
 
-      const withoutTarget = boards.filter(({ id }) => id !== boardId);
-      this.moveService.resetOrders(withoutTarget);
-
-      const boardsAfterDeleting = await transactionalManager.save(BoardEntity, withoutTarget);
-
-      return {
-        deletedBoardId: target.id,
-        boards: this.boardMapper.toModel(boardsAfterDeleting, { withRelations: false }),
-      };
+      return { deletedBoardId: target.id };
     });
   }
 }

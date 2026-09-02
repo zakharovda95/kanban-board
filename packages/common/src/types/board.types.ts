@@ -31,12 +31,12 @@ export type TMoveBoardResponse = TSuccessResponse<TMoveBoardEmitPayload>;
 
 /** Полезная нагрузка эмита удаления доски. **/
 export type TDeleteBoardEmitPayload = {
-  boards: TBoardBase[];
   deletedBoardId: number;
 };
 
 /** Полезная нагрузка эмита перемещения доски. **/
 export type TMoveBoardEmitPayload = {
-  boards: TBoardBase[];
   movedBoardId: number;
+  /** Если была нормализация order - отправляем null. Если null - делаем refetch c фронта. **/
+  movedBoard: TBoardBase | null;
 };

@@ -4,6 +4,7 @@ import {
   type TDeleteBoardEmitPayload,
   type TMoveBoardEmitPayload,
 } from '@kanban-board/common';
+import { cloneDeep, orderBy } from 'lodash';
 import { defineStore } from 'pinia';
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
@@ -21,8 +22,8 @@ export const useBoardsStore = defineStore('boards-store', () => {
   const currentBoardId = computed(() => Number(route.params.id));
 
   const { call: fetchBoards } = useTryCatchFinally({
-    callback: async () => {
-      isLoadingBoards.value = true;
+    callback: async (withLoader: boolean = true) => {
+      if (withLoader) isLoadingBoards.value = true;
       boards.value = await $fetch<TBoardBase[]>('/api/boards', { method: 'GET' });
     },
     finallyCallback: () => {
@@ -37,16 +38,23 @@ export const useBoardsStore = defineStore('boards-store', () => {
 
   const updateBoard = (updatedBoard: TBoardBase) => {
     if (!updatedBoard) return;
-
-    const targetIndex = boards.value.findIndex(({ id }: TBoardBase) => id === updatedBoard.id);
-    if (targetIndex != -1) boards.value.splice(targetIndex, 1, updatedBoard);
+    replaceBoard(updatedBoard);
   };
 
-  const deleteBoard = (payload: TDeleteBoardEmitPayload) => {
-    if (!payload) return;
+  const deleteBoard = ({ deletedBoardId }: TDeleteBoardEmitPayload) => {
+    if (!deletedBoardId) return;
+    boards.value = boards.value.filter(({ id }: TBoardBase) => id !== deletedBoardId);
+    if (deletedBoardId === currentBoardId.value) navigateTo(`/boards`);
+  };
 
-    boards.value = payload.boards;
-    if (payload.deletedBoardId === currentBoardId.value) navigateTo(`/boards`);
+  const moveBoard = async (moveResult: TMoveBoardEmitPayload) => {
+    // если не передан объект перемещенной доски, значит был reorder всех досок и нужно сделать refetch
+    if (!moveResult.movedBoard) {
+      await fetchBoards(false);
+      return;
+    }
+    replaceBoard(moveResult.movedBoard);
+    boards.value = orderBy(boards.value, ['order'], 'asc');
   };
 
   const stopListenCreated = listen(EBoardEvent.CREATED, (newBoard: TBoardBase) => {
@@ -77,9 +85,9 @@ export const useBoardsStore = defineStore('boards-store', () => {
     }
   });
 
-  const stopListenMove = listen(EBoardEvent.MOVED, (payload: TMoveBoardEmitPayload) => {
+  const stopListenMove = listen(EBoardEvent.MOVED, async (payload: TMoveBoardEmitPayload) => {
     if (payload.movedBoardId) {
-      boards.value = [...payload.boards];
+      await moveBoard(payload);
       const movedBoard = boards.value.find(({ id }: TBoardBase) => id === payload.movedBoardId);
       toast.info({
         message: movedBoard ? `Доска «${movedBoard.title}» была перемещена` : 'Доска была перемещена',
@@ -100,11 +108,16 @@ export const useBoardsStore = defineStore('boards-store', () => {
   };
 
   const takeSnapshot = () => {
-    snapshot.value = structuredClone(boards.value.map(elem => toRaw(elem)));
+    snapshot.value = cloneDeep(boards.value.map(elem => toRaw(elem)));
   };
 
   const deleteSnapshot = () => {
     snapshot.value = null;
+  };
+
+  const replaceBoard = (board: TBoardBase) => {
+    const targetIndex = boards.value.findIndex(({ id }: TBoardBase) => id === board.id);
+    if (targetIndex != -1) boards.value.splice(targetIndex, 1, board);
   };
 
   return {
@@ -115,6 +128,7 @@ export const useBoardsStore = defineStore('boards-store', () => {
     addNewBoard,
     updateBoard,
     deleteBoard,
+    moveBoard,
     stopListen,
     resetStore,
     takeSnapshot,

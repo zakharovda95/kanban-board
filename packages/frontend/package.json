@@ -30,6 +30,7 @@
     "@vueuse/nuxt": "^14.3.0",
     "dayjs-nuxt": "^2.1.11",
     "izitoast": "^1.4.0",
+    "lodash": "^4.18.1",
     "nuxt": "^4.4.8",
     "nuxt-color-picker": "^1.2.8",
     "nuxt-toast": "^1.4.0",

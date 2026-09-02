@@ -18,7 +18,8 @@ export default class OrderUtility {
 
   public static calculateNextOrder(order: number): number {
     if (isNullOrUndefined(order)) throw new Error(EXCEPTION_MESSAGES.paramsNotFound);
-    return order + this.ORDER_STEP;
+    if (order < this.ORDER_STEP) return this.ORDER_STEP;
+    return Math.floor(order / this.ORDER_STEP) * this.ORDER_STEP + this.ORDER_STEP;
   }
 
   public static needResetOrders(previousOrder: number, nextOrder: number): boolean {

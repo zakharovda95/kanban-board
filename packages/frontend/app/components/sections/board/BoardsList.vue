@@ -29,18 +29,14 @@
               >
                 <div class="w-[calc(100%-32px)] text-left">
                   <p class="text-14 block overflow-hidden leading-18 font-medium text-ellipsis whitespace-nowrap">
-                    {{ board.title }} {{ board.id }}
+                    {{ board.title }}
                   </p>
                   <p class="text-12 block overflow-hidden leading-16 font-light text-ellipsis whitespace-nowrap">
                     {{ board.description }}
                   </p>
                 </div>
 
-                <BoardActionsButtons
-                  :board="board"
-                  @update:board="boardsStore.updateBoard"
-                  @delete:board="boardsStore.deleteBoard"
-                />
+                <BoardActionsButtons :board="board" />
               </UILink>
             </div>
           </template>
@@ -105,10 +101,10 @@ const onBoardMove = (details: TMovedDetails<TBoardBase>) => {
   emitEvent<TMoveParameters, TMoveBoardResponse>({
     event: EBoardEvent.MOVE,
     data: { previousId, targetId },
-    successCallback: (response: TMoveBoardResponse) => {
+    successCallback: async (response: TMoveBoardResponse) => {
       if (response.isSuccess && response.data) {
-        boardsStore.boards = [...response.data.boards];
         toast.success({ message: `Доска перемещена` });
+        await boardsStore.moveBoard(response.data);
         boardsStore.deleteSnapshot();
       }
     },

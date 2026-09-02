@@ -2,10 +2,11 @@
 
 import { computed, type Ref, ref, toRaw, unref } from 'vue';
 import type { TValidationErrors } from '@kanban-board/common';
+import { cloneDeep } from 'lodash';
 
 export function useForm<T extends Record<string, any>>(initial: T) {
   const cloneSafe = <T>(value: T): T => {
-    return structuredClone(toRaw(unref(value)));
+    return cloneDeep(toRaw(unref(value)));
   };
 
   const initialValue = ref<T>(cloneSafe(initial));
