@@ -116,6 +116,7 @@ export const useBoardsStore = defineStore('boards-store', () => {
   };
 
   const replaceBoard = (board: TBoardBase) => {
+    if (!board || !boards.value?.length) return;
     const targetIndex = boards.value.findIndex(({ id }: TBoardBase) => id === board.id);
     if (targetIndex != -1) boards.value.splice(targetIndex, 1, board);
   };

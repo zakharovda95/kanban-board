@@ -55,6 +55,7 @@
 import type {
   TBoard,
   TColumn,
+  TColumnBase,
   TDeleteColumnEmitPayload,
   TDeleteIssueEmitPayload,
   TIssueBase,
@@ -82,7 +83,7 @@ withDefaults(
 
 const emit = defineEmits<{
   'add:column': [payload: TColumn];
-  'update:column': [payload: TColumn];
+  'update:column': [payload: TColumnBase];
   'delete:column': [payload: TDeleteColumnEmitPayload];
   'add:issue': [payload: TIssueBase];
   'update:issue': [payload: TIssueBase];

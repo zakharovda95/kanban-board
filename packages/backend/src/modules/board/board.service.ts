@@ -16,6 +16,7 @@ import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import OrderUtility from '@/libs/utilities/order.utility';
+import { TMaxOrderResult } from '@/libs/utilities/order.utility';
 import BoardEntity from '@/modules/board/libs/entities/board.entity';
 import BoardMapper from '@/modules/board/libs/mappers/board.mapper';
 import { DEFAULT_COLUMNS } from '@/modules/column/libs/constants/column.constants';
@@ -39,7 +40,7 @@ export default class BoardService {
     const boards = await manager.find(BoardEntity, { order: { order: 'ASC' } });
     if (!boards.length) return [];
 
-    return this.boardMapper.toModel(boards, { withRelations: false });
+    return this.boardMapper.toModel(boards, { base: true });
   }
 
   /**
@@ -59,7 +60,7 @@ export default class BoardService {
     });
     if (!board) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
 
-    return this.boardMapper.toModel(board, { withRelations: true });
+    return this.boardMapper.toModel(board, { base: false });
   }
 
   /**
@@ -72,25 +73,31 @@ export default class BoardService {
 
     const { manager } = this.dataSource;
 
-    const boardsCount = await manager.count(BoardEntity);
-    if (boardsCount >= BOARDS_MAX_COUNT) throw new WsException(BOARDS_MAX_COUNT_ERROR_MESSAGE);
+    return manager.transaction(async transactionalManager => {
+      const DATABASE_LOCK_ID = 1000;
+      // Блокируем доступ к базе данных для предотвращения одновременного создания нескольких досок.
+      await transactionalManager.query('SELECT pg_advisory_xact_lock($1)', [DATABASE_LOCK_ID]);
 
-    // Получаем максимальный order, чтобы при создании прибавить ORDER_STEP
-    const result = await manager
-      .createQueryBuilder()
-      .select('MAX(board.order)', 'maxOrder')
-      .from(BoardEntity, 'board')
-      .getRawOne<{ maxOrder: number | null }>();
+      const boardsCount = await transactionalManager.count(BoardEntity);
+      if (boardsCount >= BOARDS_MAX_COUNT) throw new WsException(BOARDS_MAX_COUNT_ERROR_MESSAGE);
 
-    const board = await manager.save(BoardEntity, {
-      title: body.title,
-      description: body.description ?? null,
-      order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
-      columns: cloneDeep(DEFAULT_COLUMNS),
+      // Получаем максимальный order, чтобы при создании прибавить ORDER_STEP
+      const result = await transactionalManager
+        .createQueryBuilder()
+        .select('MAX(board.order)', 'maxOrder')
+        .from(BoardEntity, 'board')
+        .getRawOne<TMaxOrderResult>();
+
+      const board = await transactionalManager.save(BoardEntity, {
+        title: body.title,
+        description: body.description ?? null,
+        order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
+        columns: cloneDeep(DEFAULT_COLUMNS),
+      });
+      if (!board?.id) throw new WsException(EXCEPTION_MESSAGES.createFailed);
+
+      return this.boardMapper.toModel(board, { base: true });
     });
-    if (!board?.id) throw new WsException(EXCEPTION_MESSAGES.createFailed);
-
-    return this.boardMapper.toModel(board, { withRelations: false });
   }
 
   /**
@@ -122,7 +129,8 @@ export default class BoardService {
         const movedBoardEntity = await transactionalManager.findOne(BoardEntity, {
           where: { id: body.targetId },
         });
-        if (movedBoardEntity) movedBoard = this.boardMapper.toModel(movedBoardEntity);
+        if (movedBoardEntity)
+          movedBoard = this.boardMapper.toModel(movedBoardEntity, { base: true });
       }
 
       return { movedBoard, movedBoardId: body.targetId };
@@ -145,7 +153,7 @@ export default class BoardService {
     const updatedBoard = await manager.save(Object.assign(board, rest));
     if (!updatedBoard) throw new WsException(EXCEPTION_MESSAGES.updateFailed);
 
-    return this.boardMapper.toModel(updatedBoard, { withRelations: false });
+    return this.boardMapper.toModel(updatedBoard, { base: true });
   }
 
   /**
@@ -157,19 +165,16 @@ export default class BoardService {
     if (!boardId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
-
-    return manager.transaction(async transactionalManager => {
-      const boards = await transactionalManager.find(BoardEntity, {
-        order: { order: 'ASC' },
-      });
-
-      const target = boards.find(({ id }) => id === boardId);
-      if (!target) throw new WsException(EXCEPTION_MESSAGES.notFound);
-
-      const { affected } = await transactionalManager.delete(BoardEntity, { id: boardId });
-      if (!affected || affected <= 0) throw new WsException(EXCEPTION_MESSAGES.deleteFailed);
-
-      return { deletedBoardId: target.id };
+    const boards = await manager.find(BoardEntity, {
+      order: { order: 'ASC' },
     });
+
+    const target = boards.find(({ id }) => id === boardId);
+    if (!target) throw new WsException(EXCEPTION_MESSAGES.notFound);
+
+    const { affected } = await manager.delete(BoardEntity, { id: boardId });
+    if (!affected || affected <= 0) throw new WsException(EXCEPTION_MESSAGES.deleteFailed);
+
+    return { deletedBoardId: target.id };
   }
 }

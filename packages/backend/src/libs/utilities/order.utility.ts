@@ -2,6 +2,8 @@ import { isNullOrUndefined } from '@kanban-board/common';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 
+export type TMaxOrderResult = { maxOrder: number | null };
+
 export default class OrderUtility {
   private static ORDER_STEP = 1000;
 

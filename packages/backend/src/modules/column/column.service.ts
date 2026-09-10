@@ -1,6 +1,7 @@
 import {
   ColorUtility,
   type TColumn,
+  type TColumnBase,
   type TCreateColumn,
   type TDeleteColumnEmitPayload,
   type TMoveColumn,
@@ -14,8 +15,8 @@ import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import OrderUtility from '@/libs/utilities/order.utility';
+import { TMaxOrderResult } from '@/libs/utilities/order.utility';
 import BoardEntity from '@/modules/board/libs/entities/board.entity';
-import BoardMapper from '@/modules/board/libs/mappers/board.mapper';
 import ColumnEntity from '@/modules/column/libs/entities/column.entity';
 import ColumnMapper from '@/modules/column/libs/mappers/column.mapper';
 import MoveService from '@/modules/shared/move/move.service';
@@ -26,7 +27,6 @@ export default class ColumnService {
     private dataSource: DataSource,
     private moveService: MoveService<ColumnEntity>,
     private columnMapper: ColumnMapper,
-    private boardMapper: BoardMapper,
   ) {}
 
   /**
@@ -40,21 +40,35 @@ export default class ColumnService {
     const { boardId, color, title, description } = body;
     const { manager } = this.dataSource;
 
-    const isExists = await manager.exists(BoardEntity, { where: { id: boardId } });
-    if (!isExists) throw new WsException(EXCEPTION_MESSAGES.createFailed);
+    return manager.transaction(async transactionalManager => {
+      const DATABASE_LOCK_ID = 1001;
+      // Блокируем доступ к базе данных для предотвращения одновременного создания нескольких колонок.
+      await transactionalManager.query('SELECT pg_advisory_xact_lock($1, $2)', [
+        DATABASE_LOCK_ID,
+        boardId,
+      ]);
 
-    const columnsCount = await manager.count(ColumnEntity, { where: { boardId } });
+      const isExists = await transactionalManager.exists(BoardEntity, { where: { id: boardId } });
+      if (!isExists) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
-    const createdColumn = await manager.save(ColumnEntity, {
-      title,
-      description: description ?? null,
-      color: color || ColorUtility.getRandomHexColor(),
-      order: OrderUtility.calculateOrderByIndex(columnsCount),
-      boardId,
+      const result = await transactionalManager
+        .createQueryBuilder()
+        .select('MAX(column.order)', 'maxOrder')
+        .from(ColumnEntity, 'column')
+        .where('column.boardId = :boardId', { boardId })
+        .getRawOne<TMaxOrderResult>();
+
+      const createdColumn = await transactionalManager.save(ColumnEntity, {
+        title,
+        description: description ?? null,
+        color: color || ColorUtility.getRandomHexColor(),
+        order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
+        boardId,
+      });
+      if (!createdColumn) throw new WsException(EXCEPTION_MESSAGES.createFailed);
+
+      return this.columnMapper.toModel({ ...createdColumn, issues: [] }, { base: false });
     });
-    if (!createdColumn) throw new WsException(EXCEPTION_MESSAGES.createFailed);
-
-    return this.columnMapper.toModel({ ...createdColumn, issues: [] });
   }
 
   /**
@@ -66,7 +80,7 @@ export default class ColumnService {
    * - Если при перемещении колонки ее позиция на доске не меняется, то она не может быть перемещена.
    * - Колонка не может быть перемещена на другую доску.
    * @param body - параметры перемещения (previousId, targetId, boardId).
-   * @returns id gtеремещенной колонки и обновленная доска.
+   * @returns id перемещенной колонки и перемещенная колонка или null, если был reorder всех колонок и нужно сделать refetch.
    * **/
   public async moveColumn(body: TMoveColumn): Promise<TMoveColumnEmitPayload> {
     if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
@@ -81,20 +95,23 @@ export default class ColumnService {
       });
 
       const moveParameters: TMoveParameters = { targetId, previousId };
-      this.moveService.tryToMove(columns, moveParameters);
+      const moveResult = this.moveService.tryToMove(columns, moveParameters);
       await transactionalManager.save(ColumnEntity, columns);
 
-      const boardAfterMove = await transactionalManager.findOne(BoardEntity, {
-        where: { id: boardId },
-        order: { order: 'ASC', columns: { order: 'ASC', issues: { order: 'ASC' } } },
-        relations: { columns: { issues: true } },
-      });
-      if (!boardAfterMove) throw new WsException(EXCEPTION_MESSAGES.notFound);
+      let movedColumn: TColumnBase | null = null;
+
+      if (!moveResult.isOrderWasNormalized) {
+        const movedColumnEntity = await transactionalManager.findOne(ColumnEntity, {
+          where: { id: targetId },
+        });
+        if (movedColumnEntity)
+          movedColumn = this.columnMapper.toModel(movedColumnEntity, { base: true });
+      }
 
       return {
         boardId,
         movedColumnId: targetId,
-        board: this.boardMapper.toModel(boardAfterMove, { withRelations: true }),
+        movedColumn,
       };
     });
   }
@@ -102,9 +119,9 @@ export default class ColumnService {
   /**
    * Частично обновить колонку.
    * @param body - поля для обновления (id, title, color, description).
-   * @returns объект обновленной колонки.
+   * @returns базовый объект обновленной колонки (без задач).
    * **/
-  public async updateColumn(body: TUpdateColumn): Promise<TColumn> {
+  public async updateColumn(body: TUpdateColumn): Promise<TColumnBase> {
     if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
 
     const { id, ...rest } = body;
@@ -113,55 +130,31 @@ export default class ColumnService {
     const column = await manager.findOne(ColumnEntity, { where: { id } });
     if (!column) throw new WsException(EXCEPTION_MESSAGES.notFound);
 
-    await manager.save(Object.assign(column, rest));
+    const updatedColumn = await manager.save(Object.assign(column, rest));
+    if (!updatedColumn) throw new WsException(EXCEPTION_MESSAGES.updateFailed);
 
-    const columnAfterUpdating = await manager.findOne(ColumnEntity, {
-      where: { id },
-      relations: { issues: true },
-    });
-    if (!columnAfterUpdating) throw new WsException(EXCEPTION_MESSAGES.notFound);
-
-    return this.columnMapper.toModel(columnAfterUpdating);
+    return this.columnMapper.toModel(updatedColumn, { base: true });
   }
 
   /**
    * Удалить колонку.
    * @param columnId - id колонки.
-   * @returns массив колонок после reorder и ID удаленной доски.
+   * @returns ID доски и ID удаленной доски.
    * **/
   public async deleteColumn(columnId: number): Promise<TDeleteColumnEmitPayload> {
     if (!columnId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
 
-    return manager.transaction(async transactionalManager => {
-      const target = await transactionalManager.findOne(ColumnEntity, { where: { id: columnId } });
-      if (!target) throw new WsException(EXCEPTION_MESSAGES.notFound);
+    const target = await manager.findOne(ColumnEntity, { where: { id: columnId } });
+    if (!target) throw new WsException(EXCEPTION_MESSAGES.notFound);
 
-      const columns = await transactionalManager.find(ColumnEntity, {
-        where: { boardId: target.boardId },
-        order: { order: 'ASC' },
-      });
+    const { affected } = await manager.delete(ColumnEntity, { id: columnId });
+    if (!affected || affected <= 0) throw new WsException(EXCEPTION_MESSAGES.deleteFailed);
 
-      const { affected } = await transactionalManager.delete(ColumnEntity, { id: columnId });
-      if (!affected || affected <= 0) throw new WsException(EXCEPTION_MESSAGES.deleteFailed);
-
-      const withoutTarget = columns.filter(({ id }) => id !== columnId);
-      this.moveService.resetOrders(withoutTarget);
-
-      await transactionalManager.save(ColumnEntity, withoutTarget);
-
-      const columnsAfterDeleting = await transactionalManager.find(ColumnEntity, {
-        where: { boardId: target.boardId },
-        order: { order: 'ASC' },
-        relations: { issues: true },
-      });
-
-      return {
-        boardId: target.boardId,
-        deletedColumnId: target.id,
-        columns: this.columnMapper.toModel(columnsAfterDeleting),
-      };
-    });
+    return {
+      boardId: target.boardId,
+      deletedColumnId: target.id,
+    };
   }
 }

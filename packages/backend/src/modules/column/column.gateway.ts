@@ -2,11 +2,13 @@ import {
   EColumnEvent,
   getWsBoardRoomName,
   type TColumn,
+  type TColumnBase,
+  type TCreateColumnResponse,
   type TDeleteColumnEmitPayload,
   type TDeleteColumnResponse,
   type TMoveColumnEmitPayload,
   type TMoveColumnResponse,
-  type TUpsertColumnResponse,
+  type TUpdateColumnResponse,
 } from '@kanban-board/common';
 import { UseFilters } from '@nestjs/common';
 import {
@@ -36,7 +38,7 @@ export default class ColumnGateway {
   public async createColumn(
     @MessageBody(CustomValidationPipe.wsValidationPipe) body: CreateColumnDto,
     @ConnectedSocket() client: Socket,
-  ): Promise<TUpsertColumnResponse> {
+  ): Promise<TCreateColumnResponse> {
     const createdColumn = await this.columnService.createColumn(body);
     client.to(getWsBoardRoomName(createdColumn.boardId)).emit(EColumnEvent.CREATED, createdColumn);
     return getSuccessResponseWithData<TColumn>(createdColumn);
@@ -50,10 +52,10 @@ export default class ColumnGateway {
     )
     body: UpdateColumnDto,
     @ConnectedSocket() client: Socket,
-  ): Promise<TUpsertColumnResponse> {
+  ): Promise<TUpdateColumnResponse> {
     const updatedColumn = await this.columnService.updateColumn(body);
     client.to(getWsBoardRoomName(updatedColumn.boardId)).emit(EColumnEvent.UPDATED, updatedColumn);
-    return getSuccessResponseWithData<TColumn>(updatedColumn);
+    return getSuccessResponseWithData<TColumnBase>(updatedColumn);
   }
 
   @SubscribeMessage(EColumnEvent.DELETE)

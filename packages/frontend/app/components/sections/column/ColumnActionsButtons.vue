@@ -38,10 +38,11 @@ import {
   getErrorMessage,
   isValidationError,
   type TColumn,
+  type TColumnBase,
   type TDeleteColumnEmitPayload,
   type TDeleteColumnResponse,
   type TUpdateColumn,
-  type TUpsertColumnResponse,
+  type TUpdateColumnResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
@@ -58,7 +59,7 @@ import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue'
 const props = defineProps<{ column: TColumn }>();
 
 const emit = defineEmits<{
-  'update:column': [payload: TColumn];
+  'update:column': [payload: TColumnBase];
   'delete:column': [payload: TDeleteColumnEmitPayload];
 }>();
 
@@ -116,10 +117,10 @@ const updateColumn = () => {
     ...formData.value,
   };
 
-  emitEventUpdate<TUpdateColumn, TUpsertColumnResponse>({
+  emitEventUpdate<TUpdateColumn, TUpdateColumnResponse>({
     event: EColumnEvent.UPDATE,
     data: body,
-    successCallback: (response: TUpsertColumnResponse) => {
+    successCallback: (response: TUpdateColumnResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Колонка обновлена' });
         emit('update:column', response.data);

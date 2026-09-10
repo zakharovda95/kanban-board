@@ -8,14 +8,14 @@ import ColumnMapper from '@/modules/column/libs/mappers/column.mapper';
 export default class BoardMapper {
   constructor(private columnMapper: ColumnMapper) {}
 
-  toModel(entity: BoardEntity, options?: { withRelations?: false }): TBoardBase;
-  toModel(entity: BoardEntity, options?: { withRelations: true }): TBoard;
-  toModel(entity: BoardEntity[], options?: { withRelations?: false }): TBoardBase[];
-  toModel(entity: BoardEntity[], options?: { withRelations: true }): TBoard[];
+  public toModel(entity: BoardEntity, options: { base: true }): TBoardBase;
+  public toModel(entity: BoardEntity, options?: { base?: false }): TBoard;
+  public toModel(entity: BoardEntity[], options: { base: true }): TBoardBase[];
+  public toModel(entity: BoardEntity[], options?: { base?: false }): TBoard[];
 
-  toModel(
+  public toModel(
     entity: BoardEntity | BoardEntity[],
-    options?: { withRelations: true } | { withRelations?: false },
+    options?: { base?: boolean },
   ): TBoardBase | TBoard | TBoardBase[] | TBoard[] {
     const map = (innerEntity: BoardEntity): TBoardBase | TBoard => {
       const mapped: TBoardBase = {
@@ -25,7 +25,7 @@ export default class BoardMapper {
         order: innerEntity.order,
       };
 
-      if (!options?.withRelations || innerEntity.columns == null) return mapped;
+      if (options?.base || innerEntity.columns == null) return mapped;
 
       return { ...mapped, columns: this.columnMapper.toModel(innerEntity.columns) };
     };

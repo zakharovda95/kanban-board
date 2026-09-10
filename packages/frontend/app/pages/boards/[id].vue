@@ -34,6 +34,7 @@ import {
   EIssueEvent,
   type TBoard,
   type TColumn,
+  type TColumnBase,
   type TDeleteColumnEmitPayload,
   type TDeleteIssueEmitPayload,
   type TIssueBase,
@@ -69,16 +70,22 @@ const addColumn = (column: TColumn) => {
   data.value.columns.push(column);
 };
 
-const updateColumn = (column: TColumn) => {
-  if (!column || !data.value) return;
+const updateColumn = (columnBase: TColumnBase) => {
+  if (!columnBase || !data.value) return;
 
-  const targetIndex = data.value.columns.findIndex(({ id }: TColumn) => id === column.id);
-  if (targetIndex != -1) data.value.columns.splice(targetIndex, 1, column);
+  const targetIndex = data.value.columns.findIndex(({ id }: TColumn) => id === columnBase.id);
+  if (targetIndex === -1) return;
+
+  const existingColumn = data.value.columns[targetIndex];
+  if (!existingColumn) return;
+
+  const issues = existingColumn.issues;
+  data.value.columns.splice(targetIndex, 1, { ...columnBase, issues });
 };
 
 const deleteColumn = (payload: TDeleteColumnEmitPayload) => {
   if (!payload || !data.value) return;
-  data.value.columns = payload.columns;
+  data.value.columns = data.value.columns.filter(({ id }) => id !== payload.deletedColumnId);
 };
 
 const stopListenColumnCreated = listen(EColumnEvent.CREATED, (column: TColumn) => {
@@ -86,7 +93,7 @@ const stopListenColumnCreated = listen(EColumnEvent.CREATED, (column: TColumn) =
   toast.info({ message: `Добавлена новая колонка «${column.title}»` });
 });
 
-const stopListenColumnUpdated = listen(EColumnEvent.UPDATED, (column: TColumn) => {
+const stopListenColumnUpdated = listen(EColumnEvent.UPDATED, (column: TColumnBase) => {
   updateColumn(column);
   toast.info({ message: `Обновлена колонка «${column.title}»` });
 });

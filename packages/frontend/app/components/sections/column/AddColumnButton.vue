@@ -43,7 +43,7 @@ import {
   isValidationError,
   type TColumn,
   type TCreateColumn,
-  type TUpsertColumnResponse,
+  type TCreateColumnResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
@@ -79,10 +79,10 @@ const createBoard = () => {
     ...formData.value,
   };
 
-  emitEvent<TCreateColumn, TUpsertColumnResponse>({
+  emitEvent<TCreateColumn, TCreateColumnResponse>({
     event: EColumnEvent.CREATE,
     data: body,
-    successCallback: (response: TUpsertColumnResponse) => {
+    successCallback: (response: TCreateColumnResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Колонка создана' });
         emit('add:column', response.data);
