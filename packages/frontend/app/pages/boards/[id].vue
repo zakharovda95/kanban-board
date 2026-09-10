@@ -1,29 +1,31 @@
 <template>
   <div class="flex size-full items-center justify-center">
-    <TheBoard
-      class="laptop:block hidden"
-      :board="data ?? null"
-      :is-loading="pending"
-      :error-text="errorMessage"
-      @add:column="addColumn"
-      @update:column="updateColumn"
-      @delete:column="deleteColumn"
-      @add:issue="addIssue"
-      @update:issue="updateIssue"
-      @delete:issue="deleteIssue"
-    />
-    <TheBoardMobile
-      class="laptop:hidden flex"
-      :board="data ?? null"
-      :is-loading="pending"
-      :error-text="errorMessage"
-      @add:column="addColumn"
-      @update:column="updateColumn"
-      @delete:column="deleteColumn"
-      @add:issue="addIssue"
-      @update:issue="updateIssue"
-      @delete:issue="deleteIssue"
-    />
+    <UILoader v-if="showLoader" :size="64" full />
+    <div v-else-if="errorMessage" class="flex size-full items-center justify-center p-12">
+      <p class="text-14 font-medium">{{ errorMessage }}</p>
+    </div>
+    <template v-else-if="data">
+      <TheBoard
+        v-if="isLaptop"
+        :board="data"
+        @add:column="addColumn"
+        @update:column="updateColumn"
+        @delete:column="deleteColumn"
+        @add:issue="addIssue"
+        @update:issue="updateIssue"
+        @delete:issue="deleteIssue"
+      />
+      <TheBoardMobile
+        v-else
+        :board="data"
+        @add:column="addColumn"
+        @update:column="updateColumn"
+        @delete:column="deleteColumn"
+        @add:issue="addIssue"
+        @update:issue="updateIssue"
+        @delete:issue="deleteIssue"
+      />
+    </template>
   </div>
 </template>
 
@@ -40,20 +42,24 @@ import {
   type TIssueBase,
 } from '@kanban-board/common';
 
+import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 
 import TheBoard from '~/components/sections/board/TheBoard.vue';
 import TheBoardMobile from '~/components/sections/board/TheBoardMobile.vue';
+import UILoader from '~/components/ui/UILoader.vue';
 
 definePageMeta({
   layout: 'board',
 });
 
+const isMounted = useMounted();
 const route = useRoute();
 const toast = useToast();
 const { listen, $socket } = useSocket();
 
 const boardId = computed(() => Number(route.params.id));
+const isLaptop = useIsLaptop();
 
 const errorMessage = ref<string | null>(null);
 
@@ -64,6 +70,8 @@ if (error.value) {
   toast.error({ message });
   errorMessage.value = message;
 }
+
+const showLoader = computed(() => !isMounted.value || pending.value);
 
 const addColumn = (column: TColumn) => {
   if (!column || !data.value) return;

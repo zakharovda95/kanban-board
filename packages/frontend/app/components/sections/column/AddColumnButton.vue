@@ -1,19 +1,9 @@
 <template>
   <div class="w-fit">
-    <UIButton
-      class="laptop:flex hidden"
-      :disabled="isModalOpen"
-      prepend-icon="mingcute:add-line"
-      @click:button="openModal"
-    >
+    <UIButton v-if="isLaptop" :disabled="isModalOpen" prepend-icon="mingcute:add-line" @click:button="openModal">
       Добавить колонку
     </UIButton>
-    <UIIconButton
-      class="laptop:hidden flex"
-      :disabled="isModalOpen"
-      icon="mingcute:add-line"
-      @click:button="openModal"
-    />
+    <UIIconButton v-else :disabled="isModalOpen" icon="mingcute:add-line" @click:button="openModal" />
 
     <UpsertModal
       :is-open="isModalOpen"
@@ -48,6 +38,7 @@ import {
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable.ts';
+import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 
@@ -61,6 +52,7 @@ const emit = defineEmits<{
 
 const route = useRoute();
 const toast = useToast();
+const isLaptop = useIsLaptop();
 
 const isModalOpen = ref(false);
 

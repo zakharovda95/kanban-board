@@ -4,7 +4,7 @@
       {{ column.title }}
     </p>
     <p
-      v-if="column.description"
+      v-if="column.description && !hideDescription"
       class="text-12 block w-full overflow-hidden leading-16 font-light text-ellipsis whitespace-nowrap"
     >
       {{ column.description }}
@@ -15,7 +15,13 @@
 <script setup lang="ts">
 import type { TColumn } from '@kanban-board/common';
 
-defineProps<{
-  column: TColumn;
-}>();
+withDefaults(
+  defineProps<{
+    column: TColumn;
+    hideDescription?: boolean;
+  }>(),
+  {
+    hideDescription: false,
+  },
+);
 </script>
