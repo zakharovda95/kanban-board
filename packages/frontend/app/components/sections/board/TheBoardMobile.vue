@@ -35,9 +35,11 @@
                 <ColumnInfo :column="column" class="w-[calc(100%-60px)]" />
                 <StopPreventWrapper>
                   <ColumnActionsButtons
-                    :column="column"
+                    :column-id="column.id"
+                    :columns="board.columns"
                     @update:column="emit('update:column', $event)"
                     @delete:column="deleteColumn"
+                    @move:column="emit('move:column', $event)"
                   />
                 </StopPreventWrapper>
               </div>
@@ -82,6 +84,7 @@ import type {
   TDeleteColumnEmitPayload,
   TDeleteIssueEmitPayload,
   TIssueBase,
+  TMoveColumnEmitPayload,
 } from '@kanban-board/common';
 
 import AddColumnButton from '~/components/sections/column/AddColumnButton.vue';
@@ -97,6 +100,7 @@ const emit = defineEmits<{
   'add:column': [payload: TColumn];
   'update:column': [payload: TColumnBase];
   'delete:column': [payload: TDeleteColumnEmitPayload];
+  'move:column': [payload: TMoveColumnEmitPayload];
   'add:issue': [payload: TIssueBase];
   'update:issue': [payload: TIssueBase];
   'delete:issue': [payload: TDeleteIssueEmitPayload];

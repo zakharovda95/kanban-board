@@ -1,5 +1,6 @@
 import {
   ColorUtility,
+  TBoardBase,
   type TColumn,
   type TColumnBase,
   type TCreateColumn,
@@ -28,6 +29,20 @@ export default class ColumnService {
     private moveService: MoveService<ColumnEntity>,
     private columnMapper: ColumnMapper,
   ) {}
+
+  /**
+   * Получить колонки доски по ее ID.
+   * @param boardId - ID доски.
+   * @returns массив базовых объектов колонок доски.
+   * **/
+  public async getColumns(boardId: number): Promise<TBoardBase[]> {
+    const { manager } = this.dataSource;
+    const columns = await manager.find(ColumnEntity, {
+      where: { boardId },
+      order: { order: 'ASC' },
+    });
+    return this.columnMapper.toModel(columns, { base: true });
+  }
 
   /**
    * Создать колонку на доске.

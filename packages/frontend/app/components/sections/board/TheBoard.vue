@@ -20,9 +20,11 @@
             <div class="flex size-full items-center justify-between">
               <ColumnInfo :column="column" class="w-[calc(100%-32px)]" />
               <ColumnActionsButtons
-                :column="column"
+                :column-id="column.id"
+                :columns="board.columns"
                 @update:column="emit('update:column', $event)"
                 @delete:column="emit('delete:column', $event)"
+                @move:column="emit('move:column', $event)"
               />
             </div>
           </header>
@@ -57,6 +59,7 @@ import type {
   TDeleteColumnEmitPayload,
   TDeleteIssueEmitPayload,
   TIssueBase,
+  TMoveColumnEmitPayload,
 } from '@kanban-board/common';
 import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
 
@@ -73,6 +76,7 @@ const emit = defineEmits<{
   'add:column': [payload: TColumn];
   'update:column': [payload: TColumnBase];
   'delete:column': [payload: TDeleteColumnEmitPayload];
+  'move:column': [payload: TMoveColumnEmitPayload];
   'add:issue': [payload: TIssueBase];
   'update:issue': [payload: TIssueBase];
   'delete:issue': [payload: TDeleteIssueEmitPayload];

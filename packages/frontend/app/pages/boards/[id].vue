@@ -11,6 +11,7 @@
         @add:column="addColumn"
         @update:column="updateColumn"
         @delete:column="deleteColumn"
+        @move:column="moveColumn"
         @add:issue="addIssue"
         @update:issue="updateIssue"
         @delete:issue="deleteIssue"
@@ -21,6 +22,7 @@
         @add:column="addColumn"
         @update:column="updateColumn"
         @delete:column="deleteColumn"
+        @move:column="moveColumn"
         @add:issue="addIssue"
         @update:issue="updateIssue"
         @delete:issue="deleteIssue"
@@ -40,7 +42,9 @@ import {
   type TDeleteColumnEmitPayload,
   type TDeleteIssueEmitPayload,
   type TIssueBase,
+  type TMoveColumnEmitPayload,
 } from '@kanban-board/common';
+import { orderBy } from 'lodash';
 
 import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
@@ -63,7 +67,7 @@ const isLaptop = useIsLaptop();
 
 const errorMessage = ref<string | null>(null);
 
-const { data, pending, error } = await useFetch<TBoard>(`/api/boards/${boardId.value}`, { deep: true });
+const { data, pending, error, refresh } = await useFetch<TBoard>(`/api/boards/${boardId.value}`, { deep: true });
 
 if (error.value) {
   const message = 'Произошла ошибка при загрузке доски.';
@@ -96,6 +100,17 @@ const deleteColumn = (payload: TDeleteColumnEmitPayload) => {
   data.value.columns = data.value.columns.filter(({ id }) => id !== payload.deletedColumnId);
 };
 
+const moveColumn = async (moveResult: TMoveColumnEmitPayload) => {
+  if (!moveResult || !data.value) return;
+  // если не передан объект перемещенной колонки, значит был reorder всех колонок и нужно сделать refetch
+  if (!moveResult.movedColumn) {
+    await refresh();
+    return;
+  }
+  updateColumn(moveResult.movedColumn);
+  data.value.columns = orderBy(data.value.columns, ['order'], 'asc');
+};
+
 const stopListenColumnCreated = listen(EColumnEvent.CREATED, (column: TColumn) => {
   addColumn(column);
   toast.info({ message: `Добавлена новая колонка «${column.title}»` });
@@ -114,6 +129,16 @@ const stopListenColumnDeleted = listen(EColumnEvent.DELETED, (payload: TDeleteCo
   toast.info({
     message: deletedColumn ? `Колонка «${deletedColumn.title}» была удалена` : 'Колонка была удалена',
   });
+});
+
+const stopListenColumnMoved = listen(EColumnEvent.MOVED, async (payload: TMoveColumnEmitPayload) => {
+  if (payload.movedColumnId) {
+    await moveColumn(payload);
+    const movedColumn = data.value?.columns.find(({ id }: TColumn) => id === payload.movedColumnId);
+    toast.info({
+      message: movedColumn ? `Колонка «${movedColumn.title}» была перемещена` : 'Колонка была перемещена',
+    });
+  }
 });
 
 const addIssue = (issue: TIssueBase) => {
@@ -170,6 +195,7 @@ onBeforeUnmount(() => {
   stopListenColumnCreated();
   stopListenColumnUpdated();
   stopListenColumnDeleted();
+  stopListenColumnMoved();
 
   stopListenIssueCreated();
   stopListenIssueUpdated();
