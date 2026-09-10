@@ -14,7 +14,9 @@ export type TActionButtonData = {
   icon: string;
   backgroundColor: EColor;
   color: EColor;
+  handler: () => void | Promise<void>;
   iconClass?: string;
+  disabled: boolean;
 };
 
 export type TMovedDetails<T> = {

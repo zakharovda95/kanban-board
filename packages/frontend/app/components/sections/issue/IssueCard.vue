@@ -28,12 +28,7 @@
 
       <UILoader v-if="isLoading" :size="EIconSizeSmall.MEDIUM" />
       <StopPreventWrapper v-else>
-        <ActionsButtons
-          :actions="['copy', 'share']"
-          :button-background-color="EColor.LIGHT_BASE"
-          @copy="copyIssueTitle"
-          @share="copyIssueLink"
-        />
+        <ActionsButtons :actions="actions" :button-background-color="EColor.LIGHT_BASE" />
       </StopPreventWrapper>
     </header>
 
@@ -66,7 +61,9 @@ import {
 import { useIssueInfo } from '~/composables/app/use-issue-info.composable';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable';
+import { ACTIONS_BUTTONS_DATA } from '~/constants/shared.constants.ts';
 import { EIconSizeSmall } from '~/enums/global.enums';
+import type { TActionButtonData } from '~/types/shared.types.ts';
 
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
 import IssueDetailsModal from '~/components/sections/issue/IssueDetailsModal.vue';
@@ -99,6 +96,19 @@ const { listen } = useSocket();
 
 const { issueString, daysPassedSinceCreation, issueIdFromQuery, copyIssueId, copyIssueTitle, copyIssueLink } =
   useIssueInfo(issue);
+
+const actions = computed<TActionButtonData[]>(() => [
+  {
+    ...ACTIONS_BUTTONS_DATA.copy,
+    handler: copyIssueTitle,
+    disabled: false,
+  },
+  {
+    ...ACTIONS_BUTTONS_DATA.share,
+    handler: copyIssueLink,
+    disabled: false,
+  },
+]);
 
 const needOpenCardOnInit = computed(() => issue.value.id === issueIdFromQuery.value);
 const isModalOpen = ref(needOpenCardOnInit.value);

@@ -1,7 +1,7 @@
 <template>
   <div class="size-fit">
     <StopPreventWrapper>
-      <ActionsButtons @update="openUpdateModal" @delete="isDeleteModalOpen = true" />
+      <ActionsButtons :actions="actions" />
     </StopPreventWrapper>
 
     <UpsertModal
@@ -47,9 +47,10 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
+import { ACTIONS_BUTTONS_DATA } from '~/constants/shared.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 import { useBoardsStore } from '~/stores/boards.store.ts';
-import type { TUpsertFormData } from '~/types/shared.types.ts';
+import type { TActionButtonData, TUpsertFormData } from '~/types/shared.types.ts';
 
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
@@ -65,6 +66,19 @@ const toast = useToast();
 
 const isUpdateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+
+const actions = computed<TActionButtonData[]>(() => [
+  {
+    ...ACTIONS_BUTTONS_DATA.update,
+    handler: openUpdateModal,
+    disabled: isUpdateModalOpen.value || isDeleteModalOpen.value,
+  },
+  {
+    ...ACTIONS_BUTTONS_DATA.delete,
+    handler: openDeleteModal,
+    disabled: isUpdateModalOpen.value || isDeleteModalOpen.value,
+  },
+]);
 
 const getInitialValue = (): Omit<TUpdateBoard, 'id'> => ({
   title: props.board.title,
@@ -118,6 +132,10 @@ const deleteBoard = () => {
 const openUpdateModal = () => {
   set(getInitialValue(), { setAsInitial: true, clearErrors: true });
   isUpdateModalOpen.value = true;
+};
+
+const openDeleteModal = () => {
+  isDeleteModalOpen.value = true;
 };
 
 const closeModal = () => {

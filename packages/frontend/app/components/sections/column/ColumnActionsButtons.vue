@@ -1,11 +1,6 @@
 <template>
   <div class="size-fit">
-    <ActionsButtons
-      :grid-template-columns="4"
-      :actions="['moveToStart', 'moveToPrevious', 'moveToNext', 'moveToEnd', 'update', 'delete']"
-      @update="openUpdateModal"
-      @delete="isDeleteModalOpen = true"
-    />
+    <ActionsButtons :actions="actions" :grid-template-columns="4" />
 
     <UpsertModal
       :is-open="isUpdateModalOpen"
@@ -52,8 +47,9 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
+import { ACTIONS_BUTTONS_DATA } from '~/constants/shared.constants.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
-import type { TUpsertFormData } from '~/types/shared.types.ts';
+import type { TActionButtonData, TUpsertFormData } from '~/types/shared.types.ts';
 
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import UpsertModal from '~/components/shared/UpsertModal.vue';
@@ -70,6 +66,39 @@ const toast = useToast();
 
 const isUpdateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+
+const actions = computed<TActionButtonData[]>(() => [
+  {
+    ...ACTIONS_BUTTONS_DATA.moveToStart,
+    handler: moveToStart,
+    disabled: false,
+  },
+  {
+    ...ACTIONS_BUTTONS_DATA.moveToPrevious,
+    handler: moveToPrevious,
+    disabled: false,
+  },
+  {
+    ...ACTIONS_BUTTONS_DATA.moveToNext,
+    handler: moveToNext,
+    disabled: false,
+  },
+  {
+    ...ACTIONS_BUTTONS_DATA.moveToEnd,
+    handler: moveToEnd,
+    disabled: false,
+  },
+  {
+    ...ACTIONS_BUTTONS_DATA.update,
+    handler: () => openUpdateModal(),
+    disabled: isUpdateModalOpen.value || isDeleteModalOpen.value,
+  },
+  {
+    ...ACTIONS_BUTTONS_DATA.delete,
+    handler: () => openDeleteModal(),
+    disabled: isUpdateModalOpen.value || isDeleteModalOpen.value,
+  },
+]);
 
 const getInitialValue = (): Omit<TUpdateColumn, 'id'> => ({
   title: props.column.title ?? '',
@@ -121,9 +150,20 @@ const deleteColumn = () => {
   });
 };
 
+const moveToStart = () => {};
+
+const moveToPrevious = () => {};
+
+const moveToNext = () => {};
+const moveToEnd = () => {};
+
 const openUpdateModal = () => {
-  isUpdateModalOpen.value = true;
   set(getInitialValue(), { setAsInitial: true, clearErrors: true });
+  isUpdateModalOpen.value = true;
+};
+
+const openDeleteModal = () => {
+  isDeleteModalOpen.value = true;
 };
 
 const closeModal = () => {
