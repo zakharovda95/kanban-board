@@ -17,7 +17,6 @@ import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import type { TMaxOrderResult } from '@/libs/utilities/order.utility';
 import OrderUtility from '@/libs/utilities/order.utility';
 import ColumnEntity from '@/modules/column/libs/entities/column.entity';
-import ColumnMapper from '@/modules/column/libs/mappers/column.mapper';
 import IssueEntity from '@/modules/issue/libs/entities/issue.entity';
 import IssueMapper from '@/modules/issue/libs/mappers/issue.mapper';
 import MoveService from '@/modules/shared/move/move.service';
@@ -27,7 +26,6 @@ export default class IssueService {
   constructor(
     private dataSource: DataSource,
     private issueMapper: IssueMapper,
-    private columnMapper: ColumnMapper,
     private moveService: MoveService<IssueEntity>,
   ) {}
 
@@ -94,13 +92,13 @@ export default class IssueService {
    * Правила перемещения:
    * - Если указан toColumnId - задача перемещается в указанную колонку.
    * - Если не указан toColumnId - перемещение в рамках текущей колонки.
-   * - Должен быть указан previousId - id задачи перед которой будет помещена целевая задача.
+   * - Должен быть указан previousId - id задачи после которой будет помещена целевая задача.
    * - Если previousId - null - задача помещается в начало.
    * - При перемещении задачи в другую ПУСТУЮ колонку необходимо указать previousId в значении null (иначе ошибка).
    * - Если при перемещении задачи ее позиция на доске не меняется (та же колонка та же позиция), то она не может быть перемещена.
    * - Задача не может быть перемещена на другую доску.
    * @param body - параметры перемещения (previousId, targetId, fromColumnId, toColumnId, boardId).
-   * @returns id перемещенной задачи и колонка, куда была перемещена задача.
+   * @returns ID перемещенной задачи, ID колонки from/to и перемещенная задача или null, если был reorder и нужен refetch.
    * **/
   public async moveIssue(body: TMoveIssue): Promise<TMoveIssueEmitPayload> {
     if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
@@ -116,13 +114,13 @@ export default class IssueService {
 
       const isCurrentBoard = Boolean(targetIssue.boardId === boardId);
       const isCurrentColumn = Boolean(!toColumnId || toColumnId === targetIssue.columnId);
-      const actualColumnId = toColumnId || targetIssue.columnId;
+      const columnIdTo = toColumnId || targetIssue.columnId;
 
       if (!isCurrentBoard) throw new WsException(EXCEPTION_MESSAGES.moveFailed);
 
       const targetColumn = await transactionalManager.findOne(ColumnEntity, {
         relations: { issues: true },
-        where: { id: actualColumnId, boardId },
+        where: { id: columnIdTo, boardId },
         order: { issues: { order: 'ASC' } },
       });
       if (!targetColumn) throw new WsException(EXCEPTION_MESSAGES.notFound);
@@ -134,23 +132,27 @@ export default class IssueService {
         ? targetColumn.issues
         : [...targetColumn.issues, targetIssue];
 
-      if (!isCurrentColumn) targetIssue.columnId = actualColumnId;
+      if (!isCurrentColumn) targetIssue.columnId = columnIdTo;
 
-      this.moveService.tryToMove(issuesWithTarget, moveParameters, moveOptions);
+      const moveResult = this.moveService.tryToMove(issuesWithTarget, moveParameters, moveOptions);
       await transactionalManager.save(IssueEntity, issuesWithTarget);
 
-      const targetColumnAfterMove = await transactionalManager.findOne(ColumnEntity, {
-        relations: { issues: true },
-        where: { id: actualColumnId, boardId },
-        order: { issues: { order: 'ASC' } },
-      });
-      if (!targetColumnAfterMove) throw new WsException(EXCEPTION_MESSAGES.notFound);
+      let movedIssue: TIssueBase | null = null;
+
+      if (!moveResult.isOrderWasNormalized) {
+        const movedIssueEntity = await transactionalManager.findOne(IssueEntity, {
+          where: { id: targetId },
+        });
+        if (movedIssueEntity)
+          movedIssue = this.issueMapper.toModel(movedIssueEntity, { base: true });
+      }
 
       return {
         boardId,
-        columnId: actualColumnId,
         movedIssueId: targetId,
-        column: this.columnMapper.toModel(targetColumnAfterMove),
+        columnIdFrom: fromColumnId,
+        columnIdTo,
+        movedIssue,
       };
     });
   }

@@ -1,4 +1,3 @@
-import type { TColumn } from './column.types';
 import type { IMovable, TMoveParameters } from './move.types.js';
 import type { TSuccessResponse } from './response.types.js';
 
@@ -48,8 +47,10 @@ export type TDeleteIssueEmitPayload = {
 
 /** Полезная нагрузка эмита перемещения задачи. **/
 export type TMoveIssueEmitPayload = {
-  movedIssueId: number;
   boardId: number;
-  columnId: number;
-  column: TColumn;
+  movedIssueId: number;
+  columnIdFrom: number;
+  columnIdTo: number;
+  /** Перемещенная задача (без колонки) или null, если был reorder всех задач и нужно сделать refetch. **/
+  movedIssue: TIssueBase | null;
 };
