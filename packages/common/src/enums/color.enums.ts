@@ -1,5 +1,7 @@
 export enum EColor {
   LIGHT_BASE = '#ffffff',
+  LIGHT_50 = '#fafafa',
+  LIGHT_100 = '#f5f5f5',
   LIGHT_200 = '#e5e5e5',
   LIGHT_300 = '#d4d4d4',
   LIGHT_400 = '#a3a3a3',

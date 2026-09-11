@@ -24,7 +24,7 @@
         </UIButton>
         <UIButton
           class="w-full"
-          :class="isColButtonsPosition ? 'laptop:w-full' : 'laptop:w-fit'"
+          :class="isColButtonsPosition ? 'laptop:w-full' : 'laptop:w-fit min-w-120'"
           :size="buttonsSize"
           :background-color="EColor.RED"
           @click:button="emit('reset:form')"

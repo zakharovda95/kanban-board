@@ -1,6 +1,8 @@
 <template>
   <div ref="tooltipRef" class="flex size-auto cursor-help items-center justify-center">
-    <NuxtIcon class="shrink-0" :size="computedSize.icon" name="mingcute:question-fill" :style="{ color }" />
+    <slot>
+      <NuxtIcon class="shrink-0" :size="computedSize.icon" name="mingcute:question-line" :style="{ color }" />
+    </slot>
   </div>
 </template>
 

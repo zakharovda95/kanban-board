@@ -1,32 +1,20 @@
 <template>
   <div class="flex flex-wrap items-center gap-8">
-    <Component :is="resolvedComponent" v-if="createdAt" v-bind="resolvedAttributes">
-      <span v-if="variant === 'details'">Создано: </span><NuxtTime :datetime="createdAt" />
-      <span
-        v-if="daysPassedSinceCreation"
-        class="italic"
-        :class="{
-          'text-green!': daysPassedSinceCreation === 'сегодня',
-          'text-orange!': daysPassedSinceCreation === 'вчера',
-        }"
-      >
-        ({{ daysPassedSinceCreation }})
-      </span>
-    </Component>
-
-    <Component :is="resolvedComponent" v-if="updatedAt" v-bind="resolvedAttributes">
-      <span v-if="variant === 'details'">Обновлено:</span> <NuxtTime :datetime="updatedAt" />
-      <span
-        v-if="daysPassedSinceUpdating"
-        class="italic"
-        :class="{
-          'text-green!': daysPassedSinceUpdating === 'сегодня',
-          'text-orange!': daysPassedSinceUpdating === 'вчера',
-        }"
-      >
-        ({{ daysPassedSinceUpdating }})
-      </span>
-    </Component>
+    <template v-for="item in dateItems" :key="item.key">
+      <div v-if="variant === 'card'" class="text-12 text-light-800 flex items-center gap-2">
+        <NuxtTime :datetime="item.datetime" />
+        <UITooltip v-if="item.daysPassed" :text="String(item.daysPassed)" size="small" @click.stop />
+      </div>
+      <UITooltip v-else-if="item.daysPassed" :text="String(item.daysPassed)">
+        <UIBadge v-bind="detailsBadgeProps" class="cursor-help">
+          {{ item.label }} <NuxtTime :datetime="item.datetime" />
+        </UIBadge>
+      </UITooltip>
+      <UIBadge v-else v-bind="detailsBadgeProps">
+        {{ item.label }}
+        <NuxtTime :datetime="item.datetime" />
+      </UIBadge>
+    </template>
   </div>
 </template>
 
@@ -34,6 +22,7 @@
 import { EColor } from '@kanban-board/common';
 
 import UIBadge from '~/components/ui/UIBadge.vue';
+import UITooltip from '~/components/ui/UITooltip.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -52,15 +41,38 @@ const props = withDefaults(
   },
 );
 
-const resolvedComponent = computed(() => (props.variant === 'card' ? 'div' : UIBadge));
+const detailsBadgeProps = {
+  size: 'medium' as const,
+  backgroundColor: EColor.LIGHT_200,
+  color: EColor.LIGHT_800,
+};
 
-const resolvedAttributes = computed(() => {
-  if (props.variant === 'card') return { class: 'text-12 text-light-800 flex gap-2' };
+const dateItems = computed(() => {
+  const items: {
+    key: string;
+    label: string;
+    datetime: Date | string;
+    daysPassed: number | string | null;
+  }[] = [];
 
-  return {
-    size: 'medium',
-    backgroundColor: EColor.LIGHT_200,
-    color: EColor.LIGHT_800,
-  };
+  if (props.createdAt) {
+    items.push({
+      key: 'created',
+      label: 'Создано:',
+      datetime: props.createdAt,
+      daysPassed: props.daysPassedSinceCreation,
+    });
+  }
+
+  if (props.updatedAt) {
+    items.push({
+      key: 'updated',
+      label: 'Обновлено:',
+      datetime: props.updatedAt,
+      daysPassed: props.daysPassedSinceUpdating,
+    });
+  }
+
+  return items;
 });
 </script>

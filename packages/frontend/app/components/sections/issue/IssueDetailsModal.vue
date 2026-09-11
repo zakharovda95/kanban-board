@@ -1,115 +1,119 @@
 <template>
-  <UIModal :is-open="isOpen" body-class="laptop:w-640 w-full" @update:is-open="closeModal">
+  <UIModal
+    :is-open="isOpen"
+    :body-class="`w-full ${isUpdateMode ? 'max-w-640!' : 'max-width'}`"
+    @update:is-open="closeModal"
+  >
     <template #header>
-      <div class="mr-12 flex flex-1 flex-col gap-8">
-        <div v-if="!isUpdateMode" class="flex w-full justify-between gap-12">
-          <h4 class="text-18 flex flex-wrap items-center gap-4">
-            <button
-              class="text-green cursor-pointer bg-none p-0 font-bold whitespace-nowrap underline underline-offset-4 duration-300 outline-none hover:brightness-95"
-              @click="copyIssueId"
-            >
-              {{ issueString }}:
-            </button>
-            <span class="font-bold">{{ issue.title }}</span>
-          </h4>
-
-          <div class="flex gap-4">
-            <UIIconButton icon="mingcute:copy-line" size="small" @click:button="copyIssueTitle" />
-            <UIIconButton
-              icon="mingcute:share-2-line"
-              :background-color="EColor.BLUE"
-              size="small"
-              @click:button="copyIssueLink"
-            />
-          </div>
-        </div>
-        <UILabel v-else text="Название задачи" required>
-          <UIInput
-            v-model="formData.title as string"
-            name="issue-title"
-            :max-length="ISSUE_TITLE_MAXLENGTH"
-            full
-            placeholder="Введите название задачи"
+      <div class="mr-12 flex w-full flex-1 justify-between gap-8">
+        <h4 class="text-18 font-bold">
+          <span
+            class="text-green cursor-pointer bg-none p-0 font-bold whitespace-nowrap underline underline-offset-4 duration-300 outline-none hover:brightness-95"
+            @click="copyIssueId"
+          >
+            {{ issueString }}:
+          </span>
+          {{ issue.title }}
+        </h4>
+        <div v-if="!isUpdateMode" class="flex gap-4">
+          <UIIconButton icon="mingcute:copy-line" size="small" @click:button="copyIssueTitle" />
+          <UIIconButton
+            icon="mingcute:share-2-line"
+            :background-color="EColor.BLUE"
+            size="small"
+            @click:button="copyIssueLink"
           />
-        </UILabel>
+        </div>
+      </div>
+    </template>
 
+    <div class="laptop:flex-row flex w-full flex-col justify-between gap-24">
+      <IssueDate
+        v-if="!isUpdateMode"
+        class="laptop:hidden flex"
+        variant="details"
+        :created-at="issue.createdAt"
+        :updated-at="issue.updatedAt"
+        :days-passed-since-creation="daysPassedSinceCreation"
+        :days-passed-since-updating="daysPassedSinceUpdating"
+      />
+
+      <div class="flex-1">
+        <div v-if="!isUpdateMode" class="bg-light-100 rounded-8 h-full p-12">
+          <OverlayScrollbarsComponent v-if="issue.description" :options="scrollbarOptions">
+            <div class="max-h-[50vh]" v-html="issue.description" />
+          </OverlayScrollbarsComponent>
+          <p v-else class="text-light-500 text-14 italic">(описание не добавлено)</p>
+        </div>
+        <UIForm
+          v-else
+          full
+          :disabled="isLoadingUpdate || !isDirty"
+          buttons-position="row"
+          @submit:form="updateIssue"
+          @reset:form="resetUpdating"
+        >
+          <UILabel text="Название задачи" required>
+            <UIInput
+              v-model="formData.title as string"
+              name="issue-title"
+              :max-length="ISSUE_TITLE_MAXLENGTH"
+              full
+              placeholder="Введите название задачи"
+            />
+          </UILabel>
+          <UILabel text="Описание" tag="div">
+            <UIRichEditor
+              v-model="formData.description as string"
+              name="issue-description"
+              full
+              placeholder="Введите описание задачи..."
+              editor-class="max-h-[50vh]"
+            />
+          </UILabel>
+        </UIForm>
+      </div>
+
+      <div v-if="!isUpdateMode" class="laptop:max-w-320 flex w-full max-w-none flex-col justify-between gap-24">
         <IssueDate
-          v-if="!isUpdateMode"
+          class="laptop:flex hidden"
           variant="details"
           :created-at="issue.createdAt"
           :updated-at="issue.updatedAt"
           :days-passed-since-creation="daysPassedSinceCreation"
           :days-passed-since-updating="daysPassedSinceUpdating"
         />
-      </div>
-    </template>
 
-    <div v-if="!isUpdateMode" class="bg-light-100 rounded-8 p-12">
-      <OverlayScrollbarsComponent v-if="issue.description" :options="scrollbarOptions">
-        <div v-html="issue.description" />
-      </OverlayScrollbarsComponent>
-      <p v-else class="text-light-500 text-14 italic">(описание не добавлено)</p>
-    </div>
-    <UILabel v-else text="Описание" tag="div">
-      <UIRichEditor
-        v-model="formData.description as string"
-        name="issue-description"
-        full
-        placeholder="Введите описание задачи..."
-        editor-class="max-h-[50vh]"
-      />
-    </UILabel>
-
-    <template #footer>
-      <div class="laptop:gap-12 laptop:flex-row flex flex-col-reverse items-center justify-between gap-8">
-        <template v-if="!isUpdateMode">
+        <div class="flex flex-col gap-8">
           <UIButton
-            class="laptop:w-fit w-full"
-            :background-color="EColor.RED"
-            prepend-icon="mingcute:delete-2-line"
-            @click:button="isOpenDeleteModal = true"
-          >
-            Удалить задачу
-          </UIButton>
-          <UIButton
-            class="laptop:w-auto laptop:flex-1 w-full"
+            full
             :background-color="EColor.ORANGE"
             prepend-icon="mingcute:pencil-line"
             @click:button="startUpdateMode"
           >
             Редактировать задачу
           </UIButton>
-        </template>
-        <template v-else>
           <UIButton
-            class="laptop:w-fit w-full"
+            full
             :background-color="EColor.RED"
-            :disabled="isLoadingUpdate"
-            @click:button="resetUpdating"
+            prepend-icon="mingcute:delete-2-line"
+            @click:button="isOpenDeleteModal = true"
           >
-            Отменить
+            Удалить задачу
           </UIButton>
-          <UIButton
-            class="laptop:w-auto laptop:flex-1 w-full"
-            :background-color="EColor.ORANGE"
-            :disabled="isLoadingUpdate || !isDirty"
-            @click:button="updateIssue"
-          >
-            Применить
-          </UIButton>
-        </template>
-      </div>
+        </div>
 
-      <UIConfirmationModal
-        v-model:is-open="isOpenDeleteModal"
-        title="Удалить задачу?"
-        :text="CONFIRMATION_MODAL_TEXT"
-        action-button-label="Да, удалить задачу"
-        :disabled="isLoadingDelete"
-        @click:confirm="deleteIssue"
-        @click:reset="isOpenDeleteModal = false"
-      />
-    </template>
+        <UIConfirmationModal
+          v-model:is-open="isOpenDeleteModal"
+          title="Удалить задачу?"
+          :text="CONFIRMATION_MODAL_TEXT"
+          action-button-label="Да, удалить задачу"
+          :disabled="isLoadingDelete"
+          @click:confirm="deleteIssue"
+          @click:reset="isOpenDeleteModal = false"
+        />
+      </div>
+    </div>
   </UIModal>
 </template>
 
