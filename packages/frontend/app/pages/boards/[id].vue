@@ -162,7 +162,7 @@ const deleteIssue = (payload: TDeleteIssueEmitPayload) => {
   if (!payload || !data.value) return;
 
   const targetColumn = data.value.columns.find(({ id }) => id === payload.columnId);
-  if (targetColumn) targetColumn.issues = payload.issues;
+  if (targetColumn) targetColumn.issues = targetColumn.issues.filter(({ id }) => id !== payload.deletedIssueId);
 };
 
 const stopListenIssueCreated = listen(EIssueEvent.CREATED, (issue: TIssueBase) => {

@@ -41,7 +41,6 @@ export type TMoveIssueResponse = TSuccessResponse<TMoveIssueEmitPayload>;
 
 /** Полезная нагрузка эмита удаления задачи. **/
 export type TDeleteIssueEmitPayload = {
-  issues: TIssueBase[];
   boardId: number;
   columnId: number;
   deletedIssueId: number;

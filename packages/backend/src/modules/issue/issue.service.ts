@@ -9,16 +9,12 @@ import type {
   TMoveParameters,
   TUpdateIssue,
 } from '@kanban-board/common';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { DataSource } from 'typeorm';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
+import type { TMaxOrderResult } from '@/libs/utilities/order.utility';
 import OrderUtility from '@/libs/utilities/order.utility';
 import ColumnEntity from '@/modules/column/libs/entities/column.entity';
 import ColumnMapper from '@/modules/column/libs/mappers/column.mapper';
@@ -60,21 +56,37 @@ export default class IssueService {
     const { boardId, columnId, title, description } = body;
     const { manager } = this.dataSource;
 
-    const isExists = await manager.exists(ColumnEntity, { where: { id: columnId, boardId } });
-    if (!isExists) throw new WsException(EXCEPTION_MESSAGES.createFailed);
+    return manager.transaction(async transactionalManager => {
+      const DATABASE_LOCK_ID = 1002;
+      // Блокируем доступ к базе данных для предотвращения одновременного создания нескольких задач.
+      await transactionalManager.query('SELECT pg_advisory_xact_lock($1, $2)', [
+        DATABASE_LOCK_ID,
+        columnId,
+      ]);
 
-    const issuesCount = await manager.count(IssueEntity, { where: { columnId } });
+      const isExists = await transactionalManager.exists(ColumnEntity, {
+        where: { id: columnId, boardId },
+      });
+      if (!isExists) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
-    const createdIssue = await manager.save(IssueEntity, {
-      title,
-      description: description ?? null,
-      order: OrderUtility.calculateOrderByIndex(issuesCount),
-      boardId,
-      columnId,
+      const result = await transactionalManager
+        .createQueryBuilder()
+        .select('MAX(issue.order)', 'maxOrder')
+        .from(IssueEntity, 'issue')
+        .where('issue.columnId = :columnId', { columnId })
+        .getRawOne<TMaxOrderResult>();
+
+      const createdIssue = await transactionalManager.save(IssueEntity, {
+        title,
+        description: description ?? null,
+        order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
+        boardId,
+        columnId,
+      });
+      if (!createdIssue) throw new WsException(EXCEPTION_MESSAGES.createFailed);
+
+      return this.issueMapper.toModel(createdIssue, { base: true });
     });
-    if (!createdIssue) throw new WsException(EXCEPTION_MESSAGES.createFailed);
-
-    return this.issueMapper.toModel(createdIssue, { base: true });
   }
 
   /**
@@ -166,42 +178,23 @@ export default class IssueService {
   /**
    * Удалить задачу.
    * @param issueId - id задачи.
-   * @returns ID удаленной задачи и массив базовых объектов задач после reorder.
+   * @returns ID удаленной задачи, ID доски и ID колонки.
    * **/
   public async deleteIssue(issueId: number): Promise<TDeleteIssueEmitPayload> {
-    if (!issueId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+    if (!issueId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
 
     const { manager } = this.dataSource;
 
-    return manager.transaction(async transactionalManager => {
-      const target = await transactionalManager.findOne(IssueEntity, { where: { id: issueId } });
-      if (!target) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+    const target = await manager.findOne(IssueEntity, { where: { id: issueId } });
+    if (!target) throw new WsException(EXCEPTION_MESSAGES.notFound);
 
-      const issues = await transactionalManager.find(IssueEntity, {
-        where: { columnId: target.columnId, boardId: target.boardId },
-        order: { order: 'ASC' },
-      });
+    const { affected } = await manager.delete(IssueEntity, { id: issueId });
+    if (!affected || affected <= 0) throw new WsException(EXCEPTION_MESSAGES.deleteFailed);
 
-      const { affected } = await transactionalManager.delete(IssueEntity, { id: issueId });
-      if (!affected || affected <= 0)
-        throw new InternalServerErrorException(EXCEPTION_MESSAGES.deleteFailed);
-
-      const withoutTarget = issues.filter(({ id }) => id !== issueId);
-      this.moveService.resetOrders(withoutTarget);
-
-      await transactionalManager.save(IssueEntity, withoutTarget);
-
-      const issuesAfterDeleting = await transactionalManager.find(IssueEntity, {
-        where: { columnId: target.columnId, boardId: target.boardId },
-        order: { order: 'ASC' },
-      });
-
-      return {
-        boardId: target.boardId,
-        columnId: target.columnId,
-        deletedIssueId: target.id,
-        issues: this.issueMapper.toModel(issuesAfterDeleting, { base: true }),
-      };
-    });
+    return {
+      boardId: target.boardId,
+      columnId: target.columnId,
+      deletedIssueId: target.id,
+    };
   }
 }
