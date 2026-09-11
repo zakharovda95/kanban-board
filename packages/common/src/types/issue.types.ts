@@ -26,7 +26,8 @@ export type TUpdateIssue = Pick<TIssueBase, 'id'> & Partial<Pick<TIssue, 'title'
 export type TMoveIssue = TMoveParameters & {
   boardId: number;
   fromColumnId: number;
-  toColumnId?: number;
+  /** Если null, то перемещение в рамках этой же колонки **/
+  toColumnId: number | null;
 };
 
 /** Ответ ack после создания/обновления задачи. **/

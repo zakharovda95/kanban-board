@@ -13,11 +13,11 @@ export default class IssueEntity extends MovableEntity {
   description: string | null;
 
   @Index()
-  @Column({ type: 'bigint' })
+  @Column({ type: 'int' })
   boardId: number;
 
   @Index()
-  @Column({ type: 'bigint' })
+  @Column({ type: 'int' })
   columnId: number;
 
   @ManyToOne(() => ColumnEntity, entity => entity.issues, { onDelete: 'CASCADE' })

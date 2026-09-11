@@ -17,7 +17,7 @@ export default class ColumnEntity extends MovableEntity {
   color: string;
 
   @Index()
-  @Column({ type: 'bigint' })
+  @Column({ type: 'int' })
   boardId: number;
 
   @ManyToOne(() => BoardEntity, entity => entity.columns, { onDelete: 'CASCADE' })

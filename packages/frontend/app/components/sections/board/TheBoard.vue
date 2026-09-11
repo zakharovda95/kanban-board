@@ -33,16 +33,26 @@
 
           <div class="size-full overflow-hidden pb-8">
             <OverlayScrollbarsComponent class="size-full h-[calc(100vh-348px)]" :options="scrollbarOptionsColumn">
-              <div class="flex w-full flex-col items-center gap-8 px-8">
-                <IssueCard
-                  v-for="issue in column.issues"
-                  :key="issue.id"
-                  :issue="issue"
-                  :color="column.color"
-                  @update:issue="emit('update:issue', $event)"
-                  @delete:issue="emit('delete:issue', $event)"
-                />
-              </div>
+              <draggable
+                v-model="column.issues"
+                class="flex min-h-full w-full flex-col items-center gap-8 px-8"
+                item-key="id"
+                group="board-issues"
+                ghost-class="drag-ghost"
+                :animation="200"
+                :disabled="isLoading"
+                @start="emit('take:snapshot')"
+                @change="onIssueChange($event, column)"
+              >
+                <template #item="{ element: issue }">
+                  <IssueCard
+                    :issue="issue"
+                    :color="column.color"
+                    @update:issue="emit('update:issue', $event)"
+                    @delete:issue="emit('delete:issue', $event)"
+                  />
+                </template>
+              </draggable>
             </OverlayScrollbarsComponent>
           </div>
         </article>
@@ -52,16 +62,25 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  TBoard,
-  TColumn,
-  TColumnBase,
-  TDeleteColumnEmitPayload,
-  TDeleteIssueEmitPayload,
-  TIssueBase,
-  TMoveColumnEmitPayload,
+import draggable from 'vuedraggable';
+import {
+  EIssueEvent,
+  getErrorMessage,
+  type TBoard,
+  type TColumn,
+  type TColumnBase,
+  type TDeleteColumnEmitPayload,
+  type TDeleteIssueEmitPayload,
+  type TIssueBase,
+  type TMoveColumnEmitPayload,
+  type TMoveIssue,
+  type TMoveIssueEmitPayload,
+  type TMoveIssueResponse,
 } from '@kanban-board/common';
 import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
+
+import { useSocket } from '~/composables/use-socket.composable.ts';
+import type { TDragChangeDetails } from '~/types/shared.types.ts';
 
 import BoardFilter from '~/components/sections/board/BoardFilter.vue';
 import AddColumnButton from '~/components/sections/column/AddColumnButton.vue';
@@ -70,7 +89,7 @@ import ColumnInfo from '~/components/sections/column/ColumnInfo.vue';
 import ColumnTopPanel from '~/components/sections/column/ColumnTopPanel.vue';
 import IssueCard from '~/components/sections/issue/IssueCard.vue';
 
-defineProps<{ board: TBoard }>();
+const props = defineProps<{ board: TBoard }>();
 
 const emit = defineEmits<{
   'add:column': [payload: TColumn];
@@ -80,7 +99,54 @@ const emit = defineEmits<{
   'add:issue': [payload: TIssueBase];
   'update:issue': [payload: TIssueBase];
   'delete:issue': [payload: TDeleteIssueEmitPayload];
+  'move:issue': [payload: TMoveIssueEmitPayload];
+  'take:snapshot': [];
+  'restore:snapshot': [];
+  'delete:snapshot': [];
 }>();
+
+const toast = useToast();
+const { emitEvent, isLoading } = useSocket();
+
+const onIssueChange = (details: TDragChangeDetails<TIssueBase>, column: TColumn) => {
+  // При переносе между колонками removed игнорируем, запрос шлём только с added/moved.
+  if (details.removed || (!details.added && !details.moved)) return;
+
+  const change = details.added ?? details.moved;
+  if (!change) return;
+
+  const { element, newIndex } = change;
+  const fromColumnId = element.columnId;
+  const toColumnId = column.id;
+
+  if (details.added) element.columnId = toColumnId;
+
+  const body: TMoveIssue = {
+    boardId: props.board.id,
+    targetId: element.id,
+    previousId: column.issues[newIndex - 1]?.id ?? null,
+    fromColumnId,
+    toColumnId: fromColumnId !== toColumnId ? toColumnId : null,
+  };
+
+  console.log(body);
+
+  emitEvent<TMoveIssue, TMoveIssueResponse>({
+    event: EIssueEvent.MOVE,
+    data: body,
+    successCallback: (response: TMoveIssueResponse) => {
+      if (response.isSuccess && response.data) {
+        toast.success({ message: 'Задача перемещена' });
+        emit('move:issue', response.data);
+        emit('delete:snapshot');
+      }
+    },
+    errorCallback: (error: unknown) => {
+      toast.error({ message: getErrorMessage(error) });
+      emit('restore:snapshot');
+    },
+  });
+};
 
 const scrollbarOptionsBoard: OverlayScrollbarsComponentProps['options'] = {
   overflow: { y: 'hidden' },

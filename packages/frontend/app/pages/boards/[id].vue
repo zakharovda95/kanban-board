@@ -15,6 +15,10 @@
         @add:issue="addIssue"
         @update:issue="updateIssue"
         @delete:issue="deleteIssue"
+        @move:issue="moveIssue"
+        @take:snapshot="takeSnapshot"
+        @restore:snapshot="restoreSnapshot"
+        @delete:snapshot="deleteSnapshot"
       />
       <TheBoardMobile
         v-else
@@ -43,8 +47,9 @@ import {
   type TDeleteIssueEmitPayload,
   type TIssueBase,
   type TMoveColumnEmitPayload,
+  type TMoveIssueEmitPayload,
 } from '@kanban-board/common';
-import { orderBy } from 'lodash';
+import { cloneDeep, orderBy } from 'lodash';
 
 import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
@@ -66,6 +71,7 @@ const boardId = computed(() => Number(route.params.id));
 const isLaptop = useIsLaptop();
 
 const errorMessage = ref<string | null>(null);
+const snapshot = ref<TColumn[] | null>(null);
 
 const { data, pending, error, refresh } = await useFetch<TBoard>(`/api/boards/${boardId.value}`, { deep: true });
 
@@ -141,6 +147,21 @@ const stopListenColumnMoved = listen(EColumnEvent.MOVED, async (payload: TMoveCo
   }
 });
 
+const takeSnapshot = () => {
+  if (!data.value) return;
+  snapshot.value = cloneDeep(toRaw(data.value.columns));
+};
+
+const deleteSnapshot = () => {
+  snapshot.value = null;
+};
+
+const restoreSnapshot = () => {
+  if (!snapshot.value || !data.value) return;
+  data.value.columns = snapshot.value;
+  deleteSnapshot();
+};
+
 const addIssue = (issue: TIssueBase) => {
   if (!issue || !data.value) return;
 
@@ -165,6 +186,34 @@ const deleteIssue = (payload: TDeleteIssueEmitPayload) => {
   if (targetColumn) targetColumn.issues = targetColumn.issues.filter(({ id }) => id !== payload.deletedIssueId);
 };
 
+const moveIssue = async (moveResult: TMoveIssueEmitPayload) => {
+  if (!moveResult || !data.value) return;
+
+  // если не передан объект перемещенной задачи, значит был reorder и нужно сделать refetch
+  if (!moveResult.movedIssue) {
+    await refresh();
+    return;
+  }
+
+  const { columnIdFrom, columnIdTo, movedIssue } = moveResult;
+
+  // если перемещение было в другую колонку - удаляем из текущей колонки перемещенную задачу
+  if (columnIdFrom !== columnIdTo) {
+    const fromColumn = data.value.columns.find(({ id }) => id === columnIdFrom);
+    if (fromColumn) fromColumn.issues = fromColumn.issues.filter(({ id }) => id !== movedIssue.id);
+  }
+
+  const toColumn = data.value.columns.find(({ id }) => id === columnIdTo);
+  if (!toColumn) return;
+
+  // вставляем перемещенную задачу в целевую колонку, сортируем по order
+  const targetIndex = toColumn.issues.findIndex(({ id }) => id === movedIssue.id);
+  if (targetIndex !== -1) toColumn.issues.splice(targetIndex, 1, movedIssue);
+  else toColumn.issues.push(movedIssue);
+
+  toColumn.issues = orderBy(toColumn.issues, ['order'], 'asc');
+};
+
 const stopListenIssueCreated = listen(EIssueEvent.CREATED, (issue: TIssueBase) => {
   addIssue(issue);
   toast.info({ message: `Добавлена новая задача «${issue.title}»` });
@@ -187,6 +236,20 @@ const stopListenIssueDeleted = listen(EIssueEvent.DELETED, (payload: TDeleteIssu
   });
 });
 
+const stopListenIssueMoved = listen(EIssueEvent.MOVED, async (payload: TMoveIssueEmitPayload) => {
+  if (!payload.movedIssueId) return;
+
+  await moveIssue(payload);
+
+  const movedIssue = data.value?.columns
+    ?.flatMap(column => column.issues)
+    .find(({ id }) => id === payload.movedIssueId);
+
+  toast.info({
+    message: movedIssue ? `Задача «${movedIssue.title}» была перемещена` : 'Задача была перемещена',
+  });
+});
+
 onMounted(() => {
   $socket.emit(EBoardEvent.JOIN, boardId.value);
 });
@@ -200,6 +263,7 @@ onBeforeUnmount(() => {
   stopListenIssueCreated();
   stopListenIssueUpdated();
   stopListenIssueDeleted();
+  stopListenIssueMoved();
 
   $socket.emit(EBoardEvent.LEAVE, boardId.value);
 });

@@ -69,7 +69,7 @@ import {
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { useBoardsStore } from '~/stores/boards.store.ts';
-import type { TMovedDetails } from '~/types/shared.types.ts';
+import type { TDragChangeDetails } from '~/types/shared.types.ts';
 
 import AddBoardButton from '~/components/sections/board/AddBoardButton.vue';
 import BoardActionsButtons from '~/components/sections/board/BoardActionsButtons.vue';
@@ -93,7 +93,9 @@ const onClickBoard = (id: number) => {
   emit('click:board');
 };
 
-const onBoardMove = (details: TMovedDetails<TBoardBase>) => {
+const onBoardMove = (details: TDragChangeDetails<TBoardBase>) => {
+  if (!details.moved) return;
+
   const targetId = details.moved.element.id;
   const targetNewIndex = details.moved.newIndex;
   const previousId = boardsStore.boards[targetNewIndex - 1]?.id ?? null;

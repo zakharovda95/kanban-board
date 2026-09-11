@@ -19,8 +19,17 @@ export type TActionButtonData = {
   disabled: boolean;
 };
 
-export type TMovedDetails<T> = {
-  moved: {
+/** Нагрузка события change у vuedraggable. **/
+export type TDragChangeDetails<T> = {
+  added?: {
+    element: T;
+    newIndex: number;
+  };
+  removed?: {
+    element: T;
+    oldIndex: number;
+  };
+  moved?: {
     element: T;
     oldIndex: number;
     newIndex: number;
