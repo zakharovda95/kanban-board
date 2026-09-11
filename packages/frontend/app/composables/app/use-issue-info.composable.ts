@@ -6,7 +6,8 @@ export function useIssueInfo(issue: Ref<TIssue> | Ref<TIssueBase>) {
   const runtimeConfig = useRuntimeConfig();
   const { copy } = useClipboard();
   const toast = useToast();
-  const route = useRoute();
+
+  const issueString = computed(() => `task-${issue.value.id}`);
 
   const getDaysPassedSince = (date: Date) => {
     const daysLeft = DatetimeUtility.getDaysPassedSince(date);
@@ -16,20 +17,12 @@ export function useIssueInfo(issue: Ref<TIssue> | Ref<TIssueBase>) {
     return `${daysLeft} ${StringUtility.pluralize(daysLeft, ['день', 'дня', 'дней'])}`;
   };
 
-  const issueString = computed(() => `task-${issue.value.id}`);
   const daysPassedSinceCreation = computed(() => getDaysPassedSince(issue.value.createdAt));
 
   const isIssueDetails = Object.hasOwn(issue.value, 'updatedAt');
   const daysPassedSinceUpdating = computed(() =>
     isIssueDetails ? getDaysPassedSince((issue.value as TIssue).updatedAt) : null,
   );
-
-  const issueIdFromQuery = computed(() => {
-    if (!route.query?.issue) return null;
-    const queryId = String(route.query.issue).split('-')?.[1];
-    if (!queryId) return null;
-    return Number(queryId);
-  });
 
   const copyIssueId = async () => {
     await copy(issueString.value);
@@ -50,7 +43,6 @@ export function useIssueInfo(issue: Ref<TIssue> | Ref<TIssueBase>) {
     issueString,
     daysPassedSinceCreation,
     daysPassedSinceUpdating,
-    issueIdFromQuery,
     copyIssueId,
     copyIssueTitle,
     copyIssueLink,

@@ -54,6 +54,7 @@ export default defineNuxtConfig({
     '~/assets/styles/fonts.css',
     'vue-final-modal/style.css',
     'overlayscrollbars/styles/overlayscrollbars.css',
+    'vue-multiselect/dist/vue-multiselect.min.css',
   ],
 
   vite: {

@@ -37,11 +37,16 @@ export type TSize = 'small' | 'medium' | 'large';
 
 export type TImageMimeType = 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp' | string;
 
-export interface IUIImageUploaderData {
+export type TUIImageUploaderData = {
   src: string | null;
   type: TImageMimeType | null;
-}
+};
 
-export interface IUIImageUploaderFile {
+export type TUIImageUploaderFile = {
   file: File | null;
-}
+};
+
+export type TUISelectOption = {
+  id: number;
+  label: string;
+};

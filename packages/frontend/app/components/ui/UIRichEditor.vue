@@ -143,7 +143,7 @@ import { StarterKit } from '@tiptap/starter-kit';
 import { EditorContent, useEditor } from '@tiptap/vue-3';
 import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
 
-import type { IUIImageUploaderFile } from '~/types/ui.types';
+import type { TUIImageUploaderFile } from '~/types/ui.types';
 import { ImageUtility } from '~/utilities/image.utility.ts';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
@@ -329,7 +329,7 @@ const canInsertImage = (file: File): boolean => {
   return true;
 };
 
-const uploadImage = async ({ file }: IUIImageUploaderFile): Promise<void> => {
+const uploadImage = async ({ file }: TUIImageUploaderFile): Promise<void> => {
   if (!file || !editor.value || props.disabled || !canInsertImage(file)) return;
   const src = await ImageUtility.readImageAsDataUrl(file);
   editor.value.chain().focus().setImage({ src }).run();

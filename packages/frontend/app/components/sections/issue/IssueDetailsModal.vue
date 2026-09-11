@@ -84,6 +84,15 @@
           :days-passed-since-updating="daysPassedSinceUpdating"
         />
 
+        <UILabel text="Этап" required>
+          <UISelect
+            v-if="currentStage && stages.length"
+            v-model="currentStage"
+            placeholder="Выберите значение"
+            :options="stages"
+          />
+        </UILabel>
+
         <div class="flex flex-col gap-8">
           <UIButton
             full
@@ -128,6 +137,7 @@ import {
   type TDeleteIssueResponse,
   type TIssue,
   type TIssueBase,
+  type TMoveIssue,
   type TUpdateIssue,
   type TUpsertIssueResponse,
 } from '@kanban-board/common';
@@ -137,6 +147,7 @@ import { useIssueInfo } from '~/composables/app/use-issue-info.composable.ts';
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
+import type { TUISelectOption } from '~/types/ui.types.ts';
 
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
@@ -151,16 +162,32 @@ const isOpen = defineModel<boolean>('isOpen', { required: true });
 
 const props = defineProps<{
   issue: TIssue;
+  stages: TUISelectOption[];
 }>();
 
 const emit = defineEmits<{
   'update:issue': [payload: TIssueBase];
   'delete:issue': [payload: TDeleteIssueEmitPayload];
+  'change:stage': [payload: TMoveIssue];
 }>();
 
 const { issue } = toRefs(props);
 
 const toast = useToast();
+
+const currentStage = computed({
+  get: () => props.stages?.find(({ id }) => id === props.issue.columnId) ?? props.stages?.[0],
+  set: (option: TUISelectOption) => {
+    const payload: TMoveIssue = {
+      targetId: props.issue.id,
+      previousId: null,
+      boardId: props.issue.boardId,
+      fromColumnId: props.issue.columnId,
+      toColumnId: option.id,
+    };
+    emit('change:stage', payload);
+  },
+});
 
 const scrollbarOptions: OverlayScrollbarsComponentProps['options'] = {
   overflow: { x: 'hidden' },

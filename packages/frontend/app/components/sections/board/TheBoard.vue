@@ -48,8 +48,8 @@
                   <IssueCard
                     :issue="issue"
                     :color="column.color"
-                    @update:issue="emit('update:issue', $event)"
-                    @delete:issue="emit('delete:issue', $event)"
+                    :is-loading="isLoadingIssueDetails && selectedIssueId === issue.id"
+                    @open:details="openIssueDetails"
                   />
                 </template>
               </draggable>
@@ -58,6 +58,17 @@
         </article>
       </div>
     </OverlayScrollbarsComponent>
+
+    <IssueDetailsModal
+      v-if="issueDetails"
+      :is-open="isModalOpen"
+      :issue="issueDetails"
+      :stages="stages"
+      @update:is-open="onModalOpenChange"
+      @update:issue="updateIssue"
+      @delete:issue="onDeleteIssue"
+      @change:stage="emitMove"
+    />
   </div>
 </template>
 
@@ -71,6 +82,7 @@ import {
   type TColumnBase,
   type TDeleteColumnEmitPayload,
   type TDeleteIssueEmitPayload,
+  type TIssue,
   type TIssueBase,
   type TMoveColumnEmitPayload,
   type TMoveIssue,
@@ -80,7 +92,9 @@ import {
 import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
+import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import type { TDragChangeDetails } from '~/types/shared.types.ts';
+import type { TUISelectOption } from '~/types/ui.types.ts';
 
 import BoardFilter from '~/components/sections/board/BoardFilter.vue';
 import AddColumnButton from '~/components/sections/column/AddColumnButton.vue';
@@ -88,6 +102,7 @@ import ColumnActionsButtons from '~/components/sections/column/ColumnActionsButt
 import ColumnInfo from '~/components/sections/column/ColumnInfo.vue';
 import ColumnTopPanel from '~/components/sections/column/ColumnTopPanel.vue';
 import IssueCard from '~/components/sections/issue/IssueCard.vue';
+import IssueDetailsModal from '~/components/sections/issue/IssueDetailsModal.vue';
 
 const props = defineProps<{ board: TBoard }>();
 
@@ -106,7 +121,83 @@ const emit = defineEmits<{
 }>();
 
 const toast = useToast();
-const { emitEvent, isLoading } = useSocket();
+const router = useRouter();
+const route = useRoute();
+const { emitEvent, listen, isLoading } = useSocket();
+
+const stages = computed<TUISelectOption[]>(() => props.board.columns.map(({ id, title }) => ({ id, label: title })));
+
+const issueIdFromQuery = computed(() => {
+  if (!route.query?.issue) return null;
+  const queryId = String(route.query.issue).split('-')?.[1];
+  if (!queryId) return null;
+  return Number(queryId);
+});
+
+const selectedIssueId = ref<number | null>(issueIdFromQuery.value);
+const isModalOpen = ref(!!issueIdFromQuery.value);
+
+const {
+  data: issueDetails,
+  isLoading: isLoadingIssueDetails,
+  call: fetchIssueDetails,
+} = useTryCatchFinally({
+  callback: async () => {
+    if (!selectedIssueId.value) return null;
+    return $fetch<TIssue>(`/api/issues/${selectedIssueId.value}`, { method: 'GET' });
+  },
+  catchCallback: (error: unknown) => toast.error({ message: getErrorMessage(error) }),
+  callOnInit: !!issueIdFromQuery.value,
+});
+
+let stopListen: (() => void) | null = null;
+
+// Если у кого-то открыта детальная задачи, и в это время были внесены изменения - реактивный апдейт задачи.
+const subscribeToIssueUpdates = () => {
+  if (stopListen) stopListen();
+
+  stopListen = listen(EIssueEvent.UPDATED, (updatedIssue: TIssueBase) => {
+    if (updatedIssue.id === selectedIssueId.value) fetchIssueDetails();
+  });
+};
+
+if (issueIdFromQuery.value) subscribeToIssueUpdates();
+
+const openIssueDetails = async (issue: TIssueBase) => {
+  if (isLoadingIssueDetails.value) return;
+
+  selectedIssueId.value = issue.id;
+  await fetchIssueDetails();
+
+  isModalOpen.value = true;
+  router.replace({ query: { ...route.query, issue: `task-${issue.id}` } });
+  subscribeToIssueUpdates();
+};
+
+const closeIssueDetails = () => {
+  isModalOpen.value = false;
+  selectedIssueId.value = null;
+  router.replace({ query: { ...route.query, issue: undefined } });
+
+  if (stopListen) {
+    stopListen();
+    stopListen = null;
+  }
+};
+
+const onModalOpenChange = (isOpen: boolean) => {
+  if (!isOpen) closeIssueDetails();
+};
+
+const updateIssue = (issue: TIssueBase) => {
+  fetchIssueDetails();
+  emit('update:issue', issue);
+};
+
+const onDeleteIssue = (payload: TDeleteIssueEmitPayload) => {
+  emit('delete:issue', payload);
+  closeIssueDetails();
+};
 
 const onIssueChange = (details: TDragChangeDetails<TIssueBase>, column: TColumn) => {
   // При переносе между колонками removed игнорируем, запрос шлём только с added/moved.
@@ -129,8 +220,10 @@ const onIssueChange = (details: TDragChangeDetails<TIssueBase>, column: TColumn)
     toColumnId: fromColumnId !== toColumnId ? toColumnId : null,
   };
 
-  console.log(body);
+  emitMove(body);
+};
 
+const emitMove = (body: TMoveIssue) => {
   emitEvent<TMoveIssue, TMoveIssueResponse>({
     event: EIssueEvent.MOVE,
     data: body,
@@ -138,6 +231,12 @@ const onIssueChange = (details: TDragChangeDetails<TIssueBase>, column: TColumn)
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Задача перемещена' });
         emit('move:issue', response.data);
+
+        const movedIssue = response.data.movedIssue;
+        if (movedIssue && issueDetails.value?.id === movedIssue.id) {
+          issueDetails.value = { ...issueDetails.value, columnId: movedIssue.columnId };
+        }
+
         emit('delete:snapshot');
       }
     },
@@ -165,4 +264,8 @@ const scrollbarOptionsColumn: OverlayScrollbarsComponentProps['options'] = {
     theme: 'os-theme-column',
   },
 };
+
+onBeforeUnmount(() => {
+  if (stopListen) stopListen();
+});
 </script>

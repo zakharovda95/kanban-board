@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IUIImageUploaderData, IUIImageUploaderFile } from '~/types/ui.types';
+import type { TUIImageUploaderData, TUIImageUploaderFile } from '~/types/ui.types';
 import { ImageUtility } from '~/utilities/image.utility';
 
 const slots = useSlots();
@@ -33,8 +33,8 @@ withDefaults(
 );
 
 const emit = defineEmits<{
-  'update:data': [value: IUIImageUploaderData];
-  'update:file': [value: IUIImageUploaderFile];
+  'update:data': [value: TUIImageUploaderData];
+  'update:file': [value: TUIImageUploaderFile];
 }>();
 
 const input = useTemplateRef('input');
