@@ -42,7 +42,7 @@
 import { ColorUtility, EColor, type TIssueBase } from '@kanban-board/common';
 
 import { useIssueInfo } from '~/composables/app/use-issue-info.composable';
-import { ACTIONS_BUTTONS_DATA } from '~/constants/shared.constants.ts';
+import { ACTIONS_BUTTONS_DATA } from '~/constants/actions-buttons.constants.ts';
 import { EIconSizeSmall } from '~/enums/global.enums';
 import type { TActionButtonData } from '~/types/shared.types.ts';
 

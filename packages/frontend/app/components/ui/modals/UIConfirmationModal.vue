@@ -18,8 +18,6 @@
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import { ACTION_BUTTON_LABEL } from '~/constants/ui.constants';
-
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
 
@@ -34,7 +32,7 @@ withDefaults(
   }>(),
   {
     title: null,
-    actionButtonLabel: ACTION_BUTTON_LABEL,
+    actionButtonLabel: 'Применить',
     disabled: false,
   },
 );

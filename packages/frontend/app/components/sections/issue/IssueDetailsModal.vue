@@ -115,7 +115,7 @@
         <UIConfirmationModal
           v-model:is-open="isOpenDeleteModal"
           title="Удалить задачу?"
-          :text="CONFIRMATION_MODAL_TEXT"
+          text="Восстановить данные будет невозможно!"
           action-button-label="Да, удалить задачу"
           :disabled="isLoadingDelete"
           @click:confirm="deleteIssue"
@@ -146,7 +146,6 @@ import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from
 import { useIssueInfo } from '~/composables/app/use-issue-info.composable.ts';
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
 import type { TUISelectOption } from '~/types/ui.types.ts';
 
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
@@ -157,6 +156,7 @@ import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue'
 import UIModal from '~/components/ui/modals/UIModal.vue';
 import UILabel from '~/components/ui/UILabel.vue';
 import UIRichEditor from '~/components/ui/UIRichEditor.vue';
+import UISelect from '~/components/ui/UISelect.vue';
 
 const isOpen = defineModel<boolean>('isOpen', { required: true });
 

@@ -39,7 +39,6 @@
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import { ACTION_BUTTON_LABEL } from '~/constants/ui.constants';
 import type { TSize, TUIFormButtonsPosition } from '~/types/ui.types.ts';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
@@ -57,7 +56,7 @@ const props = withDefaults(
   }>(),
   {
     title: null,
-    actionButtonLabel: ACTION_BUTTON_LABEL,
+    actionButtonLabel: 'Применить',
     buttonsSize: 'medium',
     buttonsPosition: 'column',
     full: false,

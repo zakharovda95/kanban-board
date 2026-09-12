@@ -43,7 +43,6 @@
 <script setup lang="ts">
 import type { TValidationErrors } from '@kanban-board/common';
 
-import { ACTION_BUTTON_LABEL } from '~/constants/ui.constants';
 import type { TUpsertFormData } from '~/types/shared.types';
 import type { TUIFormButtonsPosition } from '~/types/ui.types.ts';
 
@@ -75,7 +74,7 @@ const props = withDefaults(
     disabled: false,
     titleMaxlength: null,
     descriptionMaxlength: null,
-    actionButtonLabel: ACTION_BUTTON_LABEL,
+    actionButtonLabel: 'Применить',
     showColorPicker: false,
     descriptionComponent: 'input',
     buttonsPosition: 'column',

@@ -135,7 +135,7 @@ const issueIdFromQuery = computed(() => {
 });
 
 const selectedIssueId = ref<number | null>(issueIdFromQuery.value);
-const isModalOpen = ref(!!issueIdFromQuery.value);
+const isModalOpen = ref(Boolean(issueIdFromQuery.value));
 
 const {
   data: issueDetails,
@@ -147,7 +147,7 @@ const {
     return $fetch<TIssue>(`/api/issues/${selectedIssueId.value}`, { method: 'GET' });
   },
   catchCallback: (error: unknown) => toast.error({ message: getErrorMessage(error) }),
-  callOnInit: !!issueIdFromQuery.value,
+  callOnInit: Boolean(issueIdFromQuery.value),
 });
 
 let stopListen: (() => void) | null = null;

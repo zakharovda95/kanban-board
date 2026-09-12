@@ -22,7 +22,7 @@
     <UIConfirmationModal
       :is-open="isDeleteModalOpen"
       title="Удалить доску?"
-      :text="CONFIRMATION_MODAL_TEXT"
+      text="Восстановить данные будет невозможно!"
       action-button-label="Да, удалить доску"
       :disabled="isLoadingDelete"
       @update:is-open="closeModal"
@@ -47,8 +47,7 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { ACTIONS_BUTTONS_DATA } from '~/constants/shared.constants.ts';
-import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
+import { ACTIONS_BUTTONS_DATA } from '~/constants/actions-buttons.constants.ts';
 import { useBoardsStore } from '~/stores/boards.store.ts';
 import type { TActionButtonData, TUpsertFormData } from '~/types/shared.types.ts';
 

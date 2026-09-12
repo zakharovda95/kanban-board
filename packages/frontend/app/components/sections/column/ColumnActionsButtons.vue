@@ -21,7 +21,7 @@
     <UIConfirmationModal
       :is-open="isDeleteModalOpen"
       title="Удалить колонку?"
-      :text="CONFIRMATION_MODAL_TEXT"
+      text="Восстановить данные будет невозможно!"
       action-button-label="Да, удалить колонку"
       :disabled="isLoadingDelete"
       @click:confirm="deleteColumn"
@@ -51,8 +51,7 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
-import { ACTIONS_BUTTONS_DATA } from '~/constants/shared.constants.ts';
-import { CONFIRMATION_MODAL_TEXT } from '~/constants/ui.constants.ts';
+import { ACTIONS_BUTTONS_DATA } from '~/constants/actions-buttons.constants.ts';
 import type { TActionButtonData, TUpsertFormData } from '~/types/shared.types.ts';
 
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
