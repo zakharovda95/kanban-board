@@ -23,7 +23,7 @@
           class="bg-light-100 absolute right-0 bottom-0 left-0 z-0 h-[calc(100vh-148px)] w-full overflow-hidden p-12"
         >
           <div class="bg-light-base rounded-12 size-full p-12">
-            <div v-if="board.columns.length" class="hide-scrollbar flex size-full flex-col gap-8 overflow-y-auto">
+            <div v-if="board?.columns.length" class="hide-scrollbar flex size-full flex-col gap-8 overflow-y-auto">
               <div
                 v-for="column in board.columns"
                 :key="column.id"
@@ -34,13 +34,7 @@
                 <div class="flex size-10 shrink-0 rounded-full" :style="{ backgroundColor: column.color }" />
                 <ColumnInfo :column="column" class="w-[calc(100%-60px)]" />
                 <StopPreventWrapper>
-                  <ColumnActionsButtons
-                    :column-id="column.id"
-                    :columns="board.columns"
-                    @update:column="emit('update:column', $event)"
-                    @delete:column="deleteColumn"
-                    @move:column="emit('move:column', $event)"
-                  />
+                  <ColumnActionsButtons :column-id="column.id" />
                 </StopPreventWrapper>
               </div>
             </div>
@@ -51,11 +45,11 @@
         </div>
       </Transition>
 
-      <AddColumnButton @add:column="emit('add:column', $event)" />
+      <AddColumnButton />
     </div>
 
     <div v-if="selectedColumn" class="flex flex-col items-center justify-start gap-12">
-      <ColumnTopPanel :column="selectedColumn" @add:issue="emit('add:issue', $event)" />
+      <ColumnTopPanel :column="selectedColumn" />
 
       <div class="hide-scrollbar h-[calc(100vh-208px)] w-full overflow-y-auto">
         <div v-if="selectedColumn.issues.length" class="flex flex-col items-center justify-start gap-8">
@@ -64,8 +58,6 @@
             :key="issue.id"
             :issue="issue"
             :color="selectedColumn.color"
-            @update:issue="emit('update:issue', $event)"
-            @delete:issue="emit('delete:issue', $event)"
           />
         </div>
         <div v-else class="flex size-full items-center justify-center">
@@ -77,15 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  TBoard,
-  TColumn,
-  TColumnBase,
-  TDeleteColumnEmitPayload,
-  TDeleteIssueEmitPayload,
-  TIssueBase,
-  TMoveColumnEmitPayload,
-} from '@kanban-board/common';
+import { useBoardStore } from '~/stores/board.store.ts';
 
 import AddColumnButton from '~/components/sections/column/AddColumnButton.vue';
 import ColumnActionsButtons from '~/components/sections/column/ColumnActionsButtons.vue';
@@ -94,32 +78,22 @@ import ColumnTopPanel from '~/components/sections/column/ColumnTopPanel.vue';
 import IssueCard from '~/components/sections/issue/IssueCard.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
 
-const props = defineProps<{ board: TBoard }>();
-
-const emit = defineEmits<{
-  'add:column': [payload: TColumn];
-  'update:column': [payload: TColumnBase];
-  'delete:column': [payload: TDeleteColumnEmitPayload];
-  'move:column': [payload: TMoveColumnEmitPayload];
-  'add:issue': [payload: TIssueBase];
-  'update:issue': [payload: TIssueBase];
-  'delete:issue': [payload: TDeleteIssueEmitPayload];
-}>();
-
+const boardStore = useBoardStore();
+const board = computed(() => boardStore.board);
 const toast = useToast();
 
 const isColumnsMenuOpen = ref(false);
-const selectedColumnId = ref<number | null>(props.board.columns[0]?.id ?? null);
+const selectedColumnId = ref<number | null>(board.value?.columns[0]?.id ?? null);
 
 const selectedColumn = computed(() => {
-  if (!props.board.columns.length) return null;
-  return props.board.columns.find(({ id }) => id === selectedColumnId.value) ?? props.board.columns[0] ?? null;
+  if (!board.value?.columns.length) return null;
+  return board.value.columns.find(({ id }) => id === selectedColumnId.value) ?? board.value.columns[0] ?? null;
 });
 
 const selectColumn = (columnId: number) => {
   if (!columnId || columnId <= 0) return;
 
-  const exists = props.board.columns.some(({ id }) => id === columnId);
+  const exists = board.value?.columns.some(({ id }) => id === columnId);
   if (!exists) {
     toast.error({ message: 'Колонка не найдена' });
     return;
@@ -132,10 +106,5 @@ const selectColumn = (columnId: number) => {
 const toggleColumnsMenu = () => {
   if (!selectedColumn.value) return;
   isColumnsMenuOpen.value = !isColumnsMenuOpen.value;
-};
-
-const deleteColumn = (payload: TDeleteColumnEmitPayload) => {
-  emit('delete:column', payload);
-  isColumnsMenuOpen.value = false;
 };
 </script>

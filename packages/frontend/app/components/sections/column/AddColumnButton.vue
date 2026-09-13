@@ -31,7 +31,6 @@ import {
   EColumnEvent,
   getErrorMessage,
   isValidationError,
-  type TColumn,
   type TCreateColumn,
   type TCreateColumnResponse,
   type TValidationErrors,
@@ -40,15 +39,14 @@ import {
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
+import { useBoardStore } from '~/stores/board.store.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 
-const emit = defineEmits<{
-  'add:column': [column: TColumn];
-}>();
+const boardStore = useBoardStore();
 
 const route = useRoute();
 const toast = useToast();
@@ -77,7 +75,7 @@ const createBoard = () => {
     successCallback: (response: TCreateColumnResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Колонка создана' });
-        emit('add:column', response.data);
+        boardStore.addColumn(response.data);
         closeModal();
       }
     },

@@ -22,8 +22,8 @@ export const useBoardsStore = defineStore('boards-store', () => {
   const currentBoardId = computed(() => Number(route.params.id));
 
   const { call: fetchBoards } = useTryCatchFinally({
-    callback: async (withLoader: boolean = true) => {
-      if (withLoader) isLoadingBoards.value = true;
+    callback: async () => {
+      if (!boards.value?.length) isLoadingBoards.value = true;
       boards.value = await $fetch<TBoardBase[]>('/api/boards', { method: 'GET' });
     },
     finallyCallback: () => {
@@ -43,14 +43,14 @@ export const useBoardsStore = defineStore('boards-store', () => {
 
   const deleteBoard = ({ deletedBoardId }: TDeleteBoardEmitPayload) => {
     if (!deletedBoardId) return;
-    boards.value = boards.value.filter(({ id }: TBoardBase) => id !== deletedBoardId);
     if (deletedBoardId === currentBoardId.value) navigateTo(`/boards`);
+    boards.value = boards.value.filter(({ id }: TBoardBase) => id !== deletedBoardId);
   };
 
   const moveBoard = async (moveResult: TMoveBoardEmitPayload) => {
     // если не передан объект перемещенной доски, значит был reorder всех досок и нужно сделать refetch
     if (!moveResult.movedBoard) {
-      await fetchBoards(false);
+      await fetchBoards();
       return;
     }
     replaceBoard(moveResult.movedBoard);

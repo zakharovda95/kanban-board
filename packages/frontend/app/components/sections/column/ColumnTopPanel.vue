@@ -7,22 +7,18 @@
       <UIBadge :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_800"> WIP ∞ </UIBadge>
     </div>
 
-    <AddIssueButton :column-id="column.id" @add:issue="emit('add:issue', $event)" />
+    <AddIssueButton :column-id="column.id" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { EColor, StringUtility, type TColumn, type TIssueBase } from '@kanban-board/common';
+import { EColor, StringUtility, type TColumn } from '@kanban-board/common';
 
 import AddIssueButton from '~/components/sections/issue/AddIssueButton.vue';
 import UIBadge from '~/components/ui/UIBadge.vue';
 
 const props = defineProps<{
   column: TColumn;
-}>();
-
-const emit = defineEmits<{
-  'add:issue': [payload: TIssueBase];
 }>();
 
 const computedIssuesLength = computed(() => {

@@ -1,10 +1,10 @@
 <template>
   <div class="flex size-full flex-col items-center gap-12 p-12">
-    <BoardFilter @add:column="emit('add:column', $event)" />
+    <BoardFilter />
 
-    <div v-if="!board.columns.length" class="flex size-full flex-col items-center justify-center gap-8 p-12">
+    <div v-if="!board?.columns.length" class="flex size-full flex-col items-center justify-center gap-8 p-12">
       <p class="text-14 font-medium">Для начала работы необходимо добавить колонку.</p>
-      <AddColumnButton @add:column="emit('add:column', $event)" />
+      <AddColumnButton />
     </div>
     <OverlayScrollbarsComponent v-else class="w-[calc(100vw-304px)]" :options="scrollbarOptionsBoard">
       <div class="flex h-full flex-1 flex-row gap-12">
@@ -19,17 +19,11 @@
           >
             <div class="flex size-full items-center justify-between">
               <ColumnInfo :column="column" class="w-[calc(100%-32px)]" />
-              <ColumnActionsButtons
-                :column-id="column.id"
-                :columns="board.columns"
-                @update:column="emit('update:column', $event)"
-                @delete:column="emit('delete:column', $event)"
-                @move:column="emit('move:column', $event)"
-              />
+              <ColumnActionsButtons :column-id="column.id" />
             </div>
           </header>
 
-          <ColumnTopPanel :column="column" @add:issue="emit('add:issue', $event)" />
+          <ColumnTopPanel :column="column" />
 
           <div class="size-full overflow-hidden pb-8">
             <OverlayScrollbarsComponent class="size-full h-[calc(100vh-348px)]" :options="scrollbarOptionsColumn">
@@ -41,7 +35,7 @@
                 ghost-class="drag-ghost"
                 :animation="200"
                 :disabled="isLoading"
-                @start="emit('take:snapshot')"
+                @start="boardStore.takeSnapshot"
                 @change="onIssueChange($event, column)"
               >
                 <template #item="{ element: issue }">
@@ -77,22 +71,18 @@ import draggable from 'vuedraggable';
 import {
   EIssueEvent,
   getErrorMessage,
-  type TBoard,
   type TColumn,
-  type TColumnBase,
-  type TDeleteColumnEmitPayload,
   type TDeleteIssueEmitPayload,
   type TIssue,
   type TIssueBase,
-  type TMoveColumnEmitPayload,
   type TMoveIssue,
-  type TMoveIssueEmitPayload,
   type TMoveIssueResponse,
 } from '@kanban-board/common';
 import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
+import { useBoardStore } from '~/stores/board.store.ts';
 import type { TDragChangeDetails } from '~/types/shared.types.ts';
 import type { TUISelectOption } from '~/types/ui.types.ts';
 
@@ -104,28 +94,16 @@ import ColumnTopPanel from '~/components/sections/column/ColumnTopPanel.vue';
 import IssueCard from '~/components/sections/issue/IssueCard.vue';
 import IssueDetailsModal from '~/components/sections/issue/IssueDetailsModal.vue';
 
-const props = defineProps<{ board: TBoard }>();
-
-const emit = defineEmits<{
-  'add:column': [payload: TColumn];
-  'update:column': [payload: TColumnBase];
-  'delete:column': [payload: TDeleteColumnEmitPayload];
-  'move:column': [payload: TMoveColumnEmitPayload];
-  'add:issue': [payload: TIssueBase];
-  'update:issue': [payload: TIssueBase];
-  'delete:issue': [payload: TDeleteIssueEmitPayload];
-  'move:issue': [payload: TMoveIssueEmitPayload];
-  'take:snapshot': [];
-  'restore:snapshot': [];
-  'delete:snapshot': [];
-}>();
-
+const boardStore = useBoardStore();
+const board = computed(() => boardStore.board);
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
 const { emitEvent, listen, isLoading } = useSocket();
 
-const stages = computed<TUISelectOption[]>(() => props.board.columns.map(({ id, title }) => ({ id, label: title })));
+const stages = computed<TUISelectOption[]>(
+  () => board.value?.columns.map(({ id, title }) => ({ id, label: title })) ?? [],
+);
 
 const issueIdFromQuery = computed(() => {
   if (!route.query?.issue) return null;
@@ -191,15 +169,17 @@ const onModalOpenChange = (isOpen: boolean) => {
 
 const updateIssue = (issue: TIssueBase) => {
   fetchIssueDetails();
-  emit('update:issue', issue);
+  boardStore.updateIssue(issue);
 };
 
 const onDeleteIssue = (payload: TDeleteIssueEmitPayload) => {
-  emit('delete:issue', payload);
+  boardStore.deleteIssue(payload);
   closeIssueDetails();
 };
 
 const onIssueChange = (details: TDragChangeDetails<TIssueBase>, column: TColumn) => {
+  if (!board.value) return;
+
   // При переносе между колонками removed игнорируем, запрос шлём только с added/moved.
   if (details.removed || (!details.added && !details.moved)) return;
 
@@ -213,7 +193,7 @@ const onIssueChange = (details: TDragChangeDetails<TIssueBase>, column: TColumn)
   if (details.added) element.columnId = toColumnId;
 
   const body: TMoveIssue = {
-    boardId: props.board.id,
+    boardId: board.value.id,
     targetId: element.id,
     previousId: column.issues[newIndex - 1]?.id ?? null,
     fromColumnId,
@@ -227,22 +207,22 @@ const emitMove = (body: TMoveIssue) => {
   emitEvent<TMoveIssue, TMoveIssueResponse>({
     event: EIssueEvent.MOVE,
     data: body,
-    successCallback: (response: TMoveIssueResponse) => {
+    successCallback: async (response: TMoveIssueResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Задача перемещена' });
-        emit('move:issue', response.data);
+        await boardStore.moveIssue(response.data);
 
         const movedIssue = response.data.movedIssue;
         if (movedIssue && issueDetails.value?.id === movedIssue.id) {
           issueDetails.value = { ...issueDetails.value, columnId: movedIssue.columnId };
         }
 
-        emit('delete:snapshot');
+        boardStore.deleteSnapshot();
       }
     },
     errorCallback: (error: unknown) => {
       toast.error({ message: getErrorMessage(error) });
-      emit('restore:snapshot');
+      boardStore.restoreSnapshot();
     },
   });
 };

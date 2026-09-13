@@ -37,12 +37,8 @@ import {
   EColumnEvent,
   getErrorMessage,
   isValidationError,
-  type TColumn,
-  type TColumnBase,
-  type TDeleteColumnEmitPayload,
   type TDeleteColumnResponse,
   type TMoveColumn,
-  type TMoveColumnEmitPayload,
   type TMoveColumnResponse,
   type TUpdateColumn,
   type TUpdateColumnResponse,
@@ -52,6 +48,7 @@ import {
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { ACTIONS_BUTTONS_DATA } from '~/constants/actions-buttons.constants.ts';
+import { useBoardStore } from '~/stores/board.store.ts';
 import type { TActionButtonData, TUpsertFormData } from '~/types/shared.types.ts';
 
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
@@ -60,26 +57,21 @@ import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue'
 
 const props = defineProps<{
   columnId: number;
-  columns: TColumn[];
 }>();
 
-const emit = defineEmits<{
-  'update:column': [payload: TColumnBase];
-  'delete:column': [payload: TDeleteColumnEmitPayload];
-  'move:column': [payload: TMoveColumnEmitPayload];
-}>();
-
+const boardStore = useBoardStore();
 const toast = useToast();
 
 const isUpdateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 
-const column = computed(() => props.columns.find(({ id }) => id === props.columnId) ?? null);
-const columnIndex = computed(() => props.columns.findIndex(({ id }) => id === props.columnId));
+const columns = computed(() => boardStore.board?.columns ?? []);
+const column = computed(() => columns.value.find(({ id }) => id === props.columnId) ?? null);
+const columnIndex = computed(() => columns.value.findIndex(({ id }) => id === props.columnId));
 
-const isOnlyOneColumn = computed(() => props.columns.length <= 1);
+const isOnlyOneColumn = computed(() => columns.value.length <= 1);
 const isFirstColumn = computed(() => columnIndex.value <= 0);
-const isLastColumn = computed(() => columnIndex.value === -1 || columnIndex.value === props.columns.length - 1);
+const isLastColumn = computed(() => columnIndex.value === -1 || columnIndex.value === columns.value.length - 1);
 
 const cannotMoveBackward = computed(() => isOnlyOneColumn.value || isFirstColumn.value);
 const cannotMoveForward = computed(() => isOnlyOneColumn.value || isLastColumn.value);
@@ -142,7 +134,7 @@ const updateColumn = () => {
     successCallback: (response: TUpdateColumnResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Колонка обновлена' });
-        emit('update:column', response.data);
+        boardStore.updateColumn(response.data);
         closeModal();
       }
     },
@@ -162,7 +154,7 @@ const deleteColumn = () => {
     successCallback: (response: TDeleteColumnResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Колонка удалена' });
-        emit('delete:column', response.data);
+        boardStore.deleteColumn(response.data);
         closeModal();
       }
     },
@@ -184,10 +176,10 @@ const moveColumn = (previousId: number | null) => {
   emitEventMove<TMoveColumn, TMoveColumnResponse>({
     event: EColumnEvent.MOVE,
     data: body,
-    successCallback: (response: TMoveColumnResponse) => {
+    successCallback: async (response: TMoveColumnResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Колонка перемещена' });
-        emit('move:column', response.data);
+        await boardStore.moveColumn(response.data);
       }
     },
     errorCallback: (error: unknown) => {
@@ -203,17 +195,17 @@ const moveToStart = () => {
 
 const moveToPrevious = () => {
   if (cannotMoveBackward.value) return;
-  moveColumn(props.columns[columnIndex.value - 2]?.id ?? null);
+  moveColumn(columns.value[columnIndex.value - 2]?.id ?? null);
 };
 
 const moveToNext = () => {
-  const previousId = props.columns[columnIndex.value + 1]?.id;
+  const previousId = columns.value[columnIndex.value + 1]?.id;
   if (cannotMoveForward.value || !previousId) return;
   moveColumn(previousId);
 };
 
 const moveToEnd = () => {
-  const lastColumnId = props.columns[props.columns.length - 1]?.id;
+  const lastColumnId = columns.value[columns.value.length - 1]?.id;
   if (cannotMoveForward.value || !lastColumnId) return;
   moveColumn(lastColumnId);
 };

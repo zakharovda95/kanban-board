@@ -1,12 +1,7 @@
 <template>
   <div class="w-fit">
-    <UIIconButton class="laptop:flex hidden" icon="mingcute:add-line" size="small" @click:button="isModalOpen = true" />
-    <UIButton
-      class="laptop:hidden flex"
-      prepend-icon="mingcute:add-line"
-      size="small"
-      @click:button="isModalOpen = true"
-    >
+    <UIIconButton v-if="isLaptop" icon="mingcute:add-line" size="small" @click:button="isModalOpen = true" />
+    <UIButton v-else prepend-icon="mingcute:add-line" size="small" @click:button="isModalOpen = true">
       Добавить задачу
     </UIButton>
 
@@ -35,13 +30,14 @@ import {
   ISSUE_TITLE_MAXLENGTH,
   isValidationError,
   type TCreateIssue,
-  type TIssueBase,
   type TUpsertIssueResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable.ts';
+import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
+import { useBoardStore } from '~/stores/board.store.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
 
 import UpsertModal from '~/components/shared/UpsertModal.vue';
@@ -52,12 +48,11 @@ const props = defineProps<{
   columnId: number;
 }>();
 
-const emit = defineEmits<{
-  'add:issue': [payload: TIssueBase];
-}>();
+const boardStore = useBoardStore();
 
 const route = useRoute();
 const toast = useToast();
+const isLaptop = useIsLaptop();
 
 const isModalOpen = ref(false);
 
@@ -80,7 +75,7 @@ const createIssue = () => {
     successCallback: (response: TUpsertIssueResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Задача создана' });
-        emit('add:issue', response.data);
+        boardStore.addIssue(response.data);
         closeModal();
       }
     },

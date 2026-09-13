@@ -25,8 +25,4 @@ const text = computed(() =>
       ? 'Выберите доску в меню слева.'
       : 'Для начала работы необходимо добавить доску.',
 );
-
-if (boardsStore.boards?.length) {
-  navigateTo(`/boards/${boardsStore.boards?.[0]?.id}`);
-}
 </script>
