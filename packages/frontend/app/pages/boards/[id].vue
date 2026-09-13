@@ -44,7 +44,7 @@ if (error.value) {
   toast.error({ message });
 }
 
-const showLoader = computed(() => !isMounted.value || (boardStore.isLoadingBoard && !boardStore.board));
+const showLoader = computed(() => !isMounted.value || boardStore.isLoadingBoard);
 
 onMounted(() => {
   boardStore.joinBoard(boardId.value);

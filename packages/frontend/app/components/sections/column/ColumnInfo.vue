@@ -1,11 +1,11 @@
 <template>
-  <div class="laptop:justify-start flex h-full flex-col items-stretch justify-center text-left">
-    <p class="text-14 block overflow-hidden leading-18 font-medium text-ellipsis whitespace-nowrap">
+  <div class="laptop:justify-start flex h-full min-h-0 flex-col items-stretch justify-center overflow-hidden text-left">
+    <p class="text-14 block h-18 overflow-hidden leading-18 font-medium text-ellipsis whitespace-nowrap">
       {{ column.title }}
     </p>
     <p
-      v-if="column.description && !hideDescription"
-      class="text-12 block w-full overflow-hidden leading-16 font-light text-ellipsis whitespace-nowrap"
+      v-if="!hideDescription"
+      class="text-12 block h-16 w-full overflow-hidden leading-16 font-light text-ellipsis whitespace-nowrap"
     >
       {{ column.description }}
     </p>
