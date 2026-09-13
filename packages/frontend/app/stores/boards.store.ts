@@ -15,84 +15,86 @@ export const useBoardsStore = defineStore('boards-store', () => {
   const toast = useToast();
   const route = useRoute();
 
-  const isLoadingBoards = ref(false);
-  const boards = ref<TBoardBase[]>([]);
   const snapshot = ref<TBoardBase[] | null>(null);
 
   const currentBoardId = computed(() => Number(route.params.id));
 
-  const { call: fetchBoards } = useTryCatchFinally({
-    callback: async () => {
-      if (!boards.value?.length) isLoadingBoards.value = true;
-      boards.value = await $fetch<TBoardBase[]>('/api/boards', { method: 'GET' });
-    },
-    finallyCallback: () => {
-      isLoadingBoards.value = false;
-    },
+  const {
+    call: fetchBoards,
+    data: boards,
+    isLoading: isLoadingBoards,
+  } = useTryCatchFinally<TBoardBase[], undefined>({
+    callback: async () => await $fetch<TBoardBase[]>('/api/boards', { method: 'GET' }),
   });
 
   const addNewBoard = (newBoard: TBoardBase): void => {
-    if (!newBoard) return;
+    if (!newBoard || !boards.value) return;
     boards.value.push(newBoard);
   };
 
   const updateBoard = (updatedBoard: TBoardBase) => {
-    if (!updatedBoard) return;
+    if (!updatedBoard || !boards.value?.length) return;
     replaceBoard(updatedBoard);
   };
 
   const deleteBoard = ({ deletedBoardId }: TDeleteBoardEmitPayload) => {
-    if (!deletedBoardId) return;
+    if (!deletedBoardId || !boards.value?.length) return;
     if (deletedBoardId === currentBoardId.value) navigateTo(`/boards`);
     boards.value = boards.value.filter(({ id }: TBoardBase) => id !== deletedBoardId);
   };
 
   const moveBoard = async (moveResult: TMoveBoardEmitPayload) => {
+    if (!boards.value?.length) return;
+
     // если не передан объект перемещенной доски, значит был reorder всех досок и нужно сделать refetch
     if (!moveResult.movedBoard) {
-      await fetchBoards();
+      await fetchBoards(undefined, false);
       return;
     }
     replaceBoard(moveResult.movedBoard);
+
     boards.value = orderBy(boards.value, ['order'], 'asc');
   };
 
   const stopListenCreated = listen(EBoardEvent.CREATED, (newBoard: TBoardBase) => {
-    if (newBoard.id) {
-      addNewBoard(newBoard);
-      toast.info({ message: `Добавлена новая доска «${newBoard.title}»` });
-    }
+    if (!newBoard.id || !boards.value) return;
+
+    addNewBoard(newBoard);
+
+    toast.info({ message: `Добавлена новая доска «${newBoard.title}»` });
   });
 
   const stopListenUpdated = listen(EBoardEvent.UPDATED, (updatedBoard: TBoardBase) => {
-    if (updatedBoard.id) {
-      updateBoard(updatedBoard);
-      toast.info({ message: `Обновлена доска «${updatedBoard.title}»` });
-    }
+    if (!updatedBoard.id || !boards.value?.length) return;
+
+    updateBoard(updatedBoard);
+
+    toast.info({ message: `Обновлена доска «${updatedBoard.title}»` });
   });
 
   const stopListenDeleted = listen(EBoardEvent.DELETED, (payload: TDeleteBoardEmitPayload) => {
-    if (payload.deletedBoardId) {
-      const deletedBoard = boards.value.find(({ id }) => id === payload.deletedBoardId);
-      deleteBoard(payload);
+    if (!payload.deletedBoardId || !boards.value?.length) return;
 
-      if (payload.deletedBoardId === currentBoardId.value) {
-        toast.info({ message: 'Активная доска была удалена и больше недоступна' });
-      } else
-        toast.info({
-          message: deletedBoard ? `Доска «${deletedBoard.title}» была удалена` : 'Доска была удалена',
-        });
-    }
+    deleteBoard(payload);
+
+    const deletedBoard = boards.value.find(({ id }) => id === payload.deletedBoardId);
+    if (payload.deletedBoardId === currentBoardId.value)
+      toast.info({ message: 'Активная доска была удалена и больше недоступна' });
+    else
+      toast.info({
+        message: deletedBoard ? `Доска «${deletedBoard.title}» была удалена` : 'Доска была удалена',
+      });
   });
 
   const stopListenMove = listen(EBoardEvent.MOVED, async (payload: TMoveBoardEmitPayload) => {
-    if (payload.movedBoardId) {
-      await moveBoard(payload);
-      const movedBoard = boards.value.find(({ id }: TBoardBase) => id === payload.movedBoardId);
-      toast.info({
-        message: movedBoard ? `Доска «${movedBoard.title}» была перемещена` : 'Доска была перемещена',
-      });
-    }
+    if (!payload.movedBoardId || !boards.value?.length) return;
+
+    await moveBoard(payload);
+
+    const movedBoard = boards.value.find(({ id }: TBoardBase) => id === payload.movedBoardId);
+    toast.info({
+      message: movedBoard ? `Доска «${movedBoard.title}» была перемещена` : 'Доска была перемещена',
+    });
   });
 
   const stopListen = () => {
@@ -105,9 +107,11 @@ export const useBoardsStore = defineStore('boards-store', () => {
   const resetStore = () => {
     isLoadingBoards.value = false;
     boards.value = [];
+    deleteSnapshot();
   };
 
   const takeSnapshot = () => {
+    if (!boards.value?.length) return;
     snapshot.value = cloneDeep(boards.value.map(elem => toRaw(elem)));
   };
 
@@ -122,8 +126,8 @@ export const useBoardsStore = defineStore('boards-store', () => {
   };
 
   return {
-    isLoadingBoards,
     boards,
+    isLoadingBoards,
     snapshot,
     fetchBoards,
     addNewBoard,

@@ -86,7 +86,7 @@ const toast = useToast();
 const { emitEvent, isLoading } = useSocket();
 
 const boardId = computed(() => Number(route.params.id));
-const isTooMuchBoards = computed(() => boardsStore.boards.length >= BOARDS_MAX_COUNT);
+const isTooMuchBoards = computed(() => boardsStore.boards != null && boardsStore.boards.length >= BOARDS_MAX_COUNT);
 
 const onClickBoard = (id: number) => {
   if (id === boardId.value) return;
@@ -94,7 +94,7 @@ const onClickBoard = (id: number) => {
 };
 
 const onBoardMove = (details: TDragChangeDetails<TBoardBase>) => {
-  if (!details.moved) return;
+  if (!details.moved || !boardsStore.boards?.length) return;
 
   const targetId = details.moved.element.id;
   const targetNewIndex = details.moved.newIndex;

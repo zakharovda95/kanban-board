@@ -21,7 +21,7 @@ import TheFooter from '~/components/layouts/shared/TheFooter.vue';
 const boardsStore = useBoardsStore();
 
 const { error } = await useAsyncData('fetch-boards', async () => {
-  await boardsStore.fetchBoards();
+  await boardsStore.fetchBoards(undefined, true);
   return null;
 });
 

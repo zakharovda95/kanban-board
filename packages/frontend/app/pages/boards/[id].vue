@@ -34,7 +34,7 @@ const errorMessage = ref<string | null>(null);
 const boardId = computed(() => Number(route.params.id));
 
 const { error } = await useAsyncData(`fetch-board-${boardId.value}`, async () => {
-  await boardStore.fetchBoard(boardId.value);
+  await boardStore.fetchBoard(boardId.value, boardStore.board == null);
   return null;
 });
 

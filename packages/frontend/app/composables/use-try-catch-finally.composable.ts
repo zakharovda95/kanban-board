@@ -22,7 +22,7 @@ export function useTryCatchFinally<TReturnData, TParams = undefined>(
     abortController = null;
   };
 
-  const call = async (params?: TParams): Promise<void> => {
+  const call = async (params?: TParams, useLoader: boolean = true): Promise<void> => {
     let innerAbortController: AbortController | null = null;
 
     if (options.useAbort) {
@@ -31,7 +31,7 @@ export function useTryCatchFinally<TReturnData, TParams = undefined>(
       innerAbortController = abortController;
     }
     try {
-      isLoading.value = true;
+      if (useLoader) isLoading.value = true;
       data.value = await options.callback(params, innerAbortController?.signal);
     } catch (error: unknown) {
       const errorData = (error as FetchError)?.response?._data?.data ?? null;

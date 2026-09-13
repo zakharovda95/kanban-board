@@ -21,20 +21,16 @@ export const useBoardStore = defineStore('board-store', () => {
   const { listen, $socket } = useSocket();
   const toast = useToast();
 
-  const isLoadingBoard = ref(false);
-  const board = ref<TBoard | null>(null);
   const snapshot = ref<TColumn[] | null>(null);
 
-  const { call: fetchBoard } = useTryCatchFinally({
+  const {
+    call: fetchBoard,
+    isLoading: isLoadingBoard,
+    data: board,
+  } = useTryCatchFinally({
     callback: async (boardId: number = 0, signal?: AbortSignal) => {
-      if (!boardId || boardId <= 0) {
-        throw new Error('Не передан boardId');
-      }
-      if (board == null) isLoadingBoard.value = true;
-      board.value = await $fetch<TBoard>(`/api/boards/${boardId}`, { method: 'GET', signal });
-    },
-    finallyCallback: () => {
-      isLoadingBoard.value = false;
+      if (!boardId || boardId <= 0) throw new Error('Не передан boardId');
+      return await $fetch<TBoard>(`/api/boards/${boardId}`, { method: 'GET', signal });
     },
     useAbort: true,
   });
@@ -75,12 +71,15 @@ export const useBoardStore = defineStore('board-store', () => {
 
   const moveColumn = async (moveResult: TMoveColumnEmitPayload) => {
     if (!moveResult || !board.value) return;
+
     // если не передан объект перемещенной колонки, значит был reorder всех колонок и нужно сделать refetch
     if (!moveResult.movedColumn) {
-      await fetchBoard(moveResult.boardId);
+      await fetchBoard(moveResult.boardId, false);
       return;
     }
+
     updateColumn(moveResult.movedColumn);
+
     board.value.columns = orderBy(board.value.columns, ['order'], 'asc');
   };
 
@@ -113,7 +112,7 @@ export const useBoardStore = defineStore('board-store', () => {
 
     // если не передан объект перемещенной задачи, значит был reorder и нужно сделать refetch
     if (!moveResult.movedIssue) {
-      await fetchBoard(moveResult.boardId);
+      await fetchBoard(moveResult.boardId, false);
       return;
     }
 
@@ -151,48 +150,64 @@ export const useBoardStore = defineStore('board-store', () => {
   };
 
   const stopListenColumnCreated = listen(EColumnEvent.CREATED, (column: TColumn) => {
+    if (!board.value) return;
+
     addColumn(column);
+
     toast.info({ message: `Добавлена новая колонка «${column.title}»` });
   });
 
   const stopListenColumnUpdated = listen(EColumnEvent.UPDATED, (column: TColumnBase) => {
+    if (!board.value) return;
+
     updateColumn(column);
+
     toast.info({ message: `Обновлена колонка «${column.title}»` });
   });
 
   const stopListenColumnDeleted = listen(EColumnEvent.DELETED, (payload: TDeleteColumnEmitPayload) => {
-    const deletedColumn = board.value?.columns?.find(({ id }) => id === payload.deletedColumnId);
+    if (!board.value) return;
 
     deleteColumn(payload);
 
+    const deletedColumn = board.value?.columns.find(({ id }) => id === payload.deletedColumnId);
     toast.info({
       message: deletedColumn ? `Колонка «${deletedColumn.title}» была удалена` : 'Колонка была удалена',
     });
   });
 
   const stopListenColumnMoved = listen(EColumnEvent.MOVED, async (payload: TMoveColumnEmitPayload) => {
-    if (payload.movedColumnId) {
-      await moveColumn(payload);
-      const movedColumn = board.value?.columns.find(({ id }: TColumn) => id === payload.movedColumnId);
-      toast.info({
-        message: movedColumn ? `Колонка «${movedColumn.title}» была перемещена` : 'Колонка была перемещена',
-      });
-    }
+    if (!payload.movedColumnId || !board.value) return;
+
+    await moveColumn(payload);
+
+    const movedColumn = board.value.columns.find(({ id }: TColumn) => id === payload.movedColumnId);
+    toast.info({
+      message: movedColumn ? `Колонка «${movedColumn.title}» была перемещена` : 'Колонка была перемещена',
+    });
   });
 
   const stopListenIssueCreated = listen(EIssueEvent.CREATED, (issue: TIssueBase) => {
+    if (!board.value) return;
+
     addIssue(issue);
+
     toast.info({ message: `Добавлена новая задача «${issue.title}»` });
   });
 
   const stopListenIssueUpdated = listen(EIssueEvent.UPDATED, (issue: TIssueBase) => {
+    if (!board.value) return;
+
     updateIssue(issue);
+
     toast.info({ message: `Обновлена задача «${issue.title}»` });
   });
 
   const stopListenIssueDeleted = listen(EIssueEvent.DELETED, (payload: TDeleteIssueEmitPayload) => {
-    const deletedIssue = board.value?.columns
-      ?.flatMap(column => column.issues)
+    if (!board.value) return;
+
+    const deletedIssue = board.value.columns
+      .flatMap(column => column.issues)
       .find(({ id }) => id === payload.deletedIssueId);
 
     deleteIssue(payload);
@@ -203,7 +218,7 @@ export const useBoardStore = defineStore('board-store', () => {
   });
 
   const stopListenIssueMoved = listen(EIssueEvent.MOVED, async (payload: TMoveIssueEmitPayload) => {
-    if (!payload.movedIssueId) return;
+    if (!payload.movedIssueId || !board.value) return;
 
     await moveIssue(payload);
 
