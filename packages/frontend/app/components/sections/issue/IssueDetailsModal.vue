@@ -75,23 +75,25 @@
       </div>
 
       <div v-if="!isUpdateMode" class="laptop:max-w-320 flex w-full max-w-none flex-col justify-between gap-24">
-        <IssueDate
-          class="laptop:flex hidden"
-          variant="details"
-          :created-at="issue.createdAt"
-          :updated-at="issue.updatedAt"
-          :days-passed-since-creation="daysPassedSinceCreation"
-          :days-passed-since-updating="daysPassedSinceUpdating"
-        />
-
-        <UILabel text="Этап" required>
-          <UISelect
-            v-if="currentStage && stages.length"
-            v-model="currentStage"
-            placeholder="Выберите значение"
-            :options="stages"
+        <div class="flex flex-col gap-8">
+          <UILabel text="Этап" required>
+            <UISelect
+              v-if="currentStage && stages.length"
+              v-model="currentStage"
+              name="issue-stage-select"
+              placeholder="Выберите значение"
+              :options="stages"
+            />
+          </UILabel>
+          <IssueDate
+            class="laptop:flex hidden"
+            variant="details"
+            :created-at="issue.createdAt"
+            :updated-at="issue.updatedAt"
+            :days-passed-since-creation="daysPassedSinceCreation"
+            :days-passed-since-updating="daysPassedSinceUpdating"
           />
-        </UILabel>
+        </div>
 
         <div class="flex flex-col gap-8">
           <UIButton

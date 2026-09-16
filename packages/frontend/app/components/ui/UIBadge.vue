@@ -1,7 +1,7 @@
 <template>
   <div
-    class="text-12 rounded-4 flex w-fit cursor-default items-center justify-center gap-4 leading-none whitespace-nowrap"
-    :class="[computedSize.element]"
+    class="text-12 rounded-4 flex cursor-default items-center justify-center gap-4 leading-none whitespace-nowrap"
+    :class="[computedSize.element, full ? 'w-full' : 'w-fit']"
     :style="{ backgroundColor, color }"
     @click="emit('click:badge', $event)"
   >
@@ -23,6 +23,7 @@ const props = withDefaults(
     appendIcon?: string | null;
     backgroundColor?: EColor | string;
     color?: EColor;
+    full?: boolean;
   }>(),
   {
     size: 'medium',
@@ -30,6 +31,7 @@ const props = withDefaults(
     appendIcon: null,
     backgroundColor: EColor.GREEN,
     color: EColor.LIGHT_BASE,
+    full: false,
   },
 );
 
