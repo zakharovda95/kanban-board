@@ -34,16 +34,16 @@
                 group="board-issues"
                 ghost-class="drag-ghost"
                 :animation="200"
-                :disabled="isLoading"
+                :disabled="isLoadingSocket"
                 @start="boardStore.takeSnapshot"
-                @change="onIssueChange($event, column)"
+                @change="onIssueMove($event, column)"
               >
                 <template #item="{ element: issue }">
                   <IssueCard
                     :issue="issue"
                     :color="column.color"
                     :is-loading="isLoadingIssueDetails && selectedIssueId === issue.id"
-                    @open:details="openIssueDetails"
+                    @open:details="issueDetailsStore.openIssueDetails"
                   />
                 </template>
               </draggable>
@@ -58,33 +58,23 @@
       :is-open="isModalOpen"
       :issue="issueDetails"
       :stages="stages"
-      @update:is-open="onModalOpenChange"
-      @update:issue="updateIssue"
-      @delete:issue="onDeleteIssue"
-      @change:stage="emitMove"
+      @update:is-open="issueDetailsStore.onModalClose"
+      @update:issue="issueDetailsStore.onUpdateIssue"
+      @delete:issue="issueDetailsStore.onDeleteIssue"
+      @change:stage="issueDetailsStore.onChangeStage"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import draggable from 'vuedraggable';
-import {
-  EIssueEvent,
-  getErrorMessage,
-  type TColumn,
-  type TDeleteIssueEmitPayload,
-  type TIssue,
-  type TIssueBase,
-  type TMoveIssue,
-  type TMoveIssueResponse,
-} from '@kanban-board/common';
+import type { TColumn, TIssueBase, TMoveIssue } from '@kanban-board/common';
 import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
+import { storeToRefs } from 'pinia';
 
-import { useSocket } from '~/composables/use-socket.composable.ts';
-import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import { useBoardStore } from '~/stores/board.store.ts';
+import { useIssueDetailsStore } from '~/stores/issue-details.store.ts';
 import type { TDragChangeDetails } from '~/types/shared.types.ts';
-import type { TUISelectOption } from '~/types/ui.types.ts';
 
 import BoardFilter from '~/components/sections/board/BoardFilter.vue';
 import AddColumnButton from '~/components/sections/column/AddColumnButton.vue';
@@ -95,89 +85,18 @@ import IssueCard from '~/components/sections/issue/IssueCard.vue';
 import IssueDetailsModal from '~/components/sections/issue/IssueDetailsModal.vue';
 
 const boardStore = useBoardStore();
-const board = computed(() => boardStore.board);
-const toast = useToast();
-const router = useRouter();
-const route = useRoute();
-const { emitEvent, listen, isLoading } = useSocket();
+const issueDetailsStore = useIssueDetailsStore();
 
-const stages = computed<TUISelectOption[]>(
-  () => board.value?.columns.map(({ id, title }) => ({ id, label: title })) ?? [],
-);
+const { board } = storeToRefs(boardStore);
 
-const issueIdFromQuery = computed(() => {
-  if (!route.query?.issue) return null;
-  const queryId = String(route.query.issue).split('-')?.[1];
-  if (!queryId) return null;
-  return Number(queryId);
-});
+const { issueDetails, isLoadingSocket, isLoadingIssueDetails, issueIdFromQuery, selectedIssueId, isModalOpen, stages } =
+  storeToRefs(issueDetailsStore);
 
-const selectedIssueId = ref<number | null>(issueIdFromQuery.value);
-const isModalOpen = ref(Boolean(issueIdFromQuery.value));
+if (issueIdFromQuery.value) {
+  issueDetailsStore.subscribeToIssueUpdates();
+}
 
-const {
-  data: issueDetails,
-  isLoading: isLoadingIssueDetails,
-  call: fetchIssueDetails,
-} = useTryCatchFinally({
-  callback: async () => {
-    if (!selectedIssueId.value) return null;
-    return $fetch<TIssue>(`/api/issues/${selectedIssueId.value}`, { method: 'GET' });
-  },
-  catchCallback: (error: unknown) => toast.error({ message: getErrorMessage(error) }),
-  callOnInit: Boolean(issueIdFromQuery.value),
-});
-
-let stopListen: (() => void) | null = null;
-
-// Если у кого-то открыта детальная задачи, и в это время были внесены изменения - реактивный апдейт задачи.
-const subscribeToIssueUpdates = () => {
-  if (stopListen) stopListen();
-
-  stopListen = listen(EIssueEvent.UPDATED, (updatedIssue: TIssueBase) => {
-    if (updatedIssue.id === selectedIssueId.value) fetchIssueDetails();
-  });
-};
-
-if (issueIdFromQuery.value) subscribeToIssueUpdates();
-
-const openIssueDetails = async (issue: TIssueBase) => {
-  if (isLoadingIssueDetails.value) return;
-
-  selectedIssueId.value = issue.id;
-  await fetchIssueDetails();
-
-  isModalOpen.value = true;
-  router.replace({ query: { ...route.query, issue: `task-${issue.id}` } });
-  subscribeToIssueUpdates();
-};
-
-const closeIssueDetails = () => {
-  isModalOpen.value = false;
-  selectedIssueId.value = null;
-  router.replace({ query: { ...route.query, issue: undefined } });
-
-  if (stopListen) {
-    stopListen();
-    stopListen = null;
-  }
-};
-
-const onModalOpenChange = (isOpen: boolean) => {
-  if (!isOpen) closeIssueDetails();
-};
-
-const updateIssue = (issue: TIssueBase) => {
-  fetchIssueDetails();
-  boardStore.updateIssue(issue);
-};
-
-const onDeleteIssue = (payload: TDeleteIssueEmitPayload) => {
-  boardStore.deleteIssue(payload);
-  closeIssueDetails();
-};
-
-const onIssueChange = (details: TDragChangeDetails<TIssueBase>, column: TColumn) => {
+const onIssueMove = (details: TDragChangeDetails<TIssueBase>, column: TColumn) => {
   if (!board.value) return;
 
   // При переносе между колонками removed игнорируем, запрос шлём только с added/moved.
@@ -200,31 +119,7 @@ const onIssueChange = (details: TDragChangeDetails<TIssueBase>, column: TColumn)
     toColumnId: fromColumnId !== toColumnId ? toColumnId : null,
   };
 
-  emitMove(body);
-};
-
-const emitMove = (body: TMoveIssue) => {
-  emitEvent<TMoveIssue, TMoveIssueResponse>({
-    event: EIssueEvent.MOVE,
-    data: body,
-    successCallback: async (response: TMoveIssueResponse) => {
-      if (response.isSuccess && response.data) {
-        toast.success({ message: 'Задача перемещена' });
-        await boardStore.moveIssue(response.data);
-
-        const movedIssue = response.data.movedIssue;
-        if (movedIssue && issueDetails.value?.id === movedIssue.id) {
-          issueDetails.value = { ...issueDetails.value, columnId: movedIssue.columnId };
-        }
-
-        boardStore.deleteSnapshot();
-      }
-    },
-    errorCallback: (error: unknown) => {
-      toast.error({ message: getErrorMessage(error) });
-      boardStore.restoreSnapshot();
-    },
-  });
+  issueDetailsStore.emitMove(body);
 };
 
 const scrollbarOptionsBoard: OverlayScrollbarsComponentProps['options'] = {
@@ -246,6 +141,7 @@ const scrollbarOptionsColumn: OverlayScrollbarsComponentProps['options'] = {
 };
 
 onBeforeUnmount(() => {
-  if (stopListen) stopListen();
+  issueDetailsStore.stopListen();
+  issueDetailsStore.resetStore();
 });
 </script>

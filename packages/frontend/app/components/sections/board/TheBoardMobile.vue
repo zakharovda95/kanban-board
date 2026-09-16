@@ -57,30 +57,57 @@
             v-for="issue in selectedColumn.issues"
             :key="issue.id"
             :issue="issue"
+            :is-loading="isLoadingIssueDetails && selectedIssueId === issue.id"
             :color="selectedColumn.color"
+            @open:details="issueDetailsStore.openIssueDetails"
           />
         </div>
         <div v-else class="flex size-full items-center justify-center">
           <span class="text-14 font-medium">Нет задач</span>
         </div>
+
+        <IssueDetailsModal
+          v-if="issueDetails"
+          :is-open="isModalOpen"
+          :issue="issueDetails"
+          :stages="stages"
+          @update:is-open="issueDetailsStore.onModalClose"
+          @update:issue="issueDetailsStore.onUpdateIssue"
+          @delete:issue="issueDetailsStore.onDeleteIssue"
+          @change:stage="issueDetailsStore.onChangeStage"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
+
 import { useBoardStore } from '~/stores/board.store.ts';
+import { useIssueDetailsStore } from '~/stores/issue-details.store.ts';
 
 import AddColumnButton from '~/components/sections/column/AddColumnButton.vue';
 import ColumnActionsButtons from '~/components/sections/column/ColumnActionsButtons.vue';
 import ColumnInfo from '~/components/sections/column/ColumnInfo.vue';
 import ColumnTopPanel from '~/components/sections/column/ColumnTopPanel.vue';
 import IssueCard from '~/components/sections/issue/IssueCard.vue';
+import IssueDetailsModal from '~/components/sections/issue/IssueDetailsModal.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
 
-const boardStore = useBoardStore();
-const board = computed(() => boardStore.board);
 const toast = useToast();
+
+const boardStore = useBoardStore();
+const issueDetailsStore = useIssueDetailsStore();
+
+const { board } = storeToRefs(boardStore);
+
+const { issueDetails, isLoadingIssueDetails, stages, issueIdFromQuery, selectedIssueId, isModalOpen } =
+  storeToRefs(issueDetailsStore);
+
+if (issueIdFromQuery.value) {
+  issueDetailsStore.subscribeToIssueUpdates();
+}
 
 const isColumnsMenuOpen = ref(false);
 const selectedColumnId = ref<number | null>(board.value?.columns[0]?.id ?? null);
@@ -107,4 +134,9 @@ const toggleColumnsMenu = () => {
   if (!selectedColumn.value) return;
   isColumnsMenuOpen.value = !isColumnsMenuOpen.value;
 };
+
+onBeforeUnmount(() => {
+  issueDetailsStore.stopListen();
+  issueDetailsStore.resetStore();
+});
 </script>
