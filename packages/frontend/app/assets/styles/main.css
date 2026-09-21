@@ -70,6 +70,8 @@
   --color-light-800: #262626;
   --color-light-900: #171717;
   --color-light-black-opacity: rgba(0, 0, 0, 0.4);
+  --color-light-black-opacity-l: rgba(0, 0, 0, 0.3);
+  --color-light-black-opacity-xl: rgba(0, 0, 0, 0.2);
 
   --color-dark-base: #000000;
   --color-dark-50: #0a0a0a;

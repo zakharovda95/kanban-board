@@ -4,7 +4,7 @@
       {{ column.title }}
     </p>
     <p
-      v-if="!hideDescription"
+      v-if="column.description && !hideDescription"
       class="text-12 block h-16 w-full overflow-hidden leading-16 font-light text-ellipsis whitespace-nowrap"
     >
       {{ column.description }}

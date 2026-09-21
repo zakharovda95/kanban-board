@@ -191,15 +191,6 @@ const currentStage = computed({
   },
 });
 
-const scrollbarOptions: OverlayScrollbarsComponentProps['options'] = {
-  overflow: { x: 'hidden' },
-  scrollbars: {
-    autoHide: 'leave',
-    autoHideDelay: 300,
-    theme: 'os-theme-modal',
-  },
-};
-
 const isOpenDeleteModal = ref(false);
 const isUpdateMode = ref(false);
 
@@ -269,6 +260,15 @@ const closeModal = () => {
 const startUpdateMode = () => {
   isUpdateMode.value = true;
   set(getInitialValue(), { setAsInitial: true, clearErrors: true });
+};
+
+const scrollbarOptions: OverlayScrollbarsComponentProps['options'] = {
+  overflow: { x: 'hidden' },
+  scrollbars: {
+    autoHide: 'leave',
+    autoHideDelay: 300,
+    theme: 'os-theme-modal',
+  },
 };
 
 onBeforeUnmount(() => {
