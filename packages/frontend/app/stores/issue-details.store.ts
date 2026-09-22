@@ -5,6 +5,7 @@ import {
   type TIssue,
   type TIssueBase,
   type TMoveIssue,
+  type TMoveIssueEmitPayload,
   type TMoveIssueResponse,
 } from '@kanban-board/common';
 import { defineStore } from 'pinia';
@@ -49,14 +50,22 @@ export const useIssueDetailsStore = defineStore('issue-detail-store', () => {
     callOnInit: Boolean(issueIdFromQuery.value),
   });
 
-  let unsubscribe: (() => void) | null = null;
+  const unsubscribers: Array<() => void> = [];
 
   // Если у кого-то открыта детальная задачи, и в это время были внесены изменения - реактивный апдейт задачи.
   const subscribeToIssueUpdates = () => {
     stopListen();
-    unsubscribe = listen(EIssueEvent.UPDATED, async (updatedIssue: TIssueBase) => {
-      if (updatedIssue.id === selectedIssueId.value) await fetchIssueDetails();
-    });
+
+    unsubscribers.push(
+      listen(EIssueEvent.UPDATED, async (updatedIssue: TIssueBase) => {
+        if (updatedIssue.id === selectedIssueId.value) await fetchIssueDetails();
+      }),
+
+      listen(EIssueEvent.MOVED, async (payload: TMoveIssueEmitPayload) => {
+        if (payload.movedIssueId !== selectedIssueId.value || !issueDetails.value) return;
+        await onIssueMove(payload);
+      }),
+    );
   };
 
   const openIssueDetails = async (issue: TIssueBase) => {
@@ -84,13 +93,7 @@ export const useIssueDetailsStore = defineStore('issue-detail-store', () => {
       successCallback: async (response: TMoveIssueResponse) => {
         if (response.isSuccess && response.data) {
           toast.success({ message: 'Задача перемещена' });
-          await boardStore.moveIssue(response.data);
-
-          const movedIssue = response.data.movedIssue;
-          if (movedIssue && issueDetails.value?.id === movedIssue.id) {
-            issueDetails.value = { ...issueDetails.value, columnId: movedIssue.columnId };
-          }
-
+          await Promise.allSettled([boardStore.moveIssue(response.data), onIssueMove(response.data)]);
           boardStore.deleteSnapshot();
         }
       },
@@ -116,6 +119,14 @@ export const useIssueDetailsStore = defineStore('issue-detail-store', () => {
     closeIssueDetails();
   };
 
+  const onIssueMove = async (payload: TMoveIssueEmitPayload) => {
+    if (payload.movedIssue && issueDetails.value?.id === payload.movedIssue.id) {
+      issueDetails.value = { ...issueDetails.value, columnId: payload.movedIssue.columnId };
+      return;
+    }
+    await fetchIssueDetails();
+  };
+
   const onChangeStage = (payload: TMoveIssue) => {
     emitMove(payload);
   };
@@ -127,9 +138,8 @@ export const useIssueDetailsStore = defineStore('issue-detail-store', () => {
   };
 
   const stopListen = () => {
-    if (unsubscribe) {
-      unsubscribe();
-      unsubscribe = null;
+    while (unsubscribers.length) {
+      unsubscribers.pop()?.();
     }
   };
 

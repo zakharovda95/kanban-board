@@ -28,15 +28,23 @@
     </template>
 
     <div class="laptop:flex-row flex w-full flex-col justify-between gap-24">
-      <IssueDate
-        v-if="!isUpdateMode"
-        class="laptop:hidden flex"
-        variant="details"
-        :created-at="issue.createdAt"
-        :updated-at="issue.updatedAt"
-        :days-passed-since-creation="daysPassedSinceCreation"
-        :days-passed-since-updating="daysPassedSinceUpdating"
-      />
+      <div class="laptop:hidden flex flex-col gap-8">
+        <IssueDate
+          v-if="!isUpdateMode"
+          variant="details"
+          :created-at="issue.createdAt"
+          :updated-at="issue.updatedAt"
+          :days-passed-since-creation="daysPassedSinceCreation"
+          :days-passed-since-updating="daysPassedSinceUpdating"
+        />
+        <UISelect
+          v-if="currentStage && stages.length"
+          v-model="currentStage"
+          name="issue-stage-select"
+          placeholder="Выберите значение"
+          :options="stages"
+        />
+      </div>
 
       <div class="flex-1">
         <div v-if="!isUpdateMode" class="bg-light-100 rounded-8 h-full p-12">
@@ -75,7 +83,7 @@
       </div>
 
       <div v-if="!isUpdateMode" class="laptop:max-w-320 flex w-full max-w-none flex-col justify-between gap-24">
-        <div class="flex flex-col gap-8">
+        <div class="laptop:flex hidden flex-col gap-8">
           <UILabel text="Этап" required>
             <UISelect
               v-if="currentStage && stages.length"
@@ -86,7 +94,6 @@
             />
           </UILabel>
           <IssueDate
-            class="laptop:flex hidden"
             variant="details"
             :created-at="issue.createdAt"
             :updated-at="issue.updatedAt"
@@ -178,13 +185,13 @@ const { issue } = toRefs(props);
 const toast = useToast();
 
 const currentStage = computed({
-  get: () => props.stages?.find(({ id }) => id === props.issue.columnId) ?? props.stages?.[0],
+  get: () => props.stages?.find(({ id }) => id === issue.value.columnId) ?? props.stages?.[0],
   set: (option: TUISelectOption) => {
     const payload: TMoveIssue = {
-      targetId: props.issue.id,
+      targetId: issue.value.id,
       previousId: null,
-      boardId: props.issue.boardId,
-      fromColumnId: props.issue.columnId,
+      boardId: issue.value.boardId,
+      fromColumnId: issue.value.columnId,
       toColumnId: option.id,
     };
     emit('change:stage', payload);
@@ -198,8 +205,8 @@ const { issueString, daysPassedSinceCreation, daysPassedSinceUpdating, copyIssue
   useIssueInfo(issue);
 
 const getInitialValue = (): Omit<TUpdateIssue, 'id'> => ({
-  title: props.issue?.title ?? '',
-  description: props.issue?.description ?? '',
+  title: issue.value?.title ?? '',
+  description: issue.value?.description ?? '',
 });
 
 const { formData, formErrors, isDirty, reset, set } = useForm<Omit<TUpdateIssue, 'id'>>(getInitialValue());
