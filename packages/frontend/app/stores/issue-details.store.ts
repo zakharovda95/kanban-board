@@ -50,29 +50,32 @@ export const useIssueDetailsStore = defineStore('issue-detail-store', () => {
     callOnInit: Boolean(issueIdFromQuery.value),
   });
 
+  // Если у кого-то открыта детальная задачи, и в это время были внесены изменения - реактивный апдейт.
   const unsubscribers: Array<() => void> = [];
-
-  // Если у кого-то открыта детальная задачи, и в это время были внесены изменения - реактивный апдейт задачи.
   const subscribeToIssueUpdates = () => {
     stopListen();
 
     unsubscribers.push(
-      listen(EIssueEvent.UPDATED, async (updatedIssue: TIssueBase) => {
-        if (updatedIssue.id === selectedIssueId.value) await fetchIssueDetails();
+      listen(EIssueEvent.UPDATED, (updatedIssue: TIssueBase) => {
+        if (updatedIssue.id !== selectedIssueId.value) return;
+        void onUpdateIssue(updatedIssue);
       }),
 
-      listen(EIssueEvent.MOVED, async (payload: TMoveIssueEmitPayload) => {
+      listen(EIssueEvent.MOVED, (payload: TMoveIssueEmitPayload) => {
         if (payload.movedIssueId !== selectedIssueId.value || !issueDetails.value) return;
-        await onIssueMove(payload);
+        void onIssueMove(payload);
+      }),
+
+      listen(EIssueEvent.DELETED, (payload: TDeleteIssueEmitPayload) => {
+        if (payload.deletedIssueId !== selectedIssueId.value) return;
+        void onDeleteIssue(payload);
       }),
     );
   };
 
   const openIssueDetails = async (issue: TIssueBase) => {
     if (isLoadingIssueDetails.value) return;
-
     selectedIssueId.value = issue.id;
-
     await fetchIssueDetails();
     isModalOpen.value = true;
     router.replace({ query: { ...route.query, issue: `task-${issue.id}` } });
