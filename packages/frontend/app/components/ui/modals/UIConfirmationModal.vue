@@ -1,5 +1,5 @@
 <template>
-  <UIModal v-model:is-open="isOpen" :title="title">
+  <UIModal v-model:is-open="isOpen" :title="title" hide-close-button :close-on-esc="false">
     <div class="w-320">
       <p class="text-14 text-light-500">{{ text }}</p>
     </div>
@@ -9,7 +9,15 @@
         <UIButton full :disabled="disabled" @click:button="emit('click:confirm')">
           {{ actionButtonLabel }}
         </UIButton>
-        <UIButton full :background-color="EColor.RED" :disabled="disabled" @click:button="reset"> Отмена </UIButton>
+        <UIButton
+          v-if="!hideResetButton"
+          full
+          :background-color="EColor.RED"
+          :disabled="disabled"
+          @click:button="reset"
+        >
+          Отмена
+        </UIButton>
       </div>
     </template>
   </UIModal>
@@ -29,11 +37,13 @@ withDefaults(
     text: string;
     actionButtonLabel?: string;
     disabled?: boolean;
+    hideResetButton?: boolean;
   }>(),
   {
     title: null,
     actionButtonLabel: 'Применить',
     disabled: false,
+    hideResetButton: false,
   },
 );
 
