@@ -31,6 +31,8 @@ export default defineNuxtConfig({
   ],
 
   runtimeConfig: {
+    // Задаётся в .env: локально http://localhost:<port>/api, в Docker http://backend:<port>/api
+    BACKEND_INTERNAL_URL: process.env.BACKEND_INTERNAL_URL || process.env.BACKEND_URL,
     public: {
       NODE_ENV: NODE_ENV,
       BASE_URL: process.env.BACKEND_URL,

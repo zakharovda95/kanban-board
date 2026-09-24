@@ -33,6 +33,14 @@ _(Описание не заполнено)_
 5) Запустить бэкенд ```npm run dev:backend```;
 6) Запустить фронтенд ```npm run dev:frontend```;
 
+## Установка и запуск в Docker (production-сборка, без SSL):
+
+1) Заполнить `.env.production` (можно скопировать с `.env.development`; `BACKEND_INTERNAL_URL=http://backend:<BACKEND_PORT>/api`);
+2) Инфраструктура: ```npm run docker:up```;
+3) Собрать и запустить app: ```npm run docker:app:up```;
+4) Открыть фронт на `FRONTEND_PORT`, API на `BACKEND_PORT` из `.env`;
+5) Остановить app: ```npm run docker:app:down```;
+
 ## Версии приложения
 
 ### 0.1.* - MVP _(текущая версия)_

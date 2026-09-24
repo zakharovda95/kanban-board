@@ -22,7 +22,10 @@
         "check:all": "npm run check:common && npm run check:backend && npm run check:frontend",
         "docker:up": "docker compose --env-file .env.development -f docker/docker-compose.yml up -d minio postgres && docker compose --env-file .env.development -f docker/docker-compose.yml run --rm --no-deps minio-init",
         "docker:down": "docker compose --env-file .env.development -f docker/docker-compose.yml down",
-        "docker:logs": "docker compose --env-file .env.development -f docker/docker-compose.yml logs -f minio postgres"
+        "docker:logs": "docker compose --env-file .env.development -f docker/docker-compose.yml logs -f minio postgres backend frontend",
+        "docker:app:build": "docker compose --env-file .env.production -f docker/docker-compose.yml build backend frontend",
+        "docker:app:up": "docker compose --env-file .env.production -f docker/docker-compose.yml up -d --build backend frontend",
+        "docker:app:down": "docker compose --env-file .env.production -f docker/docker-compose.yml stop backend frontend && docker compose --env-file .env.production -f docker/docker-compose.yml rm -f backend frontend"
     },
     "workspaces": [
         "packages/*"

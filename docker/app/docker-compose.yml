@@ -1,0 +1,65 @@
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: docker/app/Dockerfile.backend
+    image: kanban-backend:local
+    container_name: kanban-backend
+    env_file:
+      - path: ../../.env.production
+        required: false
+      - path: ../../.env.development
+        required: false
+    environment:
+      NODE_ENV: production
+      BACKEND_HOST: 0.0.0.0
+      DB_HOST: postgres
+      MINIO_ENDPOINT: minio
+    ports:
+      - '${BACKEND_PORT:-3000}:${BACKEND_PORT:-3000}'
+    networks:
+      kanban_net:
+        ipv4_address: 172.28.0.20
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../..
+      dockerfile: docker/app/Dockerfile.frontend
+      args:
+        NODE_ENV: production
+        BACKEND_URL: ${BACKEND_URL}
+        FRONTEND_URL: ${FRONTEND_URL}
+        WEBSOCKET_URL: ${WEBSOCKET_URL}
+        MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+        MINIO_PORT: ${MINIO_PORT}
+        MINIO_USE_SSL: ${MINIO_USE_SSL:-false}
+        MINIO_BUCKET: ${MINIO_BUCKET}
+        MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
+    image: kanban-frontend:local
+    container_name: kanban-frontend
+    env_file:
+      - path: ../../.env.production
+        required: false
+      - path: ../../.env.development
+        required: false
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: ${FRONTEND_PORT:-3000}
+      NITRO_HOST: 0.0.0.0
+      NITRO_PORT: ${FRONTEND_PORT:-3000}
+      NUXT_BACKEND_INTERNAL_URL: ${BACKEND_INTERNAL_URL}
+    ports:
+      - '${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}'
+    networks:
+      kanban_net:
+        ipv4_address: 172.28.0.21
+    depends_on:
+      - backend
+    restart: unless-stopped
