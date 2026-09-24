@@ -20,13 +20,17 @@ _(Описание не заполнено)_
 
 _(Описание не заполнено)_
 
-## Установка и запуск:
+## Установка и запуск в режиме разработки:
 
 1) Скопировать и заполнить .env файл в зависимости от окружения (шаблон .env.example);
 2) Установить зависимости (без выполнения npm-хуков) ```npm run first-install```;
 3) Сбилдить common-проект ```npm run build:common```;
-4) Запустить бэкенд ```npm run dev:backend```;
-5) Запустить фронтенд ```npm run dev:frontend```;
+4) Поднять MinIO (Docker):
+   - Положить лицензию в `docker/minio/minio.license` (в git не коммитится);
+   - ```npm run docker:up``` — API `http://localhost:9000`, Console `http://localhost:9001`, данные в `./volumes/minio`;
+5) Запустить бэкенд ```npm run dev:backend```;
+6) Запустить фронтенд ```npm run dev:frontend```;
+7) Тест загрузки файла: страница `/docs`;
 
 ## Версии приложения
 

@@ -41,6 +41,13 @@ coverage/
 .env.*
 !.env.example
 
+# Docker bind mounts (MinIO, future Postgres, etc.)
+volumes/
+
+# MinIO AIStor Free license (do not commit)
+docker/minio/minio.license
+*.license
+
 # temp directory
 .temp
 .tmp

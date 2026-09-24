@@ -1,0 +1,13 @@
+name: kanban
+
+include:
+  - path: ./minio/docker-compose.yml
+  # - path: ./postgres/docker-compose.yml
+
+networks:
+  kanban_net:
+    name: kanban_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

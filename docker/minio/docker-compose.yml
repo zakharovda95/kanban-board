@@ -1,0 +1,52 @@
+services:
+  minio:
+    image: quay.io/minio/aistor/minio:latest
+    container_name: kanban-minio
+    command: server /data --console-address ":9001" --license /minio.license
+    ports:
+      - '${MINIO_PORT:-9000}:9000'
+      - '${MINIO_CONSOLE_PORT:-9001}:9001'
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+      MINIO_API_CORS_ALLOW_ORIGIN: '*'
+      MINIO_LICENSE: /minio.license
+    volumes:
+      - ../../volumes/minio:/data
+      - ./minio.license:/minio.license:ro
+    networks:
+      kanban_net:
+        ipv4_address: 172.28.0.10
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+
+  minio-init:
+    image: amazon/aws-cli:latest
+    profiles: ['init']
+    environment:
+      AWS_ACCESS_KEY_ID: ${MINIO_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_SECRET_KEY}
+      AWS_DEFAULT_REGION: us-east-1
+      MINIO_BUCKET: ${MINIO_BUCKET}
+    volumes:
+      - ./bucket-policy.json:/bucket-policy.json:ro
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        echo 'Waiting for MinIO...'
+        until aws --endpoint-url http://minio:9000 s3 ls >/dev/null 2>&1; do
+          sleep 1
+        done
+        aws --endpoint-url http://minio:9000 s3 mb "s3://$$MINIO_BUCKET" 2>/dev/null || true
+        sed "s/__BUCKET__/$$MINIO_BUCKET/g" /bucket-policy.json > /tmp/policy.json
+        aws --endpoint-url http://minio:9000 s3api put-bucket-policy --bucket "$$MINIO_BUCKET" --policy file:///tmp/policy.json
+        echo "Bucket $$MINIO_BUCKET is ready (public read/write; CORS via MINIO_API_CORS_ALLOW_ORIGIN)"
+    networks:
+      - kanban_net
