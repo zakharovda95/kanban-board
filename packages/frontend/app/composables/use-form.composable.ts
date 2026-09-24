@@ -2,7 +2,7 @@
 
 import { computed, type Ref, ref, toRaw, unref } from 'vue';
 import type { TValidationErrors } from '@kanban-board/common';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep.js';
 
 export function useForm<T extends Record<string, any>>(initial: T) {
   const cloneSafe = <T>(value: T): T => {

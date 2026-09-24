@@ -1,4 +1,4 @@
-import { throttle } from 'lodash';
+import throttle from 'lodash/throttle.js';
 
 const DEFAULT_TIMEOUT = 30 * 60 * 1000; // 30 сек
 const THROTTLE_TIMEOUT = 5_000;

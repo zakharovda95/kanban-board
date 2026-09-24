@@ -4,9 +4,10 @@ WORKDIR /app
 COPY package.json ./
 COPY packages/common/package.json ./packages/common/
 COPY packages/frontend/package.json ./packages/frontend/
-COPY packages/backend/package.json ./packages/backend/
 
-RUN npm install --ignore-scripts --workspace=@kanban-board/common --workspace=@kanban-board/frontend
+RUN npm install --ignore-scripts \
+  --workspace=@kanban-board/common \
+  --workspace=@kanban-board/frontend
 
 FROM deps AS build
 COPY packages/common ./packages/common

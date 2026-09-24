@@ -11,7 +11,8 @@ import {
   type TMoveColumnEmitPayload,
   type TMoveIssueEmitPayload,
 } from '@kanban-board/common';
-import { cloneDeep, orderBy } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep.js';
+import orderBy from 'lodash/orderBy.js';
 import { defineStore } from 'pinia';
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
