@@ -2,7 +2,7 @@ name: kanban
 
 include:
   - path: ./minio/docker-compose.yml
-  # - path: ./postgres/docker-compose.yml
+  - path: ./postgres/docker-compose.yml
 
 networks:
   kanban_net:

@@ -20,9 +20,9 @@
         "check:backend": "npm run type:check -w @kanban-board/backend && npm run code:format -w @kanban-board/backend && npm run code:lint -w @kanban-board/backend",
         "check:frontend": "npm run type:check -w @kanban-board/frontend && npm run code:format -w @kanban-board/frontend && npm run code:lint -w @kanban-board/frontend",
         "check:all": "npm run check:common && npm run check:backend && npm run check:frontend",
-        "docker:up": "docker compose --env-file .env.development -f docker/docker-compose.yml up -d minio && docker compose --env-file .env.development -f docker/docker-compose.yml run --rm --no-deps minio-init",
+        "docker:up": "docker compose --env-file .env.development -f docker/docker-compose.yml up -d minio postgres && docker compose --env-file .env.development -f docker/docker-compose.yml run --rm --no-deps minio-init",
         "docker:down": "docker compose --env-file .env.development -f docker/docker-compose.yml down",
-        "docker:logs": "docker compose --env-file .env.development -f docker/docker-compose.yml logs -f minio"
+        "docker:logs": "docker compose --env-file .env.development -f docker/docker-compose.yml logs -f minio postgres"
     },
     "workspaces": [
         "packages/*"

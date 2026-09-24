@@ -25,12 +25,13 @@ _(Описание не заполнено)_
 1) Скопировать и заполнить .env файл в зависимости от окружения (шаблон .env.example);
 2) Установить зависимости (без выполнения npm-хуков) ```npm run first-install```;
 3) Сбилдить common-проект ```npm run build:common```;
-4) Поднять MinIO (Docker):
+4) Поднять инфраструктуру (Docker) ```npm run docker:up```:
    - Положить лицензию в `docker/minio/minio.license` (в git не коммитится);
-   - ```npm run docker:up``` — API `http://localhost:9000`, Console `http://localhost:9001`, данные в `./volumes/minio`;
+   - MinIO API `http://localhost:9000`, MinIO Console `http://localhost:9001`, 
+   - Postgres `localhost:5432`; 
+   - Данные лежат в `./volumes/minio` и `./volumes/postgres`;
 5) Запустить бэкенд ```npm run dev:backend```;
 6) Запустить фронтенд ```npm run dev:frontend```;
-7) Тест загрузки файла: страница `/docs`;
 
 ## Версии приложения
 
