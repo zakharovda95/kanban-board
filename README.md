@@ -25,7 +25,7 @@ _(Описание не заполнено)_
 1) Скопировать и заполнить .env файл в зависимости от окружения (шаблон .env.example);
 2) Установить зависимости (без выполнения npm-хуков) ```npm run first-install```;
 3) Сбилдить common-проект ```npm run build:common```;
-4) Поднять инфраструктуру (Docker) ```npm run docker:up```:
+4) Поднять инфраструктуру (Docker) ```npm run docker:up-infrastructure-dev```:
    - Положить лицензию в `docker/minio/minio.license` (в git не коммитится);
    - MinIO API `http://localhost:9000`, MinIO Console `http://localhost:9001`, 
    - Postgres `localhost:5432`; 
@@ -35,11 +35,11 @@ _(Описание не заполнено)_
 
 ## Установка и запуск в Docker (production-сборка, без SSL):
 
-1) Заполнить `.env.production` (можно скопировать с `.env.local`);
-2) Инфраструктура: ```npm run docker:up```;
-3) Собрать и запустить app: ```npm run docker:app:up```;
+1) Заполнить `.env.production` (можно скопировать с `.env.development`);
+2) Инфраструктура: ```npm run docker:up-infrastructure-prod```;
+3) Собрать и запустить app: ```npm run docker:up-app-prod```;
 4) Открыть фронт на `FRONTEND_PORT`, API на `BACKEND_PORT` из `.env`;
-5) Остановить app: ```npm run docker:app:down```;
+5) Остановить app: ```npm run docker:down-app-prod```;
 
 ## Версии приложения
 
