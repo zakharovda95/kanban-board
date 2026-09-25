@@ -36,8 +36,9 @@ _(Описание не заполнено)_
 ## Установка и запуск в Docker (production-сборка, без SSL):
 
 1) Заполнить `.env.production` (можно скопировать с `.env.development`);
-2) Инфраструктура: ```npm run docker:up-infrastructure-prod```;
-3) Собрать и запустить app: ```npm run docker:up-app-prod```;
+2) Скопировать лицензию в `docker/minio/minio.license`
+2) Поднять инфраструктуру: ```npm run docker:up-infrastructure-prod```;
+3) Собрать и запустить приложение: ```npm run docker:up-app-prod```;
 4) Открыть фронт на `FRONTEND_PORT`, API на `BACKEND_PORT` из `.env`;
 5) Остановить app: ```npm run docker:down-app-prod```;
 
