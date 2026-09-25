@@ -31,17 +31,12 @@ export default defineNuxtConfig({
   ],
 
   runtimeConfig: {
-    // Задаётся в .env: локально http://localhost:<port>/api, в Docker http://backend:<port>/api
-    BACKEND_INTERNAL_URL: process.env.BACKEND_INTERNAL_URL || process.env.BACKEND_URL,
     public: {
       NODE_ENV: NODE_ENV,
       BASE_URL: process.env.BACKEND_URL,
       FRONTEND_URL: process.env.FRONTEND_URL,
       WEBSOCKET_URL: process.env.WEBSOCKET_URL,
       VERSION: process.env.npm_package_version,
-      MINIO_ENDPOINT: process.env.MINIO_ENDPOINT,
-      MINIO_PORT: process.env.MINIO_PORT,
-      MINIO_USE_SSL: process.env.MINIO_USE_SSL,
       MINIO_BUCKET: process.env.MINIO_BUCKET,
       MINIO_PUBLIC_URL: process.env.MINIO_PUBLIC_URL,
     },

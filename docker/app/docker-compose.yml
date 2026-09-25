@@ -14,7 +14,6 @@ services:
       NODE_ENV: production
       BACKEND_HOST: 0.0.0.0
       DB_HOST: postgres
-      MINIO_ENDPOINT: minio
     ports:
       - '${BACKEND_PORT:-3000}:${BACKEND_PORT:-3000}'
     networks:
@@ -36,9 +35,6 @@ services:
         BACKEND_URL: ${BACKEND_URL}
         FRONTEND_URL: ${FRONTEND_URL}
         WEBSOCKET_URL: ${WEBSOCKET_URL}
-        MINIO_ENDPOINT: ${MINIO_ENDPOINT}
-        MINIO_PORT: ${MINIO_PORT}
-        MINIO_USE_SSL: ${MINIO_USE_SSL:-false}
         MINIO_BUCKET: ${MINIO_BUCKET}
         MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
     image: kanban-frontend:local
@@ -54,7 +50,6 @@ services:
       PORT: ${FRONTEND_PORT:-3000}
       NITRO_HOST: 0.0.0.0
       NITRO_PORT: ${FRONTEND_PORT:-3000}
-      NUXT_BACKEND_INTERNAL_URL: ${BACKEND_INTERNAL_URL}
     ports:
       - '${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}'
     networks:

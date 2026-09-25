@@ -24,13 +24,6 @@ export default class AppConfig {
       DB_USER: z.string().trim().min(this.MIN_LENGTH),
       DB_PASSWORD: z.string().trim().min(this.MIN_DB_PASSWORD_LENGTH),
       DB_MAX: z.coerce.number().default(this.MAX_DB_CONNECTIONS),
-      MINIO_ENDPOINT: z.string().trim().min(this.MIN_LENGTH),
-      MINIO_PORT: z.coerce.number().min(this.MIN_PORT).max(this.MAX_PORT),
-      MINIO_CONSOLE_PORT: z.coerce.number().min(this.MIN_PORT).max(this.MAX_PORT),
-      MINIO_USE_SSL: z
-        .enum(['true', 'false'])
-        .default('false')
-        .transform(value => value === 'true'),
       MINIO_ACCESS_KEY: z.string().trim().min(this.MIN_LENGTH),
       MINIO_SECRET_KEY: z.string().trim().min(this.MIN_DB_PASSWORD_LENGTH),
       MINIO_BUCKET: z.string().trim().min(this.MIN_LENGTH),

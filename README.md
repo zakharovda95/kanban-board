@@ -35,7 +35,7 @@ _(Описание не заполнено)_
 
 ## Установка и запуск в Docker (production-сборка, без SSL):
 
-1) Заполнить `.env.production` (можно скопировать с `.env.development`; `BACKEND_INTERNAL_URL=http://backend:<BACKEND_PORT>/api`);
+1) Заполнить `.env.production` (можно скопировать с `.env.local`);
 2) Инфраструктура: ```npm run docker:up```;
 3) Собрать и запустить app: ```npm run docker:app:up```;
 4) Открыть фронт на `FRONTEND_PORT`, API на `BACKEND_PORT` из `.env`;
