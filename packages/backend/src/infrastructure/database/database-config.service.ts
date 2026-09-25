@@ -1,4 +1,4 @@
-import { ENodeEnv } from '@kanban-board/common';
+// import { ENodeEnv } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
@@ -8,7 +8,7 @@ export default class DatabaseConfigService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
-    const nodeEnv = this.configService.get<ENodeEnv>('NODE_ENV');
+    // const nodeEnv = this.configService.get<ENodeEnv>('NODE_ENV');
 
     return {
       type: 'postgres',
@@ -18,7 +18,8 @@ export default class DatabaseConfigService implements TypeOrmOptionsFactory {
       username: this.configService.get<string>('DB_USER'),
       password: this.configService.get<string>('DB_PASSWORD'),
       poolSize: this.configService.get<number>('DB_POOL_SIZE'),
-      synchronize: nodeEnv !== ENodeEnv.PRODUCTION,
+      //   synchronize: nodeEnv !== ENodeEnv.PRODUCTION,
+      synchronize: true, // Открыл временно для продакшена чтобы не писать миграции для МВП.
       autoLoadEntities: true,
       entityPrefix: undefined,
       // dropSchema: true,
