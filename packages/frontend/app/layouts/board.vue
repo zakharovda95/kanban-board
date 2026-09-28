@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen flex-col">
+  <div class="flex h-dvh flex-col">
     <TheHeader />
 
     <main class="laptop:flex-row flex flex-1 flex-col">

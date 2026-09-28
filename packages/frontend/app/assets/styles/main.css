@@ -14,7 +14,7 @@
   body {
     background-color: var(--color-light-100);
     color: var(--color-light-800);
-    min-height: 100vh;
+    min-height: 100dvh;
     font-family: Inter, sans-serif;
     font-weight: normal;
     line-height: normal;

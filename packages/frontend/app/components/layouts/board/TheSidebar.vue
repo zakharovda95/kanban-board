@@ -10,7 +10,7 @@
     <Transition name="fade">
       <div
         v-if="isBoardsMenuOpen"
-        class="bg-light-100 absolute right-0 bottom-0 left-0 z-1 h-[calc(100vh-148px)] w-full p-12"
+        class="bg-light-100 absolute right-0 bottom-0 left-0 z-1 h-[calc(100dvh-148px)] w-full p-12"
       >
         <BoardsList @click:board="isBoardsMenuOpen = false" />
       </div>

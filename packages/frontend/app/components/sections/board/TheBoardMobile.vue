@@ -20,7 +20,7 @@
       <Transition name="fade">
         <div
           v-if="isColumnsMenuOpen"
-          class="bg-light-100 absolute right-0 bottom-0 left-0 z-0 h-[calc(100vh-148px)] w-full overflow-hidden p-12"
+          class="bg-light-100 absolute right-0 bottom-0 left-0 z-0 h-[calc(100dvh-148px)] w-full overflow-hidden p-12"
         >
           <div class="bg-light-base rounded-12 size-full p-12">
             <div v-if="board?.columns.length" class="hide-scrollbar flex size-full flex-col gap-8 overflow-y-auto">
@@ -51,7 +51,7 @@
     <div v-if="selectedColumn" class="flex flex-col items-center justify-start gap-12">
       <ColumnTopPanel :column="selectedColumn" />
 
-      <div class="hide-scrollbar h-[calc(100vh-208px)] w-full overflow-y-auto">
+      <div class="hide-scrollbar h-[calc(100dvh-208px)] w-full overflow-y-auto">
         <div v-if="selectedColumn.issues.length" class="flex flex-col items-center justify-start gap-8">
           <IssueCard
             v-for="issue in selectedColumn.issues"

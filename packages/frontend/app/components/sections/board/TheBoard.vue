@@ -36,7 +36,7 @@
             <ColumnTopPanel :column="column" />
 
             <div class="size-full overflow-hidden pb-8">
-              <OverlayScrollbarsComponent class="size-full h-[calc(100vh-348px)]" :options="scrollbarOptionsColumn">
+              <OverlayScrollbarsComponent class="size-full h-[calc(100dvh-348px)]" :options="scrollbarOptionsColumn">
                 <draggable
                   v-model="column.issues"
                   class="flex min-h-full w-full flex-col items-center gap-8 px-8"
