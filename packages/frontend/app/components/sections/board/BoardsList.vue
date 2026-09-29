@@ -87,9 +87,10 @@ const emit = defineEmits<{
 }>();
 
 const route = useRoute();
-const boardsStore = useBoardsStore();
 const toast = useToast();
 const { emitEvent, isLoading } = useSocket();
+
+const boardsStore = useBoardsStore();
 
 const boardId = computed(() => Number(route.params.id));
 const isTooMuchBoards = computed(() => boardsStore.boards != null && boardsStore.boards.length >= BOARDS_MAX_COUNT);

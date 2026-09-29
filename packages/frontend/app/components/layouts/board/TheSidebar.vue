@@ -11,7 +11,7 @@
     class="laptop:hidden block"
     button-icon="mingcute:grid-2-fill"
     modal-title="Мои доски"
-    :selected-title="boardStore.board?.title ?? null"
+    :selected-title="selectedTitle"
     :deselected-title="boardsStore.boards?.length ? 'Необходимо выбрать доску' : 'Необходимо добавить доску'"
     :is-loading="boardsStore.isLoadingBoards || boardStore.isLoadingBoard"
     :tooltip-text="boardStore.board?.description ?? null"
@@ -21,6 +21,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router';
+
 import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
 import { useBoardStore } from '~/stores/board.store.ts';
 import { useBoardsStore } from '~/stores/boards.store.ts';
@@ -29,8 +31,16 @@ import BoardsList from '~/components/sections/board/BoardsList.vue';
 import MobileSelectPanel from '~/components/shared/MobileSelectPanel.vue';
 import TheProfile from '~/components/shared/TheProfile.vue';
 
+const route = useRoute();
 const boardsStore = useBoardsStore();
 const boardStore = useBoardStore();
+
+const boardId = computed(() => Number(route.params.id));
+
+const selectedTitle = computed(() => {
+  if (boardStore.board?.title) return boardStore.board.title;
+  return boardsStore.boards?.find(board => board.id === boardId.value)?.title ?? null;
+});
 
 const isBoardsMenuOpen = ref(false);
 

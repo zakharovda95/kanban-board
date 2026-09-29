@@ -9,7 +9,7 @@
       />
 
       <div v-if="isLoading" class="flex flex-1 items-center justify-center">
-        <UILoader :size="EIconSizeSmall.MEDIUM" />
+        <UISkeleton class="rounded-6 h-32 w-full" />
       </div>
       <UITooltip v-else class="w-full" :text="tooltipText">
         <div class="bg-light-100 rounded-6 flex h-32 w-[calc(100%-64px)] flex-1 items-center justify-center px-12 py-6">
@@ -35,10 +35,8 @@
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
-import { EIconSizeSmall } from '~/enums/global.enums.ts';
-
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
-import UILoader from '~/components/ui/loaders/UILoader.vue';
+import UISkeleton from '~/components/ui/loaders/UISkeleton.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
 import UITooltip from '~/components/ui/UITooltip.vue';
 
