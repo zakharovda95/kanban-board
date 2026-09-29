@@ -151,11 +151,13 @@ const deleteColumn = () => {
   emitEventDelete<number, TDeleteColumnResponse>({
     event: EColumnEvent.DELETE,
     data: column.value.id,
-    successCallback: (response: TDeleteColumnResponse) => {
+    successCallback: async (response: TDeleteColumnResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Колонка удалена' });
-        boardStore.deleteColumn(response.data);
+        // Close first so VFM can restore overlays before this list item unmounts.
         closeModal();
+        await nextTick();
+        boardStore.deleteColumn(response.data);
       }
     },
     errorCallback: (error: unknown) => {

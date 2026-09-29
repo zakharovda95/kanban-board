@@ -13,16 +13,18 @@
         @click:button="isContextMenuOpen = !isContextMenuOpen"
       />
     </div>
-    <Transition name="menu-fade">
-      <div
-        v-if="isContextMenuOpen"
-        ref="menuRef"
-        :style="{ ...floatingStyles }"
-        class="border-light-200 bg-light-base rounded-6 max-size-200 z-2 size-fit border p-8"
-      >
-        <slot />
-      </div>
-    </Transition>
+    <Teleport to="#teleports">
+      <Transition name="menu-fade">
+        <div
+          v-if="isContextMenuOpen"
+          ref="menuRef"
+          :style="{ ...floatingStyles }"
+          class="border-light-200 bg-light-base rounded-6 max-size-200 z-[2000] size-fit border p-8"
+        >
+          <slot />
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -65,9 +67,13 @@ const closeContextMenu = () => {
   isContextMenuOpen.value = false;
 };
 
-onClickOutside(contextMenuRef, () => {
-  closeContextMenu();
-});
+onClickOutside(
+  contextMenuRef,
+  () => {
+    closeContextMenu();
+  },
+  { ignore: [menuRef] },
+);
 
 defineExpose({
   closeContextMenu,
@@ -75,6 +81,7 @@ defineExpose({
 
 const { floatingStyles } = useFloating(buttonRef, menuRef, {
   placement: 'bottom-start',
+  strategy: 'fixed',
   whileElementsMounted: autoUpdate,
   middleware: [offset(8), flip(), shift()],
 });

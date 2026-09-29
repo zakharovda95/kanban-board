@@ -1,88 +1,136 @@
 <template>
-  <div class="flex size-full flex-col items-center gap-12 p-12">
-    <BoardFilter />
+  <div class="size-full">
+    <UILoader v-if="boardStore.isLoadingBoard" :size="64" full />
+    <div v-else class="laptop:p-12 flex size-full flex-col items-center gap-12 p-0">
+      <!--   Desktop версия   -->
+      <BoardFilter class="laptop:flex hidden" />
+      <!--   Mobile версия   -->
+      <MobileSelectPanel
+        v-model:is-open="isOpenMobileColumnsList"
+        class="laptop:hidden flex py-0"
+        button-icon="mingcute:column-fill"
+        :selected-title="selectedColumn?.title ?? null"
+        :color="selectedColumn?.color ?? null"
+        deselected-title="Необходимо добавить колонку"
+        modal-title="Колонки"
+      >
+        <MobileColumnsList :selected-column-id="selectedColumnId" @select:column="selectColumn" />
+      </MobileSelectPanel>
 
-    <div v-if="!board?.columns.length" class="flex size-full flex-col items-center justify-center gap-8 p-12">
-      <p class="text-14 font-medium">Для начала работы необходимо добавить колонку.</p>
-      <AddColumnButton />
-    </div>
-
-    <div v-else class="relative size-full">
-      <BoardScrollButton
-        @mouseenter="startScrollLeft"
-        @mouseleave="stopScroll"
-        @dragenter.prevent="startScrollLeft"
-        @dragover.prevent="onDragOverLeft"
-        @dragleave="stopScroll"
-        @drop.prevent="stopScroll"
-      />
-      <OverlayScrollbarsComponent ref="boardScrollRef" class="w-[calc(100vw-304px)]" :options="scrollbarOptionsBoard">
-        <div class="flex h-full flex-1 flex-row gap-12">
-          <article
-            v-for="column in board.columns"
-            :key="column.id"
-            class="border-light-200 bg-light-100 rounded-12 flex size-full w-280 shrink-0 flex-col items-center gap-8 overflow-hidden border"
+      <div v-if="!board?.columns.length" class="flex size-full flex-col items-center justify-center gap-8 p-12">
+        <p class="text-14 text-center font-medium">Для начала работы необходимо добавить колонку.</p>
+        <AddColumnButton />
+      </div>
+      <template v-else>
+        <!--   Desktop версия   -->
+        <div class="laptop:block relative hidden size-full">
+          <BoardScrollButton
+            @mouseenter="startScrollLeft"
+            @mouseleave="stopScroll"
+            @dragenter.prevent="startScrollLeft"
+            @dragover.prevent="onDragOverLeft"
+            @dragleave="stopScroll"
+            @drop.prevent="stopScroll"
+          />
+          <OverlayScrollbarsComponent
+            ref="boardScrollRef"
+            class="w-[calc(100vw-304px)]"
+            :options="scrollbarOptionsBoard"
           >
-            <header
-              class="bg-light-base flex h-54 min-h-54 w-full shrink-0 flex-col overflow-hidden border-b-4 px-12 py-8 text-left select-none"
-              :style="{ borderBottomColor: column.color }"
-            >
-              <div class="flex size-full items-center justify-between">
-                <ColumnInfo :column="column" class="w-[calc(100%-32px)]" />
-                <ColumnActionsButtons :column-id="column.id" />
-              </div>
-            </header>
-
-            <ColumnTopPanel :column="column" />
-
-            <div class="size-full overflow-hidden pb-8">
-              <OverlayScrollbarsComponent class="size-full h-[calc(100dvh-348px)]" :options="scrollbarOptionsColumn">
-                <draggable
-                  v-model="column.issues"
-                  class="flex min-h-full w-full flex-col items-center gap-8 px-8"
-                  item-key="id"
-                  group="board-issues"
-                  ghost-class="drag-ghost"
-                  :animation="200"
-                  :disabled="isLoadingSocket"
-                  @start="boardStore.takeSnapshot"
-                  @change="onIssueMove($event, column)"
+            <div class="flex h-full flex-1 flex-row gap-12">
+              <article
+                v-for="column in board.columns"
+                :key="column.id"
+                class="border-light-200 bg-light-100 rounded-12 flex size-full w-280 shrink-0 flex-col items-center gap-8 overflow-hidden border"
+              >
+                <header
+                  class="bg-light-base flex h-54 min-h-54 w-full shrink-0 flex-col overflow-hidden border-b-4 px-12 py-8 text-left select-none"
+                  :style="{ borderBottomColor: column.color }"
                 >
-                  <template #item="{ element: issue }">
-                    <IssueCard
-                      :issue="issue"
-                      :color="column.color"
-                      :is-loading="isLoadingIssueDetails && selectedIssueId === issue.id"
-                      @open:details="issueDetailsStore.openIssueDetails"
-                    />
-                  </template>
-                </draggable>
-              </OverlayScrollbarsComponent>
+                  <div class="flex size-full items-center justify-between">
+                    <ColumnInfo :column="column" class="w-[calc(100%-32px)]" />
+                    <ColumnActionsButtons :column-id="column.id" />
+                  </div>
+                </header>
+
+                <ColumnTopPanel :column="column" />
+
+                <div class="size-full overflow-hidden pb-8">
+                  <OverlayScrollbarsComponent
+                    class="size-full h-[calc(100dvh-348px)]"
+                    :options="scrollbarOptionsColumn"
+                  >
+                    <draggable
+                      v-model="column.issues"
+                      class="flex min-h-full w-full flex-col items-center gap-8 px-8"
+                      item-key="id"
+                      group="board-issues"
+                      ghost-class="drag-ghost"
+                      :animation="200"
+                      :disabled="isLoadingSocket"
+                      @start="boardStore.takeSnapshot"
+                      @change="onIssueMove($event, column)"
+                    >
+                      <template #item="{ element: issue }">
+                        <IssueCard
+                          :issue="issue"
+                          :color="column.color"
+                          :is-loading="isLoadingIssueDetails && selectedIssueId === issue.id"
+                          @open:details="issueDetailsStore.openIssueDetails"
+                        />
+                      </template>
+                    </draggable>
+                  </OverlayScrollbarsComponent>
+                </div>
+              </article>
             </div>
-          </article>
+          </OverlayScrollbarsComponent>
+          <BoardScrollButton
+            position="right"
+            @mouseenter="startScrollRight"
+            @mouseleave="stopScroll"
+            @dragenter.prevent="startScrollRight"
+            @dragover.prevent="onDragOverRight"
+            @dragleave="stopScroll"
+            @drop.prevent="stopScroll"
+          />
         </div>
-      </OverlayScrollbarsComponent>
-      <BoardScrollButton
-        position="right"
-        @mouseenter="startScrollRight"
-        @mouseleave="stopScroll"
-        @dragenter.prevent="startScrollRight"
-        @dragover.prevent="onDragOverRight"
-        @dragleave="stopScroll"
-        @drop.prevent="stopScroll"
+        <!--   Mobile версия   -->
+        <div class="laptop:hidden block size-full px-12">
+          <div v-if="selectedColumn" class="flex flex-col items-center justify-start gap-12">
+            <ColumnTopPanel :column="selectedColumn" />
+
+            <OverlayScrollbarsComponent class="h-[calc(100dvh-260px)] w-full" :options="scrollbarOptionsColumn">
+              <div v-if="selectedColumn.issues.length" class="flex flex-col items-center justify-start gap-8">
+                <IssueCard
+                  v-for="issue in selectedColumn.issues"
+                  :key="issue.id"
+                  :issue="issue"
+                  :is-loading="isLoadingIssueDetails && selectedIssueId === issue.id"
+                  :color="selectedColumn.color"
+                  @open:details="issueDetailsStore.openIssueDetails"
+                />
+              </div>
+              <div v-else class="flex size-full items-center justify-center">
+                <span class="text-14 font-medium">Нет задач</span>
+              </div>
+            </OverlayScrollbarsComponent>
+          </div>
+          <p v-else class="text-14 text-center font-medium">Необходимо выбрать колонку.</p>
+        </div>
+      </template>
+
+      <IssueDetailsModal
+        v-if="issueDetails"
+        :is-open="isModalOpen"
+        :issue="issueDetails"
+        :stages="stages"
+        @update:is-open="issueDetailsStore.onModalClose"
+        @update:issue="issueDetailsStore.onUpdateIssue"
+        @delete:issue="issueDetailsStore.onDeleteIssue"
+        @change:stage="issueDetailsStore.onChangeStage"
       />
     </div>
-
-    <IssueDetailsModal
-      v-if="issueDetails"
-      :is-open="isModalOpen"
-      :issue="issueDetails"
-      :stages="stages"
-      @update:is-open="issueDetailsStore.onModalClose"
-      @update:issue="issueDetailsStore.onUpdateIssue"
-      @delete:issue="issueDetailsStore.onDeleteIssue"
-      @change:stage="issueDetailsStore.onChangeStage"
-    />
   </div>
 </template>
 
@@ -96,6 +144,7 @@ import {
 } from 'overlayscrollbars-vue';
 import { storeToRefs } from 'pinia';
 
+import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
 import { useBoardStore } from '~/stores/board.store.ts';
 import { useIssueDetailsStore } from '~/stores/issue-details.store.ts';
 import type { TDragChangeDetails } from '~/types/shared.types.ts';
@@ -106,8 +155,13 @@ import AddColumnButton from '~/components/sections/column/AddColumnButton.vue';
 import ColumnActionsButtons from '~/components/sections/column/ColumnActionsButtons.vue';
 import ColumnInfo from '~/components/sections/column/ColumnInfo.vue';
 import ColumnTopPanel from '~/components/sections/column/ColumnTopPanel.vue';
+import MobileColumnsList from '~/components/sections/column/MobileColumnsList.vue';
 import IssueCard from '~/components/sections/issue/IssueCard.vue';
 import IssueDetailsModal from '~/components/sections/issue/IssueDetailsModal.vue';
+import MobileSelectPanel from '~/components/shared/MobileSelectPanel.vue';
+import UILoader from '~/components/ui/loaders/UILoader.vue';
+
+const toast = useToast();
 
 const boardStore = useBoardStore();
 const issueDetailsStore = useIssueDetailsStore();
@@ -120,6 +174,38 @@ const { issueDetails, isLoadingSocket, isLoadingIssueDetails, issueIdFromQuery, 
 if (issueIdFromQuery.value) {
   issueDetailsStore.subscribeToIssueUpdates();
 }
+
+const isOpenMobileColumnsList = ref(false);
+
+const closeMobileColumnsList = () => {
+  isOpenMobileColumnsList.value = false;
+};
+
+useIsLaptop({
+  onTrue: () => {
+    closeMobileColumnsList();
+  },
+});
+
+const selectedColumnId = ref<number | null>(board.value?.columns[0]?.id ?? null);
+
+const selectedColumn = computed(() => {
+  if (!board.value?.columns.length) return null;
+  return board.value.columns.find(({ id }) => id === selectedColumnId.value) ?? board.value.columns[0] ?? null;
+});
+
+const selectColumn = (columnId: number) => {
+  if (!columnId || columnId <= 0) return;
+
+  const exists = board.value?.columns.some(({ id }) => id === columnId);
+  if (!exists) {
+    toast.error({ message: 'Колонка не найдена' });
+    return;
+  }
+
+  selectedColumnId.value = columnId;
+  closeMobileColumnsList();
+};
 
 const onIssueMove = (details: TDragChangeDetails<TIssueBase>, column: TColumn) => {
   if (!board.value) return;
@@ -240,5 +326,6 @@ onBeforeUnmount(() => {
   stopScroll();
   issueDetailsStore.stopListen();
   issueDetailsStore.resetStore();
+  closeMobileColumnsList();
 });
 </script>

@@ -2,7 +2,7 @@
   <div class="bg-light-base rounded-12 flex size-full h-full flex-col gap-12 p-12">
     <UILoader v-if="boardsStore.isLoadingBoards" full />
     <template v-else>
-      <h4 class="font-medium">Мои доски</h4>
+      <h4 v-if="!hideTitle" class="font-medium">Мои доски</h4>
       <template v-if="boardsStore.boards?.length">
         <draggable
           v-model="boardsStore.boards"
@@ -42,10 +42,7 @@
           </template>
         </draggable>
       </template>
-      <div v-else class="text-12 p-8">
-        <p>Вы еще не добавили ни одной доски.</p>
-        <p>Добавьте новую доску для начала работы.</p>
-      </div>
+      <p v-else class="text-12">Вы еще не добавили ни одной доски.<br >Добавьте новую доску для начала работы.</p>
 
       <AddBoardButton
         :disabled="isTooMuchBoards"
@@ -73,8 +70,17 @@ import type { TDragChangeDetails } from '~/types/shared.types.ts';
 
 import AddBoardButton from '~/components/sections/board/AddBoardButton.vue';
 import BoardActionsButtons from '~/components/sections/board/BoardActionsButtons.vue';
+import UILoader from '~/components/ui/loaders/UILoader.vue';
 import UILink from '~/components/ui/UILink.vue';
-import UILoader from '~/components/ui/UILoader.vue';
+
+withDefaults(
+  defineProps<{
+    hideTitle?: boolean;
+  }>(),
+  {
+    hideTitle: false,
+  },
+);
 
 const emit = defineEmits<{
   'click:board': [];

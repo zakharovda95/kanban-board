@@ -49,8 +49,8 @@ import type { TActionButtonData } from '~/types/shared.types.ts';
 import IssueDate from '~/components/sections/issue/IssueDate.vue';
 import ActionsButtons from '~/components/shared/ActionsButtons.vue';
 import StopPreventWrapper from '~/components/shared/StopPreventWrapper.vue';
+import UILoader from '~/components/ui/loaders/UILoader.vue';
 import UIBadge from '~/components/ui/UIBadge.vue';
-import UILoader from '~/components/ui/UILoader.vue';
 
 const props = withDefaults(
   defineProps<{

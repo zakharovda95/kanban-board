@@ -1,40 +1,30 @@
 <template>
   <div class="flex size-full items-center justify-center">
-    <UILoader v-if="showLoader" :size="64" full />
-    <div v-else-if="errorMessage" class="flex size-full items-center justify-center p-12">
+    <div v-if="errorMessage" class="flex size-full items-center justify-center p-12">
       <p class="text-14 font-medium">{{ errorMessage }}</p>
     </div>
-    <template v-else-if="boardStore.board">
-      <TheBoard v-if="isLaptop" />
-      <TheBoardMobile v-else />
-    </template>
+    <TheBoard v-else />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
 import { useBoardStore } from '~/stores/board.store.ts';
 
 import TheBoard from '~/components/sections/board/TheBoard.vue';
-import TheBoardMobile from '~/components/sections/board/TheBoardMobile.vue';
-import UILoader from '~/components/ui/UILoader.vue';
-
 definePageMeta({
   layout: 'board',
 });
 
 const boardStore = useBoardStore();
 
-const isMounted = useMounted();
 const route = useRoute();
 const toast = useToast();
-const isLaptop = useIsLaptop();
 
 const errorMessage = ref<string | null>(null);
 const boardId = computed(() => Number(route.params.id));
 
 const { error } = await useAsyncData(`fetch-board-${boardId.value}`, async () => {
-  await boardStore.fetchBoard(boardId.value, boardStore.board == null);
+  await boardStore.fetchBoard(boardId.value, false);
   return null;
 });
 
@@ -43,8 +33,6 @@ if (error.value) {
   errorMessage.value = message;
   toast.error({ message });
 }
-
-const showLoader = computed(() => !isMounted.value || boardStore.isLoadingBoard);
 
 onMounted(() => {
   boardStore.joinBoard(boardId.value);

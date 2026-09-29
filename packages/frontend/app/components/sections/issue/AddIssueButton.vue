@@ -1,7 +1,12 @@
 <template>
   <div class="w-fit">
-    <UIIconButton v-if="isLaptop" icon="mingcute:add-line" size="small" @click:button="isModalOpen = true" />
-    <UIButton v-else prepend-icon="mingcute:add-line" size="small" @click:button="isModalOpen = true">
+    <UIIconButton class="laptop:flex hidden" icon="mingcute:add-line" size="small" @click:button="isModalOpen = true" />
+    <UIButton
+      class="laptop:hidden flex"
+      prepend-icon="mingcute:add-line"
+      size="small"
+      @click:button="isModalOpen = true"
+    >
       Добавить задачу
     </UIButton>
 
@@ -35,7 +40,6 @@ import {
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable.ts';
-import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { useBoardStore } from '~/stores/board.store.ts';
 import type { TUpsertFormData } from '~/types/shared.types.ts';
@@ -52,7 +56,6 @@ const boardStore = useBoardStore();
 
 const route = useRoute();
 const toast = useToast();
-const isLaptop = useIsLaptop();
 
 const isModalOpen = ref(false);
 

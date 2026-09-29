@@ -13,7 +13,7 @@
       :title-maxlength="BOARD_TITLE_MAXLENGTH"
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
       :disabled="isLoadingUpdate || !isDirty"
-      body-class="w-320!"
+      body-class="w-full laptop:w-320!"
       @update:is-open="closeModal"
       @click:action-button="updateBoard"
       @update:field="update"
@@ -48,6 +48,7 @@ import {
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useSocket } from '~/composables/use-socket.composable.ts';
 import { ACTIONS_BUTTONS_DATA } from '~/constants/actions-buttons.constants.ts';
+import { useBoardStore } from '~/stores/board.store.ts';
 import { useBoardsStore } from '~/stores/boards.store.ts';
 import type { TActionButtonData, TUpsertFormData } from '~/types/shared.types.ts';
 
@@ -61,6 +62,8 @@ const props = defineProps<{
 }>();
 
 const boardsStore = useBoardsStore();
+const boardStore = useBoardStore();
+
 const toast = useToast();
 
 const isUpdateModalOpen = ref(false);
@@ -101,6 +104,7 @@ const updateBoard = () => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Доска обновлена' });
         boardsStore.updateBoard(response.data);
+        boardStore.updateBoardBaseInfo(response.data);
         closeModal();
       }
     },
@@ -115,11 +119,13 @@ const deleteBoard = () => {
   emitDelete<number, TDeleteBoardResponse>({
     event: EBoardEvent.DELETE,
     data: props.board.id,
-    successCallback: (response: TDeleteBoardResponse) => {
+    successCallback: async (response: TDeleteBoardResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Доска удалена' });
-        boardsStore.deleteBoard(response.data);
+        // Close first so VFM can restore overlays before this list item unmounts.
         closeModal();
+        await nextTick();
+        boardsStore.deleteBoard(response.data);
       }
     },
     errorCallback: (error: unknown) => {

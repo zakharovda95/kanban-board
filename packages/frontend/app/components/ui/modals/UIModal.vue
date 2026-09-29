@@ -4,6 +4,7 @@
     :teleport-to="options.teleportTo"
     :display-directive="options.displayDirective"
     :hide-overlay="options.hideOverlay"
+    :overlay-behavior="options.overlayBehavior"
     :overlay-transition="options.overlayTransition"
     :content-transition="options.contentTransition"
     :click-to-close="options.clickToClose"
@@ -15,14 +16,16 @@
     class="flex items-center justify-center p-12"
     overlay-class="bg-light-black-opacity"
     :content-class="[
-      'bg-light-base rounded-12 relative flex w-fit max-h-[calc(100dvh-24px)] max-w-full flex-col overflow-hidden p-12',
+      'bg-light-base rounded-12 relative flex w-full laptop:w-fit max-h-[calc(100dvh-24px)] max-w-full flex-col overflow-hidden p-12',
       bodyClass,
     ]"
   >
-    <header v-if="title || slots.header" class="mb-12 flex w-full shrink-0 items-start justify-between gap-8">
-      <slot name="header">
-        <h4 class="text-18 font-medium">{{ title }}</h4>
-      </slot>
+    <header class="mb-12 flex w-full shrink-0 items-start justify-between gap-8">
+      <div class="flex-1">
+        <slot v-if="title || slots.header" name="header">
+          <h4 class="text-18 font-medium">{{ title }}</h4>
+        </slot>
+      </div>
       <UIIconButton
         v-if="!hideCloseButton"
         :background-color="EColor.LIGHT_200"
@@ -75,6 +78,7 @@ const options = ref({
   teleportTo: '#teleports',
   displayDirective: 'if' as const,
   hideOverlay: false,
+  overlayBehavior: 'persist' as const,
   overlayTransition: 'vfm-fade',
   contentTransition: 'vfm-fade',
   clickToClose: props.closeOnOverlay,

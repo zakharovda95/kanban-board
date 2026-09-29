@@ -1,5 +1,7 @@
 import { isSuccessResponse } from '@kanban-board/common';
 
+const DEFAULT_TIMEOUT = 10_000;
+
 export function useSocket() {
   const { $socket } = useNuxtApp();
 
@@ -7,7 +9,7 @@ export function useSocket() {
 
   const emitEvent = <TData, TAckReturnValue>({
     event,
-    timeout = 10000,
+    timeout = DEFAULT_TIMEOUT,
     data,
     successCallback,
     errorCallback,

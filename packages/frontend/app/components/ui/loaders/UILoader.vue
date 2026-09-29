@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import type { EIconSizeSmall } from '~/enums/global.enums';
-import { EIconSize } from '~/enums/global.enums';
+import type { EIconSizeSmall } from '~/enums/global.enums.ts';
+import { EIconSize } from '~/enums/global.enums.ts';
 
 withDefaults(
   defineProps<{

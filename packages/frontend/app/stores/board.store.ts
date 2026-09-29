@@ -3,6 +3,7 @@ import {
   EColumnEvent,
   EIssueEvent,
   type TBoard,
+  type TBoardBase,
   type TColumn,
   type TColumnBase,
   type TDeleteColumnEmitPayload,
@@ -44,6 +45,11 @@ export const useBoardStore = defineStore('board-store', () => {
   const leaveBoard = (boardId: number) => {
     if (!boardId || boardId <= 0) return;
     $socket?.emit(EBoardEvent.LEAVE, boardId);
+  };
+
+  const updateBoardBaseInfo = (updatedBoardInfo: TBoardBase) => {
+    if (!board.value || !updatedBoardInfo) return;
+    Object.assign(board.value, updatedBoardInfo);
   };
 
   const addColumn = (column: TColumn) => {
@@ -272,5 +278,6 @@ export const useBoardStore = defineStore('board-store', () => {
     restoreSnapshot,
     stopListen,
     resetStore,
+    updateBoardBaseInfo,
   };
 });

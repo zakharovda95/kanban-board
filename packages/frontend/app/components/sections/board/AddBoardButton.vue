@@ -22,7 +22,7 @@
       :title-maxlength="BOARD_TITLE_MAXLENGTH"
       :description-maxlength="BOARD_DESCRIPTION_MAXLENGTH"
       :disabled="isLoading"
-      body-class="w-320!"
+      body-class="w-full laptop:w-320!"
       @click:action-button="createBoard"
       @update:is-open="closeModal"
       @update:field="update"
