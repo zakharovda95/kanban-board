@@ -308,7 +308,7 @@ const editor = useEditor({
   },
   onUpdate: () => {
     if (props.disabled) return;
-    model.value = editor.value?.getHTML() ?? model.value;
+    model.value = editor.value?.isEmpty ? '' : (editor.value?.getHTML() ?? model.value);
   },
 });
 

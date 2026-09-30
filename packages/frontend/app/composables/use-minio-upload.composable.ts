@@ -31,7 +31,7 @@ export function useMinioUpload() {
     });
 
     if (!response.ok) {
-      throw new Error(`MinIO upload failed: ${response.status} ${response.statusText}`);
+      throw new Error(`Ошибка загрузки файла: ${response.status} ${response.statusText}`);
     }
 
     return { key, url };

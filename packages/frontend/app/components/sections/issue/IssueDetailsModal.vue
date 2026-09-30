@@ -1,7 +1,7 @@
 <template>
   <UIModal
     :is-open="isOpen"
-    :body-class="`w-full ${isUpdateMode ? 'max-w-640!' : 'max-width'}`"
+    :body-class="`w-full! ${isUpdateMode ? 'max-w-640!' : 'max-width'}`"
     @update:is-open="closeModal"
   >
     <template #header>
@@ -27,10 +27,12 @@
       </div>
     </template>
 
-    <div class="laptop:flex-row flex w-full flex-col justify-between gap-24">
-      <div class="laptop:hidden flex flex-col gap-8">
+    <div
+      class="laptop:flex-row flex w-full flex-col justify-between gap-24"
+      :class="isUpdateMode ? 'min-h-none' : 'laptop:min-h-[40vh] min-h-none'"
+    >
+      <div v-if="!isUpdateMode" class="laptop:hidden flex flex-col gap-8">
         <IssueDate
-          v-if="!isUpdateMode"
           variant="details"
           :created-at="issue.createdAt"
           :updated-at="issue.updatedAt"
@@ -47,7 +49,7 @@
       </div>
 
       <div class="flex-1">
-        <div v-if="!isUpdateMode" class="bg-light-100 rounded-8 h-full p-12">
+        <div v-if="!isUpdateMode" class="bg-light-100 rounded-8 h-full min-h-250 p-12">
           <OverlayScrollbarsComponent v-if="issue.description" :options="scrollbarOptions">
             <div class="max-h-[50vh]" v-html="issue.description" />
           </OverlayScrollbarsComponent>
@@ -82,7 +84,7 @@
         </UIForm>
       </div>
 
-      <div v-if="!isUpdateMode" class="laptop:max-w-320 flex w-full max-w-none flex-col justify-between gap-24">
+      <div v-if="!isUpdateMode" class="laptop:max-w-340 flex w-full max-w-none flex-col justify-between gap-24">
         <div class="laptop:flex hidden flex-col gap-8">
           <UILabel text="Этап" required>
             <UISelect
