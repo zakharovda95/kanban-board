@@ -6,4 +6,5 @@ export const VALIDATION_MESSAGES = {
   idMustBeDefined: 'Id должен быть указан',
   idMustBeNumber: 'Id должен иметь числовой формат',
   idMustBePositive: 'Id должен быть больше 0',
+  parameterWrongValue: 'Неверное значение параметра',
 };

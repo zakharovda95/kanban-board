@@ -19,7 +19,7 @@ import type { Socket } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
-import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
+import ParameterNumberPipe from '@/libs/pipes/parameter-number.pipe';
 import RequireAnyPipe from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import BoardService from '@/modules/board/board.service';
@@ -34,7 +34,7 @@ export default class BoardGateway {
 
   @SubscribeMessage(EBoardEvent.JOIN)
   public async joinRoom(
-    @MessageBody(new ParameterIdPipe('ws')) boardId: number,
+    @MessageBody(new ParameterNumberPipe('ws', { zero: false, negative: false })) boardId: number,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     await client.join(getWsBoardRoomName(boardId));
@@ -42,7 +42,7 @@ export default class BoardGateway {
 
   @SubscribeMessage(EBoardEvent.LEAVE)
   public async leaveRoom(
-    @MessageBody(new ParameterIdPipe('ws')) boardId: number,
+    @MessageBody(new ParameterNumberPipe('ws', { zero: false, negative: false })) boardId: number,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     await client.leave(getWsBoardRoomName(boardId));
@@ -74,7 +74,7 @@ export default class BoardGateway {
 
   @SubscribeMessage(EBoardEvent.DELETE)
   public async deleteBoard(
-    @MessageBody(new ParameterIdPipe('ws')) boardId: number,
+    @MessageBody(new ParameterNumberPipe('ws', { zero: false, negative: false })) boardId: number,
     @ConnectedSocket() client: Socket,
   ): Promise<TDeleteBoardResponse> {
     const payload = await this.boardService.deleteBoard(boardId);

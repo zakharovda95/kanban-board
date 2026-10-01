@@ -43,8 +43,6 @@ export default defineNuxtConfig({
       FRONTEND_URL: process.env.FRONTEND_URL,
       WEBSOCKET_URL: process.env.WEBSOCKET_URL,
       VERSION: process.env.npm_package_version,
-      MINIO_BUCKET: process.env.MINIO_BUCKET,
-      MINIO_PUBLIC_URL: process.env.MINIO_PUBLIC_URL,
     },
   },
 

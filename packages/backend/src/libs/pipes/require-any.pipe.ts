@@ -10,6 +10,11 @@ import { WsException } from '@nestjs/websockets';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 
+/**
+ * Проверка присутствует ли в объекте хотя бы одно поле из заданных.
+ * @param fields - массив из ключей объекта, хотя бы одно поле из этого списка должно присутствовать в объекте.
+ * @param context - контекст выполнения WebSocket или HTTP. Формируется исключение соответствующего типа.
+ * **/
 @Injectable()
 export default class RequireAnyPipe<T> implements PipeTransform {
   constructor(

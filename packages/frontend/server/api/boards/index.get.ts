@@ -5,5 +5,5 @@ export default defineEventHandler(async _ => {
   const runtimeConfig = useRuntimeConfig();
   const baseUrl = runtimeConfig.public.BASE_URL || '';
 
-  return await $fetch<TBoardBase[]>(`${baseUrl}/v1/boards`, { method: 'GET' });
+  return $fetch<TBoardBase[]>(`${baseUrl}/v1/boards`, { method: 'GET' });
 });

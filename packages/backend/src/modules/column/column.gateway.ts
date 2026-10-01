@@ -21,7 +21,7 @@ import type { Socket } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
-import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
+import ParameterNumberPipe from '@/libs/pipes/parameter-number.pipe';
 import RequireAnyPipe from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import ColumnService from '@/modules/column/column.service';
@@ -60,7 +60,7 @@ export default class ColumnGateway {
 
   @SubscribeMessage(EColumnEvent.DELETE)
   public async deleteColumn(
-    @MessageBody(new ParameterIdPipe('ws')) columnId: number,
+    @MessageBody(new ParameterNumberPipe('ws', { zero: false, negative: false })) columnId: number,
     @ConnectedSocket() client: Socket,
   ): Promise<TDeleteColumnResponse> {
     const payload = await this.columnService.deleteColumn(columnId);

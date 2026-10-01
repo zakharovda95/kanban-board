@@ -1,7 +1,7 @@
 import type { TBoardBase } from '@kanban-board/common';
 import { Controller, Get, Param } from '@nestjs/common';
 
-import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
+import ParameterNumberPipe from '@/libs/pipes/parameter-number.pipe';
 import ColumnService from '@/modules/column/column.service';
 
 @Controller()
@@ -10,7 +10,8 @@ export default class ColumnController {
 
   @Get('boards/:boardId/columns')
   public async getBoards(
-    @Param('boardId', new ParameterIdPipe('ws')) boardId: number,
+    @Param('boardId', new ParameterNumberPipe('ws', { zero: false, negative: false }))
+    boardId: number,
   ): Promise<TBoardBase[]> {
     return await this.columnService.getColumns(boardId);
   }

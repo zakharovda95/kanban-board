@@ -19,7 +19,7 @@ import type { Socket } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
-import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
+import ParameterNumberPipe from '@/libs/pipes/parameter-number.pipe';
 import RequireAnyPipe from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import IssueService from '@/modules/issue/issue.service';
@@ -58,7 +58,7 @@ export default class IssueGateway {
 
   @SubscribeMessage(EIssueEvent.DELETE)
   public async deleteIssue(
-    @MessageBody(new ParameterIdPipe('ws')) issueId: number,
+    @MessageBody(new ParameterNumberPipe('ws', { zero: false, negative: false })) issueId: number,
     @ConnectedSocket() client: Socket,
   ): Promise<TDeleteIssueResponse> {
     const payload = await this.issueService.deleteIssue(issueId);
