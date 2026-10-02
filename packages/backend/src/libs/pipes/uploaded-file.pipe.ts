@@ -1,36 +1,18 @@
-import { FILE_MIME_TYPES } from '@kanban-board/common';
-import {
-  ArgumentMetadata,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  PipeTransform,
-} from '@nestjs/common';
-
-const AVAILABLE_FILE_SIZE = 500 * 1024;
+import { FILE_MAX_SIZE, FILE_MIME_TYPES, FileUtility } from '@kanban-board/common';
+import { FileTypeValidator, HttpStatus, MaxFileSizeValidator, ParseFilePipe } from '@nestjs/common';
 
 /** Валидирует загружаемые файлы. **/
-@Injectable()
-export default class UploadedFilePipe implements PipeTransform {
-  transform(file: Express.Multer.File, _: ArgumentMetadata) {
-    if (!file) {
-      throw new HttpException(`Файл не передан.`, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
-    if (file.size > AVAILABLE_FILE_SIZE) {
-      throw new HttpException(
-        `Размер файла не должен превышать ${AVAILABLE_FILE_SIZE / 1024}Кб.`,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-
-    if (!FILE_MIME_TYPES.includes(file.mimetype)) {
-      throw new HttpException(
+export const uploadedFilePipe = new ParseFilePipe({
+  validators: [
+    new MaxFileSizeValidator({
+      maxSize: FILE_MAX_SIZE,
+      errorMessage: ({ config }) => `Размер файла не должен превышать ${config.maxSize / 1024}Кб.`,
+    }),
+    new FileTypeValidator({
+      fileType: FileUtility.buildMimeTypeRegExp(FILE_MIME_TYPES),
+      errorMessage: () =>
         `Недопустимый формат файла. Допустимые форматы: ${FILE_MIME_TYPES.join(', ')}`,
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-
-    return file;
-  }
-}
+    }),
+  ],
+  errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+});

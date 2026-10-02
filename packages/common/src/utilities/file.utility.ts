@@ -1,5 +1,5 @@
 import { FILE_MIME_SIGNATURES } from '../constants';
-import { TFileMimeType } from '../types';
+import type { TFileMimeType } from '../types';
 
 export class FileUtility {
   public static async readFileAsDataUrl(file: File): Promise<string> {
@@ -46,5 +46,12 @@ export class FileUtility {
       .join('');
 
     return FILE_MIME_SIGNATURES[header] ?? fallback;
+  }
+
+  public static buildMimeTypeRegExp(mimeTypes: TFileMimeType[]): RegExp {
+    const pattern = mimeTypes
+      .map(mimeType => mimeType.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('|');
+    return new RegExp(`^(${pattern})$`);
   }
 }

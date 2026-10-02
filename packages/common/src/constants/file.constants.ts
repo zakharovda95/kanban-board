@@ -24,3 +24,9 @@ export const IMAGE_MIME_TYPES: TImageMimeType[] = [
 
 /** Массив MIME-типов файлов. **/
 export const FILE_MIME_TYPES: TFileMimeType[] = [...IMAGE_MIME_TYPES];
+
+/** Максимально допустимый размер файла. **/
+export const FILE_MAX_SIZE = 500 * 1024;
+
+/** Дефолтный ContentType. **/
+export const FILE_CONTENT_TYPE = 'application/octet-stream';
