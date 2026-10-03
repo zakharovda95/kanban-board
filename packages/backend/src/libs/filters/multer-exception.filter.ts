@@ -1,4 +1,4 @@
-import { FILE_MAX_SIZE, type TErrorResponse } from '@kanban-board/common';
+import { STORAGE_FILE_MAX_SIZE, type TErrorResponse } from '@kanban-board/common';
 import {
   ArgumentsHost,
   BadRequestException,
@@ -42,7 +42,7 @@ export default class MulterExceptionFilter implements ExceptionFilter {
     // Только если явно задана в настройках File(s)Interceptor лимит по размеру файла.
     // Тогда не пройдет до пайпа, где тоже есть проверка на размер.
     if (exception instanceof PayloadTooLargeException) {
-      error.message = `Размер файла не должен превышать ${FILE_MAX_SIZE / 1024}Кб.`;
+      error.message = `Размер файла не должен превышать ${STORAGE_FILE_MAX_SIZE / 1024}Кб.`;
     }
 
     if (exception instanceof BadRequestException) {

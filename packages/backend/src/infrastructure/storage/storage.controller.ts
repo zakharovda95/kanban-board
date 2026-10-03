@@ -1,4 +1,8 @@
-import { EStorageSubmodule, type TSuccessResponse } from '@kanban-board/common';
+import {
+  EStorageSubmodule,
+  STORAGE_FILES_MAX_COUNT,
+  type TSuccessResponse,
+} from '@kanban-board/common';
 import {
   Controller,
   Get,
@@ -35,7 +39,7 @@ export default class StorageController {
   @HttpCode(HttpStatus.OK)
   @Post(':submodule')
   @UseFilters(MulterExceptionFilter, S3ExceptionFilter)
-  @UseInterceptors(FilesInterceptor('files', 3))
+  @UseInterceptors(FilesInterceptor('files', STORAGE_FILES_MAX_COUNT))
   public async uploadFile(
     @Param('submodule', new ParameterEnumPipe(EStorageSubmodule)) submodule: EStorageSubmodule,
     @UploadedFiles(uploadedFilePipe) files: Array<Express.Multer.File>,
