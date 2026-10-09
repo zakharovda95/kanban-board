@@ -9,36 +9,35 @@ import {
   MaxLength,
 } from 'class-validator';
 
-import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 
 export default class CreateIssueDto implements TCreateIssue {
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: 'Идентификатор доски обязателен' })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: 'Идентификатор доски должен быть числом' },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
-  @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
+  @IsInt({ message: 'Идентификатор доски должен быть целым числом' })
+  @IsPositive({ message: 'Идентификатор доски должен быть больше 0' })
   boardId: number;
 
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: 'Идентификатор колонки обязателен' })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: 'Идентификатор колонки должен быть числом' },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
-  @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
+  @IsInt({ message: 'Идентификатор колонки должен быть целым числом' })
+  @IsPositive({ message: 'Идентификатор колонки должен быть больше 0' })
   columnId: number;
 
-  @IsString({ message: VALIDATION_MESSAGES.isString })
-  @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
+  @IsString({ message: 'Название задачи должно быть строкой' })
+  @IsNotEmpty({ message: 'Название задачи обязательно для заполнения' })
   @MaxLength(ISSUE_TITLE_MAXLENGTH, {
-    message: `${VALIDATION_MESSAGES.maxlength} ${ISSUE_TITLE_MAXLENGTH}`,
+    message: `Название задачи не должно превышать ${ISSUE_TITLE_MAXLENGTH} символов`,
   })
   title: string;
 
   @ValidateIfDefinedAndNotNull()
-  @IsString({ message: VALIDATION_MESSAGES.isString })
+  @IsString({ message: 'Описание задачи должно быть строкой' })
   description: string | null;
 }

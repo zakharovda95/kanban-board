@@ -14,7 +14,6 @@ import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { DataSource } from 'typeorm';
 
-import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import OrderUtility from '@/libs/utilities/order.utility';
 import { TMaxOrderResult } from '@/libs/utilities/order.utility';
 import BoardEntity from '@/modules/board/libs/entities/board.entity';
@@ -50,7 +49,7 @@ export default class ColumnService {
    * @returns объект созданной колонки.
    * **/
   public async createColumn(body: TCreateColumn): Promise<TColumn> {
-    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
+    if (!body) throw new WsException('Не переданы данные, необходимые для создания колонки');
 
     const { boardId, color, title, description } = body;
     const { manager } = this.dataSource;
@@ -64,7 +63,10 @@ export default class ColumnService {
       ]);
 
       const isExists = await transactionalManager.exists(BoardEntity, { where: { id: boardId } });
-      if (!isExists) throw new WsException(EXCEPTION_MESSAGES.createFailed);
+      if (!isExists)
+        throw new WsException(
+          'Не удалось создать колонку: доска с указанным идентификатором не найдена',
+        );
 
       const result = await transactionalManager
         .createQueryBuilder()
@@ -80,7 +82,7 @@ export default class ColumnService {
         order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
         boardId,
       });
-      if (!createdColumn) throw new WsException(EXCEPTION_MESSAGES.createFailed);
+      if (!createdColumn) throw new WsException('Не удалось сохранить колонку в базе данных');
 
       return this.columnMapper.toModel({ ...createdColumn, issues: [] }, { base: false });
     });
@@ -98,7 +100,7 @@ export default class ColumnService {
    * @returns id перемещенной колонки и перемещенная колонка или null, если был reorder всех колонок и нужно сделать refetch.
    * **/
   public async moveColumn(body: TMoveColumn): Promise<TMoveColumnEmitPayload> {
-    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
+    if (!body) throw new WsException('Не переданы данные, необходимые для перемещения колонки');
 
     const { boardId, targetId, previousId } = body;
     const { manager } = this.dataSource;
@@ -137,16 +139,20 @@ export default class ColumnService {
    * @returns базовый объект обновленной колонки (без задач).
    * **/
   public async updateColumn(body: TUpdateColumn): Promise<TColumnBase> {
-    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
+    if (!body) throw new WsException('Не переданы данные, необходимые для обновления колонки');
 
     const { id, ...rest } = body;
     const { manager } = this.dataSource;
 
     const column = await manager.findOne(ColumnEntity, { where: { id } });
-    if (!column) throw new WsException(EXCEPTION_MESSAGES.notFound);
+    if (!column)
+      throw new WsException(
+        'Не удалось обновить колонку: колонка с указанным идентификатором не найдена',
+      );
 
     const updatedColumn = await manager.save(Object.assign(column, rest));
-    if (!updatedColumn) throw new WsException(EXCEPTION_MESSAGES.updateFailed);
+    if (!updatedColumn)
+      throw new WsException('Не удалось сохранить изменения колонки в базе данных');
 
     return this.columnMapper.toModel(updatedColumn, { base: true });
   }
@@ -157,15 +163,20 @@ export default class ColumnService {
    * @returns ID доски и ID удаленной доски.
    * **/
   public async deleteColumn(columnId: number): Promise<TDeleteColumnEmitPayload> {
-    if (!columnId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
+    if (!columnId)
+      throw new WsException('Не передан идентификатор, необходимый для удаления колонки');
 
     const { manager } = this.dataSource;
 
     const target = await manager.findOne(ColumnEntity, { where: { id: columnId } });
-    if (!target) throw new WsException(EXCEPTION_MESSAGES.notFound);
+    if (!target)
+      throw new WsException(
+        'Не удалось удалить колонку: колонка с указанным идентификатором не найдена',
+      );
 
     const { affected } = await manager.delete(ColumnEntity, { id: columnId });
-    if (!affected || affected <= 0) throw new WsException(EXCEPTION_MESSAGES.deleteFailed);
+    if (!affected || affected <= 0)
+      throw new WsException('Не удалось удалить колонку из базы данных');
 
     return {
       boardId: target.boardId,

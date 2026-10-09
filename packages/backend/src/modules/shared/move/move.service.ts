@@ -3,7 +3,6 @@ import { isNull } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 
-import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import OrderUtility from '@/libs/utilities/order.utility';
 
 @Injectable()
@@ -29,10 +28,14 @@ export default class MoveService<T extends IMovable> {
     options?: TMoveOptions,
   ): TMoveResult {
     const { previousId, targetId } = parameters;
-    if (!targetId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
+    if (!targetId)
+      throw new WsException('Не передан идентификатор элемента, который необходимо переместить');
 
     const target = entities.find(({ id }) => id === targetId);
-    if (!target) throw new WsException(EXCEPTION_MESSAGES.notFound);
+    if (!target)
+      throw new WsException(
+        'Не удалось выполнить перемещение: элемент с указанным идентификатором не найден в списке',
+      );
 
     const moveResult: TMoveResult = { isOrderWasNormalized: false };
 
@@ -44,13 +47,18 @@ export default class MoveService<T extends IMovable> {
       if (options?.allowForceMove && isNull(previousId)) {
         target.order = OrderUtility.calculateNextOrder(0);
         return moveResult;
-      } else throw new WsException(EXCEPTION_MESSAGES.moveFailed);
+      } else
+        throw new WsException(
+          'Не удалось выполнить перемещение: в списке нет других элементов для определения позиции',
+        );
     }
 
     if (previousId) {
       const [previousElement, adjacentElement] = this.getAdjacent(withoutTarget, previousId);
       if (!previousElement || this.isCurrentPosition(targetId, previousId))
-        throw new WsException(EXCEPTION_MESSAGES.moveFailed);
+        throw new WsException(
+          'Не удалось выполнить перемещение: некорректно указан элемент, после которого нужно разместить целевой',
+        );
 
       // Проверяем не находится ли перемещаемая задача на той же позиции.
       const previousIndex = entities.findIndex(({ id }) => id === previousId);
@@ -58,7 +66,9 @@ export default class MoveService<T extends IMovable> {
 
       // C allowForceMove позиция может совпадать (например задачу перемещают из одного столбца в другой на ту же позицию)
       if (!options?.allowForceMove && this.isCurrentPosition(targetIndex, previousIndex + 1))
-        throw new WsException(EXCEPTION_MESSAGES.moveFailed);
+        throw new WsException(
+          'Не удалось выполнить перемещение: элемент уже находится в указанной позиции',
+        );
 
       // если нет adjacentElement, значит помещается в конец (к order последнего элемента в списке прибавляем 1000).
       if (!adjacentElement) {
@@ -86,7 +96,9 @@ export default class MoveService<T extends IMovable> {
     // если previousId - null - помещаем в начало.
     if (isNull(previousId)) {
       if (this.isCurrentPosition(targetId, entities[0]?.id))
-        throw new WsException(EXCEPTION_MESSAGES.moveFailed);
+        throw new WsException(
+          'Не удалось выполнить перемещение: элемент уже находится в начале списка',
+        );
 
       const first = withoutTarget[0];
       if (OrderUtility.needResetOrders(0, first.order)) {
@@ -98,7 +110,9 @@ export default class MoveService<T extends IMovable> {
       return moveResult;
     }
 
-    throw new WsException(EXCEPTION_MESSAGES.moveFailed);
+    throw new WsException(
+      'Не удалось выполнить перемещение: переданы некорректные параметры позиции',
+    );
   }
 
   /**

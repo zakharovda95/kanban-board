@@ -12,7 +12,6 @@ export default class BoardMapper {
   public toModel(entity: BoardEntity, options?: { base?: false }): TBoard;
   public toModel(entity: BoardEntity[], options: { base: true }): TBoardBase[];
   public toModel(entity: BoardEntity[], options?: { base?: false }): TBoard[];
-
   public toModel(
     entity: BoardEntity | BoardEntity[],
     options?: { base?: boolean },

@@ -2,19 +2,18 @@ import type { TUpdateColumn } from '@kanban-board/common';
 import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { IsDefined, IsInt, IsNumber, IsPositive } from 'class-validator';
 
-import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import CreateColumnDto from '@/modules/column/libs/dtos/create-column.dto';
 
 export default class UpdateColumnDto
   extends PartialType(OmitType(CreateColumnDto, ['boardId'] as const))
   implements TUpdateColumn
 {
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: 'Идентификатор колонки обязателен' })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: 'Идентификатор колонки должен быть числом' },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
-  @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
+  @IsInt({ message: 'Идентификатор колонки должен быть целым числом' })
+  @IsPositive({ message: 'Идентификатор колонки должен быть больше 0' })
   id: number;
 }

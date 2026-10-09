@@ -5,21 +5,20 @@ import {
 } from '@kanban-board/common';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 
 export default class CreateBoardDto implements TCreateBoard {
-  @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
-  @IsString({ message: VALIDATION_MESSAGES.isString })
+  @IsNotEmpty({ message: 'Название доски обязательно для заполнения' })
+  @IsString({ message: 'Название доски должно быть строкой' })
   @MaxLength(BOARD_TITLE_MAXLENGTH, {
-    message: `${VALIDATION_MESSAGES.maxlength} ${BOARD_TITLE_MAXLENGTH}`,
+    message: `Название доски не должно превышать ${BOARD_TITLE_MAXLENGTH} символов`,
   })
   title: string;
 
   @ValidateIfDefinedAndNotNull()
-  @IsString({ message: VALIDATION_MESSAGES.isString })
+  @IsString({ message: 'Описание доски должно быть строкой' })
   @MaxLength(BOARD_DESCRIPTION_MAXLENGTH, {
-    message: `${VALIDATION_MESSAGES.maxlength} ${BOARD_DESCRIPTION_MAXLENGTH}`,
+    message: `Описание доски не должно превышать ${BOARD_DESCRIPTION_MAXLENGTH} символов`,
   })
   description?: string | null;
 }

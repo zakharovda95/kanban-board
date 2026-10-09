@@ -1,6 +1,5 @@
 import {
   BOARDS_MAX_COUNT,
-  BOARDS_MAX_COUNT_ERROR_MESSAGE,
   type TBoard,
   type TBoardBase,
   type TCreateBoard,
@@ -14,7 +13,6 @@ import { WsException } from '@nestjs/websockets';
 import { cloneDeep } from 'lodash';
 import { DataSource } from 'typeorm';
 
-import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import OrderUtility from '@/libs/utilities/order.utility';
 import { TMaxOrderResult } from '@/libs/utilities/order.utility';
 import BoardEntity from '@/modules/board/libs/entities/board.entity';
@@ -49,7 +47,8 @@ export default class BoardService {
    * @returns объект доски с вложенными колонками и задачами.
    * **/
   public async getBoardById(boardId: number): Promise<TBoard> {
-    if (!boardId) throw new BadRequestException(EXCEPTION_MESSAGES.idNotFound);
+    if (!boardId)
+      throw new BadRequestException('Не передан идентификатор, необходимый для получения доски');
 
     const { manager } = this.dataSource;
 
@@ -58,7 +57,7 @@ export default class BoardService {
       relations: { columns: { issues: true } },
       order: { order: 'ASC', columns: { order: 'ASC', issues: { order: 'ASC' } } },
     });
-    if (!board) throw new NotFoundException(EXCEPTION_MESSAGES.notFound);
+    if (!board) throw new NotFoundException('Доска с указанным идентификатором не найдена');
 
     return this.boardMapper.toModel(board, { base: false });
   }
@@ -69,7 +68,7 @@ export default class BoardService {
    * @returns объект созданной доски.
    * **/
   public async createBoard(body: TCreateBoard): Promise<TBoardBase> {
-    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
+    if (!body) throw new WsException('Не переданы данные, необходимые для создания доски');
 
     const { manager } = this.dataSource;
 
@@ -79,7 +78,10 @@ export default class BoardService {
       await transactionalManager.query('SELECT pg_advisory_xact_lock($1)', [DATABASE_LOCK_ID]);
 
       const boardsCount = await transactionalManager.count(BoardEntity);
-      if (boardsCount >= BOARDS_MAX_COUNT) throw new WsException(BOARDS_MAX_COUNT_ERROR_MESSAGE);
+      if (boardsCount >= BOARDS_MAX_COUNT)
+        throw new WsException(
+          `Не удалось создать доску: в одном рабочем пространстве допускается не более ${BOARDS_MAX_COUNT} досок`,
+        );
 
       // Получаем максимальный order, чтобы при создании прибавить ORDER_STEP
       const result = await transactionalManager
@@ -94,7 +96,7 @@ export default class BoardService {
         order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
         columns: cloneDeep(DEFAULT_COLUMNS),
       });
-      if (!board?.id) throw new WsException(EXCEPTION_MESSAGES.createFailed);
+      if (!board?.id) throw new WsException('Не удалось сохранить доску в базе данных');
 
       return this.boardMapper.toModel(board, { base: true });
     });
@@ -111,7 +113,7 @@ export default class BoardService {
    * @returns объект перемещаемой доски, если order не был нормализован (точечная замена + сортировка по order на фронте, дешевле чем refetch), если был - null (если null - на фронте refetch досок тк меняется order всех досок).
    * **/
   public async moveBoard(body: TMoveParameters): Promise<TMoveBoardEmitPayload> {
-    if (!body) throw new WsException(EXCEPTION_MESSAGES.requestBodyNotFound);
+    if (!body) throw new WsException('Не переданы данные, необходимые для перемещения доски');
 
     const { manager } = this.dataSource;
 
@@ -143,15 +145,21 @@ export default class BoardService {
    * @returns объект обновленной доски.
    * **/
   public async updateBoard(body: TUpdateBoard): Promise<TBoardBase> {
-    if (!body?.id) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
+    if (!body?.id)
+      throw new WsException(
+        'Не переданы данные, необходимые для обновления доски: отсутствует идентификатор',
+      );
     const { id, ...rest } = body;
     const { manager } = this.dataSource;
 
     const board = await manager.findOne(BoardEntity, { where: { id } });
-    if (!board) throw new WsException(EXCEPTION_MESSAGES.notFound);
+    if (!board)
+      throw new WsException(
+        'Не удалось обновить доску: доска с указанным идентификатором не найдена',
+      );
 
     const updatedBoard = await manager.save(Object.assign(board, rest));
-    if (!updatedBoard) throw new WsException(EXCEPTION_MESSAGES.updateFailed);
+    if (!updatedBoard) throw new WsException('Не удалось сохранить изменения доски в базе данных');
 
     return this.boardMapper.toModel(updatedBoard, { base: true });
   }
@@ -162,7 +170,7 @@ export default class BoardService {
    * @returns ID удаленной доски.
    * **/
   public async deleteBoard(boardId: number): Promise<TDeleteBoardEmitPayload> {
-    if (!boardId) throw new WsException(EXCEPTION_MESSAGES.idNotFound);
+    if (!boardId) throw new WsException('Не передан идентификатор, необходимый для удаления доски');
 
     const { manager } = this.dataSource;
     const boards = await manager.find(BoardEntity, {
@@ -170,10 +178,14 @@ export default class BoardService {
     });
 
     const target = boards.find(({ id }) => id === boardId);
-    if (!target) throw new WsException(EXCEPTION_MESSAGES.notFound);
+    if (!target)
+      throw new WsException(
+        'Не удалось удалить доску: доска с указанным идентификатором не найдена',
+      );
 
     const { affected } = await manager.delete(BoardEntity, { id: boardId });
-    if (!affected || affected <= 0) throw new WsException(EXCEPTION_MESSAGES.deleteFailed);
+    if (!affected || affected <= 0)
+      throw new WsException('Не удалось удалить доску из базы данных');
 
     return { deletedBoardId: target.id };
   }

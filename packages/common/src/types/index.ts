@@ -6,3 +6,4 @@ export * from './file.types.js';
 export * from './issue.types.js';
 export * from './move.types.js';
 export * from './response.types.js';
+export * from './storage.types.js';

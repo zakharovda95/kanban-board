@@ -1,20 +1,8 @@
-import {
-  CreateDateColumn,
-  DeleteDateColumn,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { PrimaryGeneratedColumn } from 'typeorm';
 
-export default abstract class BaseEntity {
+import DatesEntity from '@/libs/entities/dates.entity';
+
+export default abstract class BaseEntity extends DatesEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date | null;
 }

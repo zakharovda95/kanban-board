@@ -1,7 +1,6 @@
 import { TMoveIssue } from '@kanban-board/common';
 import { IsDefined, IsInt, IsNumber, IsPositive } from 'class-validator';
 
-import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 import MoveParametersDto from '@/modules/shared/move/libs/dto/move-parameters.dto';
 
@@ -9,27 +8,27 @@ export default class MoveIssueDto extends MoveParametersDto implements TMoveIssu
   @ValidateIfDefinedAndNotNull()
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: 'Идентификатор целевой колонки должен быть числом' },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
-  @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
+  @IsInt({ message: 'Идентификатор целевой колонки должен быть целым числом' })
+  @IsPositive({ message: 'Идентификатор целевой колонки должен быть больше 0' })
   toColumnId: number;
 
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: 'Идентификатор доски обязателен для перемещения задачи' })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: 'Идентификатор доски должен быть числом' },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
-  @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
+  @IsInt({ message: 'Идентификатор доски должен быть целым числом' })
+  @IsPositive({ message: 'Идентификатор доски должен быть больше 0' })
   boardId: number;
 
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: 'Идентификатор исходной колонки обязателен для перемещения задачи' })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: 'Идентификатор исходной колонки должен быть числом' },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
-  @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
+  @IsInt({ message: 'Идентификатор исходной колонки должен быть целым числом' })
+  @IsPositive({ message: 'Идентификатор исходной колонки должен быть больше 0' })
   fromColumnId: number;
 }

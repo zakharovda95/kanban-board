@@ -1,6 +1,6 @@
 import {
   EStorageSubmodule,
-  STORAGE_FILES_MAX_COUNT,
+  STORAGE_MAX_FILES_COUNT,
   type TSuccessResponse,
 } from '@kanban-board/common';
 import {
@@ -10,6 +10,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   StreamableFile,
   UploadedFiles,
   UseFilters,
@@ -22,28 +23,33 @@ import MulterExceptionFilter from '@/libs/filters/multer-exception.filter';
 import S3ExceptionFilter from '@/libs/filters/s3-exception.filter';
 import ParameterEnumPipe from '@/libs/pipes/parameter-enum.pipe';
 import { uploadedFilePipe } from '@/libs/pipes/uploaded-file.pipe';
+import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 
 @Controller('storage')
 export default class StorageController {
   constructor(private storageService: StorageService) {}
 
-  @Get(':submodule/:key')
+  /** Метод для прямого получения файла из хранилища по его ключу. Требуется SUPER_AWESOME_PASS_KEY. **/
+  @Get(':key')
   @UseFilters(S3ExceptionFilter)
   public async getFile(
-    @Param('submodule', new ParameterEnumPipe(EStorageSubmodule)) submodule: EStorageSubmodule,
     @Param('key') key: string,
+    @Query('passKey') passKey: string,
   ): Promise<StreamableFile> {
-    return await this.storageService.getFile(submodule, key);
+    return await this.storageService.getFile(key, passKey);
   }
 
+  /** Метод для прямой загрузки файлов в хранилище. Требуется SUPER_AWESOME_PASS_KEY. **/
   @HttpCode(HttpStatus.OK)
   @Post(':submodule')
   @UseFilters(MulterExceptionFilter, S3ExceptionFilter)
-  @UseInterceptors(FilesInterceptor('files', STORAGE_FILES_MAX_COUNT))
+  @UseInterceptors(FilesInterceptor('files', STORAGE_MAX_FILES_COUNT))
   public async uploadFile(
     @Param('submodule', new ParameterEnumPipe(EStorageSubmodule)) submodule: EStorageSubmodule,
     @UploadedFiles(uploadedFilePipe) files: Array<Express.Multer.File>,
+    @Query('passKey') passKey: string,
   ): Promise<TSuccessResponse<string[]>> {
-    return await this.storageService.uploadFiles(submodule, files);
+    const objectKeys = await this.storageService.uploadFiles(submodule, files, passKey);
+    return getSuccessResponseWithData<string[]>(objectKeys);
   }
 }

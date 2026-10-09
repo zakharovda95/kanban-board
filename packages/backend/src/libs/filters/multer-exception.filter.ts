@@ -1,4 +1,4 @@
-import { STORAGE_FILE_MAX_SIZE, type TErrorResponse } from '@kanban-board/common';
+import { STORAGE_MAX_FILE_SIZE, type TErrorResponse } from '@kanban-board/common';
 import {
   ArgumentsHost,
   BadRequestException,
@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 
-/** Перехватчик Multer ошибок. Нужен для нормализации текста ошибки.
+/** Фильтр Multer ошибок. Нужен для нормализации текста ошибки.
  *  MulterError не перехватывается потому что идет трансформация ошибки
  *  MulterError --> BadRequestException | PayloadTooLargeException на уровне FileInterceptor
  * */
@@ -20,7 +20,7 @@ export default class MulterExceptionFilter implements ExceptionFilter {
     const response: Response = httpContext.getResponse();
 
     const error: TErrorResponse = {
-      message: 'Произошла ошибка при загрузке файла',
+      message: 'Не удалось обработать загружаемый файл',
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
     };
 
@@ -42,7 +42,7 @@ export default class MulterExceptionFilter implements ExceptionFilter {
     // Только если явно задана в настройках File(s)Interceptor лимит по размеру файла.
     // Тогда не пройдет до пайпа, где тоже есть проверка на размер.
     if (exception instanceof PayloadTooLargeException) {
-      error.message = `Размер файла не должен превышать ${STORAGE_FILE_MAX_SIZE / 1024}Кб.`;
+      error.message = `Размер загружаемого файла превышает допустимый лимит ${STORAGE_MAX_FILE_SIZE / 1024} Кб`;
     }
 
     if (exception instanceof BadRequestException) {
@@ -50,7 +50,7 @@ export default class MulterExceptionFilter implements ExceptionFilter {
 
       // Если указано неверное поле
       if (parts.includes('Unexpected field')) {
-        error.message = `Ожидается поле files${parts[1] ? `, указано поле ${parts[1]}` : ''}`;
+        error.message = `Некорректное имя поля формы: ожидается files${parts[1] ? `, получено ${parts[1]}` : ''}`;
       }
 
       // Добавить если возникнут ошибки другого типа.

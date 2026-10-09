@@ -14,33 +14,32 @@ import {
   MaxLength,
 } from 'class-validator';
 
-import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decorators';
 
 export default class CreateColumnDto implements TCreateColumn {
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: 'Идентификатор доски обязателен' })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: 'Идентификатор доски должен быть числом' },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
-  @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
+  @IsInt({ message: 'Идентификатор доски должен быть целым числом' })
+  @IsPositive({ message: 'Идентификатор доски должен быть больше 0' })
   boardId: number;
 
-  @IsString({ message: VALIDATION_MESSAGES.isString })
-  @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
+  @IsString({ message: 'Название колонки должно быть строкой' })
+  @IsNotEmpty({ message: 'Название колонки обязательно для заполнения' })
   @MaxLength(COLUMN_TITLE_MAXLENGTH, {
-    message: `${VALIDATION_MESSAGES.maxlength} ${COLUMN_TITLE_MAXLENGTH}`,
+    message: `Название колонки не должно превышать ${COLUMN_TITLE_MAXLENGTH} символов`,
   })
   title: string;
 
   @ValidateIfDefinedAndNotNull()
-  @IsString({ message: VALIDATION_MESSAGES.isString })
+  @IsString({ message: 'Описание колонки должно быть строкой' })
   @MaxLength(COLUMN_DESCRIPTION_MAXLENGTH, {
-    message: `${VALIDATION_MESSAGES.maxlength} ${COLUMN_DESCRIPTION_MAXLENGTH}`,
+    message: `Описание колонки не должно превышать ${COLUMN_DESCRIPTION_MAXLENGTH} символов`,
   })
   description?: string | null;
 
-  @IsHexColor({ message: VALIDATION_MESSAGES.isHex })
+  @IsHexColor({ message: 'Цвет колонки должен быть в формате HEX' })
   color: string;
 }

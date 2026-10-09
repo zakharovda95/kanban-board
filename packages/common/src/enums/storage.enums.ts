@@ -1,4 +1,15 @@
+/**
+ * Условная подпапка (часть objectKey s3-объекта) для загрузки файлов напрямую из backend.
+ * Не для загрузки из приложения.
+ * **/
 export enum EStorageSubmodule {
-  ISSUE_ATTACHMENT = 'issue-attachment',
-  AVATAR = 'avatar',
+  COMMON = 'common',
+  ISSUE_ATTACHMENTS = 'issue-attachments',
+}
+
+/** Статусы загрузки файла в хранилище. **/
+export enum EStorageUploadStatus {
+  PENDING = 'UPLOADING',
+  UPLOADED = 'UPLOADED',
+  ERROR = 'ERROR',
 }

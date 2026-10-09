@@ -2,19 +2,18 @@ import { type TUpdateIssue } from '@kanban-board/common';
 import { PartialType, PickType } from '@nestjs/mapped-types';
 import { IsDefined, IsInt, IsNumber, IsPositive } from 'class-validator';
 
-import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import CreateIssueDto from '@/modules/issue/libs/dtos/create-issue.dto';
 
 export default class UpdateIssueDto
   extends PartialType(PickType(CreateIssueDto, ['description', 'title'] as const))
   implements TUpdateIssue
 {
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: 'Идентификатор задачи обязателен' })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: 'Идентификатор задачи должен быть числом' },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
-  @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
+  @IsInt({ message: 'Идентификатор задачи должен быть целым числом' })
+  @IsPositive({ message: 'Идентификатор задачи должен быть больше 0' })
   id: number;
 }
