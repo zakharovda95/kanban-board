@@ -1,7 +1,19 @@
 import { FILE_MIME_SIGNATURES } from '../constants';
-import type { TFileMimeType } from '../types';
+import type { TFileData, TFileMimeType } from '../types';
 
 export class FileUtility {
+  public static async getFileData(file: File): Promise<TFileData> {
+    const arrayBuffer = await this.readFileAsArrayBuffer(file);
+    const type = this.getFileMimeType(arrayBuffer, (file.type || null) as TFileMimeType | null);
+
+    return {
+      file,
+      type,
+      size: file.size,
+      name: file.name,
+    };
+  }
+
   public static async readFileAsDataUrl(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
