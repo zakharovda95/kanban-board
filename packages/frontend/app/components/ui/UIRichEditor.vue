@@ -103,7 +103,7 @@
                   size="small"
                   @click:button="editor.chain().focus().setHorizontalRule().run()"
                 />
-                <UIFileUploader name="image-uploader" accept="image/*" @update:data="uploadImage">
+                <UIImageUploader name="image-uploader" @update:file="uploadImage">
                   <template #default="payload">
                     <UIIconButton
                       tag="div"
@@ -115,7 +115,7 @@
                       @click:button="payload?.open()"
                     />
                   </template>
-                </UIFileUploader>
+                </UIImageUploader>
               </div>
             </div>
           </OverlayScrollbarsComponent>
@@ -134,16 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  EColor,
-  FileUtility,
-  IMAGE_MIME_TYPES,
-  STORAGE_FILE_NAME_MAXLENGTH,
-  STORAGE_MAX_FILE_SIZE,
-  STORAGE_MAX_FILES_COUNT,
-  type TFileData,
-  type TImageMimeType,
-} from '@kanban-board/common';
+import { EColor, FileUtility, IMAGE_MIME_TYPES, type TImageMimeType } from '@kanban-board/common';
 import { FileHandler } from '@tiptap/extension-file-handler';
 import { Image } from '@tiptap/extension-image';
 import { TaskItem, TaskList } from '@tiptap/extension-list';
@@ -152,12 +143,13 @@ import { StarterKit } from '@tiptap/starter-kit';
 import { EditorContent, useEditor } from '@tiptap/vue-3';
 import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
 
+import type { TUIImageUploaderFile } from '~/types/ui.types';
+
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
-import UIFileUploader from '~/components/ui/UIFileUploader.vue';
+import UIImageUploader from '~/components/ui/UIImageUploader.vue';
 import UIValidationErrors from '~/components/ui/UIValidationErrors.vue';
 
 const model = defineModel<string>({ required: true });
-const files = defineModel<File[]>('files', { required: true });
 
 const props = withDefaults(
   defineProps<{
@@ -282,10 +274,10 @@ const editor = useEditor({
       },
     }),
     Image.configure({
-      inline: false,
-      allowBase64: false,
+      // TODO: base64 пока не прикручу S3.
+      allowBase64: true,
       HTMLAttributes: {
-        class: 'max-w-250 h-auto rounded-8 my-6',
+        class: 'max-w-250 h-auto rounded-8',
       },
     }),
     FileHandler.configure({
@@ -294,16 +286,19 @@ const editor = useEditor({
         if (htmlContent || !files?.length || props.disabled) return;
 
         files.forEach(async file => {
-          if (!canInsertFile(file)) return;
+          if (!canInsertImage(file)) return;
           const src = await FileUtility.readFileAsDataUrl(file);
           currentEditor.chain().focus().setImage({ src }).run();
-
-          // return { emit file metadata }
         });
       },
-      onDrop: () => {
-        // Не доступно для D&D.
-        return;
+      onDrop: (currentEditor, files, pos) => {
+        if (!files?.length || props.disabled) return;
+
+        files.forEach(async file => {
+          if (!canInsertImage(file)) return;
+          const src = await FileUtility.readFileAsDataUrl(file);
+          currentEditor.chain().insertContentAt(pos, { type: 'image', attrs: { src } }).focus().run();
+        });
       },
     }),
   ],
@@ -316,32 +311,25 @@ const editor = useEditor({
   },
 });
 
-const canInsertFile = (file: File): boolean => {
-  if (files.value.length > STORAGE_MAX_FILES_COUNT) {
-    toast.error({ message: `Количество одновременных вложений не должно превышать ${STORAGE_MAX_FILES_COUNT}` });
-    return false;
-  }
+// TODO: ограничение по размеру пока не прикручу S3.
+const canInsertImage = (file: File): boolean => {
+  const IMAGE_MAX_SIZE_BYTES = 500 * 1024;
 
   if (!IMAGE_MIME_TYPES.includes(file.type as TImageMimeType)) {
     toast.error({ message: 'Данный формат не поддерживается' });
     return false;
   }
 
-  if (file.size > STORAGE_MAX_FILE_SIZE) {
-    toast.error({ message: `Размер изображения не должен превышать ${STORAGE_MAX_FILE_SIZE / 1024} КБ` });
-    return false;
-  }
-
-  if (file.name.length > STORAGE_FILE_NAME_MAXLENGTH) {
-    toast.error({ message: `Размер изображения не должен превышать ${STORAGE_MAX_FILE_SIZE / 1024} КБ` });
+  if (file.size > IMAGE_MAX_SIZE_BYTES) {
+    toast.error({ message: 'Размер изображения не должен превышать 500 КБ' });
     return false;
   }
 
   return true;
 };
 
-const uploadImage = async ({ file }: TFileData): Promise<void> => {
-  if (!editor.value || props.disabled || !canInsertFile(file)) return;
+const uploadImage = async ({ file }: TUIImageUploaderFile): Promise<void> => {
+  if (!file || !editor.value || props.disabled || !canInsertImage(file)) return;
   const src = await FileUtility.readFileAsDataUrl(file);
   editor.value.chain().focus().setImage({ src }).run();
 };

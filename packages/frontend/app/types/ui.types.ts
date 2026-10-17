@@ -1,3 +1,5 @@
+import type { TImageMimeType } from '@kanban-board/common';
+
 import type { EIconSize, EIconSizeSmall } from '~/enums/global.enums';
 
 export type TUIComputedSizeMap = {
@@ -34,6 +36,15 @@ export type TUIAnimatedHeightHook = (element: Element) => void;
 export type TUIFormButtonsPosition = 'column' | 'row';
 
 export type TSize = 'small' | 'medium' | 'large';
+
+export type TUIImageUploaderData = {
+  src: string | null;
+  type: TImageMimeType | null;
+};
+
+export type TUIImageUploaderFile = {
+  file: File | null;
+};
 
 export type TUISelectOption = {
   id: number;

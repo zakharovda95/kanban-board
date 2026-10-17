@@ -12,31 +12,30 @@
       class="absolute h-1 w-1 overflow-hidden whitespace-nowrap"
       :name="name"
       type="file"
-      :accept="accept"
+      accept="image/*"
       @change="upload"
     >
   </button>
 </template>
 
 <script setup lang="ts">
-import { FileUtility, type TFileData } from '@kanban-board/common';
+import { FileUtility, type TImageMimeType } from '@kanban-board/common';
+
+import type { TUIImageUploaderData, TUIImageUploaderFile } from '~/types/ui.types';
 
 const slots = useSlots();
 
 withDefaults(
   defineProps<{
     name: string;
-    accept?: string;
     hidden?: boolean;
   }>(),
-  {
-    accept: undefined,
-    hidden: false,
-  },
+  { hidden: false },
 );
 
 const emit = defineEmits<{
-  'update:data': [value: TFileData];
+  'update:data': [value: TUIImageUploaderData];
+  'update:file': [value: TUIImageUploaderFile];
 }>();
 
 const input = useTemplateRef('input');
@@ -64,7 +63,12 @@ const upload = async (event: Event): Promise<void> => {
   const file = files[0];
   if (!file) return;
 
-  emit('update:data', await FileUtility.getFileData(file));
+  const src = URL.createObjectURL(file);
+  const arrayBuffer = await FileUtility.readFileAsArrayBuffer(file);
+  const type = FileUtility.getFileMimeType(arrayBuffer, file.type as TImageMimeType);
+
+  emit('update:data', { src, type });
+  emit('update:file', { file });
 };
 
 defineExpose({ open });
