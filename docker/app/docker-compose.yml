@@ -22,8 +22,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      minio:
-        condition: service_started
     restart: unless-stopped
 
   frontend:
@@ -35,8 +33,6 @@ services:
         BACKEND_URL: ${BACKEND_URL}
         FRONTEND_URL: ${FRONTEND_URL}
         WEBSOCKET_URL: ${WEBSOCKET_URL}
-        MINIO_BUCKET: ${MINIO_BUCKET}
-        MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
     image: kanban-frontend:local
     container_name: kanban-frontend
     env_file:
