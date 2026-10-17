@@ -5,9 +5,6 @@ import { ValidationError } from 'class-validator';
 
 import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 
-/**
- * Настроить и получить ValidationPipe в зависимости от контекста выполнения (HTTP или WebSocket).
- * **/
 export default class CustomValidationPipe {
   private static BASE_SETTINGS: ValidationPipeOptions = {
     whitelist: true,
@@ -16,18 +13,12 @@ export default class CustomValidationPipe {
     errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
   };
 
-  /**
-   * Формирует объект ошибок валидации, соответствующий объекту формы.
-   * **/
   private static mapValidationErrors(errors: ValidationError[]): Record<string, string[]> {
     return Object.fromEntries(
       errors.map(({ property, constraints }) => [property, Object.values(constraints as object)]),
     );
   }
 
-  /**
-   * ValidationPipe для HTTP контекста выполнения (глобальный).
-   * **/
   public static get httpValidationPipe(): ValidationPipe {
     return new ValidationPipe({
       ...this.BASE_SETTINGS,
@@ -43,9 +34,6 @@ export default class CustomValidationPipe {
     });
   }
 
-  /**
-   * ValidationPipe для WebSocket контекста выполнения (переопределяет глобальный пайп на уровне гейтвея).
-   * **/
   public static get wsValidationPipe(): ValidationPipe {
     return new ValidationPipe({
       ...this.BASE_SETTINGS,

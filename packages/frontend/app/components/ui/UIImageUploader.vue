@@ -19,9 +19,8 @@
 </template>
 
 <script setup lang="ts">
-import { FileUtility, type TImageMimeType } from '@kanban-board/common';
-
 import type { TUIImageUploaderData, TUIImageUploaderFile } from '~/types/ui.types';
+import { ImageUtility } from '~/utilities/image.utility';
 
 const slots = useSlots();
 
@@ -64,8 +63,8 @@ const upload = async (event: Event): Promise<void> => {
   if (!file) return;
 
   const src = URL.createObjectURL(file);
-  const arrayBuffer = await FileUtility.readFileAsArrayBuffer(file);
-  const type = FileUtility.getFileMimeType(arrayBuffer, file.type as TImageMimeType);
+  const arrayBuffer = await ImageUtility.readImageAsArrayBuffer(file);
+  const type = ImageUtility.getImageMimeType(arrayBuffer, file.type);
 
   emit('update:data', { src, type });
   emit('update:file', { file });

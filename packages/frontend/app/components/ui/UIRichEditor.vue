@@ -134,7 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import { EColor, FileUtility, IMAGE_MIME_TYPES, type TImageMimeType } from '@kanban-board/common';
+import { EColor } from '@kanban-board/common';
 import { FileHandler } from '@tiptap/extension-file-handler';
 import { Image } from '@tiptap/extension-image';
 import { TaskItem, TaskList } from '@tiptap/extension-list';
@@ -144,6 +144,7 @@ import { EditorContent, useEditor } from '@tiptap/vue-3';
 import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
 
 import type { TUIImageUploaderFile } from '~/types/ui.types';
+import { ImageUtility } from '~/utilities/image.utility.ts';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIImageUploader from '~/components/ui/UIImageUploader.vue';
@@ -281,13 +282,13 @@ const editor = useEditor({
       },
     }),
     FileHandler.configure({
-      allowedMimeTypes: IMAGE_MIME_TYPES,
+      allowedMimeTypes: ImageUtility.imageMimeTypes,
       onPaste: (currentEditor, files, htmlContent) => {
         if (htmlContent || !files?.length || props.disabled) return;
 
         files.forEach(async file => {
           if (!canInsertImage(file)) return;
-          const src = await FileUtility.readFileAsDataUrl(file);
+          const src = await ImageUtility.readImageAsDataUrl(file);
           currentEditor.chain().focus().setImage({ src }).run();
         });
       },
@@ -296,7 +297,7 @@ const editor = useEditor({
 
         files.forEach(async file => {
           if (!canInsertImage(file)) return;
-          const src = await FileUtility.readFileAsDataUrl(file);
+          const src = await ImageUtility.readImageAsDataUrl(file);
           currentEditor.chain().insertContentAt(pos, { type: 'image', attrs: { src } }).focus().run();
         });
       },
@@ -315,7 +316,7 @@ const editor = useEditor({
 const canInsertImage = (file: File): boolean => {
   const IMAGE_MAX_SIZE_BYTES = 500 * 1024;
 
-  if (!IMAGE_MIME_TYPES.includes(file.type as TImageMimeType)) {
+  if (!ImageUtility.imageMimeTypes.includes(file.type)) {
     toast.error({ message: 'Данный формат не поддерживается' });
     return false;
   }
@@ -330,7 +331,7 @@ const canInsertImage = (file: File): boolean => {
 
 const uploadImage = async ({ file }: TUIImageUploaderFile): Promise<void> => {
   if (!file || !editor.value || props.disabled || !canInsertImage(file)) return;
-  const src = await FileUtility.readFileAsDataUrl(file);
+  const src = await ImageUtility.readImageAsDataUrl(file);
   editor.value.chain().focus().setImage({ src }).run();
 };
 
