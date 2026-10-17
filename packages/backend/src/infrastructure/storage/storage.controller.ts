@@ -1,45 +1,26 @@
 import { EStorageSubmodule, type TSuccessResponse } from '@kanban-board/common';
-import {
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  StreamableFile,
-  UploadedFiles,
-  UseFilters,
-  UseInterceptors,
-} from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 import StorageService from '@/infrastructure/storage/storage.service';
-import MulterExceptionFilter from '@/libs/filters/multer-exception.filter';
-import S3ExceptionFilter from '@/libs/filters/s3-exception.filter';
 import ParameterEnumPipe from '@/libs/pipes/parameter-enum.pipe';
-import { uploadedFilePipe } from '@/libs/pipes/uploaded-file.pipe';
+import UploadedFilePipe from '@/libs/pipes/uploaded-file.pipe';
 
 @Controller('storage')
 export default class StorageController {
   constructor(private storageService: StorageService) {}
 
-  @Get(':submodule/:key')
-  @UseFilters(S3ExceptionFilter)
-  public async getFile(
-    @Param('submodule', new ParameterEnumPipe(EStorageSubmodule)) submodule: EStorageSubmodule,
-    @Param('key') key: string,
-  ): Promise<StreamableFile> {
-    return await this.storageService.getFile(submodule, key);
+  @Get(':key')
+  public async getFile(@Param('key') key: string): Promise<string> {
+    return await this.storageService.getFile(key);
   }
 
-  @HttpCode(HttpStatus.OK)
   @Post(':submodule')
-  @UseFilters(MulterExceptionFilter, S3ExceptionFilter)
-  @UseInterceptors(FilesInterceptor('files', 3))
+  @UseInterceptors(FileInterceptor('file'))
   public async uploadFile(
     @Param('submodule', new ParameterEnumPipe(EStorageSubmodule)) submodule: EStorageSubmodule,
-    @UploadedFiles(uploadedFilePipe) files: Array<Express.Multer.File>,
-  ): Promise<TSuccessResponse<string[]>> {
-    return await this.storageService.uploadFiles(submodule, files);
+    @UploadedFile(UploadedFilePipe) body: Express.Multer.File,
+  ): Promise<TSuccessResponse> {
+    return await this.storageService.uploadFile(submodule, body);
   }
 }
