@@ -22,7 +22,7 @@ import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 import ParameterNumberPipe from '@/libs/pipes/parameter-number.pipe';
 import RequireAnyPipe from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
-import { IssueService } from '@/modules/issue/issue.service';
+import IssueService from '@/modules/issue/issue.service';
 import CreateIssueDto from '@/modules/issue/libs/dtos/create-issue.dto';
 import MoveIssueDto from '@/modules/issue/libs/dtos/move-issue.dto';
 import UpdateIssueDto from '@/modules/issue/libs/dtos/update-issue.dto';

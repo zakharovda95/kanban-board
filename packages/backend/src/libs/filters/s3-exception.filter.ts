@@ -13,21 +13,19 @@ export default class S3ExceptionFilter implements ExceptionFilter {
     const response: Response = httpContext.getResponse();
 
     const error: TErrorResponse = {
-      message: 'Произошла внутренняя ошибка при обращении к объектному хранилищу',
+      message: 'Произошла ошибка при работе с объектным хранилищем',
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
     };
 
     if (exception.code === 'NoSuchKey') {
-      error.message = 'Объект с указанным ключом в хранилище не найден';
+      error.message = 'Не верно указан ключ';
       error.statusCode = HttpStatus.UNPROCESSABLE_ENTITY;
     }
 
     if (exception.code === 'NotFound') {
-      error.message = 'Запрашиваемый объект в хранилище не найден';
+      error.message = 'Не найдено';
       error.statusCode = HttpStatus.NOT_FOUND;
     }
-
-    // Добавить при необходимости...
 
     response.status(Number(error.statusCode)).json(error);
   }

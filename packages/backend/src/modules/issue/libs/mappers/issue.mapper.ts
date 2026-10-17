@@ -9,6 +9,7 @@ export default class IssueMapper {
   public toModel(entity: IssueEntity, options?: { base?: false }): TIssue;
   public toModel(entity: IssueEntity[], options?: { base: true }): TIssueBase[];
   public toModel(entity: IssueEntity[], options: { base?: false }): TIssue[];
+
   public toModel(
     entity: IssueEntity | IssueEntity[],
     options?: { base?: boolean },

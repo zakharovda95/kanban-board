@@ -1,13 +1,15 @@
-import { TValidationErrorResponse } from '@kanban-board/common';
+import { EErrorType, TValidationErrorResponse } from '@kanban-board/common';
 import { HttpException, HttpStatus, ValidationPipe, ValidationPipeOptions } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { ValidationError } from 'class-validator';
+
+import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 
 /**
  * Настроить и получить ValidationPipe в зависимости от контекста выполнения (HTTP или WebSocket).
  * **/
 export default class CustomValidationPipe {
-  private static readonly BASE_SETTINGS: ValidationPipeOptions = {
+  private static BASE_SETTINGS: ValidationPipeOptions = {
     whitelist: true,
     transform: true,
     validateCustomDecorators: true,
@@ -15,18 +17,12 @@ export default class CustomValidationPipe {
   };
 
   /**
-   * Сформировать тело ошибки.
+   * Формирует объект ошибок валидации, соответствующий объекту формы.
    * **/
-  private static getValidationErrorBody(
-    errors: ValidationError[],
-  ): TValidationErrorResponse<unknown> {
-    return {
-      statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      message: 'Переданные данные не прошли проверку валидации',
-      validation: Object.fromEntries(
-        errors.map(({ property, constraints }) => [property, Object.values(constraints as object)]),
-      ),
-    };
+  private static mapValidationErrors(errors: ValidationError[]): Record<string, string[]> {
+    return Object.fromEntries(
+      errors.map(({ property, constraints }) => [property, Object.values(constraints as object)]),
+    );
   }
 
   /**
@@ -35,19 +31,33 @@ export default class CustomValidationPipe {
   public static get httpValidationPipe(): ValidationPipe {
     return new ValidationPipe({
       ...this.BASE_SETTINGS,
-      exceptionFactory: (errors: ValidationError[]) =>
-        new HttpException(this.getValidationErrorBody(errors), HttpStatus.UNPROCESSABLE_ENTITY),
+      exceptionFactory: (errors: ValidationError[]) => {
+        const validationErrorResponse: TValidationErrorResponse<unknown> = {
+          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          message: EXCEPTION_MESSAGES.validationErrors,
+          validation: this.mapValidationErrors(errors),
+        };
+
+        return new HttpException(validationErrorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+      },
     });
   }
 
   /**
-   * ValidationPipe для WebSocket контекста выполнения (переопределяет глобальный пайп на уровне gateway).
+   * ValidationPipe для WebSocket контекста выполнения (переопределяет глобальный пайп на уровне гейтвея).
    * **/
   public static get wsValidationPipe(): ValidationPipe {
     return new ValidationPipe({
       ...this.BASE_SETTINGS,
-      exceptionFactory: (errors: ValidationError[]) =>
-        new WsException(this.getValidationErrorBody(errors)),
+      exceptionFactory: (errors: ValidationError[]) => {
+        const validationErrorResponse: TValidationErrorResponse<unknown> = {
+          statusCode: EErrorType.VALIDATION,
+          message: EXCEPTION_MESSAGES.validationErrors,
+          validation: this.mapValidationErrors(errors),
+        };
+
+        return new WsException(validationErrorResponse);
+      },
     });
   }
 }

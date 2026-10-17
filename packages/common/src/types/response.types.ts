@@ -1,4 +1,4 @@
-import type { TValidationErrors } from './error.types.js';
+import type { TValidationErrors } from './error.types';
 
 export type TSuccessResponse<TData = undefined> = {
   isSuccess: boolean;

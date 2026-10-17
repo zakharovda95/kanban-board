@@ -12,6 +12,7 @@ export default class ColumnMapper {
   public toModel(entity: ColumnEntity, options?: { base?: false }): TColumn;
   public toModel(entity: ColumnEntity[], options: { base: true }): TColumnBase[];
   public toModel(entity: ColumnEntity[], options?: { base?: false }): TColumn[];
+
   public toModel(
     entity: ColumnEntity | ColumnEntity[],
     options?: { base?: boolean },

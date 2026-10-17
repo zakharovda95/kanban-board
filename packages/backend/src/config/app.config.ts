@@ -14,7 +14,6 @@ export default class AppConfig {
 
   public static get appConfigSchema() {
     return z.object({
-      SUPER_AWESOME_PASS_KEY: z.uuid({ version: 'v4' }),
       NODE_ENV: z.enum(ENodeEnv),
       BACKEND_HOST: z.string().trim().min(this.MIN_LENGTH),
       BACKEND_PORT: z.coerce.number().min(this.MIN_PORT).max(this.MAX_PORT),

@@ -8,15 +8,17 @@ import {
 } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 
+import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
+
 /** Опциональные проверки. **/
-export type TParameterNumberPipeOptions = Partial<{
+export type TParameterNumberPipeOptions = {
   /** Разрешить значения больше 0. По умолчанию true. **/
-  positive: boolean;
+  positive?: boolean;
   /** Разрешить значения равные 0. По умолчанию true. **/
-  zero: boolean;
+  zero?: boolean;
   /** Разрешить значения меньше 0. По умолчанию true. **/
-  negative: boolean;
-}>;
+  negative?: boolean;
+};
 
 /**
  * Проверка на допустимое значение параметра строки запроса.
@@ -28,35 +30,32 @@ export type TParameterNumberPipeOptions = Partial<{
  **/
 @Injectable()
 export default class ParameterNumberPipe extends ParseIntPipe {
+  private readonly context: TExecutionContextType;
   private readonly defaultOptions: TParameterNumberPipeOptions = {
     positive: true,
     zero: true,
     negative: true,
   };
 
-  constructor(
-    private context: TExecutionContextType = 'http',
-    options?: TParameterNumberPipeOptions,
-  ) {
+  constructor(context: TExecutionContextType = 'http', options?: TParameterNumberPipeOptions) {
     super({
-      exceptionFactory: (): HttpException | WsException => this.getException(),
+      exceptionFactory: (): HttpException | WsException => {
+        switch (this.context) {
+          case 'http':
+            return new HttpException(
+              VALIDATION_MESSAGES.parameterWrongValue,
+              HttpStatus.UNPROCESSABLE_ENTITY,
+            );
+          case 'ws':
+            return new WsException(VALIDATION_MESSAGES.parameterWrongValue);
+        }
+      },
     });
+
+    this.context = context;
 
     // Мержим опции, чтобы не перезаписались опции по умолчанию, если они не переданы явно.
     this.defaultOptions = { ...this.defaultOptions, ...options };
-  }
-
-  /** Получить объект исключения в зависимости от контекста выполнения. **/
-  private getException(): HttpException | WsException {
-    switch (this.context) {
-      case 'http':
-        return new HttpException(
-          'Числовой параметр запроса имеет недопустимое значение',
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      case 'ws':
-        return new WsException('Числовой параметр запроса имеет недопустимое значение');
-    }
   }
 
   /** Добавляем опциональные валидации. **/
@@ -68,7 +67,16 @@ export default class ParameterNumberPipe extends ParseIntPipe {
     const isNotValid =
       (!positive && number > 0) || (!zero && number === 0) || (!negative && number < 0);
 
-    if (isNotValid) throw this.getException();
+    if (this.context === 'http' && isNotValid) {
+      throw new HttpException(
+        VALIDATION_MESSAGES.parameterWrongValue,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    if (this.context === 'ws' && isNotValid) {
+      throw new WsException(VALIDATION_MESSAGES.parameterWrongValue);
+    }
 
     return number;
   }

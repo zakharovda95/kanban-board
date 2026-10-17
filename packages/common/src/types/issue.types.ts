@@ -1,6 +1,5 @@
 import type { IMovable, TMoveParameters } from './move.types.js';
 import type { TSuccessResponse } from './response.types.js';
-import type { TStorageUploadData } from './storage.types.js';
 
 /** Базовые данные (для карточки) **/
 export type TIssueBase = IMovable & {
@@ -56,6 +55,3 @@ export type TMoveIssueEmitPayload = {
   /** Перемещенная задача (без колонки) или null, если был reorder всех задач и нужно сделать refetch. **/
   movedIssue: TIssueBase | null;
 };
-
-/** Ответ с данными, необходимыми для загрузки вложений в хранилище. **/
-export type TUploadIssueAttachmentsResponse = TSuccessResponse<TStorageUploadData[]>;

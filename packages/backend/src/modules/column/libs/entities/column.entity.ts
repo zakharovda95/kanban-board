@@ -10,10 +10,10 @@ export default class ColumnEntity extends MovableEntity {
   @Column({ type: 'varchar', length: COLUMN_TITLE_MAXLENGTH })
   title: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   description: string | null;
 
-  @Column({ type: 'varchar', length: 7 })
+  @Column('varchar')
   color: string;
 
   @Index()

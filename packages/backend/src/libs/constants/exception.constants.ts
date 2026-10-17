@@ -1,0 +1,16 @@
+export const EXCEPTION_MESSAGES = {
+  bootstrapError: 'Ошибка параметров запуска приложения',
+  idNotFound: 'Не указан идентификатор',
+  onlyOneIdShouldBeSpecified: 'Можно указать только один идентификатор',
+  atLeastOneFieldRequired: 'Необходимо указать хотя бы одно поле',
+  atLeastOneIdRequired: 'Необходимо указать хотя бы один идентификатор',
+  notFound: 'Не найдено',
+  createFailed: 'Не удалось создать',
+  updateFailed: 'Не удалось обновить',
+  deleteFailed: 'Не удалось удалить',
+  moveFailed: 'Не удалось переместить',
+  moveNotAllowed: 'Перемещение недоступно',
+  requestBodyNotFound: 'Данные запроса не найдены',
+  paramsNotFound: 'Не переданы параметры',
+  validationErrors: 'Ошибки валидации',
+};

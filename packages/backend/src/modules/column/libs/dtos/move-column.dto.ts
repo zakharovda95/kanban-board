@@ -1,15 +1,16 @@
 import { type TMoveColumn } from '@kanban-board/common';
 import { IsDefined, IsInt, IsNumber, IsPositive } from 'class-validator';
 
+import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import MoveParametersDto from '@/modules/shared/move/libs/dto/move-parameters.dto';
 
 export default class MoveColumnDto extends MoveParametersDto implements TMoveColumn {
-  @IsDefined({ message: 'Идентификатор доски обязателен для перемещения колонки' })
+  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: 'Идентификатор доски должен быть числом' },
+    { message: VALIDATION_MESSAGES.idMustBeNumber },
   )
-  @IsInt({ message: 'Идентификатор доски должен быть целым числом' })
-  @IsPositive({ message: 'Идентификатор доски должен быть больше 0' })
+  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
+  @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
   boardId: number;
 }

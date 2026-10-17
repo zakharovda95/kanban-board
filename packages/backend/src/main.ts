@@ -8,8 +8,7 @@ async function bootstrap() {
   const host = process.env.BACKEND_HOST;
   const port = process.env.BACKEND_PORT;
 
-  if (!host || !port)
-    throw new Error('Не заданы параметры запуска приложения (BACKEND_HOST, BACKEND_PORT)');
+  if (!host || !port) throw new Error('Ошибка параметров запуска приложения');
 
   const app = await NestFactory.create(AppModule);
 
