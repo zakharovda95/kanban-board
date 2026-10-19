@@ -1,0 +1,2 @@
+export const USER_FIRST_NAME_MAXLENGTH = 64;
+export const USER_LAST_NAME_MAXLENGTH = 64;

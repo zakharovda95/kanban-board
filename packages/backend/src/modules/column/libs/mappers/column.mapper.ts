@@ -16,7 +16,7 @@ export default class ColumnMapper {
   public toModel(
     entity: ColumnEntity | ColumnEntity[],
     options?: { base?: boolean },
-  ): TColumnBase | TColumn | TColumnBase[] | TColumn[] {
+  ): TColumnBase | TColumn | TColumnBase[] {
     const map = (innerEntity: ColumnEntity): TColumnBase | TColumn => {
       const mapped: TColumnBase = {
         id: innerEntity.id,

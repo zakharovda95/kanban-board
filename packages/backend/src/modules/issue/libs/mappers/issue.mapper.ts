@@ -13,7 +13,7 @@ export default class IssueMapper {
   public toModel(
     entity: IssueEntity | IssueEntity[],
     options?: { base?: boolean },
-  ): TIssueBase | TIssueBase[] | TIssue | TIssue[] {
+  ): TIssueBase | TIssueBase[] | TIssue {
     const map = (innerEntity: IssueEntity): TIssue | TIssueBase => {
       const mapped: TIssueBase = {
         id: innerEntity.id,

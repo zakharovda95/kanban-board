@@ -1,0 +1,3 @@
+export const AUTH_LOGIN_MAXLENGTH = 64;
+export const AUTH_PASSWORD_MAXLENGTH = 64;
+export const AUTH_PASSWORD_MINLENGTH = 8;

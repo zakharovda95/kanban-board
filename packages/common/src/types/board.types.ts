@@ -1,6 +1,6 @@
 import type { TColumn } from './column.types.js';
 import type { IMovable } from './move.types.js';
-import type { TSuccessResponse } from './response.types';
+import type { TSuccessResponse } from './response.types.js';
 
 /** Базовые данные для бокового меню. **/
 export type TBoardBase = IMovable & {

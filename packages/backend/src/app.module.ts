@@ -3,9 +3,12 @@ import { ConfigModule } from '@nestjs/config';
 
 import AppConfig from '@/config/app.config';
 import InfrastructureModule from '@/infrastructure/infrastructure.module';
+import AuthModule from '@/modules/auth/auth.module';
 import BoardModule from '@/modules/board/board.module';
 import ColumnModule from '@/modules/column/column.module';
 import IssueModule from '@/modules/issue/issue.module';
+import UserModule from '@/modules/user/user.module';
+import WorkspaceModule from '@/modules/workspace/workspace.module';
 
 @Module({
   imports: [
@@ -14,6 +17,9 @@ import IssueModule from '@/modules/issue/issue.module';
     BoardModule,
     ColumnModule,
     IssueModule,
+    WorkspaceModule,
+    UserModule,
+    AuthModule,
   ],
 })
 export default class AppModule {}

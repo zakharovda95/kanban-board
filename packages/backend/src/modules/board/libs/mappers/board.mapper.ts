@@ -16,7 +16,7 @@ export default class BoardMapper {
   public toModel(
     entity: BoardEntity | BoardEntity[],
     options?: { base?: boolean },
-  ): TBoardBase | TBoard | TBoardBase[] | TBoard[] {
+  ): TBoardBase | TBoard | TBoardBase[] {
     const map = (innerEntity: BoardEntity): TBoardBase | TBoard => {
       const mapped: TBoardBase = {
         id: innerEntity.id,
