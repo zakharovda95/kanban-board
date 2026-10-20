@@ -2,8 +2,15 @@
   <Component
     :is="resolvedTag"
     v-bind="resolvedAttributes"
-    class="text-light-700 decoration-green flex cursor-pointer flex-nowrap items-center justify-start gap-4 leading-none font-medium whitespace-nowrap decoration-3 underline-offset-6 duration-300"
-    :class="[{ 'hover:opacity-50': hoverable, 'underline': isActive }]"
+    class="flex flex-nowrap items-center justify-start gap-4 whitespace-nowrap"
+    :class="[
+      {
+        'hover:opacity-50': hoverable,
+        'underline': isActive && !renderless,
+        'text-light-700 decoration-green cursor-pointer leading-none font-medium whitespace-nowrap decoration-3 underline-offset-6 duration-300':
+          !renderless,
+      },
+    ]"
   >
     <div v-if="icon" :class="`size-${iconSize}`">
       <NuxtIcon :name="icon" :size="iconSize" />
@@ -31,6 +38,7 @@ const props = withDefaults(
     iconSize?: EIconSize | EIconSizeSmall | number;
     hoverable?: boolean;
     isActive?: boolean;
+    renderless?: boolean;
   }>(),
   {
     tag: 'NuxtLink',
@@ -38,6 +46,7 @@ const props = withDefaults(
     iconSize: EIconSize.LARGE,
     hoverable: true,
     isActive: false,
+    renderless: false,
   },
 );
 

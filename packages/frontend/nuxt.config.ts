@@ -15,11 +15,12 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/': { redirect: 'boards' },
+    '/': { redirect: '/boards' },
     '/boards': { ssr: true },
     '/boards/*': { ssr: true },
     '/about': { prerender: true },
     '/docs': { prerender: true },
+    '/auth': { ssr: true },
   },
 
   devtools: { enabled: NODE_ENV === ENodeEnv.DEVELOPMENT },

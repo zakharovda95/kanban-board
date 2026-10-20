@@ -14,3 +14,11 @@ export type TAuthRegister = {
 
 /** Ответ со сгенерированными данными для авторизации. **/
 export type TAuthRegisterResponse = TSuccessResponse<TAuthData>;
+
+/** Токены аутентификации. **/
+export type TAuthLoginPayload = {
+  token: string;
+};
+
+/** Ответ с токеном после аутентификации. **/
+export type TAuthLoginResponse = TSuccessResponse<TAuthLoginPayload>;

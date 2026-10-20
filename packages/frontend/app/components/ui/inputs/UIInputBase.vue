@@ -9,6 +9,7 @@
     :inputmode="inputMode"
     :placeholder="placeholder"
     :maxlength="maxLength ?? undefined"
+    :readonly="readonly"
   >
 </template>
 
@@ -26,6 +27,7 @@ const props = withDefaults(
     autocomplete?: TUIInputAutocomplete;
     placeholder?: string | undefined;
     maxLength?: number | null;
+    readonly?: boolean;
   }>(),
   {
     size: 'medium',
@@ -34,6 +36,7 @@ const props = withDefaults(
     autocomplete: 'off',
     placeholder: undefined,
     maxLength: null,
+    readonly: false,
   },
 );
 

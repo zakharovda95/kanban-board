@@ -8,9 +8,9 @@
     :style="{ backgroundColor, color }"
     @click="onClick"
   >
-    <NuxtIcon v-if="prependIcon" :name="prependIcon" :size="computedSize.icon" />
+    <NuxtIcon v-if="prependIcon" :class="prependIconClass" :name="prependIcon" :size="computedSize.icon" />
     <slot />
-    <NuxtIcon v-if="appendIcon" :name="appendIcon" :size="computedSize.icon" />
+    <NuxtIcon v-if="appendIcon" :class="appendIconClass" :name="appendIcon" :size="computedSize.icon" />
   </Component>
 </template>
 
@@ -26,7 +26,9 @@ const props = withDefaults(
     size?: TSize;
     type?: 'button' | 'submit';
     prependIcon?: string | null;
+    prependIconClass?: string | null;
     appendIcon?: string | null;
+    appendIconClass?: string | null;
     iconSize?: EIconSizeSmall;
     disabled?: boolean;
     full?: boolean;
@@ -38,7 +40,9 @@ const props = withDefaults(
     size: 'medium',
     type: 'button',
     prependIcon: null,
+    prependIconClass: null,
     appendIcon: null,
+    appendIconClass: null,
     iconSize: EIconSizeSmall.SMALL,
     disabled: false,
     full: false,

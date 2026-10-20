@@ -1,7 +1,7 @@
 <template>
   <form class="flex w-fit flex-col gap-12" :class="{ 'w-full!': full }" @submit.prevent="emit('submit:form')">
-    <slot v-if="title || slots.title" name="title">
-      <h4 class="font-medium">{{ title }}</h4>
+    <slot v-if="title || slots.title" name="title" v-bind="{ title }">
+      <h4 class="text-18 font-medium">{{ title }}</h4>
     </slot>
 
     <div class="flex w-full flex-col gap-8">
@@ -23,6 +23,7 @@
           {{ actionButtonLabel }}
         </UIButton>
         <UIButton
+          v-if="!hideRejectButton"
           class="w-full"
           :class="isColButtonsPosition ? 'laptop:w-full' : 'laptop:w-fit min-w-120'"
           :size="buttonsSize"
@@ -53,6 +54,7 @@ const props = withDefaults(
     full?: boolean;
     disabled?: boolean;
     buttonsPosition?: TUIFormButtonsPosition;
+    hideRejectButton?: boolean;
   }>(),
   {
     title: null,
@@ -61,6 +63,7 @@ const props = withDefaults(
     buttonsPosition: 'column',
     full: false,
     disabled: false,
+    hideRejectButton: false,
   },
 );
 

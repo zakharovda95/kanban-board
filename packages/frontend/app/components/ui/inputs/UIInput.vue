@@ -1,8 +1,11 @@
 <template>
   <UIValidationErrors :full="full" :errors="errors">
     <div
-      class="focus-within:border-green bg-light-100 border-light-200 flex w-full flex-nowrap items-center justify-between gap-4 border duration-300"
-      :class="[computedSize.element, { 'disabled-element': disabled }]"
+      class="bg-light-100 border-light-200 flex w-full flex-nowrap items-center justify-between gap-4 border duration-300"
+      :class="[
+        computedSize.element,
+        { 'disabled-element': disabled, 'focus-within:border-green': !disabled && !readonly },
+      ]"
     >
       <NuxtIcon v-if="icon" :name="icon" :size="computedSize.icon" />
       <UIInputBase
@@ -14,6 +17,7 @@
         :input-mode="inputMode"
         :placeholder="placeholder"
         :max-length="maxLength"
+        :readonly="readonly"
       />
       <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
     </div>
@@ -42,6 +46,7 @@ const props = withDefaults(
     placeholder?: string | undefined;
     maxLength?: number | null;
     errors?: string[] | null;
+    readonly?: boolean;
   }>(),
   {
     icon: null,
@@ -53,6 +58,7 @@ const props = withDefaults(
     placeholder: undefined,
     maxLength: null,
     errors: null,
+    readonly: false,
   },
 );
 

@@ -1,4 +1,9 @@
-import { sleep, type TAuthData, type TAuthRegister } from '@kanban-board/common';
+import {
+  sleep,
+  type TAuthData,
+  type TAuthLoginPayload,
+  type TAuthRegister,
+} from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
@@ -14,12 +19,12 @@ export class AuthService {
   public async register(body: TAuthRegister): Promise<TAuthData> {
     await sleep(1000);
     console.log(body);
-
     return { login: '123', password: '123' };
   }
 
-  public async login(_body: TAuthData): Promise<boolean> {
+  public async login(body: TAuthData): Promise<TAuthLoginPayload> {
     await sleep(1000);
-    return true;
+    console.log(body);
+    return { token: '123' };
   }
 }

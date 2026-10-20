@@ -5,8 +5,11 @@
         <span>Designed & developed by:</span>
         <span>{{ '\u00A9 zakharovda95' }}</span>
       </div>
+      <TheSocial />
     </div>
   </footer>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import TheSocial from '~/components/shared/TheSocial.vue';
+</script>

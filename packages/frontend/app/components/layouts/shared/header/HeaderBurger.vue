@@ -17,8 +17,13 @@
           <TheProfile />
           <UIDivider variant="dashed" />
 
-          <div class="flex-1">
+          <div class="flex size-full flex-1 flex-col gap-24">
             <HeaderNav />
+
+            <template v-if="!isAuthRoute">
+              <UIDivider variant="dashed" />
+              <LoginLink full />
+            </template>
           </div>
 
           <div class="flex w-full justify-between">
@@ -35,6 +40,7 @@
 import { EColor } from '@kanban-board/common';
 
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
+import LoginLink from '~/components/layouts/shared/LoginLink.vue';
 import TheProfile from '~/components/shared/TheProfile.vue';
 import TheSettings from '~/components/shared/TheSettings.vue';
 import TheSocial from '~/components/shared/TheSocial.vue';
@@ -42,4 +48,7 @@ import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIDivider from '~/components/ui/UIDivider.vue';
 
 const isBurgerOpen = ref(false);
+
+const route = useRoute();
+const isAuthRoute = computed(() => route.name === 'auth');
 </script>
