@@ -9,3 +9,9 @@ export enum EIconSize {
   MEDIUM = 20,
   LARGE = 24,
 }
+
+export enum EIconSizeLarge {
+  SMALL = 20,
+  MEDIUM = 28,
+  LARGE = 36,
+}

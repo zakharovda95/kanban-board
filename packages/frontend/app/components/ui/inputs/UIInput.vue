@@ -19,7 +19,9 @@
         :max-length="maxLength"
         :readonly="readonly"
       />
-      <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
+      <slot v-if="maxLength || slots.right" name="right">
+        <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
+      </slot>
     </div>
   </UIValidationErrors>
 </template>
@@ -31,6 +33,8 @@ import type { TSize, TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode } fr
 import UIInputBase from '~/components/ui/inputs/UIInputBase.vue';
 import UIMaxLengthCounter from '~/components/ui/UIMaxLengthCounter.vue';
 import UIValidationErrors from '~/components/ui/UIValidationErrors.vue';
+
+const slots = useSlots();
 
 const model = defineModel<string>({ required: true });
 

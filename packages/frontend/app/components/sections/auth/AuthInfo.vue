@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-light-base rounded-12 flex w-full flex-col p-12">
-    <div class="flex w-full cursor-pointer items-center justify-between gap-12" @click="isBodyOpen = !isBodyOpen">
+  <div class="bg-light-base rounded-12 flex w-full flex-col">
+    <div class="flex w-full cursor-pointer items-center justify-between gap-12 p-12" @click="isBodyOpen = !isBodyOpen">
       <p class="text-medium text-14">
         <span class="text-green block font-bold">Привет!</span> Нажми, чтобы прочитать условия!
       </p>
@@ -12,8 +12,8 @@
       />
     </div>
     <UIAnimatedHeight>
-      <div v-if="isBodyOpen" class="full flex flex-col">
-        <p class="text-14 mt-12">
+      <div v-if="isBodyOpen" class="full flex flex-col px-12">
+        <p class="text-14 my-12">
           Так как это <span class="font-bold">демонстрационный проект</span>, и мне не очень хочется собирать Ваши
           <span class="font-bold">персональные данные</span>, и нести за них ответственность, созданный аккаунт будет
           иметь <span class="font-bold">ряд особенностей:</span>

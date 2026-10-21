@@ -19,6 +19,7 @@
           type="submit"
           :size="buttonsSize"
           :disabled="disabled"
+          :append-icon="actionButtonIcon"
         >
           {{ actionButtonLabel }}
         </UIButton>
@@ -28,6 +29,7 @@
           :class="isColButtonsPosition ? 'laptop:w-full' : 'laptop:w-fit min-w-120'"
           :size="buttonsSize"
           :background-color="EColor.RED"
+          :append-icon="rejectButtonIcon"
           @click:button="emit('reset:form')"
         >
           Отменить
@@ -50,6 +52,8 @@ const props = withDefaults(
   defineProps<{
     title?: string | null;
     actionButtonLabel?: string;
+    actionButtonIcon?: string | null;
+    rejectButtonIcon?: string | null;
     buttonsSize?: TSize;
     full?: boolean;
     disabled?: boolean;
@@ -59,6 +63,8 @@ const props = withDefaults(
   {
     title: null,
     actionButtonLabel: 'Применить',
+    actionButtonIcon: null,
+    rejectButtonIcon: null,
     buttonsSize: 'medium',
     buttonsPosition: 'column',
     full: false,

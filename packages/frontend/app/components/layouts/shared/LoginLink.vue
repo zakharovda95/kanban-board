@@ -2,7 +2,7 @@
   <UILink to="/auth" renderless :hoverable="false">
     <UIButton
       tag="span"
-      size="large"
+      size="medium"
       prepend-icon="mingcute:entrance-fill"
       prepend-icon-class="rotate-180"
       :full="full"

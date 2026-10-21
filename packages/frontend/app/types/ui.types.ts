@@ -1,4 +1,4 @@
-import type { EIconSize, EIconSizeSmall } from '~/enums/global.enums';
+import type { EIconSize, EIconSizeLarge, EIconSizeSmall } from '~/enums/global.enums';
 
 export type TUIComputedSizeMap = {
   small: TUIComputedSize;
@@ -8,7 +8,7 @@ export type TUIComputedSizeMap = {
 
 export type TUIComputedSize = {
   element?: string;
-  icon?: EIconSize | EIconSizeSmall | number;
+  icon?: EIconSize | EIconSizeSmall | EIconSizeLarge | number;
 };
 
 export type TUIInputAutocomplete =

@@ -2,7 +2,7 @@
   <div>
     <UIIconButton
       :icon="isBurgerOpen ? 'mingcute:close-fill' : 'mingcute:menu-fill'"
-      size="large"
+      size="medium"
       :background-color="EColor.LIGHT_200"
       :color="EColor.LIGHT_800"
       @click:button="isBurgerOpen = !isBurgerOpen"
@@ -28,7 +28,7 @@
 
           <div class="flex w-full justify-between">
             <TheSettings :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_800" size="large" />
-            <TheSocial :size="40" />
+            <TheSocial :size="EIconSizeLarge.LARGE" />
           </div>
         </div>
       </div>
@@ -38,6 +38,8 @@
 
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
+
+import { EIconSizeLarge } from '~/enums/global.enums.ts';
 
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import LoginLink from '~/components/layouts/shared/LoginLink.vue';

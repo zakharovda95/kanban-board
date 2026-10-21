@@ -29,7 +29,7 @@ export const useBoardStore = defineStore('board-store', () => {
     call: fetchBoard,
     isLoading: isLoadingBoard,
     data: board,
-  } = useTryCatchFinally({
+  } = useTryCatchFinally<TBoard, number>({
     callback: async (boardId: number = 0, signal?: AbortSignal) => {
       if (!boardId || boardId <= 0) throw new Error('Не передан boardId');
       return await $fetch<TBoard>(`/api/boards/${boardId}`, { method: 'GET', signal });

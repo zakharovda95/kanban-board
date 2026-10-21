@@ -41,7 +41,7 @@ export const useIssueDetailsStore = defineStore('issue-detail-store', () => {
     data: issueDetails,
     isLoading: isLoadingIssueDetails,
     call: fetchIssueDetails,
-  } = useTryCatchFinally({
+  } = useTryCatchFinally<TIssue>({
     callback: async () => {
       if (!selectedIssueId.value) return null;
       return $fetch<TIssue>(`/api/issues/${selectedIssueId.value}`, { method: 'GET' });

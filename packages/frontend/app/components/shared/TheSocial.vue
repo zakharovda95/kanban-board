@@ -13,14 +13,16 @@
 </template>
 
 <script setup lang="ts">
+import { EIconSizeLarge } from '~/enums/global.enums.ts';
+
 import UILink from '~/components/ui/UILink.vue';
 
 withDefaults(
   defineProps<{
-    size?: number;
+    size?: number | EIconSizeLarge;
   }>(),
   {
-    size: 32,
+    size: EIconSizeLarge.MEDIUM,
   },
 );
 </script>
