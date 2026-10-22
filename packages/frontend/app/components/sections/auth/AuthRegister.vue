@@ -130,6 +130,7 @@
 <script setup lang="ts">
 import {
   EColor,
+  FileUtility,
   getErrorMessage,
   RandomUtility,
   type TAuthData,
@@ -139,7 +140,6 @@ import {
   USER_LAST_NAMES,
 } from '@kanban-board/common';
 
-import { useTextFileDownload } from '~/composables/use-text-file-download.composable.ts';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import type { TAuthTab } from '~/types/auth.types.ts';
 
@@ -148,6 +148,7 @@ import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIAlert from '~/components/ui/UIAlert.vue';
 import UIForm from '~/components/ui/UIForm.vue';
+import UILabel from '~/components/ui/UILabel.vue';
 import UITooltip from '~/components/ui/UITooltip.vue';
 
 const emit = defineEmits<{
@@ -180,19 +181,16 @@ const copyPassword = async () => {
   }
 };
 
-const { downloadText } = useTextFileDownload();
-
-const saveData = () =>
-  downloadText(
-    [
-      `Ссылка: ${runtimeConfig.public.FRONTEND_URL}/auth?view=login`,
-      `Имя: ${formData.firstName}`,
-      `Фамилия: ${formData.lastName}`,
-      `Логин: ${data.value?.login ?? 'Ошибка'}`,
-      `Пароль: ${data.value?.password ?? 'Ошибка'}`,
-    ],
-    'my-auth-data.txt',
-  );
+const saveData = () => {
+  const lines = [
+    `Ссылка: ${runtimeConfig.public.FRONTEND_URL}/auth?view=login`,
+    `Имя: ${formData.firstName}`,
+    `Фамилия: ${formData.lastName}`,
+    `Логин: ${data.value?.login ?? 'Ошибка'}`,
+    `Пароль: ${data.value?.password ?? 'Ошибка'}`,
+  ];
+  FileUtility.downloadFile(FileUtility.buildTextFile(lines, 'my-auth-data'));
+};
 
 const formData = reactive<TAuthRegister>({
   firstName: getRandomFirstName(),

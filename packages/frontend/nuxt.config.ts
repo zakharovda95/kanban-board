@@ -30,7 +30,6 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/fonts',
     '@nuxt/image',
-    'dayjs-nuxt',
     '@pinia/nuxt',
     'nuxt-toast',
     'nuxt-color-picker',

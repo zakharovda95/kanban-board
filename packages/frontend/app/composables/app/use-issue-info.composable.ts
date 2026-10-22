@@ -1,6 +1,4 @@
-import { StringUtility, type TIssue, type TIssueBase } from '@kanban-board/common';
-
-import { DatetimeUtility } from '~/utilities/datetime.utility';
+import { DatetimeUtility, StringUtility, type TIssue, type TIssueBase } from '@kanban-board/common';
 
 export function useIssueInfo(issue: Ref<TIssue> | Ref<TIssueBase>) {
   const runtimeConfig = useRuntimeConfig();

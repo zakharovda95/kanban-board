@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-export type TDatetimeFormat = 'YYYY-MM-DD' | 'DD.MM.YYYY';
+import { TDatetimeFormat } from '../types/date-type.types.js';
 
 export class DatetimeUtility {
   public static format(date: Date, format: TDatetimeFormat): string {

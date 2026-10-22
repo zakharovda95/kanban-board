@@ -103,19 +103,6 @@
                   size="small"
                   @click:button="editor.chain().focus().setHorizontalRule().run()"
                 />
-                <UIImageUploader name="image-uploader" @update:file="uploadImage">
-                  <template #default="payload">
-                    <UIIconButton
-                      tag="div"
-                      icon="mingcute:photo-album-line"
-                      icon-class="scale-110"
-                      :color="EColor.LIGHT_800"
-                      :background-color="EColor.LIGHT_200"
-                      size="small"
-                      @click:button="payload?.open()"
-                    />
-                  </template>
-                </UIImageUploader>
               </div>
             </div>
           </OverlayScrollbarsComponent>
@@ -134,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import { EColor } from '@kanban-board/common';
+import { EColor, FILE_MAX_SIZE, FileUtility, IMAGE_MIME_TYPES, type TImageMimeType } from '@kanban-board/common';
 import { FileHandler } from '@tiptap/extension-file-handler';
 import { Image } from '@tiptap/extension-image';
 import { TaskItem, TaskList } from '@tiptap/extension-list';
@@ -143,11 +130,7 @@ import { StarterKit } from '@tiptap/starter-kit';
 import { EditorContent, useEditor } from '@tiptap/vue-3';
 import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
 
-import type { TUIImageUploaderFile } from '~/types/ui.types';
-import { ImageUtility } from '~/utilities/image.utility.ts';
-
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
-import UIImageUploader from '~/components/ui/UIImageUploader.vue';
 import UIValidationErrors from '~/components/ui/UIValidationErrors.vue';
 
 const model = defineModel<string>({ required: true });
@@ -282,25 +265,17 @@ const editor = useEditor({
       },
     }),
     FileHandler.configure({
-      allowedMimeTypes: ImageUtility.imageMimeTypes,
+      allowedMimeTypes: IMAGE_MIME_TYPES,
       onPaste: (currentEditor, files, htmlContent) => {
         if (htmlContent || !files?.length || props.disabled) return;
 
         files.forEach(async file => {
           if (!canInsertImage(file)) return;
-          const src = await ImageUtility.readImageAsDataUrl(file);
+          const src = await FileUtility.getFileAsBase64DataUrl(file);
           currentEditor.chain().focus().setImage({ src }).run();
         });
       },
-      onDrop: (currentEditor, files, pos) => {
-        if (!files?.length || props.disabled) return;
-
-        files.forEach(async file => {
-          if (!canInsertImage(file)) return;
-          const src = await ImageUtility.readImageAsDataUrl(file);
-          currentEditor.chain().insertContentAt(pos, { type: 'image', attrs: { src } }).focus().run();
-        });
-      },
+      onDrop: () => false,
     }),
   ],
   onCreate: () => {
@@ -314,27 +289,18 @@ const editor = useEditor({
 
 // TODO: ограничение по размеру пока не прикручу S3.
 const canInsertImage = (file: File): boolean => {
-  const IMAGE_MAX_SIZE_BYTES = 500 * 1024;
-
-  if (!ImageUtility.imageMimeTypes.includes(file.type)) {
+  if (!IMAGE_MIME_TYPES.includes(file.type as TImageMimeType)) {
     toast.error({ message: 'Данный формат не поддерживается' });
     return false;
   }
 
-  if (file.size > IMAGE_MAX_SIZE_BYTES) {
-    toast.error({ message: 'Размер изображения не должен превышать 500 КБ' });
+  if (file.size > FILE_MAX_SIZE) {
+    toast.error({ message: `Размер изображения не должен превышать ${FILE_MAX_SIZE / 1024}Кб.` });
     return false;
   }
 
   return true;
 };
-
-const uploadImage = async ({ file }: TUIImageUploaderFile): Promise<void> => {
-  if (!file || !editor.value || props.disabled || !canInsertImage(file)) return;
-  const src = await ImageUtility.readImageAsDataUrl(file);
-  editor.value.chain().focus().setImage({ src }).run();
-};
-
 onBeforeUnmount(() => {
   editor.value?.destroy();
 });
