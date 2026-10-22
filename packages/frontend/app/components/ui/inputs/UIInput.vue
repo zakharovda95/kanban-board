@@ -18,6 +18,7 @@
         :placeholder="placeholder"
         :max-length="maxLength"
         :readonly="readonly"
+        :type="type"
       />
       <slot v-if="maxLength || slots.right" name="right">
         <UIMaxLengthCounter v-if="maxLength" :value-length="model.length" :max-length="maxLength" />
@@ -28,7 +29,7 @@
 
 <script setup lang="ts">
 import { EIconSizeSmall } from '~/enums/global.enums';
-import type { TSize, TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode } from '~/types/ui.types';
+import type { TSize, TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode, TUIInputType } from '~/types/ui.types';
 
 import UIInputBase from '~/components/ui/inputs/UIInputBase.vue';
 import UIMaxLengthCounter from '~/components/ui/UIMaxLengthCounter.vue';
@@ -51,6 +52,7 @@ const props = withDefaults(
     maxLength?: number | null;
     errors?: string[] | null;
     readonly?: boolean;
+    type?: TUIInputType;
   }>(),
   {
     icon: null,
@@ -63,6 +65,7 @@ const props = withDefaults(
     maxLength: null,
     errors: null,
     readonly: false,
+    type: 'text',
   },
 );
 

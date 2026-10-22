@@ -11,6 +11,8 @@ export type TUIComputedSize = {
   icon?: EIconSize | EIconSizeSmall | EIconSizeLarge | number;
 };
 
+export type TUIInputType = 'text' | 'password';
+
 export type TUIInputAutocomplete =
   | 'on'
   | 'off'

@@ -7,28 +7,35 @@
       buttons-position="row"
       action-button-label="Войти"
       hide-reject-button
+      :disabled="isLoading"
+      @submit:form="call"
     >
       <div class="flex w-full flex-col gap-16">
         <UILabel text="Логин" size="medium" required>
           <UIInput
             name="auth-login"
-            model-value=""
+            :model-value="formData.login"
             full
             size="large"
             placeholder="Укажите логин"
             autocomplete="username"
             :max-length="AUTH_LOGIN_MAXLENGTH"
+            :errors="formErrors.login"
+            @update:model-value="update('login', $event)"
           />
         </UILabel>
         <UILabel text="Пароль" size="medium" required>
           <UIInput
             name="auth-login"
-            model-value=""
+            :model-value="formData.password"
             full
             size="large"
+            type="password"
             placeholder="Укажите пароль"
             autocomplete="current-password"
             :max-length="AUTH_PASSWORD_MAXLENGTH"
+            :errors="formErrors.password"
+            @update:model-value="update('password', $event)"
           />
         </UILabel>
       </div>
@@ -44,15 +51,52 @@
 </template>
 
 <script setup lang="ts">
-import { AUTH_LOGIN_MAXLENGTH, AUTH_PASSWORD_MAXLENGTH, EColor } from '@kanban-board/common';
+import {
+  AUTH_LOGIN_MAXLENGTH,
+  AUTH_PASSWORD_MAXLENGTH,
+  EColor,
+  getErrorMessage,
+  isValidationError,
+  type TAuthData,
+  type TAuthLoginResponse,
+} from '@kanban-board/common';
 
+import { useForm } from '~/composables/use-form.composable.ts';
+import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import type { TAuthTab } from '~/types/auth.types.ts';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIForm from '~/components/ui/UIForm.vue';
+import UILabel from '~/components/ui/UILabel.vue';
 
 const emit = defineEmits<{
   'update:tab': [tab: TAuthTab];
 }>();
+
+const toast = useToast();
+
+const { formData, formErrors, update } = useForm<TAuthData>({ login: '', password: '' });
+
+const { call, isLoading } = useTryCatchFinally<null>({
+  callback: async (_, signal?: AbortSignal) => {
+    const result = await $fetch<TAuthLoginResponse>('/api/auth/login', {
+      method: 'POST',
+      body: formData.value,
+      signal,
+    });
+
+    if (result.isSuccess && result.data) {
+      toast.success({ message: 'Добро пожаловать!' });
+    }
+
+    return null;
+  },
+  catchCallback: (error: unknown) => {
+    if (isValidationError(error)) formErrors.value = error.validation;
+    else toast.error({ message: getErrorMessage(error) });
+  },
+  callOnInit: false,
+  useAbort: true,
+});
 </script>

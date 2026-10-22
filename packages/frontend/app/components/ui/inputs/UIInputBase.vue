@@ -10,11 +10,12 @@
     :placeholder="placeholder"
     :maxlength="maxLength ?? undefined"
     :readonly="readonly"
+    :type="type"
   >
 </template>
 
 <script setup lang="ts">
-import type { TSize, TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode } from '~/types/ui.types';
+import type { TSize, TUIComputedSizeMap, TUIInputAutocomplete, TUIInputMode, TUIInputType } from '~/types/ui.types';
 
 const model = defineModel<string>({ required: true });
 
@@ -28,6 +29,7 @@ const props = withDefaults(
     placeholder?: string | undefined;
     maxLength?: number | null;
     readonly?: boolean;
+    type?: TUIInputType;
   }>(),
   {
     size: 'medium',
@@ -37,6 +39,7 @@ const props = withDefaults(
     placeholder: undefined,
     maxLength: null,
     readonly: false,
+    type: 'text',
   },
 );
 
