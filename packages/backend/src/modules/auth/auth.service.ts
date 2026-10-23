@@ -1,11 +1,11 @@
 import {
-  PasswordUtility,
   RandomUtility,
   sleep,
   type TAuthData,
   type TAuthLoginPayload,
   type TAuthRegister,
 } from '@kanban-board/common';
+import { PasswordUtility } from '@kanban-board/common/node';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
@@ -36,7 +36,7 @@ export class AuthService {
       if (!workspaceId) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
 
       const login = RandomUtility.generateRandomLogin(firstName, lastName);
-      const password = RandomUtility.generateRandomPassword();
+      const password = PasswordUtility.generateRandomPassword();
       const passwordHash = await PasswordUtility.hashPassword(password);
 
       const createdUser = await this.userService.createUser({

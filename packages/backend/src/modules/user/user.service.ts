@@ -40,16 +40,20 @@ export default class UserService {
         status: EUserStatus.ACTIVE,
         avatar: null,
       });
-      if (!newUser) throw new BadRequestException(EXCEPTION_MESSAGES.createFailed);
+
+      const createdUser = await transactionalManager.save(newUser);
+      if (!createdUser) throw new BadRequestException(EXCEPTION_MESSAGES.createFailed);
 
       const newUserWorkspace = transactionalManager.create(UserWorkspaceEntity, {
         workspaceId,
-        userId: newUser.id,
+        userId: createdUser.id,
         workspaceRole: EWorkspaceRole.OWNER,
       });
-      if (!newUserWorkspace) throw new BadRequestException(EXCEPTION_MESSAGES.createFailed);
 
-      return this.userMapper.toModel(newUser);
+      const createdUserWorkspace = await transactionalManager.save(newUserWorkspace);
+      if (!createdUserWorkspace) throw new BadRequestException(EXCEPTION_MESSAGES.createFailed);
+
+      return this.userMapper.toModel(createdUser);
     });
   }
 }

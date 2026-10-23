@@ -30,7 +30,7 @@ export default class UserEntity extends BaseEntity {
   @Column({ type: 'enum', enum: EUserStatus, default: EUserStatus.ACTIVE })
   status: EUserStatus;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   avatar: string | null;
 
   @OneToOne(() => UserWorkspaceEntity, entity => entity.user)
