@@ -4,6 +4,7 @@ export * from './color.utility.js';
 export * from './date-time.utility.js';
 export * from './error.utulities.js';
 export * from './file.utility.js';
+export * from './password.utility.js';
 export * from './random.utility.js';
 export * from './response.utilities.js';
 export * from './sleep.utilities.js';

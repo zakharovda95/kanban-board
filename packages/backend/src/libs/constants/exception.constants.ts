@@ -9,6 +9,7 @@ export const EXCEPTION_MESSAGES = {
   updateFailed: 'Не удалось обновить',
   deleteFailed: 'Не удалось удалить',
   moveFailed: 'Не удалось переместить',
+  loginFailed: 'Не удалось войти',
   moveNotAllowed: 'Перемещение недоступно',
   requestBodyNotFound: 'Данные запроса не найдены',
   paramsNotFound: 'Не переданы параметры',

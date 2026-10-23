@@ -278,9 +278,7 @@ const editor = useEditor({
       onDrop: () => false,
     }),
   ],
-  onCreate: () => {
-    console.log('editor created');
-  },
+  onCreate: () => false,
   onUpdate: () => {
     if (props.disabled) return;
     model.value = editor.value?.isEmpty ? '' : (editor.value?.getHTML() ?? model.value);

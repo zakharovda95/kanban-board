@@ -8,7 +8,7 @@ export function useIssueInfo(issue: Ref<TIssue> | Ref<TIssueBase>) {
   const issueString = computed(() => `task-${issue.value.id}`);
 
   const getDaysPassedSince = (date: Date) => {
-    const daysLeft = DatetimeUtility.getDaysPassedSince(date);
+    const daysLeft = DatetimeUtility.getPassedSince(date, 'day');
 
     if (daysLeft === 0) return 'сегодня';
     if (daysLeft === 1) return 'вчера';

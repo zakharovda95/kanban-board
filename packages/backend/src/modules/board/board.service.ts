@@ -88,15 +88,17 @@ export default class BoardService {
         .from(BoardEntity, 'board')
         .getRawOne<TMaxOrderResult>();
 
-      const board = await transactionalManager.save(BoardEntity, {
+      const newBoard = transactionalManager.create(BoardEntity, {
         title: body.title,
         description: body.description ?? null,
         order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
         columns: cloneDeep(DEFAULT_COLUMNS),
       });
-      if (!board?.id) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
-      return this.boardMapper.toModel(board, { base: true });
+      const createdBoard = await transactionalManager.save(newBoard);
+      if (!createdBoard) throw new WsException(EXCEPTION_MESSAGES.createFailed);
+
+      return this.boardMapper.toModel(createdBoard, { base: true });
     });
   }
 

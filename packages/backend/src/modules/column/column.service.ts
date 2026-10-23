@@ -66,6 +66,7 @@ export default class ColumnService {
       const isExists = await transactionalManager.exists(BoardEntity, { where: { id: boardId } });
       if (!isExists) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
+      // Получаем максимальный order колонки в целевой доске, чтобы при создании прибавить ORDER_STEP
       const result = await transactionalManager
         .createQueryBuilder()
         .select('MAX(column.order)', 'maxOrder')
@@ -73,13 +74,15 @@ export default class ColumnService {
         .where('column.boardId = :boardId', { boardId })
         .getRawOne<TMaxOrderResult>();
 
-      const createdColumn = await transactionalManager.save(ColumnEntity, {
+      const newColumn = transactionalManager.create(ColumnEntity, {
         title,
         description: description ?? null,
         color: color || ColorUtility.getRandomHexColor(),
         order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
         boardId,
       });
+
+      const createdColumn = await transactionalManager.save(newColumn);
       if (!createdColumn) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
       return this.columnMapper.toModel({ ...createdColumn, issues: [] }, { base: false });

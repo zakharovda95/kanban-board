@@ -67,6 +67,7 @@ export default class IssueService {
       });
       if (!isExists) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
+      // Получаем максимальный order задачи в целевой колонке, чтобы при создании прибавить ORDER_STEP
       const result = await transactionalManager
         .createQueryBuilder()
         .select('MAX(issue.order)', 'maxOrder')
@@ -74,13 +75,15 @@ export default class IssueService {
         .where('issue.columnId = :columnId', { columnId })
         .getRawOne<TMaxOrderResult>();
 
-      const createdIssue = await transactionalManager.save(IssueEntity, {
+      const newIssue = transactionalManager.create(IssueEntity, {
         title,
         description: description ?? null,
         order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
         boardId,
         columnId,
       });
+
+      const createdIssue = await transactionalManager.save(newIssue);
       if (!createdIssue) throw new WsException(EXCEPTION_MESSAGES.createFailed);
 
       return this.issueMapper.toModel(createdIssue, { base: true });
