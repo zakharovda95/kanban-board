@@ -45,6 +45,7 @@
   "dependencies": {
     "argon2": "^0.45.1",
     "dayjs": "^1.11.23",
-    "transliteration": "^2.7.0"
+    "transliteration": "^2.7.0",
+    "zod": "^4.6.7"
   }
 }

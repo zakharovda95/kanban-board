@@ -18,7 +18,7 @@ export default defineConfig({
       fileName: (_format, entryName) => `${entryName}.js`,
     },
     rollupOptions: {
-      external: ['argon2', 'node-gyp-build', 'node:crypto', 'dayjs', 'transliteration'],
+      external: ['argon2', 'node-gyp-build', 'node:crypto', 'dayjs', 'transliteration', 'zod'],
     },
     outDir: 'dist',
     emptyOutDir: false,
