@@ -9,9 +9,12 @@ import { optionalPositiveIdSchema, positiveIdSchema } from './shared.schemas.js'
 export const createIssueBodySchema = z.strictObject({
   boardId: positiveIdSchema,
   columnId: positiveIdSchema,
-  title: z.string({ error: VALIDATION_MESSAGES.mustBeString }).max(ISSUE_TITLE_MAXLENGTH, {
-    error: VALIDATION_MESSAGES.maxLength(ISSUE_TITLE_MAXLENGTH),
-  }),
+  title: z
+    .string({ error: VALIDATION_MESSAGES.mustBeString })
+    .nonempty({ error: VALIDATION_MESSAGES.required })
+    .max(ISSUE_TITLE_MAXLENGTH, {
+      error: VALIDATION_MESSAGES.maxLength(ISSUE_TITLE_MAXLENGTH),
+    }),
   description: z.string({ error: VALIDATION_MESSAGES.mustBeString }).nullish(),
 });
 

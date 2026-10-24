@@ -13,7 +13,7 @@ async function bootstrap() {
   const host = configService.get('BACKEND_HOST', { infer: true });
   const port = configService.get('BACKEND_PORT', { infer: true });
 
-  app.useGlobalPipes(CustomValidationPipe.httpValidationPipe);
+  app.useGlobalPipes(CustomValidationPipe.httpStandardSchemaPipe);
 
   app.setGlobalPrefix('api');
 

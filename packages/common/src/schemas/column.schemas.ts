@@ -11,9 +11,12 @@ import { hexColorSchema, positiveIdSchema } from './shared.schemas.js';
 /** Схема валидации тела запроса создания колонки. **/
 export const createColumnBodySchema = z.strictObject({
   boardId: positiveIdSchema,
-  title: z.string({ error: VALIDATION_MESSAGES.mustBeString }).max(COLUMN_TITLE_MAXLENGTH, {
-    error: VALIDATION_MESSAGES.maxLength(COLUMN_TITLE_MAXLENGTH),
-  }),
+  title: z
+    .string({ error: VALIDATION_MESSAGES.mustBeString })
+    .nonempty({ error: VALIDATION_MESSAGES.required })
+    .max(COLUMN_TITLE_MAXLENGTH, {
+      error: VALIDATION_MESSAGES.maxLength(COLUMN_TITLE_MAXLENGTH),
+    }),
   description: z
     .string({ error: VALIDATION_MESSAGES.mustBeString })
     .max(COLUMN_DESCRIPTION_MAXLENGTH, {

@@ -9,9 +9,12 @@ import { positiveIdSchema } from './shared.schemas.js';
 
 /** Схема валидации тела запроса создания доски. **/
 export const createBoardBodySchema = z.strictObject({
-  title: z.string({ error: VALIDATION_MESSAGES.mustBeString }).max(BOARD_TITLE_MAXLENGTH, {
-    error: VALIDATION_MESSAGES.maxLength(BOARD_TITLE_MAXLENGTH),
-  }),
+  title: z
+    .string({ error: VALIDATION_MESSAGES.mustBeString })
+    .nonempty({ error: VALIDATION_MESSAGES.required })
+    .max(BOARD_TITLE_MAXLENGTH, {
+      error: VALIDATION_MESSAGES.maxLength(BOARD_TITLE_MAXLENGTH),
+    }),
   description: z
     .string({ error: VALIDATION_MESSAGES.mustBeString })
     .max(BOARD_DESCRIPTION_MAXLENGTH, {

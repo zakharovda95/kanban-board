@@ -1,14 +1,16 @@
 import {
+  createBoardBodySchema,
   EBoardEvent,
   getWsBoardRoomName,
   type TBoardBase,
+  type TCreateBoardBodySchema,
   type TDeleteBoardEmitPayload,
   type TDeleteBoardResponse,
   type TMoveBoardEmitPayload,
   type TMoveBoardResponse,
   type TUpsertBoardResponse,
 } from '@kanban-board/common';
-import { UseFilters } from '@nestjs/common';
+import { UseFilters, UsePipes } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -23,12 +25,12 @@ import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
 import RequireAnyPipe from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import BoardService from '@/modules/board/board.service';
-import CreateBoardDto from '@/modules/board/libs/dtos/create-board.dto';
 import UpdateBoardDto from '@/modules/board/libs/dtos/update-board.dto';
 import MoveParametersDto from '@/modules/shared/move/libs/dto/move-parameters.dto';
 
 @WebSocketGateway({ cors: { origin: true } })
 @UseFilters(WsExceptionFilter)
+@UsePipes(CustomValidationPipe.wsStandardSchemaPipe)
 export default class BoardGateway {
   constructor(private boardService: BoardService) {}
 
@@ -50,7 +52,7 @@ export default class BoardGateway {
 
   @SubscribeMessage(EBoardEvent.CREATE)
   public async createBoard(
-    @MessageBody(CustomValidationPipe.wsValidationPipe) body: CreateBoardDto,
+    @MessageBody({ schema: createBoardBodySchema }) body: TCreateBoardBodySchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TUpsertBoardResponse> {
     const newBoard = await this.boardService.createBoard(body);
