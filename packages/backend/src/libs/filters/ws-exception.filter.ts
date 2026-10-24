@@ -1,16 +1,39 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { EErrorType } from '@kanban-board/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 
-@Catch(WsException)
+@Catch()
 export default class WsExceptionFilter implements ExceptionFilter {
-  public catch(exception: WsException, host: ArgumentsHost) {
-    const errorBody: unknown = exception.getError();
-
-    const args = host.getArgs();
-    // получаем ack-функцию, чтобы передать в нее тело ошибки.
-    const ack = args.find((arg): arg is (...args: unknown[]) => void => typeof arg === 'function');
+  public catch(exception: unknown, host: ArgumentsHost): void {
+    // WsProxy дописывает pattern в конец args: [client, data, ack, pattern].
+    const args = host.getArgs<unknown[]>();
+    const ack = [...args]
+      .reverse()
+      .find((arg): arg is (...payload: unknown[]) => void => typeof arg === 'function');
 
     if (!ack) return;
-    ack(errorBody);
+    ack(this.toErrorBody(exception));
+  }
+
+  private toErrorBody(exception: unknown): unknown {
+    if (exception instanceof WsException) {
+      return exception.getError();
+    }
+
+    if (exception instanceof HttpException) {
+      return exception.getResponse();
+    }
+
+    if (exception instanceof Error) {
+      return {
+        statusCode: EErrorType.INTERNAL,
+        message: exception.message || 'Внутренняя ошибка сервера',
+      };
+    }
+
+    return {
+      statusCode: EErrorType.INTERNAL,
+      message: 'Внутренняя ошибка сервера',
+    };
   }
 }

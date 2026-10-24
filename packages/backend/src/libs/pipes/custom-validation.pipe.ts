@@ -38,7 +38,7 @@ export default class CustomValidationPipe {
         const validationErrorResponse: TValidationErrorResponse<unknown> = {
           statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
           message: 'Запрос содержит некорректные данные',
-          validation: this.mapStandardSchemaIssues(issues),
+          validation: CustomValidationPipe.mapStandardSchemaIssues(issues),
         };
 
         return new HttpException(validationErrorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -50,11 +50,11 @@ export default class CustomValidationPipe {
     return new StandardSchemaValidationPipe({
       transform: true,
       validateCustomDecorators: true,
-      exceptionFactory: issues => {
+      exceptionFactory: (issues): WsException => {
         const validationErrorResponse: TValidationErrorResponse<unknown> = {
           statusCode: EErrorType.VALIDATION,
           message: 'Запрос содержит некорректные данные',
-          validation: this.mapStandardSchemaIssues(issues),
+          validation: CustomValidationPipe.mapStandardSchemaIssues(issues),
         };
 
         return new WsException(validationErrorResponse);
@@ -68,11 +68,11 @@ export default class CustomValidationPipe {
       transform: true,
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       validateCustomDecorators: true,
-      exceptionFactory: (errors: ValidationError[]) => {
+      exceptionFactory: (errors: ValidationError[]): HttpException => {
         const validationErrorResponse: TValidationErrorResponse<unknown> = {
           statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
           message: 'Запрос содержит некорректные данные',
-          validation: this.mapValidationErrors(errors),
+          validation: CustomValidationPipe.mapValidationErrors(errors),
         };
 
         return new HttpException(validationErrorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -86,11 +86,11 @@ export default class CustomValidationPipe {
       transform: true,
       // Только для @MessageBody: глобальный pipe с этим флагом ломает @ConnectedSocket.
       validateCustomDecorators: true,
-      exceptionFactory: (errors: ValidationError[]) => {
+      exceptionFactory: (errors: ValidationError[]): WsException => {
         const validationErrorResponse: TValidationErrorResponse<unknown> = {
           statusCode: EErrorType.VALIDATION,
           message: 'Запрос содержит некорректные данные',
-          validation: this.mapValidationErrors(errors),
+          validation: CustomValidationPipe.mapValidationErrors(errors),
         };
 
         return new WsException(validationErrorResponse);
