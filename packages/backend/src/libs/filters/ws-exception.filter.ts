@@ -7,6 +7,7 @@ export default class WsExceptionFilter implements ExceptionFilter {
     const errorBody: unknown = exception.getError();
 
     const args = host.getArgs();
+    // получаем ack-функцию, чтобы передать в нее тело ошибки.
     const ack = args.find((arg): arg is (...args: unknown[]) => void => typeof arg === 'function');
 
     if (!ack) return;

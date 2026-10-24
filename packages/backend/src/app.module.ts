@@ -13,12 +13,12 @@ import WorkspaceModule from '@/modules/workspace/workspace.module';
   imports: [
     AppConfigModule,
     InfrastructureModule,
+    AuthModule,
     BoardModule,
     ColumnModule,
     IssueModule,
-    WorkspaceModule,
     UserModule,
-    AuthModule,
+    WorkspaceModule,
   ],
 })
 export default class AppModule {}

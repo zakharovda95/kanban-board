@@ -14,8 +14,8 @@
     "type:check": "tsc --noEmit"
   },
   "dependencies": {
-    "@kanban-board/common": "*",
     "@floating-ui/vue": "^2.0.1",
+    "@kanban-board/common": "*",
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/icon": "^2.4.1",
     "@nuxt/image": "^2.0.0",
@@ -35,6 +35,7 @@
     "nuxt": "^4.4.8",
     "nuxt-color-picker": "^1.2.8",
     "nuxt-toast": "^1.4.0",
+    "overlayscrollbars": "^2.17.0",
     "overlayscrollbars-vue": "^0.5.10",
     "pinia": "^3.0.4",
     "socket.io-client": "^4.8.3",
