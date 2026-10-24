@@ -7,11 +7,11 @@ import MovableEntity from '@/modules/shared/move/libs/entities/movable.entity';
 @Entity('boards')
 export default class BoardEntity extends MovableEntity {
   @Column({ type: 'varchar', length: BOARD_TITLE_MAXLENGTH })
-  title: string;
+  title!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  description: string | null;
+  description!: string | null;
 
   @OneToMany(() => ColumnEntity, entity => entity.board, { cascade: ['insert'] })
-  columns: ColumnEntity[];
+  columns!: ColumnEntity[];
 }

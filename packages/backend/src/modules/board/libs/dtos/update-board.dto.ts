@@ -13,5 +13,5 @@ export default class UpdateBoardDto extends PartialType(CreateBoardDto) implemen
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  id: number;
+  id!: number;
 }

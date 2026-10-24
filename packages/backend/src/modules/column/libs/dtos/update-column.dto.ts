@@ -16,5 +16,5 @@ export default class UpdateColumnDto
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  id: number;
+  id!: number;
 }

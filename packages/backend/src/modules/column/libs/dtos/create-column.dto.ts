@@ -25,14 +25,14 @@ export default class CreateColumnDto implements TCreateColumn {
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  boardId: number;
+  boardId!: number;
 
   @IsString({ message: VALIDATION_MESSAGES.isString })
   @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
   @MaxLength(COLUMN_TITLE_MAXLENGTH, {
     message: `${VALIDATION_MESSAGES.maxlength} ${COLUMN_TITLE_MAXLENGTH}`,
   })
-  title: string;
+  title!: string;
 
   @ValidateIfDefinedAndNotNull()
   @IsString({ message: VALIDATION_MESSAGES.isString })
@@ -42,5 +42,5 @@ export default class CreateColumnDto implements TCreateColumn {
   description?: string | null;
 
   @IsHexColor({ message: VALIDATION_MESSAGES.isHex })
-  color: string;
+  color!: string;
 }

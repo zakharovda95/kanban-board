@@ -38,8 +38,10 @@ export default class AppConfig {
         return result.data;
       },
       validationOptions: {
-        allowUnknown: false,
-        abortEarly: false,
+        libraryOptions: {
+          allowUnknown: false,
+          abortEarly: false,
+        },
       },
     };
   }

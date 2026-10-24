@@ -13,7 +13,7 @@ export default class MoveIssueDto extends MoveParametersDto implements TMoveIssu
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  toColumnId: number;
+  toColumnId!: number;
 
   @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
   @IsNumber(
@@ -22,7 +22,7 @@ export default class MoveIssueDto extends MoveParametersDto implements TMoveIssu
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  boardId: number;
+  boardId!: number;
 
   @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
   @IsNumber(
@@ -31,5 +31,5 @@ export default class MoveIssueDto extends MoveParametersDto implements TMoveIssu
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  fromColumnId: number;
+  fromColumnId!: number;
 }

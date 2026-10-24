@@ -14,7 +14,7 @@ export default class CreateBoardDto implements TCreateBoard {
   @MaxLength(BOARD_TITLE_MAXLENGTH, {
     message: `${VALIDATION_MESSAGES.maxlength} ${BOARD_TITLE_MAXLENGTH}`,
   })
-  title: string;
+  title!: string;
 
   @ValidateIfDefinedAndNotNull()
   @IsString({ message: VALIDATION_MESSAGES.isString })

@@ -17,5 +17,5 @@ export default class MoveParametersDto implements TMoveParameters {
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  targetId: number;
+  targetId!: number;
 }

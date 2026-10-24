@@ -12,5 +12,5 @@ export default class MoveColumnDto extends MoveParametersDto implements TMoveCol
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  boardId: number;
+  boardId!: number;
 }

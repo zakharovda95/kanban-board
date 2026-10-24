@@ -13,12 +13,12 @@ export default class AuthRegisterDto implements TAuthRegister {
   @MaxLength(USER_FIRST_NAME_MAXLENGTH, {
     message: `${VALIDATION_MESSAGES.maxlength} ${USER_FIRST_NAME_MAXLENGTH}`,
   })
-  firstName: string;
+  firstName!: string;
 
   @IsString({ message: VALIDATION_MESSAGES.isString })
   @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
   @MaxLength(USER_LAST_NAME_MAXLENGTH, {
     message: `${VALIDATION_MESSAGES.maxlength} ${USER_LAST_NAME_MAXLENGTH}`,
   })
-  lastName: string;
+  lastName!: string;
 }

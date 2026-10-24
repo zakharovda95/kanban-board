@@ -13,26 +13,26 @@ import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.ent
 @Entity({ name: 'users' })
 export default class UserEntity extends BaseEntity {
   @Column({ type: 'varchar', length: USER_FIRST_NAME_MAXLENGTH })
-  firstName: string;
+  firstName!: string;
 
   @Column({ type: 'varchar', length: USER_LAST_NAME_MAXLENGTH })
-  lastName: string;
+  lastName!: string;
 
   @Column({ type: 'varchar', unique: true, length: AUTH_LOGIN_MAXLENGTH })
-  login: string;
+  login!: string;
 
   @Column({ type: 'text' })
-  passwordHash: string;
+  passwordHash!: string;
 
   @Column({ type: 'enum', enum: EUserRole, default: EUserRole.USER })
-  systemRole: EUserRole;
+  systemRole!: EUserRole;
 
   @Column({ type: 'enum', enum: EUserStatus, default: EUserStatus.ACTIVE })
-  status: EUserStatus;
+  status!: EUserStatus;
 
   @Column({ type: 'text', nullable: true })
-  avatar: string | null;
+  avatar!: string | null;
 
   @OneToOne(() => UserWorkspaceEntity, entity => entity.user)
-  userWorkspace: UserWorkspaceEntity;
+  userWorkspace!: UserWorkspaceEntity;
 }

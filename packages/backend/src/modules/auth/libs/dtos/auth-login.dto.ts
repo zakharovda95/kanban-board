@@ -14,7 +14,7 @@ export default class AuthLoginDto implements TAuthData {
   @MaxLength(AUTH_LOGIN_MAXLENGTH, {
     message: `${VALIDATION_MESSAGES.maxlength} ${AUTH_LOGIN_MAXLENGTH}`,
   })
-  login: string;
+  login!: string;
 
   @IsString({ message: VALIDATION_MESSAGES.isString })
   @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
@@ -24,5 +24,5 @@ export default class AuthLoginDto implements TAuthData {
   @MinLength(AUTH_PASSWORD_MINLENGTH, {
     message: `${VALIDATION_MESSAGES.minlength} ${AUTH_PASSWORD_MINLENGTH}`,
   })
-  password: string;
+  password!: string;
 }

@@ -8,22 +8,22 @@ import MovableEntity from '@/modules/shared/move/libs/entities/movable.entity';
 @Entity('columns')
 export default class ColumnEntity extends MovableEntity {
   @Column({ type: 'varchar', length: COLUMN_TITLE_MAXLENGTH })
-  title: string;
+  title!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  description: string | null;
+  description!: string | null;
 
   @Column('varchar')
-  color: string;
+  color!: string;
 
   @Index()
   @Column({ type: 'int' })
-  boardId: number;
+  boardId!: number;
 
   @ManyToOne(() => BoardEntity, entity => entity.columns, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'boardId' })
-  board: BoardEntity;
+  board!: BoardEntity;
 
   @OneToMany(() => IssueEntity, entity => entity.column)
-  issues: IssueEntity[];
+  issues!: IssueEntity[];
 }

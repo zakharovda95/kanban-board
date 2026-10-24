@@ -10,7 +10,7 @@ import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.ent
 @Check('"expiresAt" <= "createdAt" + INTERVAL \'7 days 2 second\'')
 export default class WorkspaceEntity extends BaseEntity {
   @Column({ type: 'timestamptz' })
-  expiresAt: Date;
+  expiresAt!: Date;
 
   @BeforeInsert()
   setExpiresAt(): void {
@@ -18,5 +18,5 @@ export default class WorkspaceEntity extends BaseEntity {
   }
 
   @OneToMany(() => UserWorkspaceEntity, entity => entity.workspace)
-  userWorkspaces: UserWorkspaceEntity[];
+  userWorkspaces!: UserWorkspaceEntity[];
 }

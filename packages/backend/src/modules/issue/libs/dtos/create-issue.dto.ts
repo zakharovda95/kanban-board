@@ -20,7 +20,7 @@ export default class CreateIssueDto implements TCreateIssue {
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  boardId: number;
+  boardId!: number;
 
   @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
   @IsNumber(
@@ -29,16 +29,16 @@ export default class CreateIssueDto implements TCreateIssue {
   )
   @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
-  columnId: number;
+  columnId!: number;
 
   @IsString({ message: VALIDATION_MESSAGES.isString })
   @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
   @MaxLength(ISSUE_TITLE_MAXLENGTH, {
     message: `${VALIDATION_MESSAGES.maxlength} ${ISSUE_TITLE_MAXLENGTH}`,
   })
-  title: string;
+  title!: string;
 
   @ValidateIfDefinedAndNotNull()
   @IsString({ message: VALIDATION_MESSAGES.isString })
-  description: string | null;
+  description!: string | null;
 }

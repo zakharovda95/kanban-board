@@ -9,7 +9,9 @@ export default class IssueController {
   constructor(private issueService: IssueService) {}
 
   @Get('issues/:issueId')
-  public async getIssueById(@Param('issueId', ParameterIdPipe) issueId: number): Promise<TIssue> {
+  public async getIssueById(
+    @Param('issueId', new ParameterIdPipe('http')) issueId: number,
+  ): Promise<TIssue> {
     return this.issueService.getIssueById(issueId);
   }
 }
