@@ -8,7 +8,6 @@ import {
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import UserEntity from '@/modules/user/libs/entities/user.entity';
 import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.entity';
 import UserMapper from '@/modules/user/libs/mappers/user.mapper';
@@ -21,7 +20,7 @@ export default class UserService {
   ) {}
 
   public async createUser(body: TCreateUser): Promise<TUser> {
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+    if (!body) throw new BadRequestException('Не переданы данные для создания пользователя');
     const { firstName, lastName, workspaceId, login, passwordHash } = body;
     const { manager } = this.dataSource;
 
@@ -42,7 +41,7 @@ export default class UserService {
       });
 
       const createdUser = await transactionalManager.save(newUser);
-      if (!createdUser) throw new BadRequestException(EXCEPTION_MESSAGES.createFailed);
+      if (!createdUser) throw new BadRequestException('Не удалось создать пользователя');
 
       const newUserWorkspace = transactionalManager.create(UserWorkspaceEntity, {
         workspaceId,
@@ -51,7 +50,8 @@ export default class UserService {
       });
 
       const createdUserWorkspace = await transactionalManager.save(newUserWorkspace);
-      if (!createdUserWorkspace) throw new BadRequestException(EXCEPTION_MESSAGES.createFailed);
+      if (!createdUserWorkspace)
+        throw new BadRequestException('Не удалось привязать пользователя к рабочему пространству');
 
       return this.userMapper.toModel(createdUser);
     });

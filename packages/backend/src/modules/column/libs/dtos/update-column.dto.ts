@@ -9,12 +9,12 @@ export default class UpdateColumnDto
   extends PartialType(OmitType(CreateColumnDto, ['boardId'] as const))
   implements TUpdateColumn
 {
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: VALIDATION_MESSAGES.idRequired })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: VALIDATION_MESSAGES.idMustBeInteger },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
+  @IsInt({ message: VALIDATION_MESSAGES.idMustBeInteger })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
   id!: number;
 }

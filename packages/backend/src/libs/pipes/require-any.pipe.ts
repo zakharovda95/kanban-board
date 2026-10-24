@@ -8,8 +8,6 @@ import {
 } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 
-import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-
 @Injectable()
 export default class RequireAnyPipe<T> implements PipeTransform {
   constructor(
@@ -23,11 +21,11 @@ export default class RequireAnyPipe<T> implements PipeTransform {
       switch (this.context) {
         case 'http':
           throw new HttpException(
-            EXCEPTION_MESSAGES.atLeastOneFieldRequired,
+            'Необходимо указать хотя бы одно из допустимых полей',
             HttpStatus.UNPROCESSABLE_ENTITY,
           );
         case 'ws': {
-          throw new WsException(EXCEPTION_MESSAGES.atLeastOneFieldRequired);
+          throw new WsException('Необходимо указать хотя бы одно из допустимых полей');
         }
       }
     }

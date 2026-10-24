@@ -10,16 +10,16 @@ import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decora
 
 export default class CreateBoardDto implements TCreateBoard {
   @IsNotEmpty({ message: VALIDATION_MESSAGES.required })
-  @IsString({ message: VALIDATION_MESSAGES.isString })
+  @IsString({ message: VALIDATION_MESSAGES.mustBeString })
   @MaxLength(BOARD_TITLE_MAXLENGTH, {
-    message: `${VALIDATION_MESSAGES.maxlength} ${BOARD_TITLE_MAXLENGTH}`,
+    message: VALIDATION_MESSAGES.maxLength(BOARD_TITLE_MAXLENGTH),
   })
   title!: string;
 
   @ValidateIfDefinedAndNotNull()
-  @IsString({ message: VALIDATION_MESSAGES.isString })
+  @IsString({ message: VALIDATION_MESSAGES.mustBeString })
   @MaxLength(BOARD_DESCRIPTION_MAXLENGTH, {
-    message: `${VALIDATION_MESSAGES.maxlength} ${BOARD_DESCRIPTION_MAXLENGTH}`,
+    message: VALIDATION_MESSAGES.maxLength(BOARD_DESCRIPTION_MAXLENGTH),
   })
   description?: string | null;
 }

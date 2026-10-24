@@ -6,16 +6,16 @@ import { ValidateIfDefinedAndNotNull } from '@/libs/decorators/validation.decora
 
 export default class MoveParametersDto implements TMoveParameters {
   @ValidateIfDefinedAndNotNull()
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
+  @IsInt({ message: VALIDATION_MESSAGES.idMustBeInteger })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
   previousId?: number;
 
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: VALIDATION_MESSAGES.idRequired })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: VALIDATION_MESSAGES.idMustBeInteger },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
+  @IsInt({ message: VALIDATION_MESSAGES.idMustBeInteger })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
   targetId!: number;
 }

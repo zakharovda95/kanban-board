@@ -5,12 +5,12 @@ import { VALIDATION_MESSAGES } from '@/libs/constants/validation.constants';
 import MoveParametersDto from '@/modules/shared/move/libs/dto/move-parameters.dto';
 
 export default class MoveColumnDto extends MoveParametersDto implements TMoveColumn {
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: VALIDATION_MESSAGES.idRequired })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: VALIDATION_MESSAGES.idMustBeInteger },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
+  @IsInt({ message: VALIDATION_MESSAGES.idMustBeInteger })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
   boardId!: number;
 }

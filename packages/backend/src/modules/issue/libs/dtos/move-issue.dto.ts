@@ -9,27 +9,27 @@ export default class MoveIssueDto extends MoveParametersDto implements TMoveIssu
   @ValidateIfDefinedAndNotNull()
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: VALIDATION_MESSAGES.idMustBeInteger },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
+  @IsInt({ message: VALIDATION_MESSAGES.idMustBeInteger })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
   toColumnId!: number;
 
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: VALIDATION_MESSAGES.idRequired })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: VALIDATION_MESSAGES.idMustBeInteger },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
+  @IsInt({ message: VALIDATION_MESSAGES.idMustBeInteger })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
   boardId!: number;
 
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: VALIDATION_MESSAGES.idRequired })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: VALIDATION_MESSAGES.idMustBeInteger },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
+  @IsInt({ message: VALIDATION_MESSAGES.idMustBeInteger })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
   fromColumnId!: number;
 }

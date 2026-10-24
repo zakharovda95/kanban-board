@@ -2,7 +2,6 @@ import type { TWorkspace } from '@kanban-board/common';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import WorkspaceEntity from '@/modules/workspace/libs/entities/workspace.entity';
 import WorkspaceMapper from '@/modules/workspace/libs/mappers/workspace.mapper';
 
@@ -24,7 +23,7 @@ export default class WorkspaceService {
 
       const createdWorkspace = await transactionalManager.save(newWorkspace);
       if (!createdWorkspace)
-        throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
+        throw new InternalServerErrorException('Не удалось создать рабочее пространство');
 
       return this.workspaceMapper.toModel(createdWorkspace);
     });

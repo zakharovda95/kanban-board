@@ -9,12 +9,12 @@ export default class UpdateIssueDto
   extends PartialType(PickType(CreateIssueDto, ['description', 'title'] as const))
   implements TUpdateIssue
 {
-  @IsDefined({ message: VALIDATION_MESSAGES.idMustBeDefined })
+  @IsDefined({ message: VALIDATION_MESSAGES.idRequired })
   @IsNumber(
     { allowNaN: false, allowInfinity: false },
-    { message: VALIDATION_MESSAGES.idMustBeNumber },
+    { message: VALIDATION_MESSAGES.idMustBeInteger },
   )
-  @IsInt({ message: VALIDATION_MESSAGES.idMustBeNumber })
+  @IsInt({ message: VALIDATION_MESSAGES.idMustBeInteger })
   @IsPositive({ message: VALIDATION_MESSAGES.idMustBePositive })
   id!: number;
 }

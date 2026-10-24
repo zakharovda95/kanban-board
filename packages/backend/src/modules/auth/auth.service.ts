@@ -9,7 +9,6 @@ import { PasswordUtility } from '@kanban-board/common/node';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
 import UserService from '@/modules/user/user.service';
 import WorkspaceService from '@/modules/workspace/workspace.service';
 
@@ -22,7 +21,7 @@ export class AuthService {
   ) {}
 
   public async register(body: TAuthRegister): Promise<TAuthData> {
-    if (!body) throw new BadRequestException(EXCEPTION_MESSAGES.requestBodyNotFound);
+    if (!body) throw new BadRequestException('Не переданы данные для регистрации');
 
     const { firstName, lastName } = body;
     const { manager } = this.dataSource;
@@ -33,7 +32,10 @@ export class AuthService {
       await transactionalManager.query('SELECT pg_advisory_xact_lock($1)', [DATABASE_LOCK_ID]);
 
       const { id: workspaceId } = await this.workspaceService.createWorkspace();
-      if (!workspaceId) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
+      if (!workspaceId)
+        throw new InternalServerErrorException(
+          'Не удалось завершить регистрацию: ошибка при создании рабочего пространства',
+        );
 
       const login = RandomUtility.generateRandomLogin(firstName, lastName);
       const password = PasswordUtility.generateRandomPassword();
@@ -46,7 +48,10 @@ export class AuthService {
         login,
         passwordHash,
       });
-      if (!createdUser) throw new InternalServerErrorException(EXCEPTION_MESSAGES.createFailed);
+      if (!createdUser)
+        throw new InternalServerErrorException(
+          'Не удалось завершить регистрацию: ошибка при создании пользователя',
+        );
 
       return { login, password };
     });

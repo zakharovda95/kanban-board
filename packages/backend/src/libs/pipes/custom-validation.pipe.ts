@@ -3,8 +3,6 @@ import { HttpException, HttpStatus, ValidationPipe, ValidationPipeOptions } from
 import { WsException } from '@nestjs/websockets';
 import { ValidationError } from 'class-validator';
 
-import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
-
 export default class CustomValidationPipe {
   private static BASE_SETTINGS: ValidationPipeOptions = {
     whitelist: true,
@@ -25,7 +23,7 @@ export default class CustomValidationPipe {
       exceptionFactory: (errors: ValidationError[]) => {
         const validationErrorResponse: TValidationErrorResponse<unknown> = {
           statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-          message: EXCEPTION_MESSAGES.validationErrors,
+          message: 'Запрос содержит некорректные данные',
           validation: this.mapValidationErrors(errors),
         };
 
@@ -40,7 +38,7 @@ export default class CustomValidationPipe {
       exceptionFactory: (errors: ValidationError[]) => {
         const validationErrorResponse: TValidationErrorResponse<unknown> = {
           statusCode: EErrorType.VALIDATION,
-          message: EXCEPTION_MESSAGES.validationErrors,
+          message: 'Запрос содержит некорректные данные',
           validation: this.mapValidationErrors(errors),
         };
 

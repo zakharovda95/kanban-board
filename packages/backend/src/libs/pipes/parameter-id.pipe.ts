@@ -12,11 +12,11 @@ export default class ParameterIdPipe extends ParseIntPipe {
         switch (context) {
           case 'http':
             return new HttpException(
-              VALIDATION_MESSAGES.idMustBeDefined,
+              VALIDATION_MESSAGES.idRequired,
               HttpStatus.UNPROCESSABLE_ENTITY,
             );
           case 'ws':
-            return new WsException(VALIDATION_MESSAGES.idMustBeDefined);
+            return new WsException(VALIDATION_MESSAGES.idRequired);
         }
       },
     });
