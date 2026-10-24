@@ -1,17 +1,17 @@
 import { VersioningType } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
 import AppModule from '@/app.module';
-import { EXCEPTION_MESSAGES } from '@/libs/constants/exception.constants';
+import { TAppConfigSchema } from '@/config/libs/app-config.schema';
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 
 async function bootstrap() {
-  const host = process.env.BACKEND_HOST;
-  const port = process.env.BACKEND_PORT;
-
-  if (!host || !port) throw new Error(EXCEPTION_MESSAGES.bootstrapError);
-
   const app = await NestFactory.create(AppModule);
+
+  const configService = app.get(ConfigService<TAppConfigSchema, true>);
+  const host = configService.get('BACKEND_HOST', { infer: true });
+  const port = configService.get('BACKEND_PORT', { infer: true });
 
   app.useGlobalPipes(CustomValidationPipe.httpValidationPipe);
 
