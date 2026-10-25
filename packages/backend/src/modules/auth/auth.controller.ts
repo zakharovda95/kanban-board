@@ -7,12 +7,14 @@ import {
   type TAuthRegisterBodySchema,
   type TAuthRegisterResponse,
 } from '@kanban-board/common';
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UsePipes } from '@nestjs/common';
 
+import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import { AuthService } from '@/modules/auth/auth.service';
 
 @Controller('auth')
+@UsePipes(CustomValidationPipe.httpStandardSchemaPipe)
 export default class AuthController {
   constructor(private authService: AuthService) {}
 

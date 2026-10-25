@@ -4,7 +4,6 @@ import { NestFactory } from '@nestjs/core';
 
 import AppModule from '@/app.module';
 import { TAppConfigSchema } from '@/config/libs/app-config.schema';
-import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,8 +11,6 @@ async function bootstrap() {
   const configService = app.get(ConfigService<TAppConfigSchema, true>);
   const host = configService.get('BACKEND_HOST', { infer: true });
   const port = configService.get('BACKEND_PORT', { infer: true });
-
-  app.useGlobalPipes(CustomValidationPipe.httpStandardSchemaPipe);
 
   app.setGlobalPrefix('api');
 

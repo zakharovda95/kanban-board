@@ -5,7 +5,6 @@ import { WsException } from '@nestjs/websockets';
 @Catch()
 export default class WsExceptionFilter implements ExceptionFilter {
   public catch(exception: unknown, host: ArgumentsHost): void {
-    // WsProxy дописывает pattern в конец args: [client, data, ack, pattern].
     const args = host.getArgs<unknown[]>();
     const ack = [...args]
       .reverse()

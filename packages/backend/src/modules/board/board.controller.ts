@@ -4,11 +4,13 @@ import {
   type TBoardBase,
   type TPositiveIdSchema,
 } from '@kanban-board/common';
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UsePipes } from '@nestjs/common';
 
+import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 import BoardService from '@/modules/board/board.service';
 
 @Controller('boards')
+@UsePipes(CustomValidationPipe.httpStandardSchemaPipe)
 export default class BoardController {
   constructor(private boardService: BoardService) {}
 
