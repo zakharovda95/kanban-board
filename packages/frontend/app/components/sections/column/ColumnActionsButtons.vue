@@ -38,11 +38,12 @@ import {
   getErrorMessage,
   isValidationError,
   type TDeleteColumnResponse,
-  type TMoveColumn,
   type TMoveColumnResponse,
-  type TUpdateColumn,
   type TUpdateColumnResponse,
   type TValidationErrors,
+  type TUpdateColumnBodySchema,
+  type TMoveColumnBodySchema,
+  type TPositiveIdSchema,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable.ts';
@@ -109,13 +110,15 @@ const actions = computed<TActionButtonData[]>(() => [
   },
 ]);
 
-const getInitialValue = (): Omit<TUpdateColumn, 'id'> => ({
+const getInitialValue = (): Omit<TUpdateColumnBodySchema, 'id'> => ({
   title: column.value?.title ?? '',
   description: column.value?.description ?? '',
   color: column.value?.color ?? '',
 });
 
-const { formData, formErrors, reset, isDirty, set, update } = useForm<Omit<TUpdateColumn, 'id'>>(getInitialValue());
+const { formData, formErrors, reset, isDirty, set, update } =
+  useForm<Omit<TUpdateColumnBodySchema, 'id'>>(getInitialValue());
+
 const { emitEvent: emitEventUpdate, isLoading: isLoadingUpdate } = useSocket();
 const { emitEvent: emitEventDelete, isLoading: isLoadingDelete } = useSocket();
 const { emitEvent: emitEventMove, isLoading: isLoadingMove } = useSocket();
@@ -123,12 +126,12 @@ const { emitEvent: emitEventMove, isLoading: isLoadingMove } = useSocket();
 const updateColumn = () => {
   if (!column.value) return;
 
-  const body: TUpdateColumn = {
+  const body: TUpdateColumnBodySchema = {
     id: column.value.id,
     ...formData.value,
   };
 
-  emitEventUpdate<TUpdateColumn, TUpdateColumnResponse>({
+  emitEventUpdate<TUpdateColumnBodySchema, TUpdateColumnResponse>({
     event: EColumnEvent.UPDATE,
     data: body,
     successCallback: (response: TUpdateColumnResponse) => {
@@ -148,13 +151,12 @@ const updateColumn = () => {
 const deleteColumn = () => {
   if (!column.value) return;
 
-  emitEventDelete<number, TDeleteColumnResponse>({
+  emitEventDelete<TPositiveIdSchema, TDeleteColumnResponse>({
     event: EColumnEvent.DELETE,
     data: column.value.id,
     successCallback: async (response: TDeleteColumnResponse) => {
       if (response.isSuccess && response.data) {
         toast.success({ message: 'Колонка удалена' });
-        // Close first so VFM can restore overlays before this list item unmounts.
         closeModal();
         await nextTick();
         boardStore.deleteColumn(response.data);
@@ -169,13 +171,13 @@ const deleteColumn = () => {
 const moveColumn = (previousId: number | null) => {
   if (!column.value) return;
 
-  const body: TMoveColumn = {
+  const body: TMoveColumnBodySchema = {
     boardId: column.value.boardId,
     targetId: column.value.id,
     previousId,
   };
 
-  emitEventMove<TMoveColumn, TMoveColumnResponse>({
+  emitEventMove<TMoveColumnBodySchema, TMoveColumnResponse>({
     event: EColumnEvent.MOVE,
     data: body,
     successCallback: async (response: TMoveColumnResponse) => {

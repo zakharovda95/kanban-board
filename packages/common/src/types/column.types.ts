@@ -1,5 +1,5 @@
 import type { TIssueBase } from './issue.types.js';
-import type { IMovable, TMoveParameters } from './move.types.js';
+import type { IMovable } from './move.types.js';
 import type { TSuccessResponse } from './response.types.js';
 
 /** Базовые данные **/
@@ -14,17 +14,6 @@ export type TColumnBase = IMovable & {
 export type TColumn = TColumnBase & {
   issues: TIssueBase[];
 };
-
-/** Тело запроса на создание колонки. **/
-export type TCreateColumn = Pick<TColumnBase, 'title' | 'color' | 'boardId'> &
-  Partial<Pick<TColumnBase, 'description'>>;
-
-/** Тело запроса на обновление колонки. **/
-export type TUpdateColumn = Pick<TColumnBase, 'id'> &
-  Partial<Pick<TColumnBase, 'title' | 'description' | 'color'>>;
-
-/** Тело запроса на перемещение колонки. **/
-export type TMoveColumn = TMoveParameters & Pick<TColumnBase, 'boardId'>;
 
 /** Ответ ack после создания колонки. **/
 export type TCreateColumnResponse = TSuccessResponse<TColumn>;

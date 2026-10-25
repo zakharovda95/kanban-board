@@ -1,14 +1,14 @@
 import {
   ColorUtility,
-  TBoardBase,
   type TColumn,
   type TColumnBase,
-  type TCreateColumn,
+  type TCreateColumnBodySchema,
   type TDeleteColumnEmitPayload,
-  type TMoveColumn,
+  type TMoveColumnBodySchema,
   type TMoveColumnEmitPayload,
   type TMoveParameters,
-  type TUpdateColumn,
+  type TPositiveIdSchema,
+  type TUpdateColumnBodySchema,
 } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
@@ -30,25 +30,11 @@ export default class ColumnService {
   ) {}
 
   /**
-   * Получить колонки доски по ее ID.
-   * @param boardId - ID доски.
-   * @returns массив базовых объектов колонок доски.
-   * **/
-  public async getColumns(boardId: number): Promise<TBoardBase[]> {
-    const { manager } = this.dataSource;
-    const columns = await manager.find(ColumnEntity, {
-      where: { boardId },
-      order: { order: 'ASC' },
-    });
-    return this.columnMapper.toModel(columns, { base: true });
-  }
-
-  /**
    * Создать колонку на доске.
    * @param body - данные колонки (boardId, title, color, description).
    * @returns объект созданной колонки.
    * **/
-  public async createColumn(body: TCreateColumn): Promise<TColumn> {
+  public async createColumn(body: TCreateColumnBodySchema): Promise<TColumn> {
     if (!body) throw new WsException('Не переданы данные для создания колонки');
 
     const { boardId, color, title, description } = body;
@@ -100,7 +86,7 @@ export default class ColumnService {
    * @param body - параметры перемещения (previousId, targetId, boardId).
    * @returns id перемещенной колонки и перемещенная колонка или null, если был reorder всех колонок и нужно сделать refetch.
    * **/
-  public async moveColumn(body: TMoveColumn): Promise<TMoveColumnEmitPayload> {
+  public async moveColumn(body: TMoveColumnBodySchema): Promise<TMoveColumnEmitPayload> {
     if (!body) throw new WsException('Не переданы параметры перемещения колонки');
 
     const { boardId, targetId, previousId } = body;
@@ -139,7 +125,7 @@ export default class ColumnService {
    * @param body - поля для обновления (id, title, color, description).
    * @returns базовый объект обновленной колонки (без задач).
    * **/
-  public async updateColumn(body: TUpdateColumn): Promise<TColumnBase> {
+  public async updateColumn(body: TUpdateColumnBodySchema): Promise<TColumnBase> {
     if (!body) throw new WsException('Не переданы данные для обновления колонки');
 
     const { id, ...rest } = body;
@@ -159,7 +145,7 @@ export default class ColumnService {
    * @param columnId - id колонки.
    * @returns ID доски и ID удаленной доски.
    * **/
-  public async deleteColumn(columnId: number): Promise<TDeleteColumnEmitPayload> {
+  public async deleteColumn(columnId: TPositiveIdSchema): Promise<TDeleteColumnEmitPayload> {
     if (!columnId) throw new WsException('Не указан идентификатор колонки для удаления');
 
     const { manager } = this.dataSource;

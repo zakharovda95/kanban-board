@@ -1,16 +1,24 @@
 import {
+  createColumnBodySchema,
   EColumnEvent,
   getWsBoardRoomName,
+  moveColumnBodySchema,
+  positiveIdSchema,
   type TColumn,
   type TColumnBase,
+  type TCreateColumnBodySchema,
   type TCreateColumnResponse,
   type TDeleteColumnEmitPayload,
   type TDeleteColumnResponse,
+  type TMoveColumnBodySchema,
   type TMoveColumnEmitPayload,
   type TMoveColumnResponse,
+  type TPositiveIdSchema,
+  type TUpdateColumnBodySchema,
   type TUpdateColumnResponse,
+  updateColumnBodySchema,
 } from '@kanban-board/common';
-import { UseFilters } from '@nestjs/common';
+import { UseFilters, UsePipes } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -21,22 +29,18 @@ import type { Socket } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
-import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
-import RequireAnyPipe from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import ColumnService from '@/modules/column/column.service';
-import CreateColumnDto from '@/modules/column/libs/dtos/create-column.dto';
-import MoveColumnDto from '@/modules/column/libs/dtos/move-column.dto';
-import UpdateColumnDto from '@/modules/column/libs/dtos/update-column.dto';
 
 @WebSocketGateway({ cors: { origin: true } })
 @UseFilters(WsExceptionFilter)
+@UsePipes(CustomValidationPipe.wsStandardSchemaPipe)
 export default class ColumnGateway {
   constructor(private columnService: ColumnService) {}
 
   @SubscribeMessage(EColumnEvent.CREATE)
   public async createColumn(
-    @MessageBody(CustomValidationPipe.wsValidationPipe) body: CreateColumnDto,
+    @MessageBody({ schema: createColumnBodySchema }) body: TCreateColumnBodySchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TCreateColumnResponse> {
     const createdColumn = await this.columnService.createColumn(body);
@@ -46,11 +50,8 @@ export default class ColumnGateway {
 
   @SubscribeMessage(EColumnEvent.UPDATE)
   public async updateColumn(
-    @MessageBody(
-      CustomValidationPipe.wsValidationPipe,
-      new RequireAnyPipe(['color', 'title', 'description'], 'ws'),
-    )
-    body: UpdateColumnDto,
+    @MessageBody({ schema: updateColumnBodySchema })
+    body: TUpdateColumnBodySchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TUpdateColumnResponse> {
     const updatedColumn = await this.columnService.updateColumn(body);
@@ -60,7 +61,7 @@ export default class ColumnGateway {
 
   @SubscribeMessage(EColumnEvent.DELETE)
   public async deleteColumn(
-    @MessageBody(new ParameterIdPipe('ws')) columnId: number,
+    @MessageBody({ schema: positiveIdSchema }) columnId: TPositiveIdSchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TDeleteColumnResponse> {
     const payload = await this.columnService.deleteColumn(columnId);
@@ -70,7 +71,7 @@ export default class ColumnGateway {
 
   @SubscribeMessage(EColumnEvent.MOVE)
   public async moveColumn(
-    @MessageBody(CustomValidationPipe.wsValidationPipe) body: MoveColumnDto,
+    @MessageBody({ schema: moveColumnBodySchema }) body: TMoveColumnBodySchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TMoveColumnResponse> {
     const payload = await this.columnService.moveColumn(body);

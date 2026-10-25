@@ -35,7 +35,7 @@ import {
   EColumnEvent,
   getErrorMessage,
   isValidationError,
-  type TCreateColumn,
+  type TCreateColumnBodySchema,
   type TCreateColumnResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
@@ -66,22 +66,23 @@ const toast = useToast();
 
 const isModalOpen = ref(false);
 
-const getInitialValue = (): Omit<TCreateColumn, 'boardId'> => ({
+const getInitialValue = (): Omit<TCreateColumnBodySchema, 'boardId'> => ({
   title: '',
   description: '',
   color: ColorUtility.getRandomHexColor(),
 });
 
-const { formData, formErrors, reset, update, set } = useForm<Omit<TCreateColumn, 'boardId'>>(getInitialValue());
+const { formData, formErrors, reset, update, set } =
+  useForm<Omit<TCreateColumnBodySchema, 'boardId'>>(getInitialValue());
 const { emitEvent, isLoading } = useSocket();
 
 const createBoard = () => {
-  const body: TCreateColumn = {
+  const body: TCreateColumnBodySchema = {
     boardId: Number(route.params.id),
     ...formData.value,
   };
 
-  emitEvent<TCreateColumn, TCreateColumnResponse>({
+  emitEvent<TCreateColumnBodySchema, TCreateColumnResponse>({
     event: EColumnEvent.CREATE,
     data: body,
     successCallback: (response: TCreateColumnResponse) => {
