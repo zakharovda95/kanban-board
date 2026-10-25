@@ -136,7 +136,7 @@
 
 <script setup lang="ts">
 import draggable from 'vuedraggable';
-import type { TColumn, TIssueBase, TMoveIssue } from '@kanban-board/common';
+import type { TColumn, TIssueBase, TMoveIssueBodySchema } from '@kanban-board/common';
 import {
   OverlayScrollbarsComponent,
   type OverlayScrollbarsComponentProps,
@@ -222,7 +222,7 @@ const onIssueMove = (details: TDragChangeDetails<TIssueBase>, column: TColumn) =
 
   if (details.added) element.columnId = toColumnId;
 
-  const body: TMoveIssue = {
+  const body: TMoveIssueBodySchema = {
     boardId: board.value.id,
     targetId: element.id,
     previousId: column.issues[newIndex - 1]?.id ?? null,

@@ -1,21 +1,9 @@
 import { EErrorType, TValidationErrorResponse } from '@kanban-board/common';
-import {
-  HttpException,
-  HttpStatus,
-  StandardSchemaValidationPipe,
-  ValidationPipe,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, StandardSchemaValidationPipe } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
-import { ValidationError } from 'class-validator';
 
 export default class CustomValidationPipe {
-  private static mapValidationErrors(errors: ValidationError[]): Record<string, string[]> {
-    return Object.fromEntries(
-      errors.map(({ property, constraints }) => [property, Object.values(constraints as object)]),
-    );
-  }
-
   private static isPrimitiveIssues(issues: readonly StandardSchemaV1.Issue[]): boolean {
     return issues.length > 0 && issues.every(({ path }) => !path?.length);
   }
@@ -74,24 +62,6 @@ export default class CustomValidationPipe {
           statusCode: EErrorType.VALIDATION,
           message: 'Запрос содержит некорректные данные',
           validation: this.mapStandardSchemaIssues(issues),
-        };
-
-        return new WsException(validationErrorResponse);
-      },
-    });
-  }
-
-  public static get wsValidationPipe(): ValidationPipe {
-    return new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      // Только для @MessageBody: глобальный pipe с этим флагом ломает @ConnectedSocket.
-      validateCustomDecorators: true,
-      exceptionFactory: (errors: ValidationError[]): WsException => {
-        const validationErrorResponse: TValidationErrorResponse<unknown> = {
-          statusCode: EErrorType.VALIDATION,
-          message: 'Запрос содержит некорректные данные',
-          validation: CustomValidationPipe.mapValidationErrors(errors),
         };
 
         return new WsException(validationErrorResponse);

@@ -4,7 +4,7 @@ import {
   type TDeleteIssueEmitPayload,
   type TIssue,
   type TIssueBase,
-  type TMoveIssue,
+  type TMoveIssueBodySchema,
   type TMoveIssueEmitPayload,
   type TMoveIssueResponse,
 } from '@kanban-board/common';
@@ -89,8 +89,8 @@ export const useIssueDetailsStore = defineStore('issue-detail-store', () => {
     stopListen();
   };
 
-  const emitMove = (body: TMoveIssue) => {
-    emitEvent<TMoveIssue, TMoveIssueResponse>({
+  const emitMove = (body: TMoveIssueBodySchema) => {
+    emitEvent<TMoveIssueBodySchema, TMoveIssueResponse>({
       event: EIssueEvent.MOVE,
       data: body,
       successCallback: async (response: TMoveIssueResponse) => {
@@ -130,7 +130,7 @@ export const useIssueDetailsStore = defineStore('issue-detail-store', () => {
     await fetchIssueDetails();
   };
 
-  const onChangeStage = (payload: TMoveIssue) => {
+  const onChangeStage = (payload: TMoveIssueBodySchema) => {
     emitMove(payload);
   };
 

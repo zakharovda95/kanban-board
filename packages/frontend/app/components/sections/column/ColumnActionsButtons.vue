@@ -38,12 +38,12 @@ import {
   getErrorMessage,
   isValidationError,
   type TDeleteColumnResponse,
+  type TMoveColumnBodySchema,
   type TMoveColumnResponse,
+  type TPositiveIdSchema,
+  type TUpdateColumnBodySchema,
   type TUpdateColumnResponse,
   type TValidationErrors,
-  type TUpdateColumnBodySchema,
-  type TMoveColumnBodySchema,
-  type TPositiveIdSchema,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable.ts';

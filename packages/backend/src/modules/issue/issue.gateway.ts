@@ -1,14 +1,22 @@
 import {
+  createIssueBodySchema,
   EIssueEvent,
   getWsBoardRoomName,
+  moveIssueBodySchema,
+  positiveIdSchema,
+  type TCreateIssueBodySchema,
   type TDeleteIssueEmitPayload,
   type TDeleteIssueResponse,
   type TIssueBase,
+  type TMoveIssueBodySchema,
   type TMoveIssueEmitPayload,
   type TMoveIssueResponse,
+  type TPositiveIdSchema,
+  type TUpdateIssueBodySchema,
   type TUpsertIssueResponse,
+  updateIssueBodySchema,
 } from '@kanban-board/common';
-import { UseFilters } from '@nestjs/common';
+import { UseFilters, UsePipes } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -19,22 +27,18 @@ import type { Socket } from 'socket.io';
 
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
-import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
-import RequireAnyPipe from '@/libs/pipes/require-any.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import IssueService from '@/modules/issue/issue.service';
-import CreateIssueDto from '@/modules/issue/libs/dtos/create-issue.dto';
-import MoveIssueDto from '@/modules/issue/libs/dtos/move-issue.dto';
-import UpdateIssueDto from '@/modules/issue/libs/dtos/update-issue.dto';
 
 @WebSocketGateway({ cors: { origin: true } })
 @UseFilters(WsExceptionFilter)
+@UsePipes(CustomValidationPipe.wsStandardSchemaPipe)
 export default class IssueGateway {
   constructor(private issueService: IssueService) {}
 
   @SubscribeMessage(EIssueEvent.CREATE)
   public async createIssue(
-    @MessageBody(CustomValidationPipe.wsValidationPipe) body: CreateIssueDto,
+    @MessageBody({ schema: createIssueBodySchema }) body: TCreateIssueBodySchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TUpsertIssueResponse> {
     const createdIssue = await this.issueService.createIssue(body);
@@ -44,11 +48,8 @@ export default class IssueGateway {
 
   @SubscribeMessage(EIssueEvent.UPDATE)
   public async updateIssue(
-    @MessageBody(
-      CustomValidationPipe.wsValidationPipe,
-      new RequireAnyPipe(['title', 'description'], 'ws'),
-    )
-    body: UpdateIssueDto,
+    @MessageBody({ schema: updateIssueBodySchema })
+    body: TUpdateIssueBodySchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TUpsertIssueResponse> {
     const updatedIssue = await this.issueService.updateIssue(body);
@@ -58,7 +59,7 @@ export default class IssueGateway {
 
   @SubscribeMessage(EIssueEvent.DELETE)
   public async deleteIssue(
-    @MessageBody(new ParameterIdPipe('ws')) issueId: number,
+    @MessageBody({ schema: positiveIdSchema }) issueId: TPositiveIdSchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TDeleteIssueResponse> {
     const payload = await this.issueService.deleteIssue(issueId);
@@ -68,7 +69,7 @@ export default class IssueGateway {
 
   @SubscribeMessage(EIssueEvent.MOVE)
   public async moveIssue(
-    @MessageBody(CustomValidationPipe.wsValidationPipe) body: MoveIssueDto,
+    @MessageBody({ schema: moveIssueBodySchema }) body: TMoveIssueBodySchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TMoveIssueResponse> {
     const payload = await this.issueService.moveIssue(body);

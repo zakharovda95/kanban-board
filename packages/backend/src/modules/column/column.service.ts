@@ -6,7 +6,7 @@ import {
   type TDeleteColumnEmitPayload,
   type TMoveColumnBodySchema,
   type TMoveColumnEmitPayload,
-  type TMoveParameters,
+  type TMoveParametersBodySchema,
   type TPositiveIdSchema,
   type TUpdateColumnBodySchema,
 } from '@kanban-board/common';
@@ -98,7 +98,7 @@ export default class ColumnService {
         order: { order: 'ASC' },
       });
 
-      const moveParameters: TMoveParameters = { targetId, previousId };
+      const moveParameters: TMoveParametersBodySchema = { targetId, previousId };
       const moveResult = this.moveService.tryToMove(columns, moveParameters);
       await transactionalManager.save(ColumnEntity, columns);
 

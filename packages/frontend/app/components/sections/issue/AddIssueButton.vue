@@ -34,7 +34,7 @@ import {
   getErrorMessage,
   ISSUE_TITLE_MAXLENGTH,
   isValidationError,
-  type TCreateIssue,
+  type TCreateIssueBodySchema,
   type TUpsertIssueResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
@@ -59,20 +59,20 @@ const toast = useToast();
 
 const isModalOpen = ref(false);
 
-const { formData, formErrors, reset, update } = useForm<Omit<TCreateIssue, 'columnId' | 'boardId'>>({
+const { formData, formErrors, reset, update } = useForm<Omit<TCreateIssueBodySchema, 'columnId' | 'boardId'>>({
   title: '',
   description: '',
 });
 const { emitEvent, isLoading } = useSocket();
 
 const createIssue = () => {
-  const body: TCreateIssue = {
+  const body: TCreateIssueBodySchema = {
     columnId: props.columnId,
     boardId: Number(route.params.id),
     ...formData.value,
   };
 
-  emitEvent({
+  emitEvent<TCreateIssueBodySchema, TUpsertIssueResponse>({
     event: EIssueEvent.CREATE,
     data: body,
     successCallback: (response: TUpsertIssueResponse) => {

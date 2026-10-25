@@ -148,8 +148,9 @@ import {
   type TDeleteIssueResponse,
   type TIssue,
   type TIssueBase,
-  type TMoveIssue,
-  type TUpdateIssue,
+  type TMoveIssueBodySchema,
+  type TPositiveIdSchema,
+  type TUpdateIssueBodySchema,
   type TUpsertIssueResponse,
 } from '@kanban-board/common';
 import { OverlayScrollbarsComponent, type OverlayScrollbarsComponentProps } from 'overlayscrollbars-vue';
@@ -179,7 +180,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:issue': [payload: TIssueBase];
   'delete:issue': [payload: TDeleteIssueEmitPayload];
-  'change:stage': [payload: TMoveIssue];
+  'change:stage': [payload: TMoveIssueBodySchema];
 }>();
 
 const { issue } = toRefs(props);
@@ -189,7 +190,7 @@ const toast = useToast();
 const currentStage = computed({
   get: () => props.stages?.find(({ id }) => id === issue.value.columnId) ?? props.stages?.[0],
   set: (option: TUISelectOption) => {
-    const payload: TMoveIssue = {
+    const payload: TMoveIssueBodySchema = {
       targetId: issue.value.id,
       previousId: null,
       boardId: issue.value.boardId,
@@ -206,22 +207,22 @@ const isUpdateMode = ref(false);
 const { issueString, daysPassedSinceCreation, daysPassedSinceUpdating, copyIssueId, copyIssueLink, copyIssueTitle } =
   useIssueInfo(issue);
 
-const getInitialValue = (): Omit<TUpdateIssue, 'id'> => ({
+const getInitialValue = (): Omit<TUpdateIssueBodySchema, 'id'> => ({
   title: issue.value?.title ?? '',
   description: issue.value?.description ?? '',
 });
 
-const { formData, formErrors, isDirty, reset, set } = useForm<Omit<TUpdateIssue, 'id'>>(getInitialValue());
+const { formData, formErrors, isDirty, reset, set } = useForm<Omit<TUpdateIssueBodySchema, 'id'>>(getInitialValue());
 const { emitEvent: emitEventUpdate, isLoading: isLoadingUpdate } = useSocket();
 const { emitEvent: emitEventDelete, isLoading: isLoadingDelete } = useSocket();
 
 const updateIssue = () => {
-  const body: TUpdateIssue = {
+  const body: TUpdateIssueBodySchema = {
     id: issue.value.id,
     ...formData.value,
   };
 
-  emitEventUpdate({
+  emitEventUpdate<TUpdateIssueBodySchema, TUpsertIssueResponse>({
     event: EIssueEvent.UPDATE,
     data: body,
     successCallback: (response: TUpsertIssueResponse) => {
@@ -239,7 +240,7 @@ const updateIssue = () => {
 };
 
 const deleteIssue = () => {
-  emitEventDelete({
+  emitEventDelete<TPositiveIdSchema, TDeleteIssueResponse>({
     event: EIssueEvent.DELETE,
     data: issue.value.id,
     successCallback: (response: TDeleteIssueResponse) => {

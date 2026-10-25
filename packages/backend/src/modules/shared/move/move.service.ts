@@ -1,4 +1,9 @@
-import type { IMovable, TMoveOptions, TMoveParameters, TMoveResult } from '@kanban-board/common';
+import type {
+  IMovable,
+  TMoveOptions,
+  TMoveParametersBodySchema,
+  TMoveResult,
+} from '@kanban-board/common';
 import { isNull } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
@@ -24,7 +29,7 @@ export default class MoveService<T extends IMovable> {
    * **/
   public tryToMove(
     entities: T[],
-    parameters: TMoveParameters,
+    parameters: TMoveParametersBodySchema,
     options?: TMoveOptions,
   ): TMoveResult {
     const { previousId, targetId } = parameters;

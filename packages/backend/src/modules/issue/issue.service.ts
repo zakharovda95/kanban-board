@@ -1,13 +1,14 @@
 import type {
-  TCreateIssue,
+  TCreateIssueBodySchema,
   TDeleteIssueEmitPayload,
   TIssue,
   TIssueBase,
-  TMoveIssue,
+  TMoveIssueBodySchema,
   TMoveIssueEmitPayload,
   TMoveOptions,
-  TMoveParameters,
-  TUpdateIssue,
+  TMoveParametersBodySchema,
+  TPositiveIdSchema,
+  TUpdateIssueBodySchema,
 } from '@kanban-board/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
@@ -33,7 +34,7 @@ export default class IssueService {
    * @param issueId - id задачи.
    * @returns объект задачи.
    * **/
-  public async getIssueById(issueId: number): Promise<TIssue> {
+  public async getIssueById(issueId: TPositiveIdSchema): Promise<TIssue> {
     const { manager } = this.dataSource;
 
     const issue = await manager.findOne(IssueEntity, { where: { id: issueId } });
@@ -47,7 +48,7 @@ export default class IssueService {
    * @param body - данные задачи (boardId, columnId, title, description).
    * @returns объект созданной задачи.
    * **/
-  public async createIssue(body: TCreateIssue): Promise<TIssueBase> {
+  public async createIssue(body: TCreateIssueBodySchema): Promise<TIssueBase> {
     if (!body) throw new WsException('Не переданы данные для создания задачи');
 
     const { boardId, columnId, title, description } = body;
@@ -105,7 +106,7 @@ export default class IssueService {
    * @param body - параметры перемещения (previousId, targetId, fromColumnId, toColumnId, boardId).
    * @returns ID перемещенной задачи, ID колонки from/to и перемещенная задача или null, если был reorder и нужен refetch.
    * **/
-  public async moveIssue(body: TMoveIssue): Promise<TMoveIssueEmitPayload> {
+  public async moveIssue(body: TMoveIssueBodySchema): Promise<TMoveIssueEmitPayload> {
     if (!body) throw new WsException('Не переданы параметры перемещения задачи');
 
     const { toColumnId, previousId, targetId, boardId, fromColumnId } = body;
@@ -131,7 +132,7 @@ export default class IssueService {
       });
       if (!targetColumn) throw new WsException('Целевая колонка для перемещения задачи не найдена');
 
-      const moveParameters: TMoveParameters = { previousId, targetId };
+      const moveParameters: TMoveParametersBodySchema = { previousId, targetId };
       const moveOptions: TMoveOptions = { allowForceMove: !isCurrentColumn };
 
       const issuesWithTarget = isCurrentColumn
@@ -168,7 +169,7 @@ export default class IssueService {
    * @param body - поля для обновления.
    * @returns базовый объект обновленной задачи.
    * **/
-  public async updateIssue(body: TUpdateIssue): Promise<TIssueBase> {
+  public async updateIssue(body: TUpdateIssueBodySchema): Promise<TIssueBase> {
     if (!body) throw new WsException('Не переданы данные для обновления задачи');
 
     const { id, ...rest } = body;
@@ -188,7 +189,7 @@ export default class IssueService {
    * @param issueId - id задачи.
    * @returns ID удаленной задачи, ID доски и ID колонки.
    * **/
-  public async deleteIssue(issueId: number): Promise<TDeleteIssueEmitPayload> {
+  public async deleteIssue(issueId: TPositiveIdSchema): Promise<TDeleteIssueEmitPayload> {
     if (!issueId) throw new WsException('Не указан идентификатор задачи для удаления');
 
     const { manager } = this.dataSource;

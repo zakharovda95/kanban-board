@@ -1,4 +1,4 @@
-import type { IMovable, TMoveParameters } from './move.types.js';
+import type { IMovable } from './move.types.js';
 import type { TSuccessResponse } from './response.types.js';
 
 /** Базовые данные (для карточки) **/
@@ -13,21 +13,6 @@ export type TIssueBase = IMovable & {
 export type TIssue = TIssueBase & {
   updatedAt: Date;
   description: string | null;
-};
-
-/** Тело запроса на создание задачи. **/
-export type TCreateIssue = Pick<TIssue, 'boardId' | 'columnId' | 'title'> &
-  Partial<Pick<TIssue, 'description'>>;
-
-/** Тело запроса на обновление задачи. **/
-export type TUpdateIssue = Pick<TIssueBase, 'id'> & Partial<Pick<TIssue, 'title' | 'description'>>;
-
-/** Тело запроса на перемещение задачи. **/
-export type TMoveIssue = TMoveParameters & {
-  boardId: number;
-  fromColumnId: number;
-  /** Если null, то перемещение в рамках этой же колонки **/
-  toColumnId: number | null;
 };
 
 /** Ответ ack после создания/обновления задачи. **/
