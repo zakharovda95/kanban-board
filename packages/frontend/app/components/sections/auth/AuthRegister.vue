@@ -133,8 +133,8 @@ import {
   FileUtility,
   getErrorMessage,
   RandomUtility,
-  type TAuthData,
-  type TAuthRegister,
+  type TAuthLoginBodySchema,
+  type TAuthRegisterBodySchema,
   type TAuthRegisterResponse,
   USER_FIRST_NAMES,
   USER_LAST_NAMES,
@@ -192,12 +192,12 @@ const saveData = () => {
   FileUtility.downloadFile(FileUtility.buildTextFile(lines, 'my-auth-data'));
 };
 
-const formData = reactive<TAuthRegister>({
+const formData = reactive<TAuthRegisterBodySchema>({
   firstName: getRandomFirstName(),
   lastName: getRandomLastName(),
 });
 
-const { call, isLoading, data } = useTryCatchFinally<null | TAuthData>({
+const { call, isLoading, data } = useTryCatchFinally<null | TAuthLoginBodySchema>({
   callback: async (_, signal?: AbortSignal) => {
     const result = await $fetch<TAuthRegisterResponse>('/api/auth/register', {
       method: 'POST',

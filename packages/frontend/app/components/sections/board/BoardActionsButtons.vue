@@ -40,7 +40,7 @@ import {
   isValidationError,
   type TBoardBase,
   type TDeleteBoardResponse,
-  type TUpdateBoard,
+  type TUpdateBoardBodySchema,
   type TUpsertBoardResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
@@ -82,22 +82,23 @@ const actions = computed<TActionButtonData[]>(() => [
   },
 ]);
 
-const getInitialValue = (): Omit<TUpdateBoard, 'id'> => ({
+const getInitialValue = (): Omit<TUpdateBoardBodySchema, 'id'> => ({
   title: props.board.title,
   description: props.board?.description ?? '',
 });
 
-const { formData, reset, formErrors, isDirty, set, update } = useForm<Omit<TUpdateBoard, 'id'>>(getInitialValue());
+const { formData, reset, formErrors, isDirty, set, update } =
+  useForm<Omit<TUpdateBoardBodySchema, 'id'>>(getInitialValue());
 const { isLoading: isLoadingUpdate, emitEvent: emitUpdate } = useSocket();
 const { isLoading: isLoadingDelete, emitEvent: emitDelete } = useSocket();
 
 const updateBoard = () => {
-  const body: TUpdateBoard = {
+  const body: TUpdateBoardBodySchema = {
     id: props.board.id,
     ...formData.value,
   };
 
-  emitUpdate<TUpdateBoard, TUpsertBoardResponse>({
+  emitUpdate<TUpdateBoardBodySchema, TUpsertBoardResponse>({
     event: EBoardEvent.UPDATE,
     data: body,
     successCallback: (response: TUpsertBoardResponse) => {

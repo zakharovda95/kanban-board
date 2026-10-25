@@ -57,7 +57,7 @@ import {
   EColor,
   getErrorMessage,
   isValidationError,
-  type TAuthData,
+  type TAuthLoginBodySchema,
   type TAuthLoginResponse,
 } from '@kanban-board/common';
 
@@ -76,7 +76,7 @@ const emit = defineEmits<{
 
 const toast = useToast();
 
-const { formData, formErrors, update } = useForm<TAuthData>({ login: '', password: '' });
+const { formData, formErrors, update } = useForm<TAuthLoginBodySchema>({ login: '', password: '' });
 
 const { call, isLoading } = useTryCatchFinally<null>({
   callback: async (_, signal?: AbortSignal) => {

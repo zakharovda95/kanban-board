@@ -13,13 +13,6 @@ export type TBoard = TBoardBase & {
   columns: TColumn[];
 };
 
-/** Тело запроса на создание доски. **/
-export type TCreateBoard = Pick<TBoardBase, 'title'> & Partial<Pick<TBoardBase, 'description'>>;
-
-/** Тело запроса на обновление доски. **/
-export type TUpdateBoard = Pick<TBoardBase, 'id'> &
-  Partial<Pick<TBoardBase, 'title' | 'description'>>;
-
 /** Ответ ack после создания/обновления доски. **/
 export type TUpsertBoardResponse = TSuccessResponse<TBoardBase>;
 

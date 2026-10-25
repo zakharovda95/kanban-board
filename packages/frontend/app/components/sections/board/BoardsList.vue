@@ -61,7 +61,7 @@ import {
   getErrorMessage,
   type TBoardBase,
   type TMoveBoardResponse,
-  type TMoveParameters,
+  type TMoveParametersBodySchema,
 } from '@kanban-board/common';
 
 import { useSocket } from '~/composables/use-socket.composable.ts';
@@ -107,7 +107,7 @@ const onBoardMove = (details: TDragChangeDetails<TBoardBase>) => {
   const targetNewIndex = details.moved.newIndex;
   const previousId = boardsStore.boards[targetNewIndex - 1]?.id ?? null;
 
-  emitEvent<TMoveParameters, TMoveBoardResponse>({
+  emitEvent<TMoveParametersBodySchema, TMoveBoardResponse>({
     event: EBoardEvent.MOVE,
     data: { previousId, targetId },
     successCallback: async (response: TMoveBoardResponse) => {

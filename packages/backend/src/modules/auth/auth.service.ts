@@ -1,9 +1,9 @@
 import {
   RandomUtility,
   sleep,
-  type TAuthData,
+  type TAuthLoginBodySchema,
   type TAuthLoginPayload,
-  type TAuthRegister,
+  type TAuthRegisterBodySchema,
 } from '@kanban-board/common';
 import { PasswordUtility } from '@kanban-board/common/node';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -20,7 +20,7 @@ export class AuthService {
     private dataSource: DataSource,
   ) {}
 
-  public async register(body: TAuthRegister): Promise<TAuthData> {
+  public async register(body: TAuthRegisterBodySchema): Promise<TAuthLoginBodySchema> {
     if (!body) throw new BadRequestException('Не переданы данные для регистрации');
 
     const { firstName, lastName } = body;
@@ -57,7 +57,7 @@ export class AuthService {
     });
   }
 
-  public async login(body: TAuthData): Promise<TAuthLoginPayload> {
+  public async login(body: TAuthLoginBodySchema): Promise<TAuthLoginPayload> {
     await sleep(1000);
     console.log(body);
     return { token: '123' };

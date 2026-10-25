@@ -16,6 +16,14 @@ export default class CustomValidationPipe {
     );
   }
 
+  private static isPrimitiveIssues(issues: readonly StandardSchemaV1.Issue[]): boolean {
+    return issues.length > 0 && issues.every(({ path }) => !path?.length);
+  }
+
+  private static getPrimitiveMessage(issues: readonly StandardSchemaV1.Issue[]): string {
+    return issues[0]?.message ?? 'Запрос содержит некорректные данные';
+  }
+
   private static mapStandardSchemaIssues(
     issues: readonly StandardSchemaV1.Issue[],
   ): Record<string, string[]> {
@@ -35,10 +43,17 @@ export default class CustomValidationPipe {
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       validateCustomDecorators: true,
       exceptionFactory: (issues): HttpException => {
+        if (this.isPrimitiveIssues(issues)) {
+          return new HttpException(
+            this.getPrimitiveMessage(issues),
+            HttpStatus.UNPROCESSABLE_ENTITY,
+          );
+        }
+
         const validationErrorResponse: TValidationErrorResponse<unknown> = {
           statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
           message: 'Запрос содержит некорректные данные',
-          validation: CustomValidationPipe.mapStandardSchemaIssues(issues),
+          validation: this.mapStandardSchemaIssues(issues),
         };
 
         return new HttpException(validationErrorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -51,31 +66,17 @@ export default class CustomValidationPipe {
       transform: true,
       validateCustomDecorators: true,
       exceptionFactory: (issues): WsException => {
+        if (this.isPrimitiveIssues(issues)) {
+          return new WsException(this.getPrimitiveMessage(issues));
+        }
+
         const validationErrorResponse: TValidationErrorResponse<unknown> = {
           statusCode: EErrorType.VALIDATION,
           message: 'Запрос содержит некорректные данные',
-          validation: CustomValidationPipe.mapStandardSchemaIssues(issues),
+          validation: this.mapStandardSchemaIssues(issues),
         };
 
         return new WsException(validationErrorResponse);
-      },
-    });
-  }
-
-  public static get httpValidationPipe(): ValidationPipe {
-    return new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      validateCustomDecorators: true,
-      exceptionFactory: (errors: ValidationError[]): HttpException => {
-        const validationErrorResponse: TValidationErrorResponse<unknown> = {
-          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-          message: 'Запрос содержит некорректные данные',
-          validation: CustomValidationPipe.mapValidationErrors(errors),
-        };
-
-        return new HttpException(validationErrorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
       },
     });
   }

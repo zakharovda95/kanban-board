@@ -1,7 +1,6 @@
 import {
   authLoginBodySchema,
   authRegisterBodySchema,
-  type TAuthData,
   type TAuthLoginBodySchema,
   type TAuthLoginPayload,
   type TAuthLoginResponse,
@@ -22,7 +21,7 @@ export default class AuthController {
     @Body({ schema: authRegisterBodySchema }) body: TAuthRegisterBodySchema,
   ): Promise<TAuthRegisterResponse> {
     const authData = await this.authService.register(body);
-    return getSuccessResponseWithData<TAuthData>(authData);
+    return getSuccessResponseWithData<TAuthLoginBodySchema>(authData);
   }
 
   @Post('login')

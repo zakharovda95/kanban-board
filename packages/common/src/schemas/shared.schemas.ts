@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { VALIDATION_MESSAGES } from '../constants/exception.constants.js';
 
 /** Схема валидации обязательного положительного целочисленного идентификатора. **/
-export const positiveIdSchema = z
+export const positiveIdSchema = z.coerce
   .number({
     error: iss =>
       iss.input === undefined || iss.input === null
@@ -13,8 +13,11 @@ export const positiveIdSchema = z
   .int({ error: VALIDATION_MESSAGES.idMustBeInteger })
   .positive({ error: VALIDATION_MESSAGES.idMustBePositive });
 
+/** Тип схемы валидации обязательного положительного целочисленного идентификатора. **/
+export type TPositiveIdSchema = z.infer<typeof positiveIdSchema>;
+
 /** Схема валидации опционального положительного целочисленного идентификатора. **/
-export const optionalPositiveIdSchema = z
+export const optionalPositiveIdSchema = z.coerce
   .number({ error: VALIDATION_MESSAGES.idMustBeInteger })
   .int({ error: VALIDATION_MESSAGES.idMustBeInteger })
   .positive({ error: VALIDATION_MESSAGES.idMustBePositive })

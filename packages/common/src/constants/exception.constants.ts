@@ -7,4 +7,5 @@ export const VALIDATION_MESSAGES = {
   idRequired: 'Необходимо указать идентификатор',
   idMustBeInteger: 'Идентификатор должен быть целым числом',
   idMustBePositive: 'Идентификатор должен быть положительным числом',
+  atLeastOneFieldRequired: 'Необходимо указать хотя бы одно из полей',
 } as const;

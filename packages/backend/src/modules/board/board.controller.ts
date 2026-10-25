@@ -1,7 +1,11 @@
-import type { TBoard, TBoardBase } from '@kanban-board/common';
+import {
+  positiveIdSchema,
+  type TBoard,
+  type TBoardBase,
+  type TPositiveIdSchema,
+} from '@kanban-board/common';
 import { Controller, Get, Param } from '@nestjs/common';
 
-import ParameterIdPipe from '@/libs/pipes/parameter-id.pipe';
 import BoardService from '@/modules/board/board.service';
 
 @Controller('boards')
@@ -15,7 +19,7 @@ export default class BoardController {
 
   @Get(':boardId')
   public async getBoardById(
-    @Param('boardId', new ParameterIdPipe('http')) boardId: number,
+    @Param('boardId', { schema: positiveIdSchema }) boardId: TPositiveIdSchema,
   ): Promise<TBoard> {
     return await this.boardService.getBoardById(boardId);
   }

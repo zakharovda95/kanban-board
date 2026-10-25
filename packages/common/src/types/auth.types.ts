@@ -1,24 +1,13 @@
+import type { TAuthLoginBodySchema } from '../schemas/auth.schemas.js';
 import type { TSuccessResponse } from './response.types.js';
 
-/** Данные для авторизации. **/
-export type TAuthData = {
-  login: string;
-  password: string;
-};
-
-/** Данные для регистрации (сгенерированные, не допускается ручной ввод). **/
-export type TAuthRegister = {
-  firstName: string;
-  lastName: string;
-};
-
 /** Ответ со сгенерированными данными для авторизации. **/
-export type TAuthRegisterResponse = TSuccessResponse<TAuthData>;
+export type TAuthRegisterResponse = TSuccessResponse<TAuthLoginBodySchema>;
+
+/** Ответ с токеном после аутентификации. **/
+export type TAuthLoginResponse = TSuccessResponse<TAuthLoginPayload>;
 
 /** Токены аутентификации. **/
 export type TAuthLoginPayload = {
   token: string;
 };
-
-/** Ответ с токеном после аутентификации. **/
-export type TAuthLoginResponse = TSuccessResponse<TAuthLoginPayload>;

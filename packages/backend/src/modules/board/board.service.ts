@@ -3,11 +3,12 @@ import {
   BOARDS_MAX_COUNT_ERROR_MESSAGE,
   type TBoard,
   type TBoardBase,
-  type TCreateBoard,
+  type TCreateBoardBodySchema,
   type TDeleteBoardEmitPayload,
   type TMoveBoardEmitPayload,
-  type TMoveParameters,
-  type TUpdateBoard,
+  type TMoveParametersBodySchema,
+  type TPositiveIdSchema,
+  type TUpdateBoardBodySchema,
 } from '@kanban-board/common';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
@@ -47,7 +48,7 @@ export default class BoardService {
    * @param boardId - id доски.
    * @returns объект доски с вложенными колонками и задачами.
    * **/
-  public async getBoardById(boardId: number): Promise<TBoard> {
+  public async getBoardById(boardId: TPositiveIdSchema): Promise<TBoard> {
     if (!boardId) throw new BadRequestException('Не указан идентификатор доски');
 
     const { manager } = this.dataSource;
@@ -67,7 +68,7 @@ export default class BoardService {
    * @param body - данные доски (title, description).
    * @returns объект созданной доски.
    * **/
-  public async createBoard(body: TCreateBoard): Promise<TBoardBase> {
+  public async createBoard(body: TCreateBoardBodySchema): Promise<TBoardBase> {
     if (!body) throw new WsException('Не переданы данные для создания доски');
 
     const { manager } = this.dataSource;
@@ -111,7 +112,7 @@ export default class BoardService {
    * @param body - параметры перемещения (targetId, previousId).
    * @returns объект перемещаемой доски, если order не был нормализован (точечная замена + сортировка по order на фронте, дешевле чем refetch), если был - null (если null - на фронте refetch досок тк меняется order всех досок).
    * **/
-  public async moveBoard(body: TMoveParameters): Promise<TMoveBoardEmitPayload> {
+  public async moveBoard(body: TMoveParametersBodySchema): Promise<TMoveBoardEmitPayload> {
     if (!body) throw new WsException('Не переданы параметры перемещения доски');
 
     const { manager } = this.dataSource;
@@ -143,7 +144,7 @@ export default class BoardService {
    * @param body - поля для обновления.
    * @returns объект обновленной доски.
    * **/
-  public async updateBoard(body: TUpdateBoard): Promise<TBoardBase> {
+  public async updateBoard(body: TUpdateBoardBodySchema): Promise<TBoardBase> {
     if (!body?.id) throw new WsException('Не указан идентификатор доски для обновления');
     const { id, ...rest } = body;
     const { manager } = this.dataSource;
@@ -162,7 +163,7 @@ export default class BoardService {
    * @param boardId - id доски.
    * @returns ID удаленной доски.
    * **/
-  public async deleteBoard(boardId: number): Promise<TDeleteBoardEmitPayload> {
+  public async deleteBoard(boardId: TPositiveIdSchema): Promise<TDeleteBoardEmitPayload> {
     if (!boardId) throw new WsException('Не указан идентификатор доски для удаления');
 
     const { manager } = this.dataSource;

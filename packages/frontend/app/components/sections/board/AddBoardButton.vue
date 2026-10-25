@@ -39,7 +39,7 @@ import {
   getErrorMessage,
   isValidationError,
   type TBoardBase,
-  type TCreateBoard,
+  type TCreateBoardBodySchema,
   type TUpsertBoardResponse,
   type TValidationErrors,
 } from '@kanban-board/common';
@@ -73,11 +73,11 @@ const toast = useToast();
 
 const isModalOpen = ref(false);
 
-const { formData, reset, formErrors, update } = useForm<TCreateBoard>({ title: '', description: '' });
+const { formData, reset, formErrors, update } = useForm<TCreateBoardBodySchema>({ title: '', description: '' });
 const { emitEvent, isLoading } = useSocket();
 
 const createBoard = () => {
-  emitEvent<TCreateBoard, TUpsertBoardResponse>({
+  emitEvent<TCreateBoardBodySchema, TUpsertBoardResponse>({
     event: EBoardEvent.CREATE,
     data: formData.value,
     successCallback: (response: TUpsertBoardResponse) => {
