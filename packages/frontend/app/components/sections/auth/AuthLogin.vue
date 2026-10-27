@@ -58,7 +58,7 @@ import {
   getErrorMessage,
   isValidationError,
   type TAuthLoginBodySchema,
-  type TAuthLoginResponse,
+  type TSuccessResponse,
 } from '@kanban-board/common';
 
 import { useForm } from '~/composables/use-form.composable.ts';
@@ -80,13 +80,13 @@ const { formData, formErrors, update } = useForm<TAuthLoginBodySchema>({ login: 
 
 const { call, isLoading } = useTryCatchFinally<null>({
   callback: async (_, signal?: AbortSignal) => {
-    const result = await $fetch<TAuthLoginResponse>('/api/auth/login', {
+    const result = await $fetch<TSuccessResponse>('/api/auth/login', {
       method: 'POST',
       body: formData.value,
       signal,
     });
 
-    if (result.isSuccess && result.data) {
+    if (result.isSuccess) {
       toast.success({ message: 'Добро пожаловать!' });
     }
 

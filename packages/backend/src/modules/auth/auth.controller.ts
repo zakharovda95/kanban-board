@@ -2,17 +2,20 @@ import {
   authLoginBodySchema,
   authRegisterBodySchema,
   type TAuthLoginBodySchema,
-  type TAuthLoginPayload,
-  type TAuthLoginResponse,
   type TAuthRegisterBodySchema,
   type TAuthRegisterResponse,
 } from '@kanban-board/common';
+import { Public } from '@nestjs/authentication';
 import { Body, Controller, Post, UsePipes } from '@nestjs/common';
 
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
-import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
+import {
+  getSuccessResponse,
+  getSuccessResponseWithData,
+} from '@/libs/utilities/response.utilities';
 import { AuthService } from '@/modules/auth/auth.service';
 
+@Public()
 @Controller('auth')
 @UsePipes(CustomValidationPipe.httpStandardSchemaPipe)
 export default class AuthController {
@@ -27,10 +30,8 @@ export default class AuthController {
   }
 
   @Post('login')
-  public async login(
-    @Body({ schema: authLoginBodySchema }) body: TAuthLoginBodySchema,
-  ): Promise<TAuthLoginResponse> {
-    const loginPayload = await this.authService.login(body);
-    return getSuccessResponseWithData<TAuthLoginPayload>(loginPayload);
+  public async login(@Body({ schema: authLoginBodySchema }) body: TAuthLoginBodySchema) {
+    await this.authService.login(body);
+    return getSuccessResponse();
   }
 }

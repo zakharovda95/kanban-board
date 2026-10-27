@@ -4,10 +4,8 @@ import type { TSuccessResponse } from './response.types.js';
 /** Ответ со сгенерированными данными для авторизации. **/
 export type TAuthRegisterResponse = TSuccessResponse<TAuthLoginBodySchema>;
 
-/** Ответ с токеном после аутентификации. **/
-export type TAuthLoginResponse = TSuccessResponse<TAuthLoginPayload>;
-
-/** Токены аутентификации. **/
-export type TAuthLoginPayload = {
-  token: string;
+/** ID пользователя, логин, пароль и хэш пароля. **/
+export type TAuthCredentials = Partial<TAuthLoginBodySchema> & {
+  userId: number;
+  passwordHash: string;
 };

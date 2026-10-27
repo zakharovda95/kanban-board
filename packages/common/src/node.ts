@@ -1,1 +1,1 @@
-export * from './utilities/password.utility.js';
+export * from './utilities/random-server.utility.js';
