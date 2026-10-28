@@ -18,6 +18,7 @@ import {
   type TUpdateColumnResponse,
   updateColumnBodySchema,
 } from '@kanban-board/common';
+import { Can } from '@nestjs/authorization';
 import { UseFilters, UsePipes } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -38,6 +39,7 @@ import ColumnService from '@/modules/column/column.service';
 export default class ColumnGateway {
   constructor(private columnService: ColumnService) {}
 
+  @Can.Anyone()
   @SubscribeMessage(EColumnEvent.CREATE)
   public async createColumn(
     @MessageBody({ schema: createColumnBodySchema }) body: TCreateColumnBodySchema,
@@ -48,6 +50,7 @@ export default class ColumnGateway {
     return getSuccessResponseWithData<TColumn>(createdColumn);
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EColumnEvent.UPDATE)
   public async updateColumn(
     @MessageBody({ schema: updateColumnBodySchema })
@@ -59,6 +62,7 @@ export default class ColumnGateway {
     return getSuccessResponseWithData<TColumnBase>(updatedColumn);
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EColumnEvent.DELETE)
   public async deleteColumn(
     @MessageBody({ schema: positiveIdSchema }) columnId: TPositiveIdSchema,
@@ -69,6 +73,7 @@ export default class ColumnGateway {
     return getSuccessResponseWithData<TDeleteColumnEmitPayload>(payload);
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EColumnEvent.MOVE)
   public async moveColumn(
     @MessageBody({ schema: moveColumnBodySchema }) body: TMoveColumnBodySchema,

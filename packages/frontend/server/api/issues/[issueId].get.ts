@@ -6,5 +6,10 @@ export default defineEventHandler(async event => {
   const baseUrl = runtimeConfig.public.BASE_URL || '';
   const issueId = getRouterParam(event, 'issueId');
 
-  return $fetch<TIssue>(`${baseUrl}/v1/issues/${issueId}`, { method: 'GET' });
+  return $fetch<TIssue>(`${baseUrl}/v1/issues/${issueId}`, {
+    method: 'GET',
+    headers: {
+      cookie: getHeader(event, 'cookie') ?? '',
+    },
+  });
 });

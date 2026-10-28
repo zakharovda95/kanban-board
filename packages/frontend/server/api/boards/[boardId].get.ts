@@ -6,5 +6,10 @@ export default defineEventHandler(async event => {
   const baseUrl = runtimeConfig.public.BASE_URL || '';
   const boardId = getRouterParam(event, 'boardId');
 
-  return $fetch<TBoard>(`${baseUrl}/v1/boards/${boardId}`, { method: 'GET' });
+  return $fetch<TBoard>(`${baseUrl}/v1/boards/${boardId}`, {
+    method: 'GET',
+    headers: {
+      cookie: getHeader(event, 'cookie') ?? '',
+    },
+  });
 });

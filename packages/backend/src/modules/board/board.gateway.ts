@@ -16,6 +16,7 @@ import {
   type TUpsertBoardResponse,
   updateBoardBodySchema,
 } from '@kanban-board/common';
+import { Can } from '@nestjs/authorization';
 import { UseFilters, UsePipes } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -30,12 +31,13 @@ import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import BoardService from '@/modules/board/board.service';
 
-@WebSocketGateway({ cors: { origin: true } })
+@WebSocketGateway({ cors: { origin: 'http://localhost:3002', credentials: true } })
 @UseFilters(WsExceptionFilter)
 @UsePipes(CustomValidationPipe.wsStandardSchemaPipe)
 export default class BoardGateway {
   constructor(private boardService: BoardService) {}
 
+  @Can.Anyone()
   @SubscribeMessage(EBoardEvent.JOIN)
   public async joinRoom(
     @MessageBody({ schema: positiveIdSchema }) boardId: TPositiveIdSchema,
@@ -44,6 +46,7 @@ export default class BoardGateway {
     await client.join(getWsBoardRoomName(boardId));
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EBoardEvent.LEAVE)
   public async leaveRoom(
     @MessageBody({ schema: positiveIdSchema }) boardId: TPositiveIdSchema,
@@ -52,6 +55,7 @@ export default class BoardGateway {
     await client.leave(getWsBoardRoomName(boardId));
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EBoardEvent.CREATE)
   public async createBoard(
     @MessageBody({ schema: createBoardBodySchema }) body: TCreateBoardBodySchema,
@@ -62,6 +66,7 @@ export default class BoardGateway {
     return getSuccessResponseWithData<TBoardBase>(newBoard);
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EBoardEvent.UPDATE)
   public async updateBoard(
     @MessageBody({ schema: updateBoardBodySchema })
@@ -73,6 +78,7 @@ export default class BoardGateway {
     return getSuccessResponseWithData<TBoardBase>(updatedBoard);
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EBoardEvent.DELETE)
   public async deleteBoard(
     @MessageBody({ schema: positiveIdSchema }) boardId: TPositiveIdSchema,
@@ -83,6 +89,7 @@ export default class BoardGateway {
     return getSuccessResponseWithData<TDeleteBoardEmitPayload>(payload);
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EBoardEvent.MOVE)
   public async moveBoard(
     @MessageBody({ schema: moveParametersBodySchema }) body: TMoveParametersBodySchema,

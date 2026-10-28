@@ -1,9 +1,14 @@
 import type { TBoardBase } from '@kanban-board/common';
 
 /** Получить список досок **/
-export default defineEventHandler(async _ => {
+export default defineEventHandler(async event => {
   const runtimeConfig = useRuntimeConfig();
   const baseUrl = runtimeConfig.public.BASE_URL || '';
 
-  return await $fetch<TBoardBase[]>(`${baseUrl}/v1/boards`, { method: 'GET' });
+  return await $fetch<TBoardBase[]>(`${baseUrl}/v1/boards`, {
+    method: 'GET',
+    headers: {
+      cookie: getHeader(event, 'cookie') ?? '',
+    },
+  });
 });

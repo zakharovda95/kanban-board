@@ -25,6 +25,8 @@ export const useBoardStore = defineStore('board-store', () => {
 
   const snapshot = ref<TColumn[] | null>(null);
 
+  const requestFetch = useRequestFetch();
+
   const {
     call: fetchBoard,
     isLoading: isLoadingBoard,
@@ -32,7 +34,7 @@ export const useBoardStore = defineStore('board-store', () => {
   } = useTryCatchFinally<TBoard, number>({
     callback: async (boardId: number = 0, signal?: AbortSignal) => {
       if (!boardId || boardId <= 0) throw new Error('Не передан boardId');
-      return await $fetch<TBoard>(`/api/boards/${boardId}`, { method: 'GET', signal });
+      return await requestFetch<TBoard>(`/api/boards/${boardId}`, { method: 'GET', signal });
     },
     useAbort: true,
   });

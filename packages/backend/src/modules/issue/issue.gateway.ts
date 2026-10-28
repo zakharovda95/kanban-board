@@ -16,6 +16,7 @@ import {
   type TUpsertIssueResponse,
   updateIssueBodySchema,
 } from '@kanban-board/common';
+import { Can } from '@nestjs/authorization';
 import { UseFilters, UsePipes } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -36,6 +37,7 @@ import IssueService from '@/modules/issue/issue.service';
 export default class IssueGateway {
   constructor(private issueService: IssueService) {}
 
+  @Can.Anyone()
   @SubscribeMessage(EIssueEvent.CREATE)
   public async createIssue(
     @MessageBody({ schema: createIssueBodySchema }) body: TCreateIssueBodySchema,
@@ -46,6 +48,7 @@ export default class IssueGateway {
     return getSuccessResponseWithData<TIssueBase>(createdIssue);
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EIssueEvent.UPDATE)
   public async updateIssue(
     @MessageBody({ schema: updateIssueBodySchema })
@@ -57,6 +60,7 @@ export default class IssueGateway {
     return getSuccessResponseWithData<TIssueBase>(updatedIssue);
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EIssueEvent.DELETE)
   public async deleteIssue(
     @MessageBody({ schema: positiveIdSchema }) issueId: TPositiveIdSchema,
@@ -67,6 +71,7 @@ export default class IssueGateway {
     return getSuccessResponseWithData<TDeleteIssueEmitPayload>(payload);
   }
 
+  @Can.Anyone()
   @SubscribeMessage(EIssueEvent.MOVE)
   public async moveIssue(
     @MessageBody({ schema: moveIssueBodySchema }) body: TMoveIssueBodySchema,

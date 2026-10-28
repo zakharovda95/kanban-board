@@ -1,4 +1,5 @@
 import { AuthenticationModule } from '@nestjs/authentication';
+import { AuthorizationModule } from '@nestjs/authorization';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -20,6 +21,7 @@ import WorkspaceModule from '@/modules/workspace/workspace.module';
         idleTtl: '4h',
       },
     }),
+    AuthorizationModule.forRoot(),
     TypeOrmModule.forFeature([AuthSessionEntity]),
   ],
   controllers: [AuthController],

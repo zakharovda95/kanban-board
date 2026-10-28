@@ -19,7 +19,7 @@ import AuthRegister from '~/components/sections/auth/AuthRegister.vue';
 import TheLogo from '~/components/shared/TheLogo.vue';
 
 const viewQuery = useRouteQuery<TAuthTab>('view');
-if (!viewQuery.value) viewQuery.value = 'register';
+if (!viewQuery.value) viewQuery.value = 'login';
 
 const currentTab = ref<TAuthTab>(viewQuery.value);
 const isRegisterTab = computed(() => currentTab.value === 'register');

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
 import AppModule from '@/app.module';
-import { TAppConfigSchema } from '@/config/libs/app-config.schema';
+import { TAppConfigSchema } from '@/config/app-config.schema';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
