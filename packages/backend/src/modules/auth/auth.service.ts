@@ -12,7 +12,6 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { DataSource } from 'typeorm';
@@ -30,6 +29,7 @@ export class AuthService {
     private signInService: SignInService,
   ) {}
 
+  /** Зарегистрировать нового пользователя. **/
   public async register(body: TAuthRegisterBodySchema): Promise<TAuthLoginBodySchema> {
     if (!body) throw new BadRequestException('Не переданы данные для регистрации');
 
@@ -85,14 +85,12 @@ export class AuthService {
     const { login, password } = body;
 
     const { userId, passwordHash } = await this.userService.getUserCredentialsBy(login);
-    if (!userId || !passwordHash)
-      throw new NotFoundException('Пользователь по указанному логину не найден');
+    if (!userId || !passwordHash) throw new UnauthorizedException('Не верный логин или пароль');
 
     const isValid = await this.verify(userId, passwordHash, password);
     if (!isValid) throw new UnauthorizedException('Не верный логин или пароль');
 
-    const { session } = await this.signInService.signIn(String(userId), { method: 'password' });
-    console.log(session);
+    await this.signInService.signIn(String(userId), { method: 'password' });
   }
 
   private async verify(userId: number, passwordHash: string, password: string): Promise<boolean> {
