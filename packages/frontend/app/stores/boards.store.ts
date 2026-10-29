@@ -20,14 +20,14 @@ export const useBoardsStore = defineStore('boards-store', () => {
 
   const currentBoardId = computed(() => Number(route.params.id));
 
-  const requestFetch = useRequestFetch();
+  const { $api } = useNuxtApp();
 
   const {
     call: fetchBoards,
     data: boards,
     isLoading: isLoadingBoards,
   } = useTryCatchFinally<TBoardBase[], undefined>({
-    callback: async () => await requestFetch<TBoardBase[]>('/api/boards', { method: 'GET' }),
+    callback: async () => await $api<TBoardBase[]>('/api/boards', { method: 'GET' }),
   });
 
   const addNewBoard = (newBoard: TBoardBase): void => {

@@ -18,6 +18,7 @@ import type { TUISelectOption } from '~/types/ui.types.ts';
 export const useIssueDetailsStore = defineStore('issue-detail-store', () => {
   const boardStore = useBoardStore();
 
+  const { $api } = useNuxtApp();
   const route = useRoute();
   const router = useRouter();
   const toast = useToast();
@@ -44,7 +45,7 @@ export const useIssueDetailsStore = defineStore('issue-detail-store', () => {
   } = useTryCatchFinally<TIssue>({
     callback: async () => {
       if (!selectedIssueId.value) return null;
-      return $fetch<TIssue>(`/api/issues/${selectedIssueId.value}`, { method: 'GET' });
+      return $api<TIssue>(`/api/issues/${selectedIssueId.value}`, { method: 'GET' });
     },
     catchCallback: (error: unknown) => toast.error({ message: getErrorMessage(error) }),
     callOnInit: Boolean(issueIdFromQuery.value),

@@ -33,7 +33,9 @@ import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue'
 const boardsStore = useBoardsStore();
 const { listen, $socket } = useSocket();
 
-$socket.connect();
+if (import.meta.client) {
+  $socket.connect();
+}
 
 const { error } = await useAsyncData('fetch-boards', async () => {
   await boardsStore.fetchBoards(undefined, true);

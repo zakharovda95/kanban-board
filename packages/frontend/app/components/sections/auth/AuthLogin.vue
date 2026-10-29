@@ -74,13 +74,14 @@ const emit = defineEmits<{
   'update:tab': [tab: TAuthTab];
 }>();
 
+const { $api } = useNuxtApp();
 const toast = useToast();
 
 const { formData, formErrors, update } = useForm<TAuthLoginBodySchema>({ login: '', password: '' });
 
 const { call, isLoading } = useTryCatchFinally<null>({
   callback: async (_, signal?: AbortSignal) => {
-    const result = await $fetch<TSuccessResponse>('/api/auth/login', {
+    const result = await $api<TSuccessResponse>('/api/auth/login', {
       method: 'POST',
       body: formData.value,
       signal,
@@ -88,6 +89,7 @@ const { call, isLoading } = useTryCatchFinally<null>({
 
     if (result.isSuccess) {
       toast.success({ message: 'Добро пожаловать!' });
+      navigateTo('/boards');
     }
 
     return null;

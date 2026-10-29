@@ -36,8 +36,8 @@ export function useTryCatchFinally<TReturnData, TParams = undefined>(
     } catch (error: unknown) {
       const errorData = (error as FetchError)?.response?._data?.data ?? null;
 
-      if (options.catchCallback) options.catchCallback(errorData);
-      else throw errorData;
+      if (options.catchCallback) options.catchCallback(errorData ?? error);
+      else throw errorData ?? error;
     } finally {
       if (abortController === innerAbortController) {
         isLoading.value = false;

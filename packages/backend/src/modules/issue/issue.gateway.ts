@@ -26,12 +26,13 @@ import {
 } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
 
+import { WS_CORS_OPTIONS } from '@/libs/constants/websocket.constants';
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import IssueService from '@/modules/issue/issue.service';
 
-@WebSocketGateway({ cors: { origin: true } })
+@WebSocketGateway({ cors: WS_CORS_OPTIONS })
 @UseFilters(WsExceptionFilter)
 @UsePipes(CustomValidationPipe.wsStandardSchemaPipe)
 export default class IssueGateway {

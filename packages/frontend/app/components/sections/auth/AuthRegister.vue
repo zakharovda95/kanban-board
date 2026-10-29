@@ -155,6 +155,7 @@ const emit = defineEmits<{
   'update:tab': [tab: TAuthTab];
 }>();
 
+const { $api } = useNuxtApp();
 const runtimeConfig = useRuntimeConfig();
 const toast = useToast();
 
@@ -199,7 +200,7 @@ const formData = reactive<TAuthRegisterBodySchema>({
 
 const { call, isLoading, data } = useTryCatchFinally<null | TAuthLoginBodySchema>({
   callback: async (_, signal?: AbortSignal) => {
-    const result = await $fetch<TAuthRegisterResponse>('/api/auth/register', {
+    const result = await $api<TAuthRegisterResponse>('/api/auth/register', {
       method: 'POST',
       body: formData,
       signal,
