@@ -34,4 +34,10 @@ export default class AuthController {
     await this.authService.login(body);
     return getSuccessResponse();
   }
+
+  @Post('logout')
+  public async logout() {
+    await this.authService.logout();
+    return getSuccessResponse();
+  }
 }

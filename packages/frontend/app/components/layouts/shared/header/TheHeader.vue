@@ -12,7 +12,11 @@
       class="bg-light-base rounded-12 laptop:flex hidden h-full flex-1 items-center justify-between gap-24 px-48 py-8"
     >
       <HeaderNav />
-      <LoginLink v-if="!isAuthRoute" />
+
+      <div v-if="!isAuthRoute" class="flex gap-12">
+        <LoginLink />
+        <LogoutButton />
+      </div>
     </div>
   </header>
 </template>
@@ -21,6 +25,7 @@
 import HeaderBurger from '~/components/layouts/shared/header/HeaderBurger.vue';
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import LoginLink from '~/components/layouts/shared/LoginLink.vue';
+import LogoutButton from '~/components/layouts/shared/LogoutButton.vue';
 import TheLogo from '~/components/shared/TheLogo.vue';
 import TheSettings from '~/components/shared/TheSettings.vue';
 

@@ -22,7 +22,11 @@
 
             <template v-if="!isAuthRoute">
               <UIDivider variant="dashed" />
-              <LoginLink full />
+
+              <div class="flex w-full flex-col gap-12">
+                <LoginLink full />
+                <LogoutButton full />
+              </div>
             </template>
           </div>
 
@@ -43,6 +47,7 @@ import { EIconSizeLarge } from '~/enums/global.enums.ts';
 
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import LoginLink from '~/components/layouts/shared/LoginLink.vue';
+import LogoutButton from '~/components/layouts/shared/LogoutButton.vue';
 import TheProfile from '~/components/shared/TheProfile.vue';
 import TheSettings from '~/components/shared/TheSettings.vue';
 import TheSocial from '~/components/shared/TheSocial.vue';

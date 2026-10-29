@@ -90,7 +90,13 @@ export class AuthService {
     const isValid = await this.verify(userId, passwordHash, password);
     if (!isValid) throw new UnauthorizedException('Не верный логин или пароль');
 
-    await this.signInService.signIn(String(userId), { method: 'password' });
+    const session = await this.signInService.signIn(String(userId), { method: 'password' });
+    if (!session) throw new InternalServerErrorException('Не удалось войти в систему');
+  }
+
+  public async logout(): Promise<void> {
+    const result = await this.signInService.signOut();
+    if (!result) throw new InternalServerErrorException('Не удалось выйти из системы');
   }
 
   private async verify(userId: number, passwordHash: string, password: string): Promise<boolean> {

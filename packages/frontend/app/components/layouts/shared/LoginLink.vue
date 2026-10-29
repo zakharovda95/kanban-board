@@ -1,12 +1,6 @@
 <template>
   <UILink to="/auth" renderless :hoverable="false">
-    <UIButton
-      tag="span"
-      size="medium"
-      prepend-icon="mingcute:entrance-fill"
-      prepend-icon-class="rotate-180"
-      :full="full"
-    >
+    <UIButton tag="span" size="medium" append-icon="mingcute:entrance-fill" append-icon-class="rotate-180" :full="full">
       Войти
     </UIButton>
   </UILink>
