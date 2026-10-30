@@ -252,12 +252,10 @@ export const useBoardStore = defineStore('board-store', () => {
     stopListenIssueMoved();
   };
 
-  const resetStore = (hard: boolean = false) => {
+  const resetStore = () => {
     snapshot.value = null;
-    if (hard) {
-      isLoadingBoard.value = false;
-      board.value = null;
-    }
+    isLoadingBoard.value = false;
+    board.value = null;
   };
 
   return {

@@ -1,0 +1,16 @@
+<template>
+  <div class="flex h-dvh flex-col">
+    <TheHeader />
+
+    <main class="laptop:flex-row flex flex-1 flex-col">
+      <slot />
+    </main>
+
+    <TheFooter class="laptop:flex hidden" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import TheHeader from '~/components/layouts/shared/header/TheHeader.vue';
+import TheFooter from '~/components/layouts/shared/TheFooter.vue';
+</script>

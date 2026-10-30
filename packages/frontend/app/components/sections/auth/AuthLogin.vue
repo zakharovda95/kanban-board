@@ -63,6 +63,7 @@ import {
 
 import { useForm } from '~/composables/use-form.composable.ts';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
+import { useAuthStore } from '~/stores/auth.store.ts';
 import type { TAuthTab } from '~/types/auth.types.ts';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
@@ -77,6 +78,8 @@ const emit = defineEmits<{
 const { $api } = useNuxtApp();
 const toast = useToast();
 
+const authStore = useAuthStore();
+
 const { formData, formErrors, update } = useForm<TAuthLoginBodySchema>({ login: '', password: '' });
 
 const { call, isLoading } = useTryCatchFinally<null>({
@@ -89,6 +92,7 @@ const { call, isLoading } = useTryCatchFinally<null>({
 
     if (result.isSuccess) {
       toast.success({ message: 'Добро пожаловать!' });
+      await authStore.fetchMe();
       navigateTo('/boards');
     }
 

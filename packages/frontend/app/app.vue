@@ -10,4 +10,12 @@
 
 <script setup lang="ts">
 import { ModalsContainer } from 'vue-final-modal';
+
+import { useAuthStore } from '~/stores/auth.store.ts';
+
+const authStore = useAuthStore();
+
+onBeforeUnmount(() => {
+  authStore.resetStore();
+});
 </script>

@@ -14,14 +14,16 @@
       <HeaderNav />
 
       <div v-if="!isAuthRoute" class="flex gap-12">
-        <LoginLink />
-        <LogoutButton />
+        <LoginLink v-if="!authStore.isAuth" />
+        <LogoutButton v-else />
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/auth.store.ts';
+
 import HeaderBurger from '~/components/layouts/shared/header/HeaderBurger.vue';
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import LoginLink from '~/components/layouts/shared/LoginLink.vue';
@@ -30,5 +32,7 @@ import TheLogo from '~/components/shared/TheLogo.vue';
 import TheSettings from '~/components/shared/TheSettings.vue';
 
 const route = useRoute();
+const authStore = useAuthStore();
+
 const isAuthRoute = computed(() => route.name === 'auth');
 </script>

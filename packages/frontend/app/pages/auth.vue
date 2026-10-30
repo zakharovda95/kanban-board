@@ -18,6 +18,10 @@ import AuthLogin from '~/components/sections/auth/AuthLogin.vue';
 import AuthRegister from '~/components/sections/auth/AuthRegister.vue';
 import TheLogo from '~/components/shared/TheLogo.vue';
 
+definePageMeta({
+  layout: 'auth',
+});
+
 const viewQuery = useRouteQuery<TAuthTab>('view');
 if (!viewQuery.value) viewQuery.value = 'login';
 

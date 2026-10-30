@@ -24,8 +24,8 @@
               <UIDivider variant="dashed" />
 
               <div class="flex w-full flex-col gap-12">
-                <LoginLink full />
-                <LogoutButton full />
+                <LoginLink v-if="!authStore.isAuth" full />
+                <LogoutButton v-else full />
               </div>
             </template>
           </div>
@@ -44,6 +44,7 @@
 import { EColor } from '@kanban-board/common';
 
 import { EIconSizeLarge } from '~/enums/global.enums.ts';
+import { useAuthStore } from '~/stores/auth.store.ts';
 
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import LoginLink from '~/components/layouts/shared/LoginLink.vue';
@@ -54,8 +55,10 @@ import TheSocial from '~/components/shared/TheSocial.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIDivider from '~/components/ui/UIDivider.vue';
 
+const route = useRoute();
+const authStore = useAuthStore();
+
 const isBurgerOpen = ref(false);
 
-const route = useRoute();
 const isAuthRoute = computed(() => route.name === 'auth');
 </script>
