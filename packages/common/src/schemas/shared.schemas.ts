@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { VALIDATION_MESSAGES } from '../constants/exception.constants.js';
+import { USER_FIRST_NAMES, USER_LAST_NAMES } from '../constants/user.constants.js';
 
 /** Схема валидации обязательного положительного целочисленного идентификатора. **/
 export const positiveIdSchema = z.coerce
@@ -30,3 +31,6 @@ export const HEX_COLOR_REGEX = /^#?([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}
 export const hexColorSchema = z
   .string({ error: VALIDATION_MESSAGES.mustBeHexColor })
   .regex(HEX_COLOR_REGEX, { error: VALIDATION_MESSAGES.mustBeHexColor });
+
+export const firstNameSchema = z.enum(USER_FIRST_NAMES, { error: VALIDATION_MESSAGES.mustBeEnum });
+export const lastNameSchema = z.enum(USER_LAST_NAMES, { error: VALIDATION_MESSAGES.mustBeEnum });

@@ -19,7 +19,7 @@ import { useAuthStore } from '~/stores/auth.store.ts';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
-const { full = false } = defineProps<{ full?: boolean }>();
+withDefaults(defineProps<{ full?: boolean }>(), { full: false });
 
 const { $api } = useNuxtApp();
 const toast = useToast();

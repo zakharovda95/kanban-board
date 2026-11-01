@@ -27,6 +27,9 @@ export const updateIssueBodySchema = createIssueBodySchema
   .partial()
   .extend({
     id: positiveIdSchema,
+  })
+  .refine(data => data.title || data.description, {
+    message: VALIDATION_MESSAGES.atLeastOneFieldRequired,
   });
 
 /** Тип схемы валидации тела запроса обновления задачи. **/

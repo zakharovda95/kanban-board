@@ -14,7 +14,7 @@ export default class UserWorkspaceMapper {
     const map = (innerEntity: UserWorkspaceEntity): TUserWorkspace => ({
       id: innerEntity.id,
       createdAt: innerEntity.createdAt,
-      expiresAt: innerEntity.createdAt,
+      expiresAt: innerEntity.expiresAt,
       workspaceId: innerEntity.workspaceId,
       workspaceRole: innerEntity.workspaceRole,
     });

@@ -6,10 +6,7 @@ import {
   AUTH_PASSWORD_MINLENGTH,
 } from '../constants/auth.constants.js';
 import { VALIDATION_MESSAGES } from '../constants/exception.constants.js';
-import {
-  USER_FIRST_NAME_MAXLENGTH,
-  USER_LAST_NAME_MAXLENGTH,
-} from '../constants/user.constants.js';
+import { firstNameSchema, lastNameSchema } from './shared.schemas.js';
 
 /** Схема валидации тела запроса аутентификации пользователя. **/
 export const authLoginBodySchema = z.strictObject({
@@ -33,18 +30,8 @@ export type TAuthLoginBodySchema = z.infer<typeof authLoginBodySchema>;
 
 /** Схема валидации тела запроса регистрации нового пользователя. **/
 export const authRegisterBodySchema = z.strictObject({
-  firstName: z
-    .string({ error: VALIDATION_MESSAGES.mustBeString })
-    .nonempty({ error: VALIDATION_MESSAGES.required })
-    .max(USER_FIRST_NAME_MAXLENGTH, {
-      error: VALIDATION_MESSAGES.maxLength(USER_FIRST_NAME_MAXLENGTH),
-    }),
-  lastName: z
-    .string({ error: VALIDATION_MESSAGES.mustBeString })
-    .nonempty({ error: VALIDATION_MESSAGES.required })
-    .max(USER_LAST_NAME_MAXLENGTH, {
-      error: VALIDATION_MESSAGES.maxLength(USER_LAST_NAME_MAXLENGTH),
-    }),
+  firstName: firstNameSchema,
+  lastName: lastNameSchema,
 });
 
 /** Тип схемы валидации тела запроса регистрации нового пользователя. **/

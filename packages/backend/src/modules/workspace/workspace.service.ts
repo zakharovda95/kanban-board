@@ -18,7 +18,9 @@ export default class WorkspaceService {
    * @returns объект созданного рабочего пространства.
    * **/
   public async createWorkspace(transactionalManager: EntityManager): Promise<TWorkspace> {
-    const newWorkspace = transactionalManager.create(WorkspaceEntity);
+    const newWorkspace = transactionalManager.create(WorkspaceEntity, {
+      name: 'Мое пространство',
+    });
 
     const createdWorkspace = await transactionalManager.save(newWorkspace);
     if (!createdWorkspace)

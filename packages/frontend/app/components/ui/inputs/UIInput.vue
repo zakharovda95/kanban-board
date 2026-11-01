@@ -72,15 +72,15 @@ const props = withDefaults(
 const computedSize = computed(() => {
   const size: TUIComputedSizeMap = {
     small: {
-      element: 'h-24 py-4 px-8 text-12 rounded-4',
+      element: 'h-24 py-2 px-8 text-12 rounded-4',
       icon: EIconSizeSmall.SMALL,
     },
     medium: {
-      element: 'h-32 py-6 rounded-6 px-12 text-14',
+      element: 'h-32 py-4 rounded-6 px-12 text-14',
       icon: EIconSizeSmall.MEDIUM,
     },
     large: {
-      element: 'h-40 py-8 px-16 rounded-6 text-16',
+      element: 'h-40 py-6 px-16 rounded-6 text-16',
       icon: EIconSizeSmall.LARGE,
     },
   };

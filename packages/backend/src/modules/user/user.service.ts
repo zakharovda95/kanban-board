@@ -2,10 +2,14 @@ import {
   EUserRole,
   EUserStatus,
   EWorkspaceRole,
+  RandomUtility,
   type TAuthCredentials,
   type TCreateUser,
   type TPositiveIdSchema,
+  type TUpdateUserBodySchema,
   type TUser,
+  type TUserBase,
+  USER_AVATARS,
 } from '@kanban-board/common';
 import {
   BadRequestException,
@@ -50,7 +54,7 @@ export default class UserService {
       );
     }
 
-    return this.userMapper.toModel(user);
+    return this.userMapper.toModel(user, { base: false });
   }
 
   /**
@@ -91,21 +95,23 @@ export default class UserService {
    * @param body - имя и фамилия пользователя.
    * @returns объект созданного пользователя.
    * **/
-  public async createUser(transactionalManager: EntityManager, body: TCreateUser): Promise<TUser> {
+  public async createUser(
+    transactionalManager: EntityManager,
+    body: TCreateUser,
+  ): Promise<TUserBase> {
     if (!transactionalManager) throw new BadRequestException('Не передан транзакционный менеджер.');
     if (!body) throw new BadRequestException('Не переданы данные для создания пользователя');
 
-    const { firstName, lastName, workspaceId, login, passwordHash } = body;
+    const { firstName, lastName, workspaceId, expiresAt, login, passwordHash } = body;
 
     const newUser = transactionalManager.create(UserEntity, {
       firstName,
       lastName,
-      workspaceId,
       login,
       passwordHash,
       systemRole: EUserRole.USER,
       status: EUserStatus.ACTIVE,
-      avatar: null,
+      avatar: RandomUtility.getRandomFromArray(USER_AVATARS),
     });
 
     const createdUser = await transactionalManager.save(newUser);
@@ -113,6 +119,7 @@ export default class UserService {
 
     const newUserWorkspace = transactionalManager.create(UserWorkspaceEntity, {
       workspaceId,
+      expiresAt,
       userId: createdUser.id,
       workspaceRole: EWorkspaceRole.OWNER,
     });
@@ -121,7 +128,7 @@ export default class UserService {
     if (!createdUserWorkspace)
       throw new BadRequestException('Не удалось привязать пользователя к рабочему пространству');
 
-    return this.userMapper.toModel(createdUser);
+    return this.userMapper.toModel(createdUser, { base: true });
   }
 
   /**
@@ -147,5 +154,30 @@ export default class UserService {
     if (!updatedUser) throw new InternalServerErrorException('Не удалось обновить хэш пароля');
 
     return true;
+  }
+
+  /**
+   * Обновить данные пользователя.
+   * @param userId - Id пользователя.
+   * @param body - данные для обновления.
+   * @returns объект обновленного пользователя.
+   * **/
+  public async updateUser(
+    userId: TPositiveIdSchema,
+    body: TUpdateUserBodySchema,
+  ): Promise<TUserBase> {
+    if (!userId) throw new BadRequestException(`Не указан идентификатор пользователя`);
+    if (!body) throw new BadRequestException(`Не указаны данные для обновления`);
+
+    const { manager } = this.dataSource;
+
+    const user = await manager.findOne(UserEntity, { where: { id: userId } });
+    if (!user) throw new NotFoundException(`Пользователь по указанному идентификатору не найден`);
+
+    const updatedUser = await manager.save(Object.assign(user, body));
+    if (!updatedUser)
+      throw new InternalServerErrorException('Не удалось обновить данные пользователя');
+
+    return this.userMapper.toModel(updatedUser, { base: true });
   }
 }

@@ -1,8 +1,9 @@
 import { EUserRole, EUserStatus } from '../enums/user.enums.js';
 import { EWorkspaceRole } from '../enums/workspace.enums.js';
+import { TSuccessResponse } from './response.types';
 
 /** Основные данные пользователя. **/
-export type TUser = {
+export type TUserBase = {
   id: number;
   firstName: string;
   lastName: string;
@@ -11,6 +12,10 @@ export type TUser = {
   /** Системная роль пользователя (по сути все, кроме меня USER) **/
   systemRole: EUserRole;
   avatar: string | null;
+};
+
+export type TUser = TUserBase & {
+  workspace: TUserWorkspace;
 };
 
 /** Данные о рабочем пространстве пользователя. **/
@@ -25,8 +30,11 @@ export type TUserWorkspace = {
 };
 
 /** Данные, необходимые для создания пользователя. **/
-export type TCreateUser = Pick<TUser, 'firstName' | 'lastName'> &
-  Pick<TUserWorkspace, 'workspaceId'> & {
+export type TCreateUser = Pick<TUserBase, 'firstName' | 'lastName'> &
+  Pick<TUserWorkspace, 'workspaceId' | 'expiresAt'> & {
     login: string;
     passwordHash: string;
   };
+
+/** Ответ после обновления пользователя. **/
+export type TUpdateUserResponse = TSuccessResponse<TUserBase>;

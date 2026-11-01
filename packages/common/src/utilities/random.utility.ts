@@ -2,7 +2,7 @@ import { slugify } from 'transliteration';
 
 export class RandomUtility {
   /** Получить случайный элемент из массива. **/
-  public static getRandomFromArray<T>(array: T[]): T {
+  public static getRandomFromArray<T>(array: readonly T[]): T {
     return array[Math.floor(Math.random() * array.length)];
   }
 

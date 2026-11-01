@@ -12,50 +12,7 @@
       @submit:form="call()"
     >
       <div class="flex w-full flex-col gap-16">
-        <UILabel text="Имя" size="medium" required>
-          <UIInput
-            v-model="formData.firstName"
-            name="auth-first-name"
-            full
-            size="large"
-            placeholder="Укажите имя"
-            readonly
-            autocomplete="username"
-          >
-            <template #right>
-              <UITooltip text="Обновить имя">
-                <UIIconButton
-                  icon="mingcute:refresh-2-line"
-                  size="small"
-                  :background-color="EColor.BLUE"
-                  @click:button="formData.firstName = getRandomFirstName()"
-                />
-              </UITooltip>
-            </template>
-          </UIInput>
-        </UILabel>
-        <UILabel text="Фамилия" size="medium" required>
-          <UIInput
-            v-model="formData.lastName"
-            name="auth-last-name"
-            full
-            size="large"
-            placeholder="Укажите фамилию"
-            readonly
-            autocomplete="current-password"
-          >
-            <template #right>
-              <UITooltip text="Обновить фамилию">
-                <UIIconButton
-                  icon="mingcute:refresh-2-line"
-                  size="small"
-                  :background-color="EColor.BLUE"
-                  @click:button="formData.lastName = getRandomLastName()"
-                />
-              </UITooltip>
-            </template>
-          </UIInput>
-        </UILabel>
+        <UserNameForm v-model:form-data="formData" size="large" />
       </div>
     </UIForm>
     <UIForm
@@ -143,13 +100,13 @@ import {
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import type { TAuthTab } from '~/types/auth.types.ts';
 
+import UserNameForm from '~/components/shared/UserNameForm.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIAlert from '~/components/ui/UIAlert.vue';
 import UIForm from '~/components/ui/UIForm.vue';
 import UILabel from '~/components/ui/UILabel.vue';
-import UITooltip from '~/components/ui/UITooltip.vue';
 
 const emit = defineEmits<{
   'update:tab': [tab: TAuthTab];

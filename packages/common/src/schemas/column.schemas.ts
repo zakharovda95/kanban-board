@@ -35,6 +35,9 @@ export const updateColumnBodySchema = createColumnBodySchema
   .partial()
   .extend({
     id: positiveIdSchema,
+  })
+  .refine(data => data.title || data.description || data.color, {
+    message: VALIDATION_MESSAGES.atLeastOneFieldRequired,
   });
 
 /** Тип схемы валидации тела запроса обновления колонки. **/

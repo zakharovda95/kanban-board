@@ -1,4 +1,4 @@
-import { DatetimeUtility, EXPIRES_DAYS } from '@kanban-board/common';
+import { DatetimeUtility, EXPIRES_DAYS, WORKSPACE_NAME_MAXLENGTH } from '@kanban-board/common';
 import { BeforeInsert, Check, Column, Entity, OneToMany } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
@@ -9,6 +9,9 @@ import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.ent
 // добавил 2 секунды из-за ошибки при создании, появляется разница в несколько миллисекунд при выполнении setExpiresAt, и падает по ограничению.
 @Check('"expiresAt" <= "createdAt" + INTERVAL \'7 days 2 second\'')
 export default class WorkspaceEntity extends BaseEntity {
+  @Column({ type: 'varchar', length: WORKSPACE_NAME_MAXLENGTH })
+  name!: string;
+
   @Column({ type: 'timestamptz' })
   expiresAt!: Date;
 

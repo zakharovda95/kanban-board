@@ -3,8 +3,6 @@ import {
   type TAuthLoginBodySchema,
   type TAuthRegisterBodySchema,
   type TCreateUser,
-  USER_FIRST_NAMES,
-  USER_LAST_NAMES,
 } from '@kanban-board/common';
 import { RandomServerUtility } from '@kanban-board/common/node';
 import { PasswordHasher, SignInService } from '@nestjs/authentication';
@@ -35,16 +33,6 @@ export class AuthService {
 
     const { firstName, lastName } = body;
 
-    if (!USER_FIRST_NAMES.includes(firstName))
-      throw new BadRequestException(
-        `Невозможно зарегистрировать пользователя с именем ${firstName}`,
-      );
-
-    if (!USER_LAST_NAMES.includes(lastName))
-      throw new BadRequestException(
-        `Невозможно зарегистрировать пользователя с фамилией ${lastName}`,
-      );
-
     const { manager } = this.dataSource;
 
     return manager.transaction(async transactionalManager => {
@@ -52,7 +40,8 @@ export class AuthService {
       // Блокируем доступ к базе данных для предотвращения одновременной регистрации нескольких аккаунтов.
       await transactionalManager.query('SELECT pg_advisory_xact_lock($1)', [DATABASE_LOCK_ID]);
 
-      const { id: workspaceId } = await this.workspaceService.createWorkspace(transactionalManager);
+      const { id: workspaceId, expiresAt } =
+        await this.workspaceService.createWorkspace(transactionalManager);
       if (!workspaceId)
         throw new InternalServerErrorException(
           'Не удалось завершить регистрацию: ошибка при создании рабочего пространства',
@@ -65,6 +54,7 @@ export class AuthService {
       const newUserBody: TCreateUser = {
         firstName,
         lastName,
+        expiresAt,
         workspaceId,
         login,
         passwordHash,

@@ -11,6 +11,7 @@ export default class WorkspaceMapper {
   public toModel(entity: WorkspaceEntity | WorkspaceEntity[]): TWorkspace | TWorkspace[] {
     const map = (innerEntity: WorkspaceEntity): TWorkspace => ({
       id: innerEntity.id,
+      name: innerEntity.name,
       createdAt: innerEntity.createdAt,
       expiresAt: innerEntity.expiresAt,
     });

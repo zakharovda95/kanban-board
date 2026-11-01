@@ -1,5 +1,31 @@
+import { EUserStatus, EWorkspaceRole } from '../enums';
+
 export const USER_FIRST_NAME_MAXLENGTH = 64;
 export const USER_LAST_NAME_MAXLENGTH = 64;
+
+export const USER_STATUS_MAP: Record<EUserStatus, string> = {
+  ACTIVE: 'Активный',
+  BLOCKED: 'Заблокирован',
+  DELETED: 'Удален',
+} as const;
+
+export const USER_WORKSPACE_ROLE_MAP: Record<EWorkspaceRole, string> = {
+  OWNER: 'Владелец',
+  USER: 'Пользователь',
+} as const;
+
+export const USER_AVATARS = [
+  'knight',
+  'witch',
+  'giant',
+  'fairy',
+  'elf',
+  'pirate',
+  'queen',
+  'king',
+  'gnome',
+  'wizard',
+] as const;
 
 export const USER_FIRST_NAMES = [
   'Гарри',
@@ -202,7 +228,7 @@ export const USER_FIRST_NAMES = [
   'Хлоя',
   'Элли',
   'Байонетта',
-];
+] as const;
 
 export const USER_LAST_NAMES = [
   'Поттер',
@@ -405,4 +431,4 @@ export const USER_LAST_NAMES = [
   'Сальваторе',
   'Керриган',
   'Рейнор',
-];
+] as const;

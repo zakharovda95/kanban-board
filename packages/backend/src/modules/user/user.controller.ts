@@ -1,4 +1,30 @@
-import { Controller } from '@nestjs/common';
+import {
+  type TUpdateUserBodySchema,
+  type TUpdateUserResponse,
+  type TUser,
+  type TUserBase,
+  updateUserBodySchema,
+} from '@kanban-board/common';
+import { CurrentUser } from '@nestjs/authentication';
+import { Can } from '@nestjs/authorization';
+import { Body, Controller, Patch, UsePipes } from '@nestjs/common';
+
+import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
+import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
+import UserService from '@/modules/user/user.service';
 
 @Controller('users')
-export default class UserController {}
+@UsePipes(CustomValidationPipe.httpStandardSchemaPipe)
+export default class UserController {
+  constructor(private userService: UserService) {}
+
+  @Can.Anyone()
+  @Patch()
+  public async updateUser(
+    @CurrentUser() me: TUser,
+    @Body({ schema: updateUserBodySchema }) body: TUpdateUserBodySchema,
+  ): Promise<TUpdateUserResponse> {
+    const updatedUser = await this.userService.updateUser(me.id, body);
+    return getSuccessResponseWithData<TUserBase>(updatedUser);
+  }
+}
