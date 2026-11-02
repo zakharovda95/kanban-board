@@ -15,7 +15,7 @@
 import { EColor, getErrorMessage, type TSuccessResponse } from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
-import { useAuthStore } from '~/stores/auth.store.ts';
+import { useUserStore } from '~/stores/user.store.ts';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 
@@ -24,14 +24,14 @@ withDefaults(defineProps<{ full?: boolean }>(), { full: false });
 const { $api } = useNuxtApp();
 const toast = useToast();
 
-const authStore = useAuthStore();
+const userStore = useUserStore();
 
 const { call: logout } = useTryCatchFinally<undefined, null>({
   callback: async (_, signal?: AbortSignal) => {
     const result = await $api<TSuccessResponse>('/api/auth/logout', { method: 'POST', signal });
     if (result.isSuccess) {
       toast.success({ message: 'До скорого!' });
-      authStore.resetStore();
+      userStore.resetStore();
       navigateTo('/auth?view=login');
     }
 

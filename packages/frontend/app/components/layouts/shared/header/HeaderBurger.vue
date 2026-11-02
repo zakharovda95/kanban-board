@@ -14,7 +14,11 @@
         class="bg-light-100 absolute right-0 bottom-0 left-0 z-2 flex h-[calc(100dvh-80px)] items-center justify-center p-12"
       >
         <div class="bg-light-base rounded-12 flex size-full flex-col gap-24 p-12">
-          <TheProfile v-if="authStore.me" v-model:user="authStore.me" />
+          <TheProfile
+            v-if="userStore.me && userStore.workspace"
+            v-model:user="userStore.me"
+            :workspace="userStore.workspace"
+          />
           <UIDivider variant="dashed" />
 
           <div class="flex size-full flex-1 flex-col gap-24">
@@ -24,7 +28,7 @@
               <UIDivider variant="dashed" />
 
               <div class="flex w-full flex-col gap-12">
-                <LoginLink v-if="!authStore.isAuth" full />
+                <LoginLink v-if="!userStore.isAuth" full />
                 <LogoutButton v-else full />
               </div>
             </template>
@@ -44,7 +48,7 @@
 import { EColor } from '@kanban-board/common';
 
 import { EIconSizeLarge } from '~/enums/global.enums.ts';
-import { useAuthStore } from '~/stores/auth.store.ts';
+import { useUserStore } from '~/stores/user.store.ts';
 
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import LoginLink from '~/components/layouts/shared/LoginLink.vue';
@@ -56,7 +60,7 @@ import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIDivider from '~/components/ui/UIDivider.vue';
 
 const route = useRoute();
-const authStore = useAuthStore();
+const userStore = useUserStore();
 
 const isBurgerOpen = ref(false);
 

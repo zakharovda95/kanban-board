@@ -1,37 +1,23 @@
-import type { TUser, TUserBase } from '@kanban-board/common';
+import type { TUser } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 
 import UserEntity from '@/modules/user/libs/entities/user.entity';
-import UserWorkspaceMapper from '@/modules/user/libs/mappers/user-workspace.mapper';
 
 @Injectable()
 export default class UserMapper {
-  constructor(private userWorkspaceMapper: UserWorkspaceMapper) {}
+  public toModel(entity: UserEntity): TUser;
+  public toModel(entity: UserEntity[]): TUser[];
 
-  public toModel(entity: UserEntity, options: { base: true }): TUserBase;
-  public toModel(entity: UserEntity[], options: { base: true }): TUserBase[];
-  public toModel(entity: UserEntity, options?: { base?: false }): TUser;
-  public toModel(entity: UserEntity[], options?: { base?: false }): TUser[];
-
-  public toModel(
-    entity: UserEntity | UserEntity[],
-    options?: { base?: boolean },
-  ): TUserBase | TUserBase[] | TUser | TUser[] {
-    const map = (innerEntity: UserEntity): TUserBase | TUser => {
-      const mapped: TUserBase = {
-        id: innerEntity.id,
-        firstName: innerEntity.firstName,
-        lastName: innerEntity.lastName,
-        createdAt: innerEntity.createdAt,
-        status: innerEntity.status,
-        systemRole: innerEntity.systemRole,
-        avatar: innerEntity.avatar,
-      };
-
-      if (options?.base) return mapped;
-
-      return { ...mapped, workspace: this.userWorkspaceMapper.toModel(innerEntity.userWorkspace) };
-    };
+  public toModel(entity: UserEntity | UserEntity[]): TUser | TUser[] {
+    const map = (innerEntity: UserEntity): TUser => ({
+      id: innerEntity.id,
+      firstName: innerEntity.firstName,
+      lastName: innerEntity.lastName,
+      createdAt: innerEntity.createdAt,
+      systemRole: innerEntity.systemRole,
+      avatar: innerEntity.avatar,
+      login: innerEntity.login,
+    });
 
     return Array.isArray(entity) ? entity.map(el => map(el)) : map(entity);
   }

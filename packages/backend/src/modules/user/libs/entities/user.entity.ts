@@ -1,7 +1,6 @@
 import {
   AUTH_LOGIN_MAXLENGTH,
   EUserRole,
-  EUserStatus,
   USER_FIRST_NAME_MAXLENGTH,
   USER_LAST_NAME_MAXLENGTH,
 } from '@kanban-board/common';
@@ -26,9 +25,6 @@ export default class UserEntity extends BaseEntity {
 
   @Column({ type: 'enum', enum: EUserRole, default: EUserRole.USER })
   systemRole!: EUserRole;
-
-  @Column({ type: 'enum', enum: EUserStatus, default: EUserStatus.ACTIVE })
-  status!: EUserStatus;
 
   @Column({ type: 'text', nullable: true })
   avatar!: string | null;

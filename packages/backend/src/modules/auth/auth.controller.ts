@@ -2,15 +2,12 @@ import {
   authLoginBodySchema,
   authRegisterBodySchema,
   type TAuthLoginBodySchema,
-  type TAuthMeResponse,
   type TAuthRegisterBodySchema,
   type TAuthRegisterResponse,
-  type TUser,
 } from '@kanban-board/common';
-import { CurrentUser, Public } from '@nestjs/authentication';
-import { Authenticate } from '@nestjs/authentication';
+import { Public } from '@nestjs/authentication';
 import { Can } from '@nestjs/authorization';
-import { Body, Controller, Get, Post, UsePipes } from '@nestjs/common';
+import { Body, Controller, Post, UsePipes } from '@nestjs/common';
 
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 import {
@@ -23,13 +20,6 @@ import { AuthService } from '@/modules/auth/auth.service';
 @UsePipes(CustomValidationPipe.httpStandardSchemaPipe)
 export default class AuthController {
   constructor(private authService: AuthService) {}
-
-  @Authenticate({ optional: true })
-  @Can.Anyone()
-  @Get('me')
-  public getMe(@CurrentUser() me: TUser | null): TAuthMeResponse {
-    return getSuccessResponseWithData<TUser | null>(me);
-  }
 
   @Public()
   @Post('register')

@@ -2,7 +2,11 @@
   <aside class="laptop:flex hidden h-full w-280 shrink-0 flex-col items-center justify-between gap-12 py-12 pr-0 pl-12">
     <BoardsList />
     <div class="bg-light-base rounded-12 w-full p-12">
-      <TheProfile v-if="authStore.me" v-model:user="authStore.me" />
+      <TheProfile
+        v-if="userStore.me && userStore.workspace"
+        v-model:user="userStore.me"
+        :workspace="userStore.workspace"
+      />
     </div>
   </aside>
 
@@ -24,9 +28,9 @@
 import { useRoute } from 'vue-router';
 
 import { useIsLaptop } from '~/composables/use-is-laptop.composable.ts';
-import { useAuthStore } from '~/stores/auth.store.ts';
 import { useBoardStore } from '~/stores/board.store.ts';
 import { useBoardsStore } from '~/stores/boards.store.ts';
+import { useUserStore } from '~/stores/user.store.ts';
 
 import BoardsList from '~/components/sections/board/BoardsList.vue';
 import MobileSelectPanel from '~/components/shared/MobileSelectPanel.vue';
@@ -35,7 +39,7 @@ import TheProfile from '~/components/shared/TheProfile.vue';
 const route = useRoute();
 const boardsStore = useBoardsStore();
 const boardStore = useBoardStore();
-const authStore = useAuthStore();
+const userStore = useUserStore();
 
 const boardId = computed(() => Number(route.params.id));
 

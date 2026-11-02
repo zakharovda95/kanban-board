@@ -1,4 +1,4 @@
-import { useAuthStore } from '~/stores/auth.store.ts';
+import { useUserStore } from '~/stores/user.store.ts';
 
 export default defineNuxtPlugin(nuxtApp => {
   const api = $fetch.create({
@@ -18,7 +18,7 @@ export default defineNuxtPlugin(nuxtApp => {
       if (response.status === 401) {
         // биндим накст контекст через runWithContext()
         await nuxtApp.runWithContext(() => {
-          useAuthStore().resetStore();
+          useUserStore().resetStore();
           navigateTo('/auth');
         });
       }

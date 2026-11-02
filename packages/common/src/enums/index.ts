@@ -5,4 +5,3 @@ export * from './column.enums.js';
 export * from './error.enums.js';
 export * from './issue.enums.js';
 export * from './user.enums.js';
-export * from './workspace.enums.js';

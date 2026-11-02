@@ -1,15 +1,15 @@
-import { EUserStatus, EWorkspaceRole } from '../enums';
+import { EUserWorkspaceRole, EUserWorkspaceStatus } from '../enums/user.enums.js';
 
 export const USER_FIRST_NAME_MAXLENGTH = 64;
 export const USER_LAST_NAME_MAXLENGTH = 64;
 
-export const USER_STATUS_MAP: Record<EUserStatus, string> = {
+export const USER_WORKSPACE_STATUS_MAP: Record<EUserWorkspaceStatus, string> = {
   ACTIVE: 'Активный',
   BLOCKED: 'Заблокирован',
   DELETED: 'Удален',
 } as const;
 
-export const USER_WORKSPACE_ROLE_MAP: Record<EWorkspaceRole, string> = {
+export const USER_WORKSPACE_ROLE_MAP: Record<EUserWorkspaceRole, string> = {
   OWNER: 'Владелец',
   USER: 'Пользователь',
 } as const;

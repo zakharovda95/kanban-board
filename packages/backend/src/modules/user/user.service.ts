@@ -1,14 +1,14 @@
 import {
   EUserRole,
-  EUserStatus,
-  EWorkspaceRole,
+  EUserWorkspaceRole,
+  EUserWorkspaceStatus,
   RandomUtility,
   type TAuthCredentials,
   type TCreateUser,
   type TPositiveIdSchema,
   type TUpdateUserBodySchema,
   type TUser,
-  type TUserBase,
+  type TUserWorkspace,
   USER_AVATARS,
 } from '@kanban-board/common';
 import {
@@ -22,16 +22,19 @@ import { DataSource, EntityManager } from 'typeorm';
 import UserEntity from '@/modules/user/libs/entities/user.entity';
 import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.entity';
 import UserMapper from '@/modules/user/libs/mappers/user.mapper';
+import UserWorkspaceMapper from '@/modules/user/libs/mappers/user-workspace.mapper';
 
 @Injectable()
 export default class UserService {
   constructor(
     private dataSource: DataSource,
     private userMapper: UserMapper,
+    private userWorkspaceMapper: UserWorkspaceMapper,
   ) {}
 
   /**
    * Получить пользователя по его Id или логину (перегрузка).
+   * @param login - логин или Id пользователя.
    * @returns объект пользователя.
    * **/
   public async getUserBy(login: string): Promise<TUser>;
@@ -45,7 +48,6 @@ export default class UserService {
 
     const user = await manager.findOne(UserEntity, {
       where: isLogin ? { login: loginOrId } : { id: loginOrId },
-      relations: { userWorkspace: true },
     });
 
     if (!user) {
@@ -54,11 +56,12 @@ export default class UserService {
       );
     }
 
-    return this.userMapper.toModel(user, { base: false });
+    return this.userMapper.toModel(user);
   }
 
   /**
    * Получить данные аутентификации пользователя по его Id или логину.
+   * @param login - логин или Id пользователя.
    * @returns объект с данными аутентификации.
    * **/
   public async getUserCredentialsBy(login: string): Promise<TAuthCredentials>;
@@ -95,14 +98,11 @@ export default class UserService {
    * @param body - имя и фамилия пользователя.
    * @returns объект созданного пользователя.
    * **/
-  public async createUser(
-    transactionalManager: EntityManager,
-    body: TCreateUser,
-  ): Promise<TUserBase> {
+  public async createUser(transactionalManager: EntityManager, body: TCreateUser): Promise<TUser> {
     if (!transactionalManager) throw new BadRequestException('Не передан транзакционный менеджер.');
     if (!body) throw new BadRequestException('Не переданы данные для создания пользователя');
 
-    const { firstName, lastName, workspaceId, expiresAt, login, passwordHash } = body;
+    const { firstName, lastName, workspaceId, login, passwordHash } = body;
 
     const newUser = transactionalManager.create(UserEntity, {
       firstName,
@@ -110,7 +110,6 @@ export default class UserService {
       login,
       passwordHash,
       systemRole: EUserRole.USER,
-      status: EUserStatus.ACTIVE,
       avatar: RandomUtility.getRandomFromArray(USER_AVATARS),
     });
 
@@ -119,16 +118,16 @@ export default class UserService {
 
     const newUserWorkspace = transactionalManager.create(UserWorkspaceEntity, {
       workspaceId,
-      expiresAt,
       userId: createdUser.id,
-      workspaceRole: EWorkspaceRole.OWNER,
+      status: EUserWorkspaceStatus.ACTIVE,
+      workspaceRole: EUserWorkspaceRole.OWNER,
     });
 
     const createdUserWorkspace = await transactionalManager.save(newUserWorkspace);
     if (!createdUserWorkspace)
       throw new BadRequestException('Не удалось привязать пользователя к рабочему пространству');
 
-    return this.userMapper.toModel(createdUser, { base: true });
+    return this.userMapper.toModel(createdUser);
   }
 
   /**
@@ -162,10 +161,7 @@ export default class UserService {
    * @param body - данные для обновления.
    * @returns объект обновленного пользователя.
    * **/
-  public async updateUser(
-    userId: TPositiveIdSchema,
-    body: TUpdateUserBodySchema,
-  ): Promise<TUserBase> {
+  public async updateUser(userId: TPositiveIdSchema, body: TUpdateUserBodySchema): Promise<TUser> {
     if (!userId) throw new BadRequestException(`Не указан идентификатор пользователя`);
     if (!body) throw new BadRequestException(`Не указаны данные для обновления`);
 
@@ -178,6 +174,26 @@ export default class UserService {
     if (!updatedUser)
       throw new InternalServerErrorException('Не удалось обновить данные пользователя');
 
-    return this.userMapper.toModel(updatedUser, { base: true });
+    return this.userMapper.toModel(updatedUser);
+  }
+
+  /**
+   * Получить рабочее пространство пользователя по Id пользователя.
+   * @param userId - Id пользователя.
+   * @returns объект рабочего пространства пользователя или null, если оно не найдено.
+   * **/
+  public async getUserWorkspaceByUserId(userId: TPositiveIdSchema): Promise<TUserWorkspace | null> {
+    if (!userId) throw new BadRequestException(`Не указан идентификатор пользователя`);
+
+    const { manager } = this.dataSource;
+
+    const userWorkspace = await manager.findOne(UserWorkspaceEntity, {
+      where: { userId },
+      relations: { workspace: true },
+    });
+
+    if (!userWorkspace) return null;
+
+    return this.userWorkspaceMapper.toModel(userWorkspace);
   }
 }

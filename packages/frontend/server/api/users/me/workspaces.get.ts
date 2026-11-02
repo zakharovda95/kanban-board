@@ -1,11 +1,11 @@
-import type { TAuthMeResponse } from '@kanban-board/common';
+import type { TUserWorkspace } from '@kanban-board/common';
 
-/** Получить данные о текущем пользователе **/
+/** Получить данные о рабочем пространстве пользователя. **/
 export default defineEventHandler(async event => {
   const runtimeConfig = useRuntimeConfig();
   const baseUrl = runtimeConfig.public.BASE_URL || '';
 
-  return await $fetch<TAuthMeResponse>(`${baseUrl}/v1/auth/me`, {
+  return await $fetch<TUserWorkspace | null>(`${baseUrl}/v1/users/me/workspaces`, {
     method: 'GET',
     headers: {
       cookie: getHeader(event, 'cookie') ?? '',

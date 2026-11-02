@@ -9,7 +9,7 @@
       <span class="text-12">
         активен до
         <span class="text-blue font-medium">
-          {{ DatetimeUtility.format(user.workspace.expiresAt, 'DD.MM.YYYY') }}
+          {{ DatetimeUtility.format(workspace.expiresAt, 'DD.MM.YYYY') }}
         </span>
       </span>
     </div>
@@ -18,17 +18,17 @@
       <div class="flex w-full flex-col gap-24">
         <div class="flex flex-col gap-8">
           <div class="flex flex-nowrap gap-8">
-            <UIBadge v-if="user.status">{{ USER_STATUS_MAP[user.status] }}</UIBadge>
-            <UIBadge v-if="user.workspace.workspaceRole" :background-color="EColor.BLUE">
-              {{ USER_WORKSPACE_ROLE_MAP[user.workspace.workspaceRole] }}
+            <UIBadge v-if="workspace.status">{{ USER_WORKSPACE_STATUS_MAP[workspace.status] }}</UIBadge>
+            <UIBadge v-if="workspace.workspaceRole" :background-color="EColor.BLUE">
+              {{ USER_WORKSPACE_ROLE_MAP[workspace.workspaceRole] }}
             </UIBadge>
           </div>
           <div class="flex flex-nowrap gap-8">
             <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
-              c {{ DatetimeUtility.format(user.workspace.createdAt, 'DD.MM.YYYY') }}
+              c {{ DatetimeUtility.format(workspace.createdAt, 'DD.MM.YYYY') }}
             </UIBadge>
             <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
-              до {{ DatetimeUtility.format(user.workspace.expiresAt, 'DD.MM.YYYY') }}
+              до {{ DatetimeUtility.format(workspace.expiresAt, 'DD.MM.YYYY') }}
             </UIBadge>
           </div>
         </div>
@@ -54,8 +54,9 @@ import {
   getErrorMessage,
   type TUpdateUserResponse,
   type TUser,
-  USER_STATUS_MAP,
+  type TUserWorkspace,
   USER_WORKSPACE_ROLE_MAP,
+  USER_WORKSPACE_STATUS_MAP,
 } from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
@@ -65,8 +66,11 @@ import TheAvatar from '~/components/shared/TheAvatar.vue';
 import UserNameForm from '~/components/shared/UserNameForm.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
+import UIBadge from '~/components/ui/UIBadge.vue';
 
 const user = defineModel<TUser>('user', { required: true });
+
+defineProps<{ workspace: TUserWorkspace }>();
 
 const { $api } = useNuxtApp();
 const toast = useToast();
@@ -91,7 +95,7 @@ const hasChanges = computed(() => {
 
 const { call: updateProfile, isLoading } = useTryCatchFinally({
   callback: async (_, signal?: AbortSignal) => {
-    const result = await $api<TUpdateUserResponse>('/api/users', { body: formData, method: 'PATCH', signal });
+    const result = await $api<TUpdateUserResponse>('/api/users/me', { body: formData, method: 'PATCH', signal });
     if (result.isSuccess && result.data) {
       user.value = Object.assign(user.value, result.data);
       isModalOpen.value = false;

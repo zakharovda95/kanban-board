@@ -3,8 +3,13 @@ export enum EUserRole {
   USER = 'USER',
 }
 
-export enum EUserStatus {
+export enum EUserWorkspaceStatus {
   ACTIVE = 'ACTIVE',
   BLOCKED = 'BLOCKED',
   DELETED = 'DELETED',
+}
+
+export enum EUserWorkspaceRole {
+  OWNER = 'OWNER',
+  USER = 'USER',
 }
