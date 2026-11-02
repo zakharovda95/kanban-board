@@ -26,6 +26,12 @@ export type TUserWorkspace = {
   workspaceRole: EUserWorkspaceRole;
 };
 
+/** Данные о текущем пользователе и его рабочем пространстве. **/
+export type TMe = {
+  me: TUser;
+  myWorkspace: TUserWorkspace;
+};
+
 /** Данные, необходимые для создания пользователя. **/
 export type TCreateUser = Pick<TUser, 'firstName' | 'lastName'> &
   Pick<TUserWorkspace, 'workspaceId'> & {

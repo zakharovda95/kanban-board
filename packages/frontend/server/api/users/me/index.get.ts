@@ -1,11 +1,11 @@
-import type { TUser } from '@kanban-board/common';
+import type { TMe } from '@kanban-board/common';
 
 /** Получить данные о текущем пользователе **/
 export default defineEventHandler(async event => {
   const runtimeConfig = useRuntimeConfig();
   const baseUrl = runtimeConfig.public.BASE_URL || '';
 
-  return await $fetch<TUser | null>(`${baseUrl}/v1/users/me`, {
+  return await $fetch<TMe | null>(`${baseUrl}/v1/users/me`, {
     method: 'GET',
     headers: {
       cookie: getHeader(event, 'cookie') ?? '',

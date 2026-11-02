@@ -3,9 +3,10 @@
     <BoardsList />
     <div class="bg-light-base rounded-12 w-full p-12">
       <TheProfile
-        v-if="userStore.me && userStore.workspace"
+        v-if="userStore.me && userStore.myWorkspace"
         v-model:user="userStore.me"
-        :workspace="userStore.workspace"
+        :workspace="userStore.myWorkspace"
+        can-edit
       />
     </div>
   </aside>

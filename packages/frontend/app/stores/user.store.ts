@@ -1,4 +1,4 @@
-import type { TUser, TUserWorkspace } from '@kanban-board/common';
+import type { TMe } from '@kanban-board/common';
 import { defineStore } from 'pinia';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
@@ -12,30 +12,22 @@ export const useUserStore = defineStore('user-store', () => {
     data,
     isLoading: isLoadingMe,
     call: fetchMe,
-  } = useTryCatchFinally<{ user: TUser; workspace: TUserWorkspace | null }>({
-    callback: async () => {
-      const userResult = await $api<TUser | null>('/api/users/me', { method: 'GET' });
-      if (!userResult) return null;
-
-      const workspaceResult = await $api<TUserWorkspace | null>('/api/users/me/workspaces', { method: 'GET' });
-      return {
-        user: userResult,
-        workspace: workspaceResult,
-      };
-    },
+  } = useTryCatchFinally<TMe | null>({
+    callback: async () => await $api<TMe | null>('/api/users/me', { method: 'GET' }),
   });
 
   const isAuth = computed(() => Boolean(data.value));
 
+  // Обновление данных при редактировании профиля
   const me = computed({
-    get: () => data.value?.user ?? null,
+    get: () => data.value?.me ?? null,
     set: value => {
-      if (!data.value?.user || !value) return;
-      data.value.user = value;
+      if (!data.value?.me || !value) return;
+      data.value.me = value;
     },
   });
 
-  const workspace = computed(() => data.value?.workspace ?? null);
+  const myWorkspace = computed(() => data.value?.myWorkspace ?? null);
 
   const tryInitialize = async () => {
     if (isInitialized.value) return;
@@ -49,5 +41,15 @@ export const useUserStore = defineStore('user-store', () => {
     isInitialized.value = false;
   };
 
-  return { me, workspace, isLoadingMe, isInitialized, isAuth, fetchMe, tryInitialize, resetStore };
+  return {
+    data,
+    me,
+    myWorkspace,
+    isLoadingMe,
+    isInitialized,
+    isAuth,
+    fetchMe,
+    tryInitialize,
+    resetStore,
+  };
 });

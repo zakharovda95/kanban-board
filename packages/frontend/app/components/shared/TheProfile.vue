@@ -1,7 +1,8 @@
 <template>
   <div
-    class="rounded-8 bg-light-100 hover:border-green flex size-full h-60 cursor-pointer items-center justify-start gap-24 border border-transparent p-8 duration-300 select-none"
-    @click="isModalOpen = true"
+    class="rounded-8 bg-light-100 flex size-full h-60 items-center justify-start gap-24 border border-transparent p-8 duration-300 select-none"
+    :class="{ 'hover:border-green cursor-pointer': canEdit }"
+    @click="openModal"
   >
     <TheAvatar :avatar="user.avatar" />
     <div class="flex flex-col gap-4">
@@ -14,36 +15,38 @@
       </span>
     </div>
 
-    <UIModal v-model:is-open="isModalOpen" title="Мой профиль" body-class="w-full laptop:w-320!" close-on-overlay>
-      <div class="flex w-full flex-col gap-24">
-        <div class="flex flex-col gap-8">
-          <div class="flex flex-nowrap gap-8">
-            <UIBadge v-if="workspace.status">{{ USER_WORKSPACE_STATUS_MAP[workspace.status] }}</UIBadge>
-            <UIBadge v-if="workspace.workspaceRole" :background-color="EColor.BLUE">
-              {{ USER_WORKSPACE_ROLE_MAP[workspace.workspaceRole] }}
-            </UIBadge>
+    <template v-if="canEdit">
+      <UIModal v-model:is-open="isModalOpen" title="Мой профиль" body-class="w-full laptop:w-320!" close-on-overlay>
+        <div class="flex w-full flex-col gap-24">
+          <div class="flex flex-col gap-8">
+            <div class="flex flex-nowrap gap-8">
+              <UIBadge v-if="workspace.status">{{ USER_WORKSPACE_STATUS_MAP[workspace.status] }}</UIBadge>
+              <UIBadge v-if="workspace.workspaceRole" :background-color="EColor.BLUE">
+                {{ USER_WORKSPACE_ROLE_MAP[workspace.workspaceRole] }}
+              </UIBadge>
+            </div>
+            <div class="flex flex-nowrap gap-8">
+              <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
+                c {{ DatetimeUtility.format(workspace.createdAt, 'DD.MM.YYYY') }}
+              </UIBadge>
+              <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
+                до {{ DatetimeUtility.format(workspace.expiresAt, 'DD.MM.YYYY') }}
+              </UIBadge>
+            </div>
           </div>
-          <div class="flex flex-nowrap gap-8">
-            <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
-              c {{ DatetimeUtility.format(workspace.createdAt, 'DD.MM.YYYY') }}
-            </UIBadge>
-            <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
-              до {{ DatetimeUtility.format(workspace.expiresAt, 'DD.MM.YYYY') }}
-            </UIBadge>
+
+          <UIDivider variant="dashed" />
+
+          <div class="flex w-full flex-col gap-12">
+            <TheAvatar v-model:avatar="formData.avatar" size="large" can-edit-avatar full />
+            <UserNameForm :form-data="formData" size="medium" button-class="scale-90" />
+            <UIButton full :disabled="!hasChanges || isLoading" @click:button="updateProfile()">
+              Сохранить изменения
+            </UIButton>
           </div>
         </div>
-
-        <UIDivider variant="dashed" />
-
-        <div class="flex w-full flex-col gap-12">
-          <TheAvatar v-model:avatar="formData.avatar" size="large" can-edit-avatar full />
-          <UserNameForm :form-data="formData" size="medium" button-class="scale-90" />
-          <UIButton full :disabled="!hasChanges || isLoading" @click:button="updateProfile()">
-            Сохранить изменения
-          </UIButton>
-        </div>
-      </div>
-    </UIModal>
+      </UIModal>
+    </template>
   </div>
 </template>
 
@@ -70,7 +73,15 @@ import UIBadge from '~/components/ui/UIBadge.vue';
 
 const user = defineModel<TUser>('user', { required: true });
 
-defineProps<{ workspace: TUserWorkspace }>();
+const props = withDefaults(
+  defineProps<{
+    workspace: TUserWorkspace;
+    canEdit?: boolean;
+  }>(),
+  {
+    canEdit: false,
+  },
+);
 
 const { $api } = useNuxtApp();
 const toast = useToast();
@@ -78,6 +89,10 @@ const toast = useToast();
 const fullName = computed(() => `${user.value.lastName} ${user.value.firstName}`);
 
 const isModalOpen = ref(false);
+const openModal = () => {
+  if (!props.canEdit) return;
+  isModalOpen.value = true;
+};
 
 const formData = reactive<TUserProfileFormData>({
   avatar: user.value.avatar ?? null,
@@ -95,7 +110,10 @@ const hasChanges = computed(() => {
 
 const { call: updateProfile, isLoading } = useTryCatchFinally({
   callback: async (_, signal?: AbortSignal) => {
+    if (!props.canEdit) return;
+
     const result = await $api<TUpdateUserResponse>('/api/users/me', { body: formData, method: 'PATCH', signal });
+
     if (result.isSuccess && result.data) {
       user.value = Object.assign(user.value, result.data);
       isModalOpen.value = false;

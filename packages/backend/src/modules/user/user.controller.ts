@@ -1,8 +1,8 @@
 import {
+  type TMe,
   type TUpdateUserBodySchema,
   type TUpdateUserResponse,
   type TUser,
-  type TUserWorkspace,
   updateUserBodySchema,
 } from '@kanban-board/common';
 import { Authenticate, CurrentUser } from '@nestjs/authentication';
@@ -21,16 +21,12 @@ export default class UserController {
   @Authenticate({ optional: true })
   @Can.Anyone()
   @Get('me')
-  public getMe(@CurrentUser() me: TUser | null): TUser | null {
-    return me;
-  }
-
-  @Authenticate({ optional: true })
-  @Can.Anyone()
-  @Get('me/workspaces')
-  public async getMyWorkspace(@CurrentUser() me: TUser | null): Promise<TUserWorkspace | null> {
+  public async getMe(@CurrentUser() me: TUser | null): Promise<TMe | null> {
     if (!me) return null;
-    return await this.userService.getUserWorkspaceByUserId(me.id);
+    const myWorkspace = await this.userService.getUserWorkspaceByUserId(me.id);
+    if (!myWorkspace) return null;
+
+    return { me, myWorkspace };
   }
 
   @Can.Anyone()

@@ -15,9 +15,10 @@
       >
         <div class="bg-light-base rounded-12 flex size-full flex-col gap-24 p-12">
           <TheProfile
-            v-if="userStore.me && userStore.workspace"
+            v-if="userStore.me && userStore.myWorkspace"
             v-model:user="userStore.me"
-            :workspace="userStore.workspace"
+            :workspace="userStore.myWorkspace"
+            can-edit
           />
           <UIDivider variant="dashed" />
 
