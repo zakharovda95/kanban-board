@@ -1,9 +1,10 @@
 <template>
-  <div class="rounded-12 bg-light-base flex h-56 w-full items-center p-12">
+  <UIWidget class="h-56!">
     <AddColumnButton />
-  </div>
+  </UIWidget>
 </template>
 
 <script setup lang="ts">
 import AddColumnButton from '~/components/sections/column/AddColumnButton.vue';
+import UIWidget from '~/components/ui/UIWidget.vue';
 </script>

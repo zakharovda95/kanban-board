@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-light-base rounded-12 w-full p-12">
+  <UIWidget>
     <UIForm
       v-if="activeView === 'form'"
       title="Создать аккаунт"
@@ -72,7 +72,7 @@
         </UILabel>
       </div>
     </UIForm>
-  </div>
+  </UIWidget>
 
   <UIButton
     append-icon="mingcute:entrance-fill"
@@ -107,6 +107,7 @@ import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIAlert from '~/components/ui/UIAlert.vue';
 import UIForm from '~/components/ui/UIForm.vue';
 import UILabel from '~/components/ui/UILabel.vue';
+import UIWidget from '~/components/ui/UIWidget.vue';
 
 const emit = defineEmits<{
   'update:tab': [tab: TAuthTab];
@@ -118,8 +119,8 @@ const toast = useToast();
 
 const activeView = ref<'form' | 'result'>('form');
 
-const getRandomFirstName = () => RandomUtility.getRandomFromArray<string>(USER_FIRST_NAMES);
-const getRandomLastName = () => RandomUtility.getRandomFromArray<string>(USER_LAST_NAMES);
+const getRandomFirstName = () => RandomUtility.getRandomFromArray(USER_FIRST_NAMES);
+const getRandomLastName = () => RandomUtility.getRandomFromArray(USER_LAST_NAMES);
 
 const { copy, copied } = useClipboard();
 

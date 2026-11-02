@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-light-base rounded-12 w-full p-12">
+  <UIWidget>
     <UIForm
       title="Войти"
       full
@@ -40,7 +40,7 @@
         </UILabel>
       </div>
     </UIForm>
-  </div>
+  </UIWidget>
   <UIButton
     append-icon="mingcute:user-add-2-fill"
     :background-color="EColor.BLUE"
@@ -70,6 +70,7 @@ import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIForm from '~/components/ui/UIForm.vue';
 import UILabel from '~/components/ui/UILabel.vue';
+import UIWidget from '~/components/ui/UIWidget.vue';
 
 const emit = defineEmits<{
   'update:tab': [tab: TAuthTab];

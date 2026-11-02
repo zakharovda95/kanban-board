@@ -1,14 +1,21 @@
 <template>
   <aside class="laptop:flex hidden h-full w-280 shrink-0 flex-col items-center justify-between gap-12 py-12 pr-0 pl-12">
-    <BoardsList />
-    <div class="bg-light-base rounded-12 w-full p-12">
+    <UIWidget h-full title="Мои доски">
+      <BoardsList />
+    </UIWidget>
+
+    <UIWidget title="Мой профиль">
       <TheProfile
         v-if="userStore.me && userStore.myWorkspace"
         v-model:user="userStore.me"
         :workspace="userStore.myWorkspace"
         can-edit
       />
-    </div>
+    </UIWidget>
+
+    <UIWidget title="Мое пространство">
+      <TheWorkspace />
+    </UIWidget>
   </aside>
 
   <MobileSelectPanel
@@ -19,9 +26,8 @@
     :selected-title="selectedTitle"
     :deselected-title="boardsStore.boards?.length ? 'Необходимо выбрать доску' : 'Необходимо добавить доску'"
     :is-loading="boardsStore.isLoadingBoards || boardStore.isLoadingBoard"
-    :tooltip-text="boardStore.board?.description ?? null"
   >
-    <BoardsList class="p-0!" hide-title @click:board="closeBoardMenu" />
+    <BoardsList class="p-0!" @click:board="closeBoardMenu" />
   </MobileSelectPanel>
 </template>
 
@@ -36,6 +42,8 @@ import { useUserStore } from '~/stores/user.store.ts';
 import BoardsList from '~/components/sections/board/BoardsList.vue';
 import MobileSelectPanel from '~/components/shared/MobileSelectPanel.vue';
 import TheProfile from '~/components/shared/TheProfile.vue';
+import TheWorkspace from '~/components/shared/TheWorkspace.vue';
+import UIWidget from '~/components/ui/UIWidget.vue';
 
 const route = useRoute();
 const boardsStore = useBoardsStore();

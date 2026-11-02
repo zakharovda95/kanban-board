@@ -23,7 +23,7 @@
     <header class="mb-12 flex w-full shrink-0 items-start justify-between gap-8">
       <div class="flex-1">
         <slot v-if="title || slots.header" name="header">
-          <h4 class="text-18 font-medium">{{ title }}</h4>
+          <h4 class="font-medium">{{ title }}</h4>
         </slot>
       </div>
       <UIIconButton

@@ -1,29 +1,31 @@
 <template>
-  <div class="bg-light-base rounded-12 flex w-full flex-col">
-    <div class="flex w-full cursor-pointer items-center justify-between gap-12 p-12" @click="isBodyOpen = !isBodyOpen">
-      <p class="text-medium text-14">
-        <span class="text-green block font-bold">Привет!</span> Нажми, чтобы прочитать условия!
-      </p>
-      <UIIconButton
-        icon="mingcute:right-fill"
-        size="small"
-        :icon-class="isBodyOpen ? 'rotate-270' : 'rotate-90'"
-        @click:button.stop="isBodyOpen = !isBodyOpen"
-      />
-    </div>
-    <UIAnimatedHeight>
-      <div v-if="isBodyOpen" class="full flex flex-col px-12">
-        <p class="text-14 my-12">
-          Так как это <span class="font-bold">демонстрационный проект</span>, и мне не очень хочется собирать Ваши
-          <span class="font-bold">персональные данные</span>, и нести за них ответственность, созданный аккаунт будет
-          иметь <span class="font-bold">ряд особенностей:</span>
+  <UIWidget>
+    <div class="flex w-full flex-col">
+      <div class="flex w-full cursor-pointer items-center justify-between gap-12" @click="isBodyOpen = !isBodyOpen">
+        <p class="text-medium text-14">
+          <span class="text-green block font-bold">Привет!</span> Нажми, чтобы прочитать условия!
         </p>
-        <ul class="editor-ul">
-          <li v-for="elem of info" :key="elem.id" class="text-14" v-html="elem.text" />
-        </ul>
+        <UIIconButton
+          icon="mingcute:right-fill"
+          size="small"
+          :icon-class="isBodyOpen ? 'rotate-270' : 'rotate-90'"
+          @click:button.stop="isBodyOpen = !isBodyOpen"
+        />
       </div>
-    </UIAnimatedHeight>
-  </div>
+      <UIAnimatedHeight>
+        <div v-if="isBodyOpen" class="full flex flex-col">
+          <p class="text-14 my-12">
+            Так как это <span class="font-bold">демонстрационный проект</span>, и мне не очень хочется собирать Ваши
+            <span class="font-bold">персональные данные</span>, и нести за них ответственность, созданный аккаунт будет
+            иметь <span class="font-bold">ряд особенностей:</span>
+          </p>
+          <ul class="editor-ul">
+            <li v-for="elem of info" :key="elem.id" class="text-14" v-html="elem.text" />
+          </ul>
+        </div>
+      </UIAnimatedHeight>
+    </div>
+  </UIWidget>
 </template>
 
 <script setup lang="ts">
@@ -31,6 +33,7 @@ import { EXPIRES_DAYS, MAX_ACCOUNTS_PER_IP } from '@kanban-board/common';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIAnimatedHeight from '~/components/ui/UIAnimatedHeight.vue';
+import UIWidget from '~/components/ui/UIWidget.vue';
 
 const isBodyOpen = ref(false);
 

@@ -1,18 +1,16 @@
 <template>
   <div class="h-auto w-full p-12">
-    <div class="rounded-8 bg-light-base flex h-max w-full items-center gap-8 p-8">
-      <UIIconButton
-        :icon="buttonIcon"
-        :background-color="EColor.LIGHT_200"
-        :color="EColor.LIGHT_800"
-        @click:button="isOpen = true"
-      />
+    <UIWidget size="small" pointer @click:widget="isOpen = true">
+      <div class="flex h-max w-full items-center gap-8">
+        <UIIconButton :icon="buttonIcon" :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_800" />
 
-      <div v-if="isLoading" class="flex flex-1 items-center justify-center">
-        <UISkeleton class="rounded-6 h-32 w-full" />
-      </div>
-      <UITooltip v-else class="w-full" :text="tooltipText">
-        <div class="bg-light-100 rounded-6 flex h-32 w-[calc(100%-64px)] flex-1 items-center justify-center px-12 py-6">
+        <div v-if="isLoading" class="flex flex-1 items-center justify-center">
+          <UISkeleton class="rounded-6 h-32 w-full" />
+        </div>
+        <div
+          v-else
+          class="bg-light-100 rounded-6 flex h-32 w-[calc(100%-64px)] flex-1 items-center justify-center px-12 py-6 select-none"
+        >
           <div class="flex flex-row flex-nowrap items-center justify-center gap-8">
             <div v-if="color" class="flex size-10 shrink-0 rounded-full" :style="{ backgroundColor: color }" />
             <span
@@ -23,8 +21,8 @@
             </span>
           </div>
         </div>
-      </UITooltip>
-    </div>
+      </div>
+    </UIWidget>
 
     <UIModal v-model:is-open="isOpen" :title="modalTitle">
       <slot />
@@ -38,7 +36,9 @@ import { EColor } from '@kanban-board/common';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UISkeleton from '~/components/ui/loaders/UISkeleton.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
-import UITooltip from '~/components/ui/UITooltip.vue';
+import UIWidget from '~/components/ui/UIWidget.vue';
+
+const isOpen = defineModel<boolean>('isOpen', { required: true });
 
 withDefaults(
   defineProps<{
@@ -48,16 +48,12 @@ withDefaults(
     modalTitle: string;
     isLoading?: boolean;
     color?: string | null;
-    tooltipText?: string | null;
   }>(),
   {
     selectedTitle: null,
     deselectedTitle: null,
     isLoading: false,
     color: null,
-    tooltipText: null,
   },
 );
-
-const isOpen = defineModel<boolean>('isOpen', { required: true });
 </script>

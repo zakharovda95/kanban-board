@@ -1,8 +1,7 @@
 <template>
-  <div class="bg-light-base rounded-12 flex size-full h-full flex-col gap-12 p-12">
+  <div class="flex size-full h-full flex-col gap-12">
     <UILoader v-if="boardsStore.isLoadingBoards" full />
     <template v-else>
-      <h4 v-if="!hideTitle" class="font-medium">Мои доски</h4>
       <template v-if="boardsStore.boards?.length">
         <draggable
           v-model="boardsStore.boards"
