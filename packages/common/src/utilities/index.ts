@@ -8,3 +8,4 @@ export * from './random.utility.js';
 export * from './response.utilities.js';
 export * from './sleep.utilities.js';
 export * from './string.utility.js';
+export * from './workspace.utilities.js';

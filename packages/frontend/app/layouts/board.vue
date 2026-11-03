@@ -21,6 +21,8 @@
 </template>
 
 <script setup lang="ts">
+import { EWorkspaceEvent } from '@kanban-board/common';
+
 import { useAfkWatcher } from '~/composables/use-afk-watcher.composable';
 import { useSocket } from '~/composables/use-socket.composable';
 import { useBoardsStore } from '~/stores/boards.store';
@@ -33,8 +35,19 @@ import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue'
 const boardsStore = useBoardsStore();
 const { listen, $socket } = useSocket();
 
+const joinWorkspace = () => {
+  $socket?.emit(EWorkspaceEvent.JOIN);
+};
+
+const leaveWorkspace = () => {
+  if (!$socket?.connected) return;
+  $socket.emit(EWorkspaceEvent.LEAVE);
+};
+
 if (import.meta.client) {
-  $socket.connect();
+  $socket?.on('connect', joinWorkspace);
+  if ($socket?.connected) joinWorkspace();
+  else $socket?.connect();
 }
 
 const { error } = await useAsyncData('fetch-boards', async () => {
@@ -65,6 +78,8 @@ const stopListenDisconnect = listen('disconnect', openReloadPageModal);
 
 onBeforeUnmount(() => {
   stopListenDisconnect();
+  $socket?.off('connect', joinWorkspace);
+  leaveWorkspace();
   boardsStore.stopListen();
   boardsStore.resetStore();
 });

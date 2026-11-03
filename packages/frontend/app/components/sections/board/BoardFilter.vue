@@ -1,5 +1,5 @@
 <template>
-  <UIWidget body-class="h-56!">
+  <UIWidget>
     <AddColumnButton />
   </UIWidget>
 </template>

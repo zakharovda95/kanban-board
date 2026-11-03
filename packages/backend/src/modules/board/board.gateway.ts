@@ -2,6 +2,7 @@ import {
   createBoardBodySchema,
   EBoardEvent,
   getWsBoardRoomName,
+  getWsWorkspaceRoomName,
   moveParametersBodySchema,
   positiveIdSchema,
   type TBoardBase,
@@ -66,30 +67,38 @@ export default class BoardGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<TUpsertBoardResponse> {
     const newBoard = await this.boardService.createBoard(me.userWorkspace.workspaceId, body);
-    client.broadcast.emit(EBoardEvent.CREATED, newBoard);
+    client
+      .to(getWsWorkspaceRoomName(me.userWorkspace.workspaceId))
+      .emit(EBoardEvent.CREATED, newBoard);
     return getSuccessResponseWithData<TBoardBase>(newBoard);
   }
 
   @Can.Anyone()
   @SubscribeMessage(EBoardEvent.UPDATE)
   public async updateBoard(
+    @CurrentUser() me: TUser,
     @MessageBody({ schema: updateBoardBodySchema })
     body: TUpdateBoardBodySchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TUpsertBoardResponse> {
     const updatedBoard = await this.boardService.updateBoard(body);
-    client.broadcast.emit(EBoardEvent.UPDATED, updatedBoard);
+    client
+      .to(getWsWorkspaceRoomName(me.userWorkspace.workspaceId))
+      .emit(EBoardEvent.UPDATED, updatedBoard);
     return getSuccessResponseWithData<TBoardBase>(updatedBoard);
   }
 
   @Can.Anyone()
   @SubscribeMessage(EBoardEvent.DELETE)
   public async deleteBoard(
+    @CurrentUser() me: TUser,
     @MessageBody({ schema: positiveIdSchema }) boardId: TPositiveIdSchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TDeleteBoardResponse> {
     const payload = await this.boardService.deleteBoard(boardId);
-    client.broadcast.emit(EBoardEvent.DELETED, payload);
+    client
+      .to(getWsWorkspaceRoomName(me.userWorkspace.workspaceId))
+      .emit(EBoardEvent.DELETED, payload);
     return getSuccessResponseWithData<TDeleteBoardEmitPayload>(payload);
   }
 
@@ -101,7 +110,9 @@ export default class BoardGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<TMoveBoardResponse> {
     const payload = await this.boardService.moveBoard(me.userWorkspace.workspaceId, body);
-    client.broadcast.emit(EBoardEvent.MOVED, payload);
+    client
+      .to(getWsWorkspaceRoomName(me.userWorkspace.workspaceId))
+      .emit(EBoardEvent.MOVED, payload);
     return getSuccessResponseWithData<TMoveBoardEmitPayload>(payload);
   }
 }
