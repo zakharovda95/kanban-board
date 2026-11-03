@@ -14,8 +14,10 @@ import {
   type TPositiveIdSchema,
   type TUpdateBoardBodySchema,
   type TUpsertBoardResponse,
+  type TUser,
   updateBoardBodySchema,
 } from '@kanban-board/common';
+import { CurrentUser } from '@nestjs/authentication';
 import { Can } from '@nestjs/authorization';
 import { UseFilters, UsePipes } from '@nestjs/common';
 import {
@@ -59,10 +61,11 @@ export default class BoardGateway {
   @Can.Anyone()
   @SubscribeMessage(EBoardEvent.CREATE)
   public async createBoard(
+    @CurrentUser() me: TUser,
     @MessageBody({ schema: createBoardBodySchema }) body: TCreateBoardBodySchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TUpsertBoardResponse> {
-    const newBoard = await this.boardService.createBoard(body);
+    const newBoard = await this.boardService.createBoard(me.userWorkspace.workspaceId, body);
     client.broadcast.emit(EBoardEvent.CREATED, newBoard);
     return getSuccessResponseWithData<TBoardBase>(newBoard);
   }
@@ -93,10 +96,11 @@ export default class BoardGateway {
   @Can.Anyone()
   @SubscribeMessage(EBoardEvent.MOVE)
   public async moveBoard(
+    @CurrentUser() me: TUser,
     @MessageBody({ schema: moveParametersBodySchema }) body: TMoveParametersBodySchema,
     @ConnectedSocket() client: Socket,
   ): Promise<TMoveBoardResponse> {
-    const payload = await this.boardService.moveBoard(body);
+    const payload = await this.boardService.moveBoard(me.userWorkspace.workspaceId, body);
     client.broadcast.emit(EBoardEvent.MOVED, payload);
     return getSuccessResponseWithData<TMoveBoardEmitPayload>(payload);
   }

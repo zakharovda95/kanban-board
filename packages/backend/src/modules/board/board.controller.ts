@@ -3,7 +3,9 @@ import {
   type TBoard,
   type TBoardBase,
   type TPositiveIdSchema,
+  type TUser,
 } from '@kanban-board/common';
+import { CurrentUser } from '@nestjs/authentication';
 import { Can } from '@nestjs/authorization';
 import { Controller, Get, Param, UsePipes } from '@nestjs/common';
 
@@ -17,8 +19,8 @@ export default class BoardController {
 
   @Get()
   @Can.Anyone()
-  async getBoards(): Promise<TBoardBase[]> {
-    return await this.boardService.getBoards();
+  async getBoards(@CurrentUser() me: TUser): Promise<TBoardBase[]> {
+    return await this.boardService.getBoards(me.userWorkspace.workspaceId);
   }
 
   @Can.Anyone()

@@ -34,10 +34,13 @@ export default class BoardService {
    * Получить список всех досок.
    * @returns список досок без вложенных колонок и задач (только title, description, order).
    * **/
-  public async getBoards(): Promise<TBoardBase[]> {
+  public async getBoards(workspaceId: number): Promise<TBoardBase[]> {
     const { manager } = this.dataSource;
 
-    const boards = await manager.find(BoardEntity, { order: { order: 'ASC' } });
+    const boards = await manager.find(BoardEntity, {
+      where: { workspaceId },
+      order: { order: 'ASC' },
+    });
     if (!boards.length) return [];
 
     return this.boardMapper.toModel(boards, { base: true });
@@ -65,10 +68,15 @@ export default class BoardService {
 
   /**
    * Создать доску.
+   * @param workspaceId - Id рабочего пространства, в котором создается доска.
    * @param body - данные доски (title, description).
    * @returns объект созданной доски.
    * **/
-  public async createBoard(body: TCreateBoardBodySchema): Promise<TBoardBase> {
+  public async createBoard(
+    workspaceId: TPositiveIdSchema,
+    body: TCreateBoardBodySchema,
+  ): Promise<TBoardBase> {
+    if (!workspaceId) throw new WsException('Не указан идентификатор рабочего пространства');
     if (!body) throw new WsException('Не переданы данные для создания доски');
 
     const { manager } = this.dataSource;
@@ -78,14 +86,17 @@ export default class BoardService {
       // Блокируем доступ к базе данных для предотвращения одновременного создания нескольких досок.
       await transactionalManager.query('SELECT pg_advisory_xact_lock($1)', [DATABASE_LOCK_ID]);
 
-      const boardsCount = await transactionalManager.count(BoardEntity);
+      const boardsCount = await transactionalManager.count(BoardEntity, {
+        where: { workspaceId },
+      });
       if (boardsCount >= BOARDS_MAX_COUNT) throw new WsException(BOARDS_MAX_COUNT_ERROR_MESSAGE);
 
-      // Получаем максимальный order, чтобы при создании прибавить ORDER_STEP
+      // Получаем максимальный order внутри пространства, чтобы при создании прибавить ORDER_STEP
       const result = await transactionalManager
         .createQueryBuilder()
         .select('MAX(board.order)', 'maxOrder')
         .from(BoardEntity, 'board')
+        .where('board.workspaceId = :workspaceId', { workspaceId })
         .getRawOne<TMaxOrderResult>();
 
       const newBoard = transactionalManager.create(BoardEntity, {
@@ -93,6 +104,7 @@ export default class BoardService {
         description: body.description ?? null,
         order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
         columns: cloneDeep(DEFAULT_COLUMNS),
+        workspaceId,
       });
 
       const createdBoard = await transactionalManager.save(newBoard);
@@ -103,22 +115,28 @@ export default class BoardService {
   }
 
   /**
-   * Изменить порядок досок в "пространстве".
+   * Изменить порядок досок в пространстве. Порядок считается отдельно для каждого пространства.
    * Правила перемещения:
    * - Должен быть указан previousId - id доски после которой будет перемещаемая доска (может быть null).
    * - Если previousId - null - доска помещается в начало списка.
    * - Если существует только одна доска, то она не может быть перемещена.
    * - Если при перемещении доски ее позиция не меняется, то доска не может быть перемещена.
+   * @param workspaceId - Id рабочего пространства, в котором меняется порядок.
    * @param body - параметры перемещения (targetId, previousId).
-   * @returns объект перемещаемой доски, если order не был нормализован (точечная замена + сортировка по order на фронте, дешевле чем refetch), если был - null (если null - на фронте refetch досок тк меняется order всех досок).
+   * @returns объект перемещаемой доски, если order не был нормализован (точечная замена + сортировка по order на фронте, дешевле чем refetch), если был - null (если null - на фронте refetch досок этого пространства, т.к. меняется order всех его досок).
    * **/
-  public async moveBoard(body: TMoveParametersBodySchema): Promise<TMoveBoardEmitPayload> {
+  public async moveBoard(
+    workspaceId: TPositiveIdSchema,
+    body: TMoveParametersBodySchema,
+  ): Promise<TMoveBoardEmitPayload> {
+    if (!workspaceId) throw new WsException('Не указан идентификатор рабочего пространства');
     if (!body) throw new WsException('Не переданы параметры перемещения доски');
 
     const { manager } = this.dataSource;
 
     return await manager.transaction(async transactionalManager => {
       const boards = await transactionalManager.find(BoardEntity, {
+        where: { workspaceId },
         order: { order: 'ASC' },
       });
 
@@ -129,7 +147,7 @@ export default class BoardService {
 
       if (!moveResult.isOrderWasNormalized) {
         const movedBoardEntity = await transactionalManager.findOne(BoardEntity, {
-          where: { id: body.targetId },
+          where: { id: body.targetId, workspaceId },
         });
         if (movedBoardEntity)
           movedBoard = this.boardMapper.toModel(movedBoardEntity, { base: true });

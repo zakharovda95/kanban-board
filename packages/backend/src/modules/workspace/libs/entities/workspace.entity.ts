@@ -2,6 +2,7 @@ import { DatetimeUtility, EXPIRES_DAYS } from '@kanban-board/common';
 import { BeforeInsert, Check, Column, Entity, OneToMany } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
+import BoardEntity from '@/modules/board/libs/entities/board.entity';
 import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.entity';
 
 @Entity({ name: 'workspaces' })
@@ -19,4 +20,7 @@ export default class WorkspaceEntity extends BaseEntity {
 
   @OneToMany(() => UserWorkspaceEntity, entity => entity.workspace)
   userWorkspaces!: UserWorkspaceEntity[];
+
+  @OneToMany(() => BoardEntity, entity => entity.workspace)
+  boards!: BoardEntity[];
 }
