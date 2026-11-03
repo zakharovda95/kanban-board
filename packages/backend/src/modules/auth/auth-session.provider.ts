@@ -1,4 +1,4 @@
-import { TUser } from '@kanban-board/common';
+import type { TUser } from '@kanban-board/common';
 import {
   AuthenticationRegistry,
   SessionCookieProvider,
@@ -18,9 +18,7 @@ export default class AuthSessionProvider extends SessionCookieProvider<TUser> {
     registry.registerProvider(this);
   }
 
-  protected validate(
-    session: SessionRecord,
-  ): TUser | Promise<TUser | null | undefined> | null | undefined {
+  protected async validate(session: SessionRecord): Promise<TUser | null> {
     if (!session) throw new InternalServerErrorException('Сессия не найдена');
 
     const userIdInt = parseInt(session.userId);
@@ -29,6 +27,6 @@ export default class AuthSessionProvider extends SessionCookieProvider<TUser> {
         'Идентификатор пользователя должен быть целым положительным числом',
       );
 
-    return this.userService.getUserBy(userIdInt);
+    return await this.userService.getMe(userIdInt);
   }
 }

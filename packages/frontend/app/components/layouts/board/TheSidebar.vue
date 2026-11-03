@@ -4,16 +4,11 @@
       <BoardsList />
     </UIWidget>
 
-    <UIWidget title="Мой профиль">
-      <TheProfile
-        v-if="userStore.me && userStore.myWorkspace"
-        v-model:user="userStore.me"
-        :workspace="userStore.myWorkspace"
-        can-edit
-      />
+    <UIWidget v-if="userStore.me" title="Мой профиль">
+      <TheProfile v-model:user="userStore.me" can-edit />
     </UIWidget>
 
-    <UIWidget title="Мое пространство">
+    <UIWidget v-if="userStore.me" title="Мое пространство">
       <TheWorkspace />
     </UIWidget>
   </aside>

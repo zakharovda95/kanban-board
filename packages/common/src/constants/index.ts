@@ -6,4 +6,3 @@ export * from './exception.constants.js';
 export * from './file.constants.js';
 export * from './issue.constants.js';
 export * from './user.constants.js';
-export * from './workspace.constants.js';

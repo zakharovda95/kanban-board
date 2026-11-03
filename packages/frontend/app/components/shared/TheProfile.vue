@@ -10,7 +10,7 @@
       <span class="text-12">
         активен до
         <span class="text-blue font-medium">
-          {{ DatetimeUtility.format(workspace.expiresAt, 'DD.MM.YYYY') }}
+          {{ DatetimeUtility.format(user.userWorkspace.expiresAt, 'DD.MM.YYYY') }}
         </span>
       </span>
     </div>
@@ -20,17 +20,19 @@
         <div class="flex w-full flex-col gap-24">
           <div class="flex flex-col gap-8">
             <div class="flex flex-nowrap gap-8">
-              <UIBadge v-if="workspace.status">{{ USER_WORKSPACE_STATUS_MAP[workspace.status] }}</UIBadge>
-              <UIBadge v-if="workspace.workspaceRole" :background-color="EColor.BLUE">
-                {{ USER_WORKSPACE_ROLE_MAP[workspace.workspaceRole] }}
+              <UIBadge v-if="user.userWorkspace.status">
+                {{ USER_WORKSPACE_STATUS_MAP[user.userWorkspace.status] }}
+              </UIBadge>
+              <UIBadge v-if="user.userWorkspace.workspaceRole" :background-color="EColor.BLUE">
+                {{ USER_WORKSPACE_ROLE_MAP[user.userWorkspace.workspaceRole] }}
               </UIBadge>
             </div>
             <div class="flex flex-nowrap gap-8">
               <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
-                c {{ DatetimeUtility.format(workspace.createdAt, 'DD.MM.YYYY') }}
+                c {{ DatetimeUtility.format(user.userWorkspace.createdAt, 'DD.MM.YYYY') }}
               </UIBadge>
               <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
-                до {{ DatetimeUtility.format(workspace.expiresAt, 'DD.MM.YYYY') }}
+                до {{ DatetimeUtility.format(user.userWorkspace.expiresAt, 'DD.MM.YYYY') }}
               </UIBadge>
             </div>
           </div>
@@ -57,7 +59,6 @@ import {
   getErrorMessage,
   type TUpdateUserResponse,
   type TUser,
-  type TUserWorkspace,
   USER_WORKSPACE_ROLE_MAP,
   USER_WORKSPACE_STATUS_MAP,
 } from '@kanban-board/common';
@@ -75,7 +76,6 @@ const user = defineModel<TUser>('user', { required: true });
 
 const props = withDefaults(
   defineProps<{
-    workspace: TUserWorkspace;
     canEdit?: boolean;
   }>(),
   {

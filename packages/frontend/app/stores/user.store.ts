@@ -1,4 +1,4 @@
-import type { TMe } from '@kanban-board/common';
+import type { TUser } from '@kanban-board/common';
 import { defineStore } from 'pinia';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
@@ -9,25 +9,14 @@ export const useUserStore = defineStore('user-store', () => {
   const isInitialized = ref(false);
 
   const {
-    data,
+    data: me,
     isLoading: isLoadingMe,
     call: fetchMe,
-  } = useTryCatchFinally<TMe | null>({
-    callback: async () => await $api<TMe | null>('/api/users/me', { method: 'GET' }),
+  } = useTryCatchFinally<TUser | null>({
+    callback: async () => await $api<TUser | null>('/api/users/me', { method: 'GET' }),
   });
 
-  const isAuth = computed(() => Boolean(data.value));
-
-  // Обновление данных при редактировании профиля
-  const me = computed({
-    get: () => data.value?.me ?? null,
-    set: value => {
-      if (!data.value?.me || !value) return;
-      data.value.me = value;
-    },
-  });
-
-  const myWorkspace = computed(() => data.value?.myWorkspace ?? null);
+  const isAuth = computed(() => Boolean(me.value));
 
   const tryInitialize = async () => {
     if (isInitialized.value) return;
@@ -36,15 +25,13 @@ export const useUserStore = defineStore('user-store', () => {
   };
 
   const resetStore = () => {
-    data.value = null;
+    me.value = null;
     isLoadingMe.value = false;
     isInitialized.value = false;
   };
 
   return {
-    data,
     me,
-    myWorkspace,
     isLoadingMe,
     isInitialized,
     isAuth,

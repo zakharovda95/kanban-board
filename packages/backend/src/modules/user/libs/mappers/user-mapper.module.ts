@@ -5,6 +5,6 @@ import UserWorkspaceMapper from '@/modules/user/libs/mappers/user-workspace.mapp
 
 @Module({
   providers: [UserMapper, UserWorkspaceMapper],
-  exports: [UserMapper, UserWorkspaceMapper],
+  exports: [UserMapper],
 })
 export default class UserMapperModule {}

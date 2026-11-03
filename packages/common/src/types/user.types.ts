@@ -2,7 +2,7 @@ import { EUserRole, EUserWorkspaceRole, EUserWorkspaceStatus } from '../enums/us
 import { TSuccessResponse } from './response.types';
 
 /** Основные данные пользователя. **/
-export type TUser = {
+export type TUserBase = {
   id: number;
   firstName: string;
   lastName: string;
@@ -13,10 +13,13 @@ export type TUser = {
   login: string;
 };
 
+export type TUser = TUserBase & {
+  userWorkspace: TUserWorkspace;
+};
+
 /** Данные о рабочем пространстве пользователя. **/
 export type TUserWorkspace = {
   id: number;
-  name: string;
   createdAt: Date;
   /** Через сколько будет удален. **/
   expiresAt: Date;
@@ -26,12 +29,6 @@ export type TUserWorkspace = {
   workspaceRole: EUserWorkspaceRole;
 };
 
-/** Данные о текущем пользователе и его рабочем пространстве. **/
-export type TMe = {
-  me: TUser;
-  myWorkspace: TUserWorkspace;
-};
-
 /** Данные, необходимые для создания пользователя. **/
 export type TCreateUser = Pick<TUser, 'firstName' | 'lastName'> &
   Pick<TUserWorkspace, 'workspaceId'> & {
@@ -39,5 +36,5 @@ export type TCreateUser = Pick<TUser, 'firstName' | 'lastName'> &
     passwordHash: string;
   };
 
-/** Ответ после обновления пользователя. **/
-export type TUpdateUserResponse = TSuccessResponse<TUser>;
+/** Ответ после обновления пользователя. Рабочее пространство при этом не меняется. **/
+export type TUpdateUserResponse = TSuccessResponse<TUserBase>;

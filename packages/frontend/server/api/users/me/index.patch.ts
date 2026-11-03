@@ -1,6 +1,6 @@
 import type { TUpdateUserBodySchema, TUpdateUserResponse } from '@kanban-board/common';
 
-/** Получить данные о текущем пользователе **/
+/** Обновить данные о текущем пользователе **/
 export default defineEventHandler(async event => {
   const runtimeConfig = useRuntimeConfig();
   const baseUrl = runtimeConfig.public.BASE_URL || '';

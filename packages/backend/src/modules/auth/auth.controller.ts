@@ -4,6 +4,7 @@ import {
   type TAuthLoginBodySchema,
   type TAuthRegisterBodySchema,
   type TAuthRegisterResponse,
+  type TSuccessResponse,
 } from '@kanban-board/common';
 import { Public } from '@nestjs/authentication';
 import { Can } from '@nestjs/authorization';
@@ -39,7 +40,7 @@ export default class AuthController {
 
   @Can.Anyone()
   @Post('logout')
-  public async logout() {
+  public async logout(): Promise<TSuccessResponse> {
     await this.authService.logout();
     return getSuccessResponse();
   }

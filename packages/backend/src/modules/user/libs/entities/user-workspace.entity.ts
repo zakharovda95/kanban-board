@@ -21,11 +21,6 @@ export default class UserWorkspaceEntity extends BaseEntity {
   @JoinColumn({ name: 'workspaceId' })
   workspace!: WorkspaceEntity;
 
-  @Index({ unique: true })
-  @Column({ type: 'int' })
-  userId!: number;
-
-  @OneToOne(() => UserEntity, entity => entity.userWorkspace, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
+  @OneToOne(() => UserEntity, entity => entity.userWorkspace)
   user!: UserEntity;
 }

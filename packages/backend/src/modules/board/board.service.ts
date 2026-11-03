@@ -167,16 +167,10 @@ export default class BoardService {
     if (!boardId) throw new WsException('Не указан идентификатор доски для удаления');
 
     const { manager } = this.dataSource;
-    const boards = await manager.find(BoardEntity, {
-      order: { order: 'ASC' },
-    });
-
-    const target = boards.find(({ id }) => id === boardId);
-    if (!target) throw new WsException('Доска для удаления не найдена');
 
     const { affected } = await manager.delete(BoardEntity, { id: boardId });
     if (!affected || affected <= 0) throw new WsException('Не удалось удалить доску');
 
-    return { deletedBoardId: target.id };
+    return { deletedBoardId: boardId };
   }
 }

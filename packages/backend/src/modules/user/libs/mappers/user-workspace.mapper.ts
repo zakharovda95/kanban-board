@@ -13,7 +13,6 @@ export default class UserWorkspaceMapper {
   ): TUserWorkspace | TUserWorkspace[] {
     const map = (innerEntity: UserWorkspaceEntity): TUserWorkspace => ({
       id: innerEntity.id,
-      name: innerEntity.workspace.name,
       status: innerEntity.status,
       createdAt: innerEntity.createdAt,
       expiresAt: innerEntity.workspace.expiresAt,

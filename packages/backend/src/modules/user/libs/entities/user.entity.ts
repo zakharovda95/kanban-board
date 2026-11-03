@@ -4,7 +4,7 @@ import {
   USER_FIRST_NAME_MAXLENGTH,
   USER_LAST_NAME_MAXLENGTH,
 } from '@kanban-board/common';
-import { Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, OneToOne } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
 import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.entity';
@@ -29,6 +29,11 @@ export default class UserEntity extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   avatar!: string | null;
 
-  @OneToOne(() => UserWorkspaceEntity, entity => entity.user)
+  @Index({ unique: true })
+  @Column({ type: 'int' })
+  userWorkspaceId!: number;
+
+  @OneToOne(() => UserWorkspaceEntity, entity => entity.user, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userWorkspaceId' })
   userWorkspace!: UserWorkspaceEntity;
 }

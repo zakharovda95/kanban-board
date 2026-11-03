@@ -32,7 +32,7 @@
           :append-icon="rejectButtonIcon"
           @click:button="emit('reset:form')"
         >
-          Отменить
+          {{ rejectButtonLabel }}
         </UIButton>
       </slot>
     </div>
@@ -53,6 +53,7 @@ const props = withDefaults(
     title?: string | null;
     actionButtonLabel?: string;
     actionButtonIcon?: string | null;
+    rejectButtonLabel?: string;
     rejectButtonIcon?: string | null;
     buttonsSize?: TSize;
     full?: boolean;
@@ -64,6 +65,7 @@ const props = withDefaults(
     title: null,
     actionButtonLabel: 'Применить',
     actionButtonIcon: null,
+    rejectButtonLabel: 'Отменить',
     rejectButtonIcon: null,
     buttonsSize: 'medium',
     buttonsPosition: 'column',
