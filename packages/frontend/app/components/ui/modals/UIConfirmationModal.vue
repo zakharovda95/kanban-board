@@ -1,7 +1,7 @@
 <template>
   <UIModal v-model:is-open="isOpen" :title="title" hide-close-button :close-on-esc="false">
     <div class="w-320">
-      <p class="text-14 text-light-500">{{ text }}</p>
+      <p class="text-14 text-light-500" v-html="text" />
     </div>
 
     <template #footer>

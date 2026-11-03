@@ -1,21 +1,17 @@
 <template>
   <header class="flex h-80 shrink-0 items-center justify-between gap-12 bg-transparent px-12 pt-12">
-    <UIWidget class="laptop:max-w-268 max-w-none" h-full>
-      <div class="flex size-full shrink-0 items-center justify-between gap-12">
-        <TheLogo show-version />
-        <TheSettings class="laptop:block hidden" />
-        <HeaderBurger class="laptop:hidden flex" />
-      </div>
+    <UIWidget class="laptop:max-w-268 max-w-none" h-full body-class="flex shrink-0 items-center justify-between gap-12">
+      <TheLogo show-version />
+      <TheSettings class="laptop:block hidden" />
+      <HeaderBurger class="laptop:hidden flex" />
     </UIWidget>
 
-    <UIWidget class="laptop:flex hidden" h-full>
-      <div class="flex size-full flex-1 items-center justify-between gap-24 px-24">
-        <HeaderNav />
+    <UIWidget class="laptop:flex hidden" h-full body-class="flex flex-1 items-center justify-between gap-24 px-24">
+      <HeaderNav />
 
-        <div v-if="!isAuthRoute" class="flex gap-12">
-          <LoginLink v-if="!userStore.isAuth" />
-          <LogoutButton v-else />
-        </div>
+      <div v-if="!isAuthRoute" class="flex gap-12">
+        <LoginLink v-if="!userStore.isAuth" />
+        <LogoutButton v-else />
       </div>
     </UIWidget>
   </header>

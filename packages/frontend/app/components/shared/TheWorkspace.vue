@@ -2,12 +2,14 @@
   <div class="size-full">
     <UIButton full @click:button="isModalOpen = true">Настроить пространство</UIButton>
     <UIModal v-model:is-open="isModalOpen" close-on-overlay title="Мое пространство" body-class="w-full laptop:w-320!">
-      <UIButton full size="large" @click:button="isConfirmModalOpen = true">Удалить рабочее пространство</UIButton>
+      <UIButton :background-color="EColor.RED" full size="large" @click:button="isConfirmModalOpen = true">
+        Удалить рабочее пространство
+      </UIButton>
     </UIModal>
     <UIConfirmationModal
       v-model:is-open="isConfirmModalOpen"
       title="Удалить рабочее пространство?"
-      text="Вы собираетесь удалить ВСЕ данные, включая добавленных пользователей, созданные задачи и Ваш собственный аккаунт. Отменить это действие будет невозможно!"
+      text="Вы собираетесь удалить <b>ВСЕ</b> данные, включая добавленных пользователей, созданные задачи и Ваш собственный аккаунт.<br>Отменить это действие будет невозможно!"
       action-button-label="Да, удалить рабочее пространство"
       @click:confirm="deleteWorkspace()"
       @click:reset="closeModals"
@@ -16,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TSuccessResponse } from '@kanban-board/common';
+import { EColor, type TSuccessResponse } from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import { useUserStore } from '~/stores/user.store.ts';

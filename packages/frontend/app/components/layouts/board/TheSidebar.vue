@@ -4,12 +4,13 @@
       <BoardsList />
     </UIWidget>
 
-    <UIWidget v-if="userStore.me" title="Мой профиль">
-      <TheProfile v-model:user="userStore.me" can-edit />
-    </UIWidget>
-
     <UIWidget v-if="userStore.me" title="Мое пространство">
       <TheWorkspace />
+    </UIWidget>
+
+    <UIWidget v-if="userStore.me" title="Мой профиль" body-class="flex flex-col gap-8">
+      <TheProfile v-model:user="userStore.me" can-edit />
+      <LogoutButton full />
     </UIWidget>
   </aside>
 
@@ -34,6 +35,7 @@ import { useBoardStore } from '~/stores/board.store.ts';
 import { useBoardsStore } from '~/stores/boards.store.ts';
 import { useUserStore } from '~/stores/user.store.ts';
 
+import LogoutButton from '~/components/layouts/shared/LogoutButton.vue';
 import BoardsList from '~/components/sections/board/BoardsList.vue';
 import MobileSelectPanel from '~/components/shared/MobileSelectPanel.vue';
 import TheProfile from '~/components/shared/TheProfile.vue';

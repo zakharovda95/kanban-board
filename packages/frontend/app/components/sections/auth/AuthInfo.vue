@@ -1,6 +1,6 @@
 <template>
-  <UIWidget>
-    <div class="flex w-full flex-col">
+  <div ref="authInfoRef" class="w-full">
+    <UIWidget body-class="flex w-full flex-col">
       <div class="flex w-full cursor-pointer items-center justify-between gap-12" @click="isBodyOpen = !isBodyOpen">
         <p class="text-medium text-14">
           <span class="text-green block font-bold">Привет!</span> Нажми, чтобы прочитать условия!
@@ -24,8 +24,8 @@
           </ul>
         </div>
       </UIAnimatedHeight>
-    </div>
-  </UIWidget>
+    </UIWidget>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -67,4 +67,11 @@ const info: Array<{ id: number; text: string }> = [
     text: `Аккаунт создается на ${EXPIRES_DAYS} дней, после этого аккаунт и все данные <b>будут стерты из базы данных. Не создавайте и не храните ничего важного!</b>`,
   },
 ];
+
+const authInfoRef = useTemplateRef<HTMLDivElement | null>('authInfoRef');
+
+onClickOutside(authInfoRef, () => {
+  if (!isBodyOpen.value) return;
+  isBodyOpen.value = false;
+});
 </script>

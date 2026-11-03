@@ -11,30 +11,32 @@
     <Transition name="fade">
       <div
         v-if="isBurgerOpen"
-        class="bg-light-100 absolute right-0 bottom-0 left-0 z-2 flex h-[calc(100dvh-80px)] items-center justify-center p-12"
+        class="bg-light-100 absolute right-0 bottom-0 left-0 z-2 flex h-[calc(100dvh-80px)] flex-col justify-between gap-12 p-12"
       >
-        <div class="bg-light-base rounded-12 flex size-full flex-col gap-24 p-12">
-          <TheProfile v-if="userStore.me" v-model:user="userStore.me" can-edit />
-          <UIDivider variant="dashed" />
-
-          <div class="flex size-full flex-1 flex-col gap-24">
+        <div class="flex w-full flex-col gap-12">
+          <UIWidget>
             <HeaderNav />
+          </UIWidget>
 
-            <template v-if="!isAuthRoute">
-              <UIDivider variant="dashed" />
+          <UIWidget v-if="!isAuthRoute && !userStore.isAuth">
+            <LoginLink full />
+          </UIWidget>
 
-              <div class="flex w-full flex-col gap-12">
-                <LoginLink v-if="!userStore.isAuth" full />
-                <LogoutButton v-else full />
-              </div>
-            </template>
-          </div>
+          <UIWidget v-if="userStore.isAuth" title="Мое пространство">
+            <TheWorkspace />
+          </UIWidget>
 
-          <div class="flex w-full justify-between">
-            <TheSettings :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_800" size="large" />
-            <TheSocial :size="EIconSizeLarge.LARGE" />
-          </div>
+          <UIWidget v-if="userStore.isAuth" title="Мой профиль" body-class="flex flex-col gap-8">
+            <TheProfile v-if="userStore.me" v-model:user="userStore.me" can-edit />
+            <LogoutButton v-if="!isAuthRoute && userStore.isAuth" full />
+          </UIWidget>
         </div>
+
+        <UIWidget body-class="flex w-full justify-between">
+          <TheSettings :background-color="EColor.LIGHT_200" :color="EColor.LIGHT_800" size="large" />
+          <TheAuthor />
+          <TheSocial :size="EIconSizeLarge.LARGE" />
+        </UIWidget>
       </div>
     </Transition>
   </div>
@@ -49,11 +51,13 @@ import { useUserStore } from '~/stores/user.store.ts';
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import LoginLink from '~/components/layouts/shared/LoginLink.vue';
 import LogoutButton from '~/components/layouts/shared/LogoutButton.vue';
+import TheAuthor from '~/components/shared/TheAuthor.vue';
 import TheProfile from '~/components/shared/TheProfile.vue';
 import TheSettings from '~/components/shared/TheSettings.vue';
 import TheSocial from '~/components/shared/TheSocial.vue';
+import TheWorkspace from '~/components/shared/TheWorkspace.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
-import UIDivider from '~/components/ui/UIDivider.vue';
+import UIWidget from '~/components/ui/UIWidget.vue';
 
 const route = useRoute();
 const userStore = useUserStore();

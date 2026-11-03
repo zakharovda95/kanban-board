@@ -10,7 +10,7 @@
     @click="emit('click:widget', $event)"
   >
     <h4 v-if="title" class="font-medium" :class="computedText.element">{{ title }}</h4>
-    <div class="size-full">
+    <div class="size-full" :class="bodyClass">
       <slot />
     </div>
   </div>
@@ -26,6 +26,7 @@ const props = withDefaults(
     hFull?: boolean;
     pointer?: boolean;
     size?: TSize;
+    bodyClass?: string | null;
   }>(),
   {
     title: null,
@@ -33,6 +34,7 @@ const props = withDefaults(
     hFull: false,
     pointer: false,
     size: 'medium',
+    bodyClass: null,
   },
 );
 
