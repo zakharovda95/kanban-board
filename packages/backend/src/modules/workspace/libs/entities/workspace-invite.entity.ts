@@ -17,8 +17,8 @@ export default class WorkspaceInviteEntity extends BaseEntity {
   }
 
   @Index({ unique: true })
-  @Column({ type: 'string' })
-  inviteToken!: string;
+  @Column({ type: 'varchar', length: 64 })
+  inviteTokenHash!: string;
 
   @Index()
   @Column({ type: 'int' })

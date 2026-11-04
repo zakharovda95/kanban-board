@@ -6,7 +6,7 @@ import {
   type TWorkspaceInvite,
   WORKSPACE_USERS_MAX_COUNT,
 } from '@kanban-board/common';
-import { RandomServerUtility } from '@kanban-board/common/node';
+import { HashServerUtility, RandomServerUtility } from '@kanban-board/common/node';
 import {
   BadRequestException,
   Injectable,
@@ -130,9 +130,11 @@ export default class WorkspaceService {
       if (invitesCount + activeUsersCount >= WORKSPACE_USERS_MAX_COUNT)
         throw new BadRequestException('Создано максимальное количество приглашений');
 
+      const inviteToken = RandomServerUtility.generateRandomPassword(32, 'base64url');
+
       const newToken = transactionalManager.create(WorkspaceInviteEntity, {
         workspaceId,
-        inviteToken: RandomServerUtility.generateRandomPassword(32, 'base64url'),
+        inviteTokenHash: HashServerUtility.sha256(inviteToken),
       });
 
       const createdToken = await transactionalManager.save(newToken);
@@ -140,7 +142,7 @@ export default class WorkspaceService {
         throw new InternalServerErrorException('Не удалось сгенерировать инвайт-токен');
 
       return {
-        inviteToken: createdToken.inviteToken,
+        inviteToken,
         expiresAt: createdToken.expiresAt,
       };
     });
@@ -160,8 +162,9 @@ export default class WorkspaceService {
       throw new InternalServerErrorException('Произошла ошибка в транзакции');
     if (!inviteToken) throw new BadRequestException('Не передан инвайт-токен');
 
+    // Сравниваем хэши напрямую в базе
     const invite = await transactionalManager.findOne(WorkspaceInviteEntity, {
-      where: { inviteToken },
+      where: { inviteTokenHash: HashServerUtility.sha256(inviteToken) },
     });
     if (!invite) throw new NotFoundException('Приглашение в пространство не найдено');
 

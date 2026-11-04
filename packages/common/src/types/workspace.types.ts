@@ -13,17 +13,18 @@ export type TWorkspace = TWorkspaceBase & {
   users: TUser[];
 };
 
-/** Данные приглашения в рабочее пространство. **/
+/** Данные приглашения в рабочее пространство. Сырого токена здесь нет: в базе хранится только хеш. **/
 export type TWorkspaceInvite = {
   id: number;
   createdAt: Date;
   expiresAt: Date;
-  inviteToken: string;
   workspaceId: number;
 };
 
-/** Сгенерированный инвайт-токен. **/
-export type TCreateWorkspaceInviteToken = Pick<TWorkspaceInvite, 'inviteToken' | 'expiresAt'>;
+/** Сгенерированный инвайт-токен. Сырое значение показывается один раз и в базе не хранится. **/
+export type TCreateWorkspaceInviteToken = Pick<TWorkspaceInvite, 'expiresAt'> & {
+  inviteToken: string;
+};
 
 /** Ответ на запрос на генерацию инвайт-токена. **/
 export type TCreateWorkspaceInviteTokenResponse = TSuccessResponse<TCreateWorkspaceInviteToken>;
