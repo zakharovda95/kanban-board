@@ -36,3 +36,13 @@ export const authRegisterBodySchema = z.strictObject({
 
 /** Тип схемы валидации тела запроса регистрации нового пользователя. **/
 export type TAuthRegisterBodySchema = z.infer<typeof authRegisterBodySchema>;
+
+/** Схема валидации тела запроса на приглашение нового пользователя в пространство. **/
+export const authRegisterByInviteBodySchema = authRegisterBodySchema.extend({
+  inviteToken: z
+    .string({ error: VALIDATION_MESSAGES.mustBeString })
+    .nonempty({ error: VALIDATION_MESSAGES.required }),
+});
+
+/** Тип схемы валидации тела запроса на приглашение нового пользователя в пространство. **/
+export type TAuthRegisterByInviteBodySchema = z.infer<typeof authRegisterByInviteBodySchema>;

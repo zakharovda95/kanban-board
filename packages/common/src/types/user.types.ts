@@ -31,7 +31,7 @@ export type TUserWorkspace = {
 
 /** Данные, необходимые для создания пользователя. **/
 export type TCreateUser = Pick<TUser, 'firstName' | 'lastName'> &
-  Pick<TUserWorkspace, 'workspaceId'> & {
+  Pick<TUserWorkspace, 'workspaceId' | 'workspaceRole'> & {
     login: string;
     passwordHash: string;
   };

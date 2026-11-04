@@ -1,6 +1,5 @@
 import {
   EUserRole,
-  EUserWorkspaceRole,
   EUserWorkspaceStatus,
   RandomUtility,
   type TAuthCredentials,
@@ -120,12 +119,12 @@ export default class UserService {
     if (!transactionalManager) throw new BadRequestException('Не передан транзакционный менеджер.');
     if (!body) throw new BadRequestException('Не переданы данные для создания пользователя');
 
-    const { firstName, lastName, workspaceId, login, passwordHash } = body;
+    const { firstName, lastName, workspaceId, login, passwordHash, workspaceRole } = body;
 
     const newUserWorkspace = transactionalManager.create(UserWorkspaceEntity, {
       workspaceId,
+      workspaceRole,
       status: EUserWorkspaceStatus.ACTIVE,
-      workspaceRole: EUserWorkspaceRole.OWNER,
     });
 
     const createdUserWorkspace = await transactionalManager.save(newUserWorkspace);

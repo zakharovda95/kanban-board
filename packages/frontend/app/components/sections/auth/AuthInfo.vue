@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { EXPIRES_DAYS, MAX_ACCOUNTS_PER_IP } from '@kanban-board/common';
+import { MAX_ACCOUNTS_PER_IP, WORKSPACE_EXPIRES_DAYS } from '@kanban-board/common';
 
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIAnimatedHeight from '~/components/ui/UIAnimatedHeight.vue';
@@ -48,7 +48,7 @@ const info: Array<{ id: number; text: string }> = [
   },
   {
     id: 1,
-    text: `На один IP-адрес <b>можно создать не более ${MAX_ACCOUNTS_PER_IP} аккаунтов.</b> Через ${EXPIRES_DAYS} дней счетчик сбрасывается.`,
+    text: `На один IP-адрес <b>можно создать не более ${MAX_ACCOUNTS_PER_IP} аккаунтов.</b> Через ${WORKSPACE_EXPIRES_DAYS} дней счетчик сбрасывается.`,
   },
   {
     id: 5,
@@ -64,7 +64,7 @@ const info: Array<{ id: number; text: string }> = [
   },
   {
     id: 2,
-    text: `Аккаунт создается на ${EXPIRES_DAYS} дней, после этого аккаунт и все данные <b>будут стерты из базы данных. Не создавайте и не храните ничего важного!</b>`,
+    text: `Аккаунт создается на ${WORKSPACE_EXPIRES_DAYS} дней, после этого аккаунт и все данные <b>будут стерты из базы данных. Не создавайте и не храните ничего важного!</b>`,
   },
 ];
 

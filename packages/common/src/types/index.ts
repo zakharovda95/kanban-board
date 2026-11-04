@@ -2,7 +2,7 @@ export * from './app.types.js';
 export * from './auth.types.js';
 export * from './board.types.js';
 export * from './column.types.js';
-export * from './date-type.types.js';
+export * from './date-time.types.js';
 export * from './error.types.js';
 export * from './file.types.js';
 export * from './file.types.js';

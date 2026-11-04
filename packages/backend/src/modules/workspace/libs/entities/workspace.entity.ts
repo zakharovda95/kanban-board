@@ -1,4 +1,4 @@
-import { DatetimeUtility, EXPIRES_DAYS } from '@kanban-board/common';
+import { DatetimeUtility, WORKSPACE_EXPIRES_DAYS } from '@kanban-board/common';
 import { BeforeInsert, Check, Column, Entity, OneToMany } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
@@ -15,7 +15,7 @@ export default class WorkspaceEntity extends BaseEntity {
 
   @BeforeInsert()
   setExpiresAt(): void {
-    this.expiresAt = DatetimeUtility.add(new Date(), EXPIRES_DAYS, 'day');
+    this.expiresAt = DatetimeUtility.add(new Date(), WORKSPACE_EXPIRES_DAYS, 'day');
   }
 
   @OneToMany(() => UserWorkspaceEntity, entity => entity.workspace)

@@ -1,8 +1,10 @@
 import {
   authLoginBodySchema,
   authRegisterBodySchema,
+  authRegisterByInviteBodySchema,
   type TAuthLoginBodySchema,
   type TAuthRegisterBodySchema,
+  type TAuthRegisterByInviteBodySchema,
   type TAuthRegisterResponse,
   type TSuccessResponse,
 } from '@kanban-board/common';
@@ -28,6 +30,15 @@ export default class AuthController {
     @Body({ schema: authRegisterBodySchema }) body: TAuthRegisterBodySchema,
   ): Promise<TAuthRegisterResponse> {
     const authData = await this.authService.register(body);
+    return getSuccessResponseWithData<TAuthLoginBodySchema>(authData);
+  }
+
+  @Public()
+  @Post('register-by-invite')
+  public async registerByInvite(
+    @Body({ schema: authRegisterByInviteBodySchema }) body: TAuthRegisterByInviteBodySchema,
+  ): Promise<TAuthRegisterResponse> {
+    const authData = await this.authService.registerByInvite(body);
     return getSuccessResponseWithData<TAuthLoginBodySchema>(authData);
   }
 

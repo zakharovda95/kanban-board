@@ -1,10 +1,19 @@
-import type { TSuccessResponse, TUser, TWorkspace } from '@kanban-board/common';
+import type {
+  TCreateWorkspaceInviteToken,
+  TCreateWorkspaceInviteTokenResponse,
+  TSuccessResponse,
+  TUser,
+  TWorkspace,
+} from '@kanban-board/common';
 import { CurrentUser } from '@nestjs/authentication';
 import { Can } from '@nestjs/authorization';
-import { Controller, Delete, Get, UsePipes } from '@nestjs/common';
+import { Controller, Delete, Get, Post, UsePipes } from '@nestjs/common';
 
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
-import { getSuccessResponse } from '@/libs/utilities/response.utilities';
+import {
+  getSuccessResponse,
+  getSuccessResponseWithData,
+} from '@/libs/utilities/response.utilities';
 import WorkspaceService from '@/modules/workspace/workspace.service';
 
 @Controller('workspaces')
@@ -23,5 +32,14 @@ export default class WorkspaceController {
   public async deleteWorkspace(@CurrentUser() me: TUser): Promise<TSuccessResponse> {
     await this.workspaceService.deleteWorkspace(me.userWorkspace.workspaceId);
     return getSuccessResponse();
+  }
+
+  @Can.Anyone()
+  @Post()
+  public async createInviteToken(
+    @CurrentUser() me: TUser,
+  ): Promise<TCreateWorkspaceInviteTokenResponse> {
+    const result = await this.workspaceService.createInviteToken(me.userWorkspace.workspaceId);
+    return getSuccessResponseWithData<TCreateWorkspaceInviteToken>(result);
   }
 }
