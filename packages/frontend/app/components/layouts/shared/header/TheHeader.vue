@@ -8,11 +8,7 @@
 
     <UIWidget class="laptop:flex hidden" h-full body-class="flex flex-1 items-center justify-between gap-24 px-24">
       <HeaderNav />
-
-      <div v-if="!isAuthRoute" class="flex gap-12">
-        <LoginLink v-if="!userStore.isAuth" />
-        <LogoutButton v-else />
-      </div>
+      <LoginLink v-if="!isAuthRoute && !userStore.isAuth" />
     </UIWidget>
   </header>
 </template>
@@ -23,7 +19,6 @@ import { useUserStore } from '~/stores/user.store.ts';
 import HeaderBurger from '~/components/layouts/shared/header/HeaderBurger.vue';
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import LoginLink from '~/components/layouts/shared/LoginLink.vue';
-import LogoutButton from '~/components/layouts/shared/LogoutButton.vue';
 import TheLogo from '~/components/shared/TheLogo.vue';
 import TheSettings from '~/components/shared/TheSettings.vue';
 import UIWidget from '~/components/ui/UIWidget.vue';

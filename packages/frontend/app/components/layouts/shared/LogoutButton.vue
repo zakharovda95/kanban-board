@@ -5,10 +5,19 @@
     prepend-icon="mingcute:entrance-fill"
     :full="full"
     :background-color="EColor.BLUE"
-    @click:button="logout()"
+    @click:button="isModalOpen = true"
   >
     Выйти
   </UIButton>
+
+  <UIConfirmationModal
+    v-model:is-open="isModalOpen"
+    title="Уже уходите?"
+    text="Выйти из системы?"
+    action-button-label="Да, выйти"
+    @click:confirm="logout()"
+    @click:reset="isModalOpen = false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -18,6 +27,7 @@ import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composab
 import { useUserStore } from '~/stores/user.store.ts';
 
 import UIButton from '~/components/ui/buttons/UIButton.vue';
+import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 
 withDefaults(defineProps<{ full?: boolean }>(), { full: false });
 
@@ -25,6 +35,8 @@ const { $api } = useNuxtApp();
 const toast = useToast();
 
 const userStore = useUserStore();
+
+const isModalOpen = ref(false);
 
 const { call: logout } = useTryCatchFinally<undefined, null>({
   callback: async (_, signal?: AbortSignal) => {

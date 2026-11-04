@@ -26,8 +26,9 @@
           <button
             v-for="avatarEl in USER_AVATARS"
             :key="avatarEl"
+            type="button"
             class="size-44 shrink-0 cursor-pointer bg-none duration-300 outline-none hover:scale-110"
-            @click="model = avatarEl"
+            @click.stop="model = avatarEl"
           >
             <img class="size-full" alt="Аватар пользователя" :src="`/images/${avatarEl}.png`" >
           </button>

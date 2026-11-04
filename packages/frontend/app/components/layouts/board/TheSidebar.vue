@@ -4,12 +4,12 @@
       <BoardsList />
     </UIWidget>
 
-    <UIWidget v-if="userStore.me" title="Мое пространство">
+    <UIWidget v-if="userStore.isOwner" title="Мое пространство">
       <TheWorkspace />
     </UIWidget>
 
     <UIWidget v-if="userStore.me" title="Мой профиль" body-class="flex flex-col gap-8">
-      <TheProfile v-model:user="userStore.me" can-edit />
+      <TheProfile v-model:user="userStore.me" is-current-user />
       <LogoutButton full />
     </UIWidget>
   </aside>

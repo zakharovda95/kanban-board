@@ -22,12 +22,12 @@
             <LoginLink full />
           </UIWidget>
 
-          <UIWidget v-if="userStore.isAuth" title="Мое пространство">
+          <UIWidget v-if="userStore.isOwner" title="Мое пространство">
             <TheWorkspace />
           </UIWidget>
 
           <UIWidget v-if="userStore.isAuth" title="Мой профиль" body-class="flex flex-col gap-8">
-            <TheProfile v-if="userStore.me" v-model:user="userStore.me" can-edit />
+            <TheProfile v-if="userStore.me" v-model:user="userStore.me" is-current-user />
             <LogoutButton v-if="!isAuthRoute && userStore.isAuth" full />
           </UIWidget>
         </div>
