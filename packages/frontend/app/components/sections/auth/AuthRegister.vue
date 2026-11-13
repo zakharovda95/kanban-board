@@ -29,7 +29,7 @@
       <div class="flex w-full flex-col gap-16">
         <UIAlert>
           <span class="block">Скопируйте и сохраните логин и пароль.</span>
-          <span>Восстановить из будет невозможно!</span>
+          <span>Восстановить их будет невозможно!</span>
         </UIAlert>
 
         <UILabel text="Ваш логин" size="medium">
@@ -165,7 +165,7 @@ const { call, isLoading, data } = useTryCatchFinally<null | TAuthLoginBodySchema
     });
     if (result.isSuccess && result.data) {
       toast.success({
-        message: 'Аккаунт создан! Сохраните предоставленные логин и пароль, восстановить из будет невозможно!',
+        message: 'Аккаунт создан! Сохраните предоставленные логин и пароль, восстановить их будет невозможно!',
       });
 
       activeView.value = 'result';

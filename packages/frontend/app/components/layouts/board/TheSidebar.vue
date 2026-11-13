@@ -37,9 +37,9 @@ import { useUserStore } from '~/stores/user.store.ts';
 
 import LogoutButton from '~/components/layouts/shared/LogoutButton.vue';
 import BoardsList from '~/components/sections/board/BoardsList.vue';
+import TheProfile from '~/components/sections/profile/TheProfile.vue';
+import TheWorkspace from '~/components/sections/workspace/TheWorkspace.vue';
 import MobileSelectPanel from '~/components/shared/MobileSelectPanel.vue';
-import TheProfile from '~/components/shared/TheProfile.vue';
-import TheWorkspace from '~/components/shared/TheWorkspace.vue';
 import UIWidget from '~/components/ui/UIWidget.vue';
 
 const route = useRoute();

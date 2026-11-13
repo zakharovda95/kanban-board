@@ -90,7 +90,7 @@ export default defineNuxtConfig({
 
   toast: {
     settings: {
-      position: 'topCenter',
+      position: 'bottomRight',
       timeout: 5000,
       titleColor: '#ffffff',
       titleSize: '16px',

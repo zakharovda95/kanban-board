@@ -1,7 +1,12 @@
-import { DatetimeUtility, WORKSPACE_INVITE_LINK_EXPIRE_HOURS } from '@kanban-board/common';
-import { BeforeInsert, Check, Column, Entity, Index } from 'typeorm';
+import {
+  DatetimeUtility,
+  WORKSPACE_INVITE_LINK_EXPIRE_HOURS,
+  WORKSPACE_INVITE_NAME_MAXLENGTH,
+} from '@kanban-board/common';
+import { BeforeInsert, Check, Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
+import WorkspaceEntity from '@/modules/workspace/libs/entities/workspace.entity';
 
 @Entity('workspaceInvites')
 @Check('"expiresAt" >= "createdAt"')
@@ -20,7 +25,13 @@ export default class WorkspaceInviteEntity extends BaseEntity {
   @Column({ type: 'varchar', length: 64 })
   inviteTokenHash!: string;
 
+  @Column({ type: 'varchar', length: WORKSPACE_INVITE_NAME_MAXLENGTH })
+  name!: string;
+
   @Index()
   @Column({ type: 'int' })
   workspaceId!: number;
+
+  @ManyToOne(() => WorkspaceEntity, entity => entity.invites, { onDelete: 'CASCADE' })
+  workspace!: WorkspaceEntity;
 }

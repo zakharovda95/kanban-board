@@ -51,11 +51,11 @@ import { useUserStore } from '~/stores/user.store.ts';
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import LoginLink from '~/components/layouts/shared/LoginLink.vue';
 import LogoutButton from '~/components/layouts/shared/LogoutButton.vue';
+import TheProfile from '~/components/sections/profile/TheProfile.vue';
+import TheWorkspace from '~/components/sections/workspace/TheWorkspace.vue';
 import TheAuthor from '~/components/shared/TheAuthor.vue';
-import TheProfile from '~/components/shared/TheProfile.vue';
 import TheSettings from '~/components/shared/TheSettings.vue';
 import TheSocial from '~/components/shared/TheSocial.vue';
-import TheWorkspace from '~/components/shared/TheWorkspace.vue';
 import UIIconButton from '~/components/ui/buttons/UIIconButton.vue';
 import UIWidget from '~/components/ui/UIWidget.vue';
 

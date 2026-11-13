@@ -127,7 +127,7 @@ export class AuthService {
           'Не удалось завершить регистрацию: ошибка при создании пользователя',
         );
 
-      await this.workspaceService.deleteWorkspaceInvite(transactionalManager, inviteId);
+      await this.workspaceService.deleteWorkspaceInvite(inviteId, transactionalManager);
 
       return { login, password };
     });

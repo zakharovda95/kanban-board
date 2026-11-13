@@ -15,6 +15,7 @@ export default class WorkspaceInviteMapper {
       id: innerEntity.id,
       createdAt: innerEntity.createdAt,
       expiresAt: innerEntity.expiresAt,
+      name: innerEntity.name,
       workspaceId: innerEntity.workspaceId,
     });
 

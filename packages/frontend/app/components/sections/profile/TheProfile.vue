@@ -1,7 +1,8 @@
 <template>
   <div
-    class="rounded-8 bg-light-100 hover:border-green flex size-full h-60 cursor-pointer items-center justify-start gap-24 border border-transparent p-8 duration-300 select-none"
-    @click="isModalOpen = true"
+    class="rounded-8 bg-light-100 flex size-full h-60 items-center justify-start gap-24 border border-transparent p-8 duration-300 select-none"
+    :class="{ 'hover:border-green cursor-pointer': !readonly }"
+    @click="open()"
   >
     <TheAvatar :avatar="user.avatar" />
     <div class="flex flex-col gap-4">
@@ -56,14 +57,7 @@
               {{ USER_WORKSPACE_ROLE_MAP[user.userWorkspace.workspaceRole] }}
             </UIBadge>
           </div>
-          <div class="flex flex-nowrap gap-8">
-            <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
-              c {{ DatetimeUtility.format(user.userWorkspace.createdAt, 'DD.MM.YYYY') }}
-            </UIBadge>
-            <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
-              до {{ DatetimeUtility.format(user.userWorkspace.expiresAt, 'DD.MM.YYYY') }}
-            </UIBadge>
-          </div>
+          <FromToDatesBadges :from="user.userWorkspace.createdAt" :to="user.userWorkspace.expiresAt" with-time />
         </div>
       </div>
     </UIModal>
@@ -84,6 +78,7 @@ import {
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import type { TUserProfileFormData } from '~/types/user.types.ts';
 
+import FromToDatesBadges from '~/components/shared/FromToDatesBadges.vue';
 import TheAvatar from '~/components/shared/TheAvatar.vue';
 import UserNameForm from '~/components/shared/UserNameForm.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
@@ -94,11 +89,13 @@ import UILabel from '~/components/ui/UILabel.vue';
 
 const user = defineModel<TUser>('user', { required: true });
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
+    readonly?: boolean;
     isCurrentUser?: boolean;
   }>(),
   {
+    readonly: false,
     isCurrentUser: false,
   },
 );
@@ -109,6 +106,10 @@ const toast = useToast();
 const fullName = computed(() => `${user.value.firstName} ${user.value.lastName}`);
 
 const isModalOpen = ref(false);
+const open = () => {
+  if (props.readonly) return;
+  isModalOpen.value = true;
+};
 
 const formData = reactive<TUserProfileFormData>({
   avatar: user.value.avatar ?? null,
@@ -126,6 +127,8 @@ const hasChanges = computed(() => {
 
 const { call: updateProfile, isLoading } = useTryCatchFinally({
   callback: async (_, signal?: AbortSignal) => {
+    if (props.readonly) return;
+
     const result = await $api<TUpdateUserResponse>('/api/users/me', { body: formData, method: 'PATCH', signal });
 
     if (result.isSuccess && result.data) {

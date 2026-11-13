@@ -2,25 +2,17 @@
   <div class="size-full">
     <UIButton :disabled="isLoadingWorkspace" full @click:button="openModal()">Настроить пространство</UIButton>
 
-    <UIModal v-model:is-open="isModalOpen" close-on-overlay title="Мое пространство" body-class="w-full laptop:w-320!">
+    <UIModal v-if="workspace" v-model:is-open="isModalOpen" title="Мое пространство" body-class="w-full laptop:w-320!">
       <div class="flex w-full flex-col gap-12">
-        <div v-if="workspace?.users && userStore.me" class="flex w-full flex-col gap-8">
-          <span class="text-14">
-            Пользователи
-            <span class="font-semibold" :class="isMaxUsersCount ? 'text-red' : 'text-green'">
-              {{ workspace.users.length }} / {{ WORKSPACE_USERS_MAX_COUNT }}
-            </span>
-          </span>
-          <div class="flex flex-col gap-12">
-            <TheProfile v-for="user in workspace.users" :key="user.id" :user="user" />
-            <div class="flex gap-8">
-              <UIButton prepend-icon="mingcute:add-line" full :disabled="isMaxUsersCount">
-                Добавить пользователя
-              </UIButton>
-              <UITooltip v-if="isMaxUsersCount" :text="WORKSPACE_USERS_MAX_COUNT_ERROR_MESSAGE" size="large" />
-            </div>
-          </div>
-        </div>
+        <FromToDatesBadges :from="workspace.createdAt" :to="workspace.expiresAt" with-time />
+
+        <UIDivider variant="dashed" />
+
+        <WorkspaceInvites :invites="workspace.invites" @refresh="fetchWorkspace()" />
+
+        <UIDivider variant="dashed" />
+
+        <WorkspaceUsers :users="workspace.users" />
 
         <UIDivider variant="dashed" />
 
@@ -43,24 +35,18 @@
 </template>
 
 <script setup lang="ts">
-import {
-  EColor,
-  getErrorMessage,
-  type TSuccessResponse,
-  type TWorkspace,
-  WORKSPACE_USERS_MAX_COUNT,
-  WORKSPACE_USERS_MAX_COUNT_ERROR_MESSAGE,
-} from '@kanban-board/common';
+import { EColor, getErrorMessage, type TSuccessResponse, type TWorkspace } from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import { useUserStore } from '~/stores/user.store.ts';
 
-import TheProfile from '~/components/shared/TheProfile.vue';
+import WorkspaceInvites from '~/components/sections/workspace/WorkspaceInvites.vue';
+import WorkspaceUsers from '~/components/sections/workspace/WorkspaceUsers.vue';
+import FromToDatesBadges from '~/components/shared/FromToDatesBadges.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
 import UIDivider from '~/components/ui/UIDivider.vue';
-import UITooltip from '~/components/ui/UITooltip.vue';
 
 const { $api } = useNuxtApp();
 const toast = useToast();
@@ -75,8 +61,6 @@ const openModal = async () => {
   if (!workspace.value) return;
   isModalOpen.value = true;
 };
-
-const isMaxUsersCount = computed(() => workspace.value?.users?.length === WORKSPACE_USERS_MAX_COUNT);
 
 const {
   data: workspace,

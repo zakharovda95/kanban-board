@@ -20,7 +20,7 @@
       bodyClass,
     ]"
   >
-    <header class="mb-12 flex w-full shrink-0 items-start justify-between gap-8">
+    <header class="mb-12 flex w-full shrink-0 items-center justify-between gap-8">
       <div class="flex-1">
         <slot v-if="title || slots.header" name="header">
           <h4 class="font-medium">{{ title }}</h4>

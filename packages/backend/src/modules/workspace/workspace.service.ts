@@ -1,9 +1,12 @@
 import {
+  EUserWorkspaceRole,
+  type TCreateWorkspaceInviteBodySchema,
   type TCreateWorkspaceInviteToken,
   type TPositiveIdSchema,
   type TWorkspace,
   type TWorkspaceBase,
   type TWorkspaceInvite,
+  TWorkspaceInvites,
   WORKSPACE_USERS_MAX_COUNT,
 } from '@kanban-board/common';
 import { HashServerUtility, RandomServerUtility } from '@kanban-board/common/node';
@@ -15,6 +18,9 @@ import {
 } from '@nestjs/common';
 import { DataSource, EntityManager, MoreThan } from 'typeorm';
 
+import UserEntity from '@/modules/user/libs/entities/user.entity';
+import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.entity';
+import UserMapper from '@/modules/user/libs/mappers/user.mapper';
 import WorkspaceEntity from '@/modules/workspace/libs/entities/workspace.entity';
 import WorkspaceInviteEntity from '@/modules/workspace/libs/entities/workspace-invite.entity';
 import WorkspaceMapper from '@/modules/workspace/libs/mappers/workspace.mapper';
@@ -25,6 +31,7 @@ export default class WorkspaceService {
   constructor(
     private dataSource: DataSource,
     private workspaceMapper: WorkspaceMapper,
+    private userMapper: UserMapper,
     private workspaceInviteMapper: WorkspaceInviteMapper,
   ) {}
 
@@ -39,24 +46,43 @@ export default class WorkspaceService {
 
     const { manager } = this.dataSource;
 
-    // Получаем рабочее пространство со всеми связями (в т.ч. и workspace) для правильного маппинга полного объекта
     const workspace = await manager.findOne(WorkspaceEntity, {
       where: { id: workspaceId },
-      relations: {
-        userWorkspaces: {
-          user: true,
-          workspace: true,
-        },
-      },
-      order: {
-        userWorkspaces: {
-          createdAt: 'ASC',
-        },
-      },
     });
     if (!workspace) throw new NotFoundException('Рабочее пространство не найдено');
 
-    return this.workspaceMapper.toModel(workspace, { base: false });
+    const workspaceModel = this.workspaceMapper.toModel(workspace);
+
+    const users = await manager.find(UserEntity, {
+      where: {
+        userWorkspace: {
+          workspaceId,
+          workspaceRole: EUserWorkspaceRole.USER,
+        },
+      },
+      relations: { userWorkspace: true },
+    });
+
+    const userModels = this.userMapper.toModel(users, { base: false });
+
+    const invites = await manager.find(WorkspaceInviteEntity, {
+      where: {
+        workspaceId,
+        expiresAt: MoreThan(new Date()),
+      },
+    });
+
+    const workspaceInviteModels = this.workspaceInviteMapper.toModel(invites);
+
+    const totalInvites = WORKSPACE_USERS_MAX_COUNT - userModels.length;
+    const invitesData: TWorkspaceInvites = {
+      invites: workspaceInviteModels,
+      total: totalInvites,
+      available: totalInvites - workspaceInviteModels.length,
+      occupied: workspaceInviteModels.length,
+    };
+
+    return { ...workspaceModel, users: userModels, invites: invitesData };
   }
 
   /**
@@ -74,7 +100,7 @@ export default class WorkspaceService {
     if (!createdWorkspace)
       throw new InternalServerErrorException('Не удалось создать рабочее пространство');
 
-    return this.workspaceMapper.toModel(createdWorkspace, { base: true });
+    return this.workspaceMapper.toModel(createdWorkspace);
   }
 
   /**
@@ -94,16 +120,23 @@ export default class WorkspaceService {
   }
 
   /**
-   * Сгенерировать пригласительный токен.
+   * Сгенерировать приглашение.
    * @param workspaceId - Id пространства, куда будет приглашен пользователь.
+   * @param body - название приглашения.
    * @returns void.
    * **/
-  public async createInviteToken(
+  public async createInvite(
     workspaceId: TPositiveIdSchema,
+    body: TCreateWorkspaceInviteBodySchema,
   ): Promise<TCreateWorkspaceInviteToken> {
     if (!workspaceId)
       throw new BadRequestException('Не передан идентификатор рабочего пространства');
+    if (!body)
+      throw new BadRequestException(
+        'Не переданы данные для создания приглашения в рабочее пространство',
+      );
 
+    const { name } = body;
     const { manager } = this.dataSource;
 
     return manager.transaction(async transactionalManager => {
@@ -111,17 +144,9 @@ export default class WorkspaceService {
       // Блокируем доступ к базе данных для предотвращения одновременного создания нескольких приглашений.
       await transactionalManager.query('SELECT pg_advisory_xact_lock($1)', [DATABASE_LOCK_ID]);
 
-      const workspace = await transactionalManager.findOne(WorkspaceEntity, {
-        where: { id: workspaceId },
-        relations: { userWorkspaces: true },
+      const activeUsersCount = await transactionalManager.count(UserWorkspaceEntity, {
+        where: { workspaceId, workspaceRole: EUserWorkspaceRole.USER },
       });
-
-      if (!workspace)
-        throw new NotFoundException('Рабочее пространство по указанному идентификатору не найдено');
-
-      // Вычитаем владельца
-      const OWNERS_COUNT = 1;
-      const activeUsersCount = workspace.userWorkspaces.length - OWNERS_COUNT;
 
       const invitesCount = await transactionalManager.count(WorkspaceInviteEntity, {
         where: { workspaceId, expiresAt: MoreThan(new Date()) },
@@ -133,6 +158,7 @@ export default class WorkspaceService {
       const inviteToken = RandomServerUtility.generateRandomPassword(32, 'base64url');
 
       const newToken = transactionalManager.create(WorkspaceInviteEntity, {
+        name,
         workspaceId,
         inviteTokenHash: HashServerUtility.sha256(inviteToken),
       });
@@ -173,20 +199,20 @@ export default class WorkspaceService {
 
   /**
    * Удалить приглашения в пространство.
-   * @param transactionalManager - транзакционный менеджер, переданный клиентским кодом.
    * @param inviteId - ID приглашения.
+   * @param transactionalManager - если передано: транзакционный менеджер, переданный клиентским кодом, для выполнения операции в одной транзакции.
    * @returns void.
    * **/
   public async deleteWorkspaceInvite(
-    transactionalManager: EntityManager,
     inviteId: number,
+    transactionalManager: EntityManager | undefined = undefined,
   ): Promise<void> {
-    if (!transactionalManager)
-      throw new InternalServerErrorException('Произошла ошибка в транзакции');
     if (!inviteId)
       throw new BadRequestException('Не передан идентификатор приглашения в рабочее пространство');
 
-    const { affected } = await transactionalManager.delete(WorkspaceInviteEntity, { id: inviteId });
+    const manager = transactionalManager || this.dataSource.manager;
+
+    const { affected } = await manager.delete(WorkspaceInviteEntity, { id: inviteId });
     if (!affected || affected <= 0)
       throw new InternalServerErrorException(
         'Не удалось удалить приглашение в рабочее пространство',
