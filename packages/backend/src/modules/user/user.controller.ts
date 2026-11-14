@@ -1,4 +1,7 @@
 import {
+  positiveIdSchema,
+  type TPositiveIdSchema,
+  type TSuccessResponse,
   type TUpdateUserBodySchema,
   type TUpdateUserResponse,
   type TUser,
@@ -7,10 +10,13 @@ import {
 } from '@kanban-board/common';
 import { Authenticate, CurrentUser } from '@nestjs/authentication';
 import { Can } from '@nestjs/authorization';
-import { Body, Controller, Get, Patch, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, UsePipes } from '@nestjs/common';
 
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
-import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
+import {
+  getSuccessResponse,
+  getSuccessResponseWithData,
+} from '@/libs/utilities/response.utilities';
 import UserService from '@/modules/user/user.service';
 
 @Controller('users')
@@ -33,5 +39,14 @@ export default class UserController {
   ): Promise<TUpdateUserResponse> {
     const updatedUser = await this.userService.updateUser(me.id, body);
     return getSuccessResponseWithData<TUserBase>(updatedUser);
+  }
+
+  @Can.Anyone()
+  @Delete(':userId')
+  public async deleteUser(
+    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
+  ): Promise<TSuccessResponse> {
+    await this.userService.deleteUser(userId);
+    return getSuccessResponse();
   }
 }

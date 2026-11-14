@@ -1,8 +1,12 @@
 <template>
-  <UIModal v-model:is-open="isOpen" :title="title" hide-close-button :close-on-esc="false">
-    <div class="w-320">
-      <p class="text-14 text-light-500" v-html="text" />
-    </div>
+  <UIModal
+    v-model:is-open="isOpen"
+    :title="title"
+    hide-close-button
+    body-class="w-full laptop:w-320!"
+    :close-on-esc="false"
+  >
+    <p class="text-14 text-light-500" v-html="text" />
 
     <template #footer>
       <div class="flex w-full flex-col gap-8">

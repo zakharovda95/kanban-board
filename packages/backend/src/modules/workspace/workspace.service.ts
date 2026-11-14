@@ -3,7 +3,8 @@ import {
   type TPositiveIdSchema,
   type TWorkspace,
   type TWorkspaceBase,
-  TWorkspaceInvites,
+  type TWorkspaceInvites,
+  type TWorkspaceUsers,
   WORKSPACE_USERS_MAX_COUNT,
 } from '@kanban-board/common';
 import {
@@ -60,6 +61,13 @@ export default class WorkspaceService {
 
     const userModels = this.userMapper.toModel(users, { base: false });
 
+    const usersData: TWorkspaceUsers = {
+      users: userModels,
+      total: WORKSPACE_USERS_MAX_COUNT,
+      available: WORKSPACE_USERS_MAX_COUNT - userModels.length,
+      occupied: userModels.length,
+    };
+
     const invites = await manager.find(WorkspaceInviteEntity, {
       where: {
         workspaceId,
@@ -77,7 +85,7 @@ export default class WorkspaceService {
       occupied: workspaceInviteModels.length,
     };
 
-    return { ...workspaceModel, users: userModels, invites: invitesData };
+    return { ...workspaceModel, users: usersData, invites: invitesData };
   }
 
   /**

@@ -18,6 +18,7 @@ import {
 } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
+import { AuthSessionEntity } from '@/modules/auth/libs/entities/auth-session.entity';
 import UserEntity from '@/modules/user/libs/entities/user.entity';
 import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.entity';
 import UserMapper from '@/modules/user/libs/mappers/user.mapper';
@@ -201,5 +202,29 @@ export default class UserService {
       throw new InternalServerErrorException('Не удалось обновить данные пользователя');
 
     return this.userMapper.toModel(updatedUser, { base: true });
+  }
+
+  /**
+   * Удалить пользователя.
+   * @param userId - Id пользователя.
+   * @returns void.
+   * **/
+  public async deleteUser(userId: TPositiveIdSchema): Promise<void> {
+    if (!userId) throw new BadRequestException(`Не указан идентификатор пользователя`);
+
+    const { manager } = this.dataSource;
+
+    await manager.transaction(async transactionalManager => {
+      const user = await transactionalManager.findOne(UserEntity, { where: { id: userId } });
+      if (!user) throw new NotFoundException(`Пользователь по указанному идентификатору не найден`);
+
+      await transactionalManager.delete(AuthSessionEntity, { userId: String(userId) });
+
+      const { affected } = await transactionalManager.delete(UserEntity, { id: userId });
+      if (!affected || affected <= 0)
+        throw new InternalServerErrorException('Не удалось удалить пользователя');
+
+      await transactionalManager.delete(UserWorkspaceEntity, { id: user.userWorkspaceId });
+    });
   }
 }

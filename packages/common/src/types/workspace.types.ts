@@ -9,7 +9,7 @@ export type TWorkspaceBase = {
 
 /** Рабочее пространство - полные данные. **/
 export type TWorkspace = TWorkspaceBase & {
-  users: TUser[];
+  users: TWorkspaceUsers;
   invites: TWorkspaceInvites;
 };
 
@@ -22,6 +22,23 @@ export type TWorkspaceInvite = {
   workspaceId: number;
 };
 
+/** Счетчики рабочего пространства. **/
+export type TWorkspaceCounters = {
+  total: number;
+  occupied: number;
+  available: number;
+};
+
+/** Инвайты рабочего пространство со счетчиками. **/
+export type TWorkspaceInvites = TWorkspaceCounters & {
+  invites: TWorkspaceInvite[];
+};
+
+/** Пользователи рабочего пространство со счетчиками. **/
+export type TWorkspaceUsers = TWorkspaceCounters & {
+  users: TUser[];
+};
+
 /** Сгенерированный инвайт-токен. Сырое значение показывается один раз и в базе не хранится. **/
 export type TCreateWorkspaceInviteToken = Pick<TWorkspaceInvite, 'expiresAt'> & {
   inviteToken: string;
@@ -29,11 +46,3 @@ export type TCreateWorkspaceInviteToken = Pick<TWorkspaceInvite, 'expiresAt'> & 
 
 /** Ответ на запрос на генерацию инвайта. **/
 export type TCreateWorkspaceInviteResponse = TSuccessResponse<TCreateWorkspaceInviteToken>;
-
-/** Инвайты рабочего пространство со счетчиками. **/
-export type TWorkspaceInvites = {
-  invites: TWorkspaceInvite[];
-  total: number;
-  occupied: number;
-  available: number;
-};

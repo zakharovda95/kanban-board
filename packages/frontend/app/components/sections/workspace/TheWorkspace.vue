@@ -1,14 +1,25 @@
 <template>
   <div class="size-full">
-    <UIButton :disabled="isLoadingWorkspace" full @click:button="openModal()">Настроить пространство</UIButton>
+    <UIButton :disabled="isLoadingWorkspace" full prepend-icon="mingcute:settings-2-line" @click:button="openModal()">
+      Настроить пространство
+    </UIButton>
 
     <UIModal v-if="workspace" v-model:is-open="isModalOpen" title="Мое пространство" body-class="w-full laptop:w-320!">
       <div class="flex w-full flex-col gap-12">
         <div class="flex">
           <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
-            создан {{ DatetimeUtility.format(workspace.createdAt, 'DD.MM.YYYY HH:mm') }}
+            создано {{ DatetimeUtility.format(workspace.createdAt, 'DD.MM.YYYY HH:mm') }}
           </UIBadge>
         </div>
+
+        <UIButton
+          :background-color="EColor.RED"
+          full
+          prepend-icon="mingcute:delete-2-line"
+          @click:button="isConfirmModalOpen = true"
+        >
+          Удалить пространство
+        </UIButton>
 
         <UIDivider variant="dashed" />
 
@@ -16,13 +27,7 @@
 
         <UIDivider variant="dashed" />
 
-        <WorkspaceUsers :users="workspace.users" />
-
-        <UIDivider variant="dashed" />
-
-        <UIButton :background-color="EColor.RED" full @click:button="isConfirmModalOpen = true">
-          Удалить рабочее пространство
-        </UIButton>
+        <WorkspaceUsers :users="workspace.users" @refresh="fetchWorkspace()" />
       </div>
     </UIModal>
 

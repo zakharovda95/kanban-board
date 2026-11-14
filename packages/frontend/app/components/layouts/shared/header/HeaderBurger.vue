@@ -27,7 +27,7 @@
           </UIWidget>
 
           <UIWidget v-if="userStore.isAuth" title="Мой профиль" body-class="flex flex-col gap-8">
-            <TheProfile v-if="userStore.me" v-model:user="userStore.me" is-current-user />
+            <MyProfile v-if="userStore.me" v-model:user="userStore.me" is-current-user />
             <LogoutButton v-if="!isAuthRoute && userStore.isAuth" full />
           </UIWidget>
         </div>
@@ -51,7 +51,7 @@ import { useUserStore } from '~/stores/user.store.ts';
 import HeaderNav from '~/components/layouts/shared/header/HeaderNav.vue';
 import LoginLink from '~/components/layouts/shared/LoginLink.vue';
 import LogoutButton from '~/components/layouts/shared/LogoutButton.vue';
-import TheProfile from '~/components/sections/profile/TheProfile.vue';
+import MyProfile from '~/components/sections/profile/MyProfile.vue';
 import TheWorkspace from '~/components/sections/workspace/TheWorkspace.vue';
 import TheAuthor from '~/components/shared/TheAuthor.vue';
 import TheSettings from '~/components/shared/TheSettings.vue';
