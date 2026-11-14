@@ -19,11 +19,15 @@ import {
   getSuccessResponseWithData,
 } from '@/libs/utilities/response.utilities';
 import WorkspaceService from '@/modules/workspace/workspace.service';
+import WorkspaceInviteService from '@/modules/workspace/workspace-invite.service';
 
 @Controller('workspaces')
 @UsePipes(CustomValidationPipe.httpStandardSchemaPipe)
 export default class WorkspaceController {
-  constructor(private workspaceService: WorkspaceService) {}
+  constructor(
+    private workspaceService: WorkspaceService,
+    private workspaceInviteService: WorkspaceInviteService,
+  ) {}
 
   @Can.Anyone()
   @Get()
@@ -44,7 +48,10 @@ export default class WorkspaceController {
     @CurrentUser() me: TUser,
     @Body({ schema: createWorkspaceInviteBodySchema }) body: TCreateWorkspaceInviteBodySchema,
   ): Promise<TCreateWorkspaceInviteResponse> {
-    const result = await this.workspaceService.createInvite(me.userWorkspace.workspaceId, body);
+    const result = await this.workspaceInviteService.createInvite(
+      me.userWorkspace.workspaceId,
+      body,
+    );
     return getSuccessResponseWithData<TCreateWorkspaceInviteToken>(result);
   }
 
@@ -53,7 +60,7 @@ export default class WorkspaceController {
   public async deleteInvite(
     @Param('inviteId', { schema: positiveIdSchema }) inviteId: TPositiveIdSchema,
   ): Promise<TSuccessResponse> {
-    await this.workspaceService.deleteWorkspaceInvite(inviteId);
+    await this.workspaceInviteService.deleteWorkspaceInvite(inviteId);
     return getSuccessResponse();
   }
 }

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import AppConfigModule from '@/config/app-config.module';
 import InfrastructureModule from '@/infrastructure/infrastructure.module';
@@ -19,6 +20,7 @@ import WorkspaceModule from '@/modules/workspace/workspace.module';
     IssueModule,
     UserModule,
     WorkspaceModule,
+    ScheduleModule.forRoot(),
   ],
 })
 export default class AppModule {}

@@ -8,6 +8,7 @@ import WorkspaceMapperModule from '@/modules/workspace/libs/mappers/workspace-ma
 import WorkspaceController from '@/modules/workspace/workspace.controller';
 import WorkspaceGateway from '@/modules/workspace/workspace.gateway';
 import WorkspaceService from '@/modules/workspace/workspace.service';
+import WorkspaceInviteService from '@/modules/workspace/workspace-invite.service';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import WorkspaceService from '@/modules/workspace/workspace.service';
     UserMapperModule,
   ],
   controllers: [WorkspaceController],
-  providers: [WorkspaceService, WorkspaceGateway],
-  exports: [WorkspaceService],
+  providers: [WorkspaceService, WorkspaceInviteService, WorkspaceGateway],
+  exports: [WorkspaceService, WorkspaceInviteService],
 })
 export default class WorkspaceModule {}

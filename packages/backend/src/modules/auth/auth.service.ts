@@ -20,11 +20,13 @@ import { DataSource } from 'typeorm';
 
 import UserService from '@/modules/user/user.service';
 import WorkspaceService from '@/modules/workspace/workspace.service';
+import WorkspaceInviteService from '@/modules/workspace/workspace-invite.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private workspaceService: WorkspaceService,
+    private workspaceInviteService: WorkspaceInviteService,
     private userService: UserService,
     private dataSource: DataSource,
     private passwordHasher: PasswordHasher,
@@ -103,7 +105,7 @@ export class AuthService {
         id: inviteId,
         expiresAt,
         workspaceId,
-      } = await this.workspaceService.getWorkspaceInvite(transactionalManager, inviteToken);
+      } = await this.workspaceInviteService.getWorkspaceInvite(transactionalManager, inviteToken);
 
       if (DatetimeUtility.compareDates(expiresAt, new Date(), EDateTimeComparison.LESS))
         throw new BadRequestException('Срок действия приглашения вышел');
@@ -127,7 +129,7 @@ export class AuthService {
           'Не удалось завершить регистрацию: ошибка при создании пользователя',
         );
 
-      await this.workspaceService.deleteWorkspaceInvite(inviteId, transactionalManager);
+      await this.workspaceInviteService.deleteWorkspaceInvite(inviteId, transactionalManager);
 
       return { login, password };
     });
