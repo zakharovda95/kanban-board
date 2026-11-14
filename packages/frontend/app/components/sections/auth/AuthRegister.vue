@@ -92,6 +92,7 @@ import {
   RandomUtility,
   type TAuthLoginBodySchema,
   type TAuthRegisterBodySchema,
+  type TAuthRegisterByInviteBodySchema,
   type TAuthRegisterResponse,
   USER_FIRST_NAMES,
   USER_LAST_NAMES,
@@ -99,6 +100,7 @@ import {
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import type { TAuthTab } from '~/types/auth.types.ts';
+import { prepareRouteHash } from '~/utilities/link.utilities.ts';
 
 import UserNameForm from '~/components/shared/UserNameForm.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
@@ -116,6 +118,9 @@ const emit = defineEmits<{
 const { $api } = useNuxtApp();
 const runtimeConfig = useRuntimeConfig();
 const toast = useToast();
+
+const inviteToken = useRouteHash();
+const preparedInviteToken = inviteToken.value ? prepareRouteHash(String(toValue(inviteToken))) : undefined;
 
 const activeView = ref<'form' | 'result'>('form');
 
@@ -151,18 +156,22 @@ const saveData = () => {
   FileUtility.downloadFile(FileUtility.buildTextFile(lines, 'my-auth-data'));
 };
 
-const formData = reactive<TAuthRegisterBodySchema>({
+const formData = reactive<TAuthRegisterBodySchema | TAuthRegisterByInviteBodySchema>({
   firstName: getRandomFirstName(),
   lastName: getRandomLastName(),
+  inviteToken: preparedInviteToken,
 });
 
 const { call, isLoading, data } = useTryCatchFinally<null | TAuthLoginBodySchema>({
   callback: async (_, signal?: AbortSignal) => {
-    const result = await $api<TAuthRegisterResponse>('/api/auth/register', {
-      method: 'POST',
-      body: formData,
-      signal,
-    });
+    const result = await $api<TAuthRegisterResponse>(
+      preparedInviteToken ? '/api/auth/register-by-invite' : '/api/auth/register',
+      {
+        method: 'POST',
+        body: formData,
+        signal,
+      },
+    );
     if (result.isSuccess && result.data) {
       toast.success({
         message: 'Аккаунт создан! Сохраните предоставленные логин и пароль, восстановить их будет невозможно!',
