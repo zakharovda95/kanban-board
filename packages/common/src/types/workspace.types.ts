@@ -5,7 +5,6 @@ import type { TUser } from './user.types.js';
 export type TWorkspaceBase = {
   id: number;
   createdAt: Date;
-  expiresAt: Date;
 };
 
 /** Рабочее пространство - полные данные. **/

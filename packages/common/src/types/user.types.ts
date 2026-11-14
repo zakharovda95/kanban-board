@@ -21,8 +21,6 @@ export type TUser = TUserBase & {
 export type TUserWorkspace = {
   id: number;
   createdAt: Date;
-  /** Через сколько будет удален. **/
-  expiresAt: Date;
   status: EUserWorkspaceStatus;
   workspaceId: number;
   /** Роль пользователя в рабочем пространстве (один OWNER, остальные USER) **/

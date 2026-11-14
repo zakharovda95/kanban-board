@@ -41,7 +41,7 @@ export default class UserService {
 
     const user = await manager.findOne(UserEntity, {
       where: { id: userId },
-      relations: { userWorkspace: { workspace: true } },
+      relations: { userWorkspace: true },
     });
     if (!user) return null;
 
@@ -64,7 +64,7 @@ export default class UserService {
 
     const user = await manager.findOne(UserEntity, {
       where: isLogin ? { login: loginOrId } : { id: loginOrId },
-      relations: { userWorkspace: { workspace: true } },
+      relations: { userWorkspace: true },
     });
 
     if (!user) {
@@ -146,7 +146,7 @@ export default class UserService {
 
     const user = await transactionalManager.findOne(UserEntity, {
       where: { id: createdUser.id },
-      relations: { userWorkspace: { workspace: true } },
+      relations: { userWorkspace: true },
     });
     if (!user) throw new BadRequestException('Не удалось создать пользователя');
 

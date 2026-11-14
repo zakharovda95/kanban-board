@@ -15,7 +15,7 @@
       <UIAnimatedHeight>
         <div v-if="isBodyOpen" class="full text-14 flex flex-col">
           <p class="my-12">
-            <span class="text-blue font-bold">KANBAN BOARD</span> &mdash; это демонстрационный проект.<br >Я не собираю
+            <span class="text-blue font-bold">KANBAN BOARD</span> &mdash; это демонстрационный проект.<br >Я не храню
             Ваши <span class="font-bold">персональные данные</span>, чтобы не нести за них ответственность.
           </p>
           <p>В связи с этим созданный аккаунт будет иметь <span class="font-bold">ряд особенностей:</span></p>

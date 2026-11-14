@@ -15,7 +15,6 @@ export default class UserWorkspaceMapper {
       id: innerEntity.id,
       status: innerEntity.status,
       createdAt: innerEntity.createdAt,
-      expiresAt: innerEntity.workspace.expiresAt,
       workspaceId: innerEntity.workspaceId,
       workspaceRole: innerEntity.workspaceRole,
     });

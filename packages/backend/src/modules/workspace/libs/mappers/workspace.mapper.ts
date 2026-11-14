@@ -12,7 +12,6 @@ export default class WorkspaceMapper {
     const map = (innerEntity: WorkspaceEntity): TWorkspaceBase => ({
       id: innerEntity.id,
       createdAt: innerEntity.createdAt,
-      expiresAt: innerEntity.expiresAt,
     });
 
     return Array.isArray(entity) ? entity.map(el => map(el)) : map(entity);

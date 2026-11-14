@@ -5,15 +5,7 @@
     @click="open()"
   >
     <TheAvatar :avatar="user.avatar" />
-    <div class="flex flex-col gap-4">
-      <span class="text-14 font-medium">{{ fullName }}</span>
-      <span class="text-12">
-        активен до
-        <span class="text-blue font-medium">
-          {{ DatetimeUtility.format(user.userWorkspace.expiresAt, 'DD.MM.YYYY') }}
-        </span>
-      </span>
-    </div>
+    <span class="text-14 font-medium">{{ fullName }}</span>
 
     <UIModal
       v-model:is-open="isModalOpen"
@@ -57,7 +49,9 @@
               {{ USER_WORKSPACE_ROLE_MAP[user.userWorkspace.workspaceRole] }}
             </UIBadge>
           </div>
-          <FromToDatesBadges :from="user.userWorkspace.createdAt" :to="user.userWorkspace.expiresAt" with-time />
+          <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
+            создан {{ DatetimeUtility.format(user.userWorkspace.createdAt, 'DD.MM.YYYY HH:mm') }}
+          </UIBadge>
         </div>
       </div>
     </UIModal>
@@ -78,7 +72,6 @@ import {
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import type { TUserProfileFormData } from '~/types/user.types.ts';
 
-import FromToDatesBadges from '~/components/shared/FromToDatesBadges.vue';
 import TheAvatar from '~/components/shared/TheAvatar.vue';
 import UserNameForm from '~/components/shared/UserNameForm.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';

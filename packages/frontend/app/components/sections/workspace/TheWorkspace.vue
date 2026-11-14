@@ -4,7 +4,11 @@
 
     <UIModal v-if="workspace" v-model:is-open="isModalOpen" title="Мое пространство" body-class="w-full laptop:w-320!">
       <div class="flex w-full flex-col gap-12">
-        <FromToDatesBadges :from="workspace.createdAt" :to="workspace.expiresAt" with-time />
+        <div class="flex">
+          <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
+            создан {{ DatetimeUtility.format(workspace.createdAt, 'DD.MM.YYYY HH:mm') }}
+          </UIBadge>
+        </div>
 
         <UIDivider variant="dashed" />
 
@@ -35,17 +39,17 @@
 </template>
 
 <script setup lang="ts">
-import { EColor, getErrorMessage, type TSuccessResponse, type TWorkspace } from '@kanban-board/common';
+import { DatetimeUtility, EColor, getErrorMessage, type TSuccessResponse, type TWorkspace } from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import { useUserStore } from '~/stores/user.store.ts';
 
 import WorkspaceInvites from '~/components/sections/workspace/WorkspaceInvites.vue';
 import WorkspaceUsers from '~/components/sections/workspace/WorkspaceUsers.vue';
-import FromToDatesBadges from '~/components/shared/FromToDatesBadges.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
+import UIBadge from '~/components/ui/UIBadge.vue';
 import UIDivider from '~/components/ui/UIDivider.vue';
 
 const { $api } = useNuxtApp();
