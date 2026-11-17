@@ -139,7 +139,7 @@ const inviteExpiresSting = computed(
 const inviteLink = computed<string | null>(() =>
   inviteData.value == null
     ? null
-    : `${runtimeConfig.public.FRONTEND_URL}/auth?view=register#${inviteData.value.inviteToken}`,
+    : `${runtimeConfig.public.FRONTEND_URL}/auth/register#${inviteData.value.inviteToken}`,
 );
 
 const { formData, formErrors, update, reset } = useForm<TCreateWorkspaceInviteBodySchema>({ name: '' });

@@ -1,5 +1,5 @@
 <template>
-  <UILink to="/auth?view=login" renderless :hoverable="false">
+  <UILink to="/auth/login" renderless :hoverable="false">
     <UIButton tag="span" size="medium" append-icon="mingcute:entrance-fill" append-icon-class="rotate-180" :full="full">
       Войти
     </UIButton>

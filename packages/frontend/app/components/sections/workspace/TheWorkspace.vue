@@ -88,7 +88,7 @@ const { call: deleteWorkspace, isLoading: isLoadingDeleteWorkspace } = useTryCat
     if (result.isSuccess) {
       toast.success({ message: 'Рабочее пространство удалено!' });
       userStore.resetStore();
-      router.push('/auth?view=login');
+      router.push('/auth/login');
     }
   },
   catchCallback: (error: unknown) => {

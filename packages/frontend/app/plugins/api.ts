@@ -19,7 +19,7 @@ export default defineNuxtPlugin(nuxtApp => {
         // биндим накст контекст через runWithContext()
         await nuxtApp.runWithContext(() => {
           useUserStore().resetStore();
-          navigateTo('/auth');
+          navigateTo('/auth/login');
         });
       }
     },

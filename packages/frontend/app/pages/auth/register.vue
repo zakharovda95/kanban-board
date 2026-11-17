@@ -1,87 +1,91 @@
 <template>
-  <UIWidget>
-    <UIForm
-      v-if="activeView === 'form'"
-      title="Создать аккаунт"
-      full
-      buttons-size="large"
-      buttons-position="row"
-      action-button-label="Создать аккаунт"
-      hide-reject-button
-      :disabled="isLoading"
-      @submit:form="call()"
-    >
-      <div class="flex w-full flex-col gap-16">
-        <UserNameForm v-model:form-data="formData" size="large" />
-      </div>
-    </UIForm>
-    <UIForm
-      v-else-if="activeView === 'result' && data"
-      title="Ваш аккаунт готов!"
-      full
-      buttons-size="large"
-      buttons-position="row"
-      action-button-label="Скачать данные входа"
-      hide-reject-button
-      action-button-icon="mingcute:download-line"
-      @submit:form="saveData"
-    >
-      <div class="flex w-full flex-col gap-16">
-        <UIAlert>
-          <span class="block">Скопируйте и сохраните логин и пароль.</span>
-          <span>Восстановить их будет невозможно!</span>
-        </UIAlert>
+  <div class="flex w-full flex-col items-center gap-24">
+    <UIWidget>
+      <UIForm
+        v-if="activeView === 'form'"
+        title="Создать аккаунт"
+        full
+        buttons-size="large"
+        buttons-position="row"
+        action-button-label="Создать аккаунт"
+        hide-reject-button
+        :disabled="isLoading"
+        @submit:form="call()"
+      >
+        <div class="flex w-full flex-col gap-16">
+          <UserNameForm v-model:form-data="formData" size="large" />
+        </div>
+      </UIForm>
+      <UIForm
+        v-else-if="activeView === 'result' && data"
+        title="Ваш аккаунт готов!"
+        full
+        buttons-size="large"
+        buttons-position="row"
+        action-button-label="Скачать данные входа"
+        hide-reject-button
+        action-button-icon="mingcute:download-line"
+        @submit:form="saveData"
+      >
+        <div class="flex w-full flex-col gap-16">
+          <UIAlert>
+            <span class="block">Скопируйте и сохраните логин и пароль.</span>
+            <span>Восстановить их будет невозможно!</span>
+          </UIAlert>
 
-        <UILabel text="Ваш логин" size="medium">
-          <UIInput
-            :model-value="data.login"
-            name="auth-login"
-            full
-            size="large"
-            placeholder="Скопируйте логин"
-            readonly
-          >
-            <template #right>
-              <UIIconButton
-                icon="mingcute:copy-line"
-                size="small"
-                :background-color="EColor.BLUE"
-                @click:button="copyLogin"
-              />
-            </template>
-          </UIInput>
-        </UILabel>
-        <UILabel text="Ваш пароль" size="medium">
-          <UIInput
-            :model-value="data.password"
-            name="auth-password"
-            full
-            size="large"
-            placeholder="Скопируйте пароль"
-            readonly
-          >
-            <template #right>
-              <UIIconButton
-                icon="mingcute:copy-line"
-                size="small"
-                :background-color="EColor.BLUE"
-                @click:button="copyPassword"
-              />
-            </template>
-          </UIInput>
-        </UILabel>
-      </div>
-    </UIForm>
-  </UIWidget>
+          <UILabel text="Ваш логин" size="medium">
+            <UIInput
+              :model-value="data.login"
+              name="auth-login"
+              full
+              size="large"
+              placeholder="Скопируйте логин"
+              readonly
+            >
+              <template #right>
+                <UIIconButton
+                  icon="mingcute:copy-line"
+                  size="small"
+                  :background-color="EColor.BLUE"
+                  @click:button="copyLogin"
+                />
+              </template>
+            </UIInput>
+          </UILabel>
+          <UILabel text="Ваш пароль" size="medium">
+            <UIInput
+              :model-value="data.password"
+              name="auth-password"
+              full
+              size="large"
+              placeholder="Скопируйте пароль"
+              readonly
+            >
+              <template #right>
+                <UIIconButton
+                  icon="mingcute:copy-line"
+                  size="small"
+                  :background-color="EColor.BLUE"
+                  @click:button="copyPassword"
+                />
+              </template>
+            </UIInput>
+          </UILabel>
+        </div>
+      </UIForm>
+    </UIWidget>
 
-  <UIButton
-    append-icon="mingcute:entrance-fill"
-    append-icon-class="rotate-180"
-    :background-color="EColor.BLUE"
-    @click:button="emit('update:tab', 'login')"
-  >
-    У меня уже есть аккаунт
-  </UIButton>
+    <UILink to="/auth/login" renderless :hoverable="false">
+      <UIButton
+        tag="span"
+        append-icon="mingcute:entrance-fill"
+        append-icon-class="rotate-180"
+        :background-color="EColor.BLUE"
+      >
+        У меня уже есть аккаунт
+      </UIButton>
+    </UILink>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -99,7 +103,6 @@ import {
 } from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
-import type { TAuthTab } from '~/types/auth.types.ts';
 import { prepareRouteHash } from '~/utilities/link.utilities.ts';
 
 import UserNameForm from '~/components/shared/UserNameForm.vue';
@@ -109,11 +112,12 @@ import UIInput from '~/components/ui/inputs/UIInput.vue';
 import UIAlert from '~/components/ui/UIAlert.vue';
 import UIForm from '~/components/ui/UIForm.vue';
 import UILabel from '~/components/ui/UILabel.vue';
+import UILink from '~/components/ui/UILink.vue';
 import UIWidget from '~/components/ui/UIWidget.vue';
 
-const emit = defineEmits<{
-  'update:tab': [tab: TAuthTab];
-}>();
+definePageMeta({
+  layout: 'auth',
+});
 
 const { $api } = useNuxtApp();
 const runtimeConfig = useRuntimeConfig();
@@ -149,7 +153,7 @@ const copyPassword = async () => {
 
 const saveData = () => {
   const lines = [
-    `Ссылка: ${runtimeConfig.public.FRONTEND_URL}/auth?view=login`,
+    `Ссылка: ${runtimeConfig.public.FRONTEND_URL}/auth/login`,
     `Имя: ${formData.firstName}`,
     `Фамилия: ${formData.lastName}`,
     `Логин: ${data.value?.login ?? 'Ошибка'}`,

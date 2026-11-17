@@ -44,7 +44,7 @@ const { call: logout } = useTryCatchFinally<undefined, null>({
     if (result.isSuccess) {
       toast.success({ message: 'До скорого!' });
       userStore.resetStore();
-      navigateTo('/auth?view=login');
+      navigateTo('/auth/login');
     }
 
     return null;

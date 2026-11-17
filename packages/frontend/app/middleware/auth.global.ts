@@ -1,4 +1,4 @@
-import { AUTH_PUBLIC_ROUTE_NAMES, AUTH_PUBLIC_ROUTE_NAMES_MAP } from '~/constants/auth.constants.ts';
+import { AUTH_GUEST_ROUTE_NAMES, AUTH_PUBLIC_ROUTE_NAMES } from '~/constants/auth.constants.ts';
 import { useUserStore } from '~/stores/user.store.ts';
 
 export default defineNuxtRouteMiddleware(async to => {
@@ -8,11 +8,11 @@ export default defineNuxtRouteMiddleware(async to => {
     await userStore.tryInitialize();
   }
 
-  if (userStore.isAuth && to.name === AUTH_PUBLIC_ROUTE_NAMES_MAP.AUTH) {
+  if (userStore.isAuth && AUTH_GUEST_ROUTE_NAMES.includes(String(to.name))) {
     return navigateTo('/boards');
   }
 
   if (!userStore.isAuth && !AUTH_PUBLIC_ROUTE_NAMES.includes(String(to.name))) {
-    return navigateTo('/auth?view=login');
+    return navigateTo('/auth/login');
   }
 });
