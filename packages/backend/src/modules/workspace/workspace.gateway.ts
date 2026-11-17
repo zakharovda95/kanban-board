@@ -24,7 +24,7 @@ export default class WorkspaceGateway {
     @CurrentUser() me: TUser,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    await client.join(getWsWorkspaceRoomName(me.userWorkspace.workspaceId));
+    await client.join(getWsWorkspaceRoomName(me.workspaceId));
   }
 
   @Can.Anyone()
@@ -33,6 +33,6 @@ export default class WorkspaceGateway {
     @CurrentUser() me: TUser,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    await client.leave(getWsWorkspaceRoomName(me.userWorkspace.workspaceId));
+    await client.leave(getWsWorkspaceRoomName(me.workspaceId));
   }
 }

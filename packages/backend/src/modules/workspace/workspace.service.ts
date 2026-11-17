@@ -51,12 +51,9 @@ export default class WorkspaceService {
 
     const users = await manager.find(UserEntity, {
       where: {
-        userWorkspace: {
-          workspaceId,
-          workspaceRole: EUserWorkspaceRole.USER,
-        },
+        workspaceId,
+        workspaceRole: EUserWorkspaceRole.USER,
       },
-      relations: { userWorkspace: true },
     });
 
     const userModels = this.userMapper.toModel(users, { base: false });

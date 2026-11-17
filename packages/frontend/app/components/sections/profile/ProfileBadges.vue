@@ -1,13 +1,13 @@
 <template>
   <div class="flex flex-wrap gap-8">
-    <UIBadge v-if="user.userWorkspace.status">
-      {{ USER_WORKSPACE_STATUS_MAP[user.userWorkspace.status] }}
+    <UIBadge v-if="user.status">
+      {{ USER_WORKSPACE_STATUS_MAP[user.status] }}
     </UIBadge>
-    <UIBadge v-if="user.userWorkspace.workspaceRole" :background-color="EColor.BLUE">
-      {{ USER_WORKSPACE_ROLE_MAP[user.userWorkspace.workspaceRole] }}
+    <UIBadge v-if="user.workspaceRole" :background-color="EColor.BLUE">
+      {{ USER_WORKSPACE_ROLE_MAP[user.workspaceRole] }}
     </UIBadge>
     <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">
-      создан {{ DatetimeUtility.format(user.userWorkspace.createdAt, 'DD.MM.YYYY HH:mm') }}
+      создан {{ DatetimeUtility.format(user.createdAt, 'DD.MM.YYYY HH:mm') }}
     </UIBadge>
   </div>
 </template>

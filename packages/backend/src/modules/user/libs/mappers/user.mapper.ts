@@ -2,12 +2,9 @@ import type { TUser, TUserBase } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 
 import UserEntity from '@/modules/user/libs/entities/user.entity';
-import UserWorkspaceMapper from '@/modules/user/libs/mappers/user-workspace.mapper';
 
 @Injectable()
 export default class UserMapper {
-  constructor(private userWorkspaceMapper: UserWorkspaceMapper) {}
-
   public toModel(entity: UserEntity, options: { base: true }): TUserBase;
   public toModel(entity: UserEntity[], options: { base: true }): TUserBase[];
   public toModel(entity: UserEntity, options?: { base?: false }): TUser;
@@ -29,9 +26,12 @@ export default class UserMapper {
       };
 
       if (options?.base) return mapped;
+
       return {
         ...mapped,
-        userWorkspace: this.userWorkspaceMapper.toModel(innerEntity.userWorkspace),
+        status: innerEntity.status,
+        workspaceId: innerEntity.workspaceId,
+        workspaceRole: innerEntity.workspaceRole,
       };
     };
 

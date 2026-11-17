@@ -20,7 +20,7 @@ export default class BoardController {
   @Get()
   @Can.Anyone()
   async getBoards(@CurrentUser() me: TUser): Promise<TBoardBase[]> {
-    return await this.boardService.getBoards(me.userWorkspace.workspaceId);
+    return await this.boardService.getBoards(me.workspaceId);
   }
 
   @Can.Anyone()

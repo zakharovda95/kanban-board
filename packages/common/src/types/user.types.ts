@@ -14,13 +14,7 @@ export type TUserBase = {
 };
 
 export type TUser = TUserBase & {
-  userWorkspace: TUserWorkspace;
-};
-
-/** Данные о рабочем пространстве пользователя. **/
-export type TUserWorkspace = {
-  id: number;
-  createdAt: Date;
+  /** Статус пользователя в рабочем пространстве. **/
   status: EUserWorkspaceStatus;
   workspaceId: number;
   /** Роль пользователя в рабочем пространстве (один OWNER, остальные USER) **/
@@ -28,11 +22,13 @@ export type TUserWorkspace = {
 };
 
 /** Данные, необходимые для создания пользователя. **/
-export type TCreateUser = Pick<TUser, 'firstName' | 'lastName'> &
-  Pick<TUserWorkspace, 'workspaceId' | 'workspaceRole'> & {
-    login: string;
-    passwordHash: string;
-  };
+export type TCreateUser = Pick<
+  TUser,
+  'firstName' | 'lastName' | 'workspaceId' | 'workspaceRole'
+> & {
+  login: string;
+  passwordHash: string;
+};
 
 /** Ответ после обновления пользователя. Рабочее пространство при этом не меняется. **/
 export type TUpdateUserResponse = TSuccessResponse<TUserBase>;

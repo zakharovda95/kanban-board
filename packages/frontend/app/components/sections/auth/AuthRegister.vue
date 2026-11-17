@@ -120,7 +120,9 @@ const runtimeConfig = useRuntimeConfig();
 const toast = useToast();
 
 const inviteToken = useRouteHash();
-const preparedInviteToken = inviteToken.value ? prepareRouteHash(String(toValue(inviteToken))) : undefined;
+const preparedInviteToken = computed(() =>
+  inviteToken.value ? prepareRouteHash(String(toValue(inviteToken))) : undefined,
+);
 
 const activeView = ref<'form' | 'result'>('form');
 
@@ -139,7 +141,7 @@ const copyLogin = async () => {
 
 const copyPassword = async () => {
   if (!data.value) return;
-  await copy(data.value.login);
+  await copy(data.value.password);
   if (copied.value) {
     toast.success({ message: 'Ваш пароль скопирован!' });
   }
@@ -159,13 +161,13 @@ const saveData = () => {
 const formData = reactive<TAuthRegisterBodySchema | TAuthRegisterByInviteBodySchema>({
   firstName: getRandomFirstName(),
   lastName: getRandomLastName(),
-  inviteToken: preparedInviteToken,
+  inviteToken: preparedInviteToken.value,
 });
 
 const { call, isLoading, data } = useTryCatchFinally<null | TAuthLoginBodySchema>({
   callback: async (_, signal?: AbortSignal) => {
     const result = await $api<TAuthRegisterResponse>(
-      preparedInviteToken ? '/api/auth/register-by-invite' : '/api/auth/register',
+      preparedInviteToken.value ? '/api/auth/register-by-invite' : '/api/auth/register',
       {
         method: 'POST',
         body: formData,

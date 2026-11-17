@@ -155,13 +155,13 @@ const closeModals = () => {
 };
 
 const resetInvite = () => {
+  inviteData.value = null;
   reset();
   closeModals();
 };
 
 const finish = () => {
-  inviteData.value = null;
-  closeModals();
+  resetInvite();
   emit('refresh');
 };
 

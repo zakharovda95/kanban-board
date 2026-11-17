@@ -32,13 +32,13 @@ export default class WorkspaceController {
   @Can.Anyone()
   @Get()
   public async getWorkspace(@CurrentUser() me: TUser): Promise<TWorkspace> {
-    return await this.workspaceService.getWorkspace(me.userWorkspace.workspaceId);
+    return await this.workspaceService.getWorkspace(me.workspaceId);
   }
 
   @Can.Anyone()
   @Delete()
   public async deleteWorkspace(@CurrentUser() me: TUser): Promise<TSuccessResponse> {
-    await this.workspaceService.deleteWorkspace(me.userWorkspace.workspaceId);
+    await this.workspaceService.deleteWorkspace(me.workspaceId);
     return getSuccessResponse();
   }
 
@@ -48,10 +48,7 @@ export default class WorkspaceController {
     @CurrentUser() me: TUser,
     @Body({ schema: createWorkspaceInviteBodySchema }) body: TCreateWorkspaceInviteBodySchema,
   ): Promise<TCreateWorkspaceInviteResponse> {
-    const result = await this.workspaceInviteService.createInvite(
-      me.userWorkspace.workspaceId,
-      body,
-    );
+    const result = await this.workspaceInviteService.createInvite(me.workspaceId, body);
     return getSuccessResponseWithData<TCreateWorkspaceInviteToken>(result);
   }
 

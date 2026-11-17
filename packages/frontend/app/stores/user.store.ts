@@ -17,7 +17,7 @@ export const useUserStore = defineStore('user-store', () => {
   });
 
   const isAuth = computed(() => Boolean(me.value));
-  const isOwner = computed(() => me.value?.userWorkspace.workspaceRole === 'OWNER');
+  const isOwner = computed(() => me.value?.workspaceRole === 'OWNER');
 
   const tryInitialize = async () => {
     if (isInitialized.value) return;

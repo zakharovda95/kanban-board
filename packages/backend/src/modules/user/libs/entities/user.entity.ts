@@ -1,13 +1,15 @@
 import {
   AUTH_LOGIN_MAXLENGTH,
   EUserRole,
+  EUserWorkspaceRole,
+  EUserWorkspaceStatus,
   USER_FIRST_NAME_MAXLENGTH,
   USER_LAST_NAME_MAXLENGTH,
 } from '@kanban-board/common';
-import { Column, Entity, Index, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
-import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.entity';
+import WorkspaceEntity from '@/modules/workspace/libs/entities/workspace.entity';
 
 @Entity({ name: 'users' })
 export default class UserEntity extends BaseEntity {
@@ -29,11 +31,17 @@ export default class UserEntity extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   avatar!: string | null;
 
-  @Index({ unique: true })
-  @Column({ type: 'int' })
-  userWorkspaceId!: number;
+  @Column({ type: 'enum', enum: EUserWorkspaceStatus, default: EUserWorkspaceStatus.ACTIVE })
+  status!: EUserWorkspaceStatus;
 
-  @OneToOne(() => UserWorkspaceEntity, entity => entity.user, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userWorkspaceId' })
-  userWorkspace!: UserWorkspaceEntity;
+  @Column({ type: 'enum', enum: EUserWorkspaceRole, default: EUserWorkspaceRole.USER })
+  workspaceRole!: EUserWorkspaceRole;
+
+  @Index()
+  @Column({ type: 'int' })
+  workspaceId!: number;
+
+  @ManyToOne(() => WorkspaceEntity, entity => entity.users, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'workspaceId' })
+  workspace!: WorkspaceEntity;
 }

@@ -16,7 +16,7 @@ import {
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { DataSource, EntityManager, LessThanOrEqual, MoreThan } from 'typeorm';
 
-import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.entity';
+import UserEntity from '@/modules/user/libs/entities/user.entity';
 import WorkspaceInviteEntity from '@/modules/workspace/libs/entities/workspace-invite.entity';
 import WorkspaceInviteMapper from '@/modules/workspace/libs/mappers/workspace-invite.mapper';
 
@@ -75,7 +75,7 @@ export default class WorkspaceInviteService {
       // Блокируем доступ к базе данных для предотвращения одновременного создания нескольких приглашений.
       await transactionalManager.query('SELECT pg_advisory_xact_lock($1)', [DATABASE_LOCK_ID]);
 
-      const activeUsersCount = await transactionalManager.count(UserWorkspaceEntity, {
+      const activeUsersCount = await transactionalManager.count(UserEntity, {
         where: { workspaceId, workspaceRole: EUserWorkspaceRole.USER },
       });
 

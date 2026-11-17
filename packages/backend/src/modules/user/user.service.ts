@@ -20,7 +20,6 @@ import { DataSource, EntityManager } from 'typeorm';
 
 import { AuthSessionEntity } from '@/modules/auth/libs/entities/auth-session.entity';
 import UserEntity from '@/modules/user/libs/entities/user.entity';
-import UserWorkspaceEntity from '@/modules/user/libs/entities/user-workspace.entity';
 import UserMapper from '@/modules/user/libs/mappers/user.mapper';
 
 @Injectable()
@@ -42,7 +41,6 @@ export default class UserService {
 
     const user = await manager.findOne(UserEntity, {
       where: { id: userId },
-      relations: { userWorkspace: true },
     });
     if (!user) return null;
 
@@ -65,7 +63,6 @@ export default class UserService {
 
     const user = await manager.findOne(UserEntity, {
       where: isLogin ? { login: loginOrId } : { id: loginOrId },
-      relations: { userWorkspace: true },
     });
 
     if (!user) {
@@ -122,16 +119,6 @@ export default class UserService {
 
     const { firstName, lastName, workspaceId, login, passwordHash, workspaceRole } = body;
 
-    const newUserWorkspace = transactionalManager.create(UserWorkspaceEntity, {
-      workspaceId,
-      workspaceRole,
-      status: EUserWorkspaceStatus.ACTIVE,
-    });
-
-    const createdUserWorkspace = await transactionalManager.save(newUserWorkspace);
-    if (!createdUserWorkspace)
-      throw new BadRequestException('Не удалось привязать пользователя к рабочему пространству');
-
     const newUser = transactionalManager.create(UserEntity, {
       firstName,
       lastName,
@@ -139,7 +126,9 @@ export default class UserService {
       passwordHash,
       systemRole: EUserRole.USER,
       avatar: RandomUtility.getRandomFromArray(USER_AVATARS),
-      userWorkspaceId: createdUserWorkspace.id,
+      workspaceId,
+      workspaceRole,
+      status: EUserWorkspaceStatus.ACTIVE,
     });
 
     const createdUser = await transactionalManager.save(newUser);
@@ -147,7 +136,6 @@ export default class UserService {
 
     const user = await transactionalManager.findOne(UserEntity, {
       where: { id: createdUser.id },
-      relations: { userWorkspace: true },
     });
     if (!user) throw new BadRequestException('Не удалось создать пользователя');
 
@@ -223,8 +211,6 @@ export default class UserService {
       const { affected } = await transactionalManager.delete(UserEntity, { id: userId });
       if (!affected || affected <= 0)
         throw new InternalServerErrorException('Не удалось удалить пользователя');
-
-      await transactionalManager.delete(UserWorkspaceEntity, { id: user.userWorkspaceId });
     });
   }
 }
