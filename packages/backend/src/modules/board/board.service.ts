@@ -10,7 +10,7 @@ import {
   type TPositiveIdSchema,
   type TUpdateBoardBodySchema,
 } from '@kanban-board/common';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { cloneDeep } from 'lodash';
 import { DataSource } from 'typeorm';
@@ -41,7 +41,6 @@ export default class BoardService {
       where: { workspaceId },
       order: { order: 'ASC' },
     });
-    if (!boards.length) return [];
 
     return this.boardMapper.toModel(boards, { base: true });
   }
@@ -52,8 +51,6 @@ export default class BoardService {
    * @returns объект доски с вложенными колонками и задачами.
    * **/
   public async getBoardById(boardId: TPositiveIdSchema): Promise<TBoard> {
-    if (!boardId) throw new BadRequestException('Не указан идентификатор доски');
-
     const { manager } = this.dataSource;
 
     const board = await manager.findOne(BoardEntity, {
@@ -76,9 +73,6 @@ export default class BoardService {
     workspaceId: TPositiveIdSchema,
     body: TCreateBoardBodySchema,
   ): Promise<TBoardBase> {
-    if (!workspaceId) throw new WsException('Не указан идентификатор рабочего пространства');
-    if (!body) throw new WsException('Не переданы данные для создания доски');
-
     const { manager } = this.dataSource;
 
     return manager.transaction(async transactionalManager => {
@@ -108,7 +102,6 @@ export default class BoardService {
       });
 
       const createdBoard = await transactionalManager.save(newBoard);
-      if (!createdBoard) throw new WsException('Не удалось создать доску');
 
       return this.boardMapper.toModel(createdBoard, { base: true });
     });
@@ -129,9 +122,6 @@ export default class BoardService {
     workspaceId: TPositiveIdSchema,
     body: TMoveParametersBodySchema,
   ): Promise<TMoveBoardEmitPayload> {
-    if (!workspaceId) throw new WsException('Не указан идентификатор рабочего пространства');
-    if (!body) throw new WsException('Не переданы параметры перемещения доски');
-
     const { manager } = this.dataSource;
 
     return await manager.transaction(async transactionalManager => {
@@ -163,7 +153,6 @@ export default class BoardService {
    * @returns объект обновленной доски.
    * **/
   public async updateBoard(body: TUpdateBoardBodySchema): Promise<TBoardBase> {
-    if (!body?.id) throw new WsException('Не указан идентификатор доски для обновления');
     const { id, ...rest } = body;
     const { manager } = this.dataSource;
 
@@ -171,7 +160,6 @@ export default class BoardService {
     if (!board) throw new WsException('Доска для обновления не найдена');
 
     const updatedBoard = await manager.save(Object.assign(board, rest));
-    if (!updatedBoard) throw new WsException('Не удалось сохранить изменения доски');
 
     return this.boardMapper.toModel(updatedBoard, { base: true });
   }
@@ -182,8 +170,6 @@ export default class BoardService {
    * @returns ID удаленной доски.
    * **/
   public async deleteBoard(boardId: TPositiveIdSchema): Promise<TDeleteBoardEmitPayload> {
-    if (!boardId) throw new WsException('Не указан идентификатор доски для удаления');
-
     const { manager } = this.dataSource;
 
     const { affected } = await manager.delete(BoardEntity, { id: boardId });

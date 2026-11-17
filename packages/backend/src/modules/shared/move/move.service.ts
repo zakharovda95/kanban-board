@@ -33,7 +33,6 @@ export default class MoveService<T extends IMovable> {
     options?: TMoveOptions,
   ): TMoveResult {
     const { previousId, targetId } = parameters;
-    if (!targetId) throw new WsException('Не указан идентификатор перемещаемого элемента');
 
     const target = entities.find(({ id }) => id === targetId);
     if (!target) throw new WsException('Перемещаемый элемент не найден в списке');
@@ -56,7 +55,7 @@ export default class MoveService<T extends IMovable> {
 
     if (previousId) {
       const [previousElement, adjacentElement] = this.getAdjacent(withoutTarget, previousId);
-      if (!previousElement || this.isCurrentPosition(targetId, previousId))
+      if (!previousElement)
         throw new WsException(
           'Некорректная позиция для перемещения: предыдущий элемент не найден или совпадает с перемещаемым',
         );

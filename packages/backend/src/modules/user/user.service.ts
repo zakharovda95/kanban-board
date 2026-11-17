@@ -10,12 +10,7 @@ import {
   type TUserBase,
   USER_AVATARS,
 } from '@kanban-board/common';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { AuthSessionEntity } from '@/modules/auth/libs/entities/auth-session.entity';
@@ -35,8 +30,6 @@ export default class UserService {
    * @returns объект пользователя.
    * **/
   public async getMe(userId: TPositiveIdSchema): Promise<TUser | null> {
-    if (!userId) throw new BadRequestException(`Не указан идентификатор пользователя`);
-
     const { manager } = this.dataSource;
 
     const user = await manager.findOne(UserEntity, {
@@ -55,8 +48,6 @@ export default class UserService {
   public async getUserBy(login: string): Promise<TUser>;
   public async getUserBy(userId: TPositiveIdSchema): Promise<TUser>;
   public async getUserBy(loginOrId: string | TPositiveIdSchema): Promise<TUser> {
-    if (!loginOrId) throw new BadRequestException(`Не указан идентификатор или логин пользователя`);
-
     const isLogin = typeof loginOrId === 'string';
 
     const { manager } = this.dataSource;
@@ -84,8 +75,6 @@ export default class UserService {
   public async getUserCredentialsBy(
     loginOrId: string | TPositiveIdSchema,
   ): Promise<TAuthCredentials> {
-    if (!loginOrId) throw new BadRequestException(`Не указан идентификатор или логин пользователя`);
-
     const isLogin = typeof loginOrId === 'string';
 
     const { manager } = this.dataSource;
@@ -114,9 +103,6 @@ export default class UserService {
    * @returns объект созданного пользователя.
    * **/
   public async createUser(transactionalManager: EntityManager, body: TCreateUser): Promise<TUser> {
-    if (!transactionalManager) throw new BadRequestException('Не передан транзакционный менеджер.');
-    if (!body) throw new BadRequestException('Не переданы данные для создания пользователя');
-
     const { firstName, lastName, workspaceId, login, passwordHash, workspaceRole } = body;
 
     const newUser = transactionalManager.create(UserEntity, {
@@ -132,14 +118,8 @@ export default class UserService {
     });
 
     const createdUser = await transactionalManager.save(newUser);
-    if (!createdUser) throw new BadRequestException('Не удалось создать пользователя');
 
-    const user = await transactionalManager.findOne(UserEntity, {
-      where: { id: createdUser.id },
-    });
-    if (!user) throw new BadRequestException('Не удалось создать пользователя');
-
-    return this.userMapper.toModel(user, { base: false });
+    return this.userMapper.toModel(createdUser, { base: false });
   }
 
   /**
@@ -149,9 +129,6 @@ export default class UserService {
    * @returns объект созданного пользователя.
    * **/
   public async updateUserPasswordHash(userId: TPositiveIdSchema, newHash: string): Promise<true> {
-    if (!userId) throw new BadRequestException(`Не указан идентификатор пользователя`);
-    if (!newHash) throw new BadRequestException(`Не указан хэш пароля`);
-
     const { manager } = this.dataSource;
 
     const user = await manager.findOne(UserEntity, {
@@ -160,9 +137,7 @@ export default class UserService {
     if (!user) throw new NotFoundException(`Пользователь по указанному идентификатору не найден`);
 
     user.passwordHash = newHash;
-
-    const updatedUser = await manager.save(user);
-    if (!updatedUser) throw new InternalServerErrorException('Не удалось обновить хэш пароля');
+    await manager.save(user);
 
     return true;
   }
@@ -177,17 +152,12 @@ export default class UserService {
     userId: TPositiveIdSchema,
     body: TUpdateUserBodySchema,
   ): Promise<TUserBase> {
-    if (!userId) throw new BadRequestException(`Не указан идентификатор пользователя`);
-    if (!body) throw new BadRequestException(`Не указаны данные для обновления пользователя`);
-
     const { manager } = this.dataSource;
 
     const user = await manager.findOne(UserEntity, { where: { id: userId } });
     if (!user) throw new NotFoundException(`Пользователь по указанному идентификатору не найден`);
 
     const updatedUser = await manager.save(Object.assign(user, body));
-    if (!updatedUser)
-      throw new InternalServerErrorException('Не удалось обновить данные пользователя');
 
     return this.userMapper.toModel(updatedUser, { base: true });
   }
@@ -198,8 +168,6 @@ export default class UserService {
    * @returns void.
    * **/
   public async deleteUser(userId: TPositiveIdSchema): Promise<void> {
-    if (!userId) throw new BadRequestException(`Не указан идентификатор пользователя`);
-
     const { manager } = this.dataSource;
 
     await manager.transaction(async transactionalManager => {
@@ -207,10 +175,7 @@ export default class UserService {
       if (!user) throw new NotFoundException(`Пользователь по указанному идентификатору не найден`);
 
       await transactionalManager.delete(AuthSessionEntity, { userId: String(userId) });
-
-      const { affected } = await transactionalManager.delete(UserEntity, { id: userId });
-      if (!affected || affected <= 0)
-        throw new InternalServerErrorException('Не удалось удалить пользователя');
+      await transactionalManager.delete(UserEntity, { id: userId });
     });
   }
 }

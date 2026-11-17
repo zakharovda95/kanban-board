@@ -49,8 +49,6 @@ export default class IssueService {
    * @returns объект созданной задачи.
    * **/
   public async createIssue(body: TCreateIssueBodySchema): Promise<TIssueBase> {
-    if (!body) throw new WsException('Не переданы данные для создания задачи');
-
     const { boardId, columnId, title, description } = body;
     const { manager } = this.dataSource;
 
@@ -87,7 +85,6 @@ export default class IssueService {
       });
 
       const createdIssue = await transactionalManager.save(newIssue);
-      if (!createdIssue) throw new WsException('Не удалось создать задачу');
 
       return this.issueMapper.toModel(createdIssue, { base: true });
     });
@@ -107,8 +104,6 @@ export default class IssueService {
    * @returns ID перемещенной задачи, ID колонки from/to и перемещенная задача или null, если был reorder и нужен refetch.
    * **/
   public async moveIssue(body: TMoveIssueBodySchema): Promise<TMoveIssueEmitPayload> {
-    if (!body) throw new WsException('Не переданы параметры перемещения задачи');
-
     const { toColumnId, previousId, targetId, boardId, fromColumnId } = body;
     const { manager } = this.dataSource;
 
@@ -119,11 +114,8 @@ export default class IssueService {
       if (!targetIssue)
         throw new WsException('Задача для перемещения не найдена в указанной колонке');
 
-      const isCurrentBoard = Boolean(targetIssue.boardId === boardId);
-      const isCurrentColumn = Boolean(!toColumnId || toColumnId === targetIssue.columnId);
+      const isCurrentColumn = !toColumnId || toColumnId === targetIssue.columnId;
       const columnIdTo = toColumnId || targetIssue.columnId;
-
-      if (!isCurrentBoard) throw new WsException('Нельзя переместить задачу на другую доску');
 
       const targetColumn = await transactionalManager.findOne(ColumnEntity, {
         relations: { issues: true },
@@ -170,8 +162,6 @@ export default class IssueService {
    * @returns базовый объект обновленной задачи.
    * **/
   public async updateIssue(body: TUpdateIssueBodySchema): Promise<TIssueBase> {
-    if (!body) throw new WsException('Не переданы данные для обновления задачи');
-
     const { id, ...rest } = body;
     const { manager } = this.dataSource;
 
@@ -179,7 +169,6 @@ export default class IssueService {
     if (!issue) throw new WsException('Задача для обновления не найдена');
 
     const updatedIssue = await manager.save(IssueEntity, Object.assign(issue, rest));
-    if (!updatedIssue) throw new WsException('Не удалось сохранить изменения задачи');
 
     return this.issueMapper.toModel(updatedIssue, { base: true });
   }
@@ -190,15 +179,12 @@ export default class IssueService {
    * @returns ID удаленной задачи, ID доски и ID колонки.
    * **/
   public async deleteIssue(issueId: TPositiveIdSchema): Promise<TDeleteIssueEmitPayload> {
-    if (!issueId) throw new WsException('Не указан идентификатор задачи для удаления');
-
     const { manager } = this.dataSource;
 
     const target = await manager.findOne(IssueEntity, { where: { id: issueId } });
     if (!target) throw new WsException('Задача для удаления не найдена');
 
-    const { affected } = await manager.delete(IssueEntity, { id: issueId });
-    if (!affected || affected <= 0) throw new WsException('Не удалось удалить задачу');
+    await manager.delete(IssueEntity, { id: issueId });
 
     return {
       boardId: target.boardId,

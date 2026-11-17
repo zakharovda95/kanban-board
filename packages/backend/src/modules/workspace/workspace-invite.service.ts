@@ -37,10 +37,6 @@ export default class WorkspaceInviteService {
     transactionalManager: EntityManager,
     inviteToken: string,
   ): Promise<TWorkspaceInvite> {
-    if (!transactionalManager)
-      throw new InternalServerErrorException('Произошла ошибка в транзакции');
-    if (!inviteToken) throw new BadRequestException('Не передан инвайт-токен');
-
     // Сравниваем хэши напрямую в базе
     const invite = await transactionalManager.findOne(WorkspaceInviteEntity, {
       where: { inviteTokenHash: HashServerUtility.sha256(inviteToken) },
@@ -60,13 +56,6 @@ export default class WorkspaceInviteService {
     workspaceId: TPositiveIdSchema,
     body: TCreateWorkspaceInviteBodySchema,
   ): Promise<TCreateWorkspaceInviteToken> {
-    if (!workspaceId)
-      throw new BadRequestException('Не передан идентификатор рабочего пространства');
-    if (!body)
-      throw new BadRequestException(
-        'Не переданы данные для создания приглашения в рабочее пространство',
-      );
-
     const { name } = body;
     const { manager } = this.dataSource;
 
@@ -95,8 +84,6 @@ export default class WorkspaceInviteService {
       });
 
       const createdToken = await transactionalManager.save(newToken);
-      if (!createdToken)
-        throw new InternalServerErrorException('Не удалось сгенерировать инвайт-токен');
 
       return {
         inviteToken,
@@ -115,9 +102,6 @@ export default class WorkspaceInviteService {
     inviteId: number,
     transactionalManager: EntityManager | undefined = undefined,
   ): Promise<void> {
-    if (!inviteId)
-      throw new BadRequestException('Не передан идентификатор приглашения в рабочее пространство');
-
     const manager = transactionalManager || this.dataSource.manager;
 
     const { affected } = await manager.delete(WorkspaceInviteEntity, { id: inviteId });

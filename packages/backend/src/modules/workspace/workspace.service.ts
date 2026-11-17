@@ -7,12 +7,7 @@ import {
   type TWorkspaceUsers,
   WORKSPACE_USERS_MAX_COUNT,
 } from '@kanban-board/common';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, MoreThan } from 'typeorm';
 
 import UserEntity from '@/modules/user/libs/entities/user.entity';
@@ -37,9 +32,6 @@ export default class WorkspaceService {
    * @returns объект рабочего пространства с пользователями и владельцем.
    * **/
   public async getWorkspace(workspaceId: TPositiveIdSchema): Promise<TWorkspace> {
-    if (!workspaceId)
-      throw new BadRequestException('Не передан идентификатор рабочего пространства');
-
     const { manager } = this.dataSource;
 
     const workspace = await manager.findOne(WorkspaceEntity, {
@@ -91,14 +83,8 @@ export default class WorkspaceService {
    * @returns объект созданного рабочего пространства.
    * **/
   public async createWorkspace(transactionalManager: EntityManager): Promise<TWorkspaceBase> {
-    if (!transactionalManager)
-      throw new InternalServerErrorException('Произошла ошибка в транзакции');
-
     const newWorkspace = transactionalManager.create(WorkspaceEntity);
-
     const createdWorkspace = await transactionalManager.save(newWorkspace);
-    if (!createdWorkspace)
-      throw new InternalServerErrorException('Не удалось создать рабочее пространство');
 
     return this.workspaceMapper.toModel(createdWorkspace);
   }
@@ -109,9 +95,6 @@ export default class WorkspaceService {
    * @returns void.
    * **/
   public async deleteWorkspace(workspaceId: TPositiveIdSchema): Promise<void> {
-    if (!workspaceId)
-      throw new BadRequestException('Не передан идентификатор рабочего пространства');
-
     const { manager } = this.dataSource;
 
     const { affected } = await manager.delete(WorkspaceEntity, { id: workspaceId });

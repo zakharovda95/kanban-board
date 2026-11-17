@@ -1,14 +1,13 @@
-import {
-  ColorUtility,
-  type TColumn,
-  type TColumnBase,
-  type TCreateColumnBodySchema,
-  type TDeleteColumnEmitPayload,
-  type TMoveColumnBodySchema,
-  type TMoveColumnEmitPayload,
-  type TMoveParametersBodySchema,
-  type TPositiveIdSchema,
-  type TUpdateColumnBodySchema,
+import type {
+  TColumn,
+  TColumnBase,
+  TCreateColumnBodySchema,
+  TDeleteColumnEmitPayload,
+  TMoveColumnBodySchema,
+  TMoveColumnEmitPayload,
+  TMoveParametersBodySchema,
+  TPositiveIdSchema,
+  TUpdateColumnBodySchema,
 } from '@kanban-board/common';
 import { Injectable } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
@@ -35,8 +34,6 @@ export default class ColumnService {
    * @returns объект созданной колонки.
    * **/
   public async createColumn(body: TCreateColumnBodySchema): Promise<TColumn> {
-    if (!body) throw new WsException('Не переданы данные для создания колонки');
-
     const { boardId, color, title, description } = body;
     const { manager } = this.dataSource;
 
@@ -63,13 +60,12 @@ export default class ColumnService {
       const newColumn = transactionalManager.create(ColumnEntity, {
         title,
         description: description ?? null,
-        color: color || ColorUtility.getRandomHexColor(),
+        color,
         order: OrderUtility.calculateNextOrder(result?.maxOrder ?? 0),
         boardId,
       });
 
       const createdColumn = await transactionalManager.save(newColumn);
-      if (!createdColumn) throw new WsException('Не удалось создать колонку');
 
       return this.columnMapper.toModel({ ...createdColumn, issues: [] }, { base: false });
     });
@@ -87,8 +83,6 @@ export default class ColumnService {
    * @returns id перемещенной колонки и перемещенная колонка или null, если был reorder всех колонок и нужно сделать refetch.
    * **/
   public async moveColumn(body: TMoveColumnBodySchema): Promise<TMoveColumnEmitPayload> {
-    if (!body) throw new WsException('Не переданы параметры перемещения колонки');
-
     const { boardId, targetId, previousId } = body;
     const { manager } = this.dataSource;
 
@@ -126,8 +120,6 @@ export default class ColumnService {
    * @returns базовый объект обновленной колонки (без задач).
    * **/
   public async updateColumn(body: TUpdateColumnBodySchema): Promise<TColumnBase> {
-    if (!body) throw new WsException('Не переданы данные для обновления колонки');
-
     const { id, ...rest } = body;
     const { manager } = this.dataSource;
 
@@ -135,7 +127,6 @@ export default class ColumnService {
     if (!column) throw new WsException('Колонка для обновления не найдена');
 
     const updatedColumn = await manager.save(Object.assign(column, rest));
-    if (!updatedColumn) throw new WsException('Не удалось сохранить изменения колонки');
 
     return this.columnMapper.toModel(updatedColumn, { base: true });
   }
@@ -146,15 +137,12 @@ export default class ColumnService {
    * @returns ID доски и ID удаленной доски.
    * **/
   public async deleteColumn(columnId: TPositiveIdSchema): Promise<TDeleteColumnEmitPayload> {
-    if (!columnId) throw new WsException('Не указан идентификатор колонки для удаления');
-
     const { manager } = this.dataSource;
 
     const target = await manager.findOne(ColumnEntity, { where: { id: columnId } });
     if (!target) throw new WsException('Колонка для удаления не найдена');
 
-    const { affected } = await manager.delete(ColumnEntity, { id: columnId });
-    if (!affected || affected <= 0) throw new WsException('Не удалось удалить колонку');
+    await manager.delete(ColumnEntity, { id: columnId });
 
     return {
       boardId: target.boardId,

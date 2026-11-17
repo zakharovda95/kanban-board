@@ -10,12 +10,7 @@ import {
 } from '@kanban-board/common';
 import { RandomServerUtility } from '@kanban-board/common/node';
 import { PasswordHasher, SignInService } from '@nestjs/authentication';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 import UserService from '@/modules/user/user.service';
@@ -39,8 +34,6 @@ export class AuthService {
    * @returns сгенерированные логин и пароль.
    * **/
   public async register(body: TAuthRegisterBodySchema): Promise<TAuthLoginBodySchema> {
-    if (!body) throw new BadRequestException('Не переданы данные для регистрации');
-
     const { firstName, lastName } = body;
 
     const { manager } = this.dataSource;
@@ -51,10 +44,6 @@ export class AuthService {
       await transactionalManager.query('SELECT pg_advisory_xact_lock($1)', [DATABASE_LOCK_ID]);
 
       const { id: workspaceId } = await this.workspaceService.createWorkspace(transactionalManager);
-      if (!workspaceId)
-        throw new InternalServerErrorException(
-          'Не удалось завершить регистрацию: ошибка при создании рабочего пространства',
-        );
 
       const login = RandomUtility.generateRandomLogin(firstName, lastName);
       const password = RandomServerUtility.generateRandomPassword();
@@ -69,11 +58,7 @@ export class AuthService {
         workspaceRole: EUserWorkspaceRole.OWNER,
       };
 
-      const createdUser = await this.userService.createUser(transactionalManager, newUserBody);
-      if (!createdUser)
-        throw new InternalServerErrorException(
-          'Не удалось завершить регистрацию: ошибка при создании пользователя',
-        );
+      await this.userService.createUser(transactionalManager, newUserBody);
 
       return { login, password };
     });
@@ -87,11 +72,6 @@ export class AuthService {
   public async registerByInvite(
     body: TAuthRegisterByInviteBodySchema,
   ): Promise<TAuthLoginBodySchema> {
-    if (!body)
-      throw new BadRequestException(
-        'Не переданы данные, необходимые для добавления пользователя в пространство',
-      );
-
     const { firstName, lastName, inviteToken } = body;
 
     const { manager } = this.dataSource;
@@ -123,12 +103,7 @@ export class AuthService {
         workspaceRole: EUserWorkspaceRole.USER,
       };
 
-      const createdUser = await this.userService.createUser(transactionalManager, newUserBody);
-      if (!createdUser)
-        throw new InternalServerErrorException(
-          'Не удалось завершить регистрацию: ошибка при создании пользователя',
-        );
-
+      await this.userService.createUser(transactionalManager, newUserBody);
       await this.workspaceInviteService.deleteWorkspaceInvite(inviteId, transactionalManager);
 
       return { login, password };
@@ -141,17 +116,14 @@ export class AuthService {
    * @returns void.
    * **/
   public async login(body: TAuthLoginBodySchema): Promise<void> {
-    if (!body) throw new BadRequestException('Не указаны данные аутентификации');
     const { login, password } = body;
 
     const { userId, passwordHash } = await this.userService.getUserCredentialsBy(login);
-    if (!userId || !passwordHash) throw new UnauthorizedException('Не верный логин или пароль');
 
     const isValid = await this.verify(userId, passwordHash, password);
     if (!isValid) throw new UnauthorizedException('Не верный логин или пароль');
 
-    const session = await this.signInService.signIn(String(userId), { method: 'password' });
-    if (!session) throw new InternalServerErrorException('Не удалось войти в систему');
+    await this.signInService.signIn(String(userId), { method: 'password' });
   }
 
   /**
@@ -159,8 +131,7 @@ export class AuthService {
    * @returns void.
    * **/
   public async logout(): Promise<void> {
-    const result = await this.signInService.signOut();
-    if (!result) throw new InternalServerErrorException('Не удалось выйти из системы');
+    await this.signInService.signOut();
   }
 
   /**
@@ -171,9 +142,6 @@ export class AuthService {
    * @returns сгенерированные логин и пароль.
    * **/
   private async verify(userId: number, passwordHash: string, password: string): Promise<boolean> {
-    if (!userId) throw new BadRequestException('Не передан идентификатор пользователя');
-    if (!passwordHash || !password) throw new BadRequestException('Не передан пароль');
-
     const isValid = await this.passwordHasher.verify(password, passwordHash);
     if (!isValid) return false;
 
