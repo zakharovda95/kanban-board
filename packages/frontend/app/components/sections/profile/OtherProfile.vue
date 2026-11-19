@@ -24,6 +24,8 @@
     <ProfileBadges :user="user" />
 
     <UIDivider variant="dashed" />
+
+    <ProfilePermissions />
   </TheProfile>
 </template>
 
@@ -34,6 +36,7 @@ import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composab
 
 import ProfileBadges from '~/components/sections/profile/ProfileBadges.vue';
 import ProfileInfo from '~/components/sections/profile/ProfileInfo.vue';
+import ProfilePermissions from '~/components/sections/profile/ProfilePermissions.vue';
 import TheProfile from '~/components/sections/profile/TheProfile.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';

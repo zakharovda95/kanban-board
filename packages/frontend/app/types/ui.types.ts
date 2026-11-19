@@ -35,6 +35,10 @@ export type TUIAnimatedHeightHook = (element: Element) => void;
 
 export type TUIFormButtonsPosition = 'column' | 'row';
 
+export type TUILabelDirection = 'column' | 'row';
+
+export type TUILabelPosition = 'start' | 'end' | 'between';
+
 export type TSize = 'small' | 'medium' | 'large';
 
 export type TUISelectOption = {
