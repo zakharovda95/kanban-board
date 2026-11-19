@@ -162,7 +162,6 @@ const resetInvite = () => {
 
 const finish = () => {
   resetInvite();
-  emit('refresh');
 };
 
 const { copy, copied } = useClipboard();
@@ -204,6 +203,7 @@ const {
       toast.success({
         message: `Инвайт-ссылка готова! Передайте ссылку пользователю. Ссылка активна ${inviteExpiresSting.value}. По одной ссылке можно зарегистрироваться только одному пользователю.`,
       });
+      emit('refresh');
       return result.data;
     }
 

@@ -6,7 +6,9 @@ import AppModule from '@/app.module';
 import { TAppConfigSchema } from '@/config/app-config.schema';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    routeConflictPolicy: { duplicate: 'error', shadow: 'error' },
+  });
 
   const configService = app.get(ConfigService<TAppConfigSchema, true>);
   const host = configService.get('BACKEND_HOST', { infer: true });

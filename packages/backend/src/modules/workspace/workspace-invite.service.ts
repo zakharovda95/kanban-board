@@ -119,7 +119,7 @@ export default class WorkspaceInviteService {
     const { manager } = this.dataSource;
 
     await manager.delete(WorkspaceInviteEntity, {
-      where: { expiresAt: LessThanOrEqual(new Date()) },
+      expiresAt: LessThanOrEqual(new Date()),
     });
   }
 }
