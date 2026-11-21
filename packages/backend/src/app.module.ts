@@ -7,6 +7,7 @@ import AuthModule from '@/modules/auth/auth.module';
 import BoardModule from '@/modules/board/board.module';
 import ColumnModule from '@/modules/column/column.module';
 import IssueModule from '@/modules/issue/issue.module';
+import PermissionModule from '@/modules/permission/permission.module';
 import UserModule from '@/modules/user/user.module';
 import WorkspaceModule from '@/modules/workspace/workspace.module';
 
@@ -18,6 +19,7 @@ import WorkspaceModule from '@/modules/workspace/workspace.module';
     BoardModule,
     ColumnModule,
     IssueModule,
+    PermissionModule,
     UserModule,
     WorkspaceModule,
     ScheduleModule.forRoot(),

@@ -6,9 +6,12 @@ import {
   USER_FIRST_NAME_MAXLENGTH,
   USER_LAST_NAME_MAXLENGTH,
 } from '@kanban-board/common';
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
+import BoardAccessPermissionEntity from '@/modules/permission/libs/entities/board-access-permission.entity';
+import BoardPermissionEntity from '@/modules/permission/libs/entities/board-permission.entity';
+import ProfilePermissionEntity from '@/modules/permission/libs/entities/profile-permission.entity';
 import WorkspaceEntity from '@/modules/workspace/libs/entities/workspace.entity';
 
 @Entity({ name: 'users' })
@@ -44,4 +47,13 @@ export default class UserEntity extends BaseEntity {
   @ManyToOne(() => WorkspaceEntity, entity => entity.users, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'workspaceId' })
   workspace!: WorkspaceEntity;
+
+  @OneToMany(() => ProfilePermissionEntity, entity => entity.user)
+  profilePermissions!: ProfilePermissionEntity[];
+
+  @OneToMany(() => BoardPermissionEntity, entity => entity.user)
+  boardPermissions!: BoardPermissionEntity[];
+
+  @OneToMany(() => BoardAccessPermissionEntity, entity => entity.user)
+  boardAccessPermissions!: BoardAccessPermissionEntity[];
 }

@@ -42,6 +42,13 @@ export default class UserController {
   }
 
   @Can.Anyone()
+  public async getUserById(
+    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
+  ): Promise<TUser> {
+    return await this.userService.getUserBy(userId);
+  }
+
+  @Can.Anyone()
   @Delete(':userId')
   public async deleteUser(
     @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,

@@ -1,5 +1,5 @@
 import { TSuccessResponse } from './response.types.js';
-import type { TUser } from './user.types.js';
+import type { TUserBase } from './user.types.js';
 
 /** Рабочее пространство - базовые данные. **/
 export type TWorkspaceBase = {
@@ -36,7 +36,7 @@ export type TWorkspaceInvites = TWorkspaceCounters & {
 
 /** Пользователи рабочего пространство со счетчиками. **/
 export type TWorkspaceUsers = TWorkspaceCounters & {
-  users: TUser[];
+  users: TUserBase[];
 };
 
 /** Сгенерированный инвайт-токен. Сырое значение показывается один раз и в базе не хранится. **/

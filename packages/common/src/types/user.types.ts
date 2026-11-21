@@ -1,5 +1,6 @@
 import { EUserRole, EUserWorkspaceRole, EUserWorkspaceStatus } from '../enums/user.enums.js';
-import { TSuccessResponse } from './response.types';
+import type { TBoardAccess, TBoardPermission, TProfilePermission } from './permission.types.js';
+import type { TSuccessResponse } from './response.types.js';
 
 /** Основные данные пользователя. **/
 export type TUserBase = {
@@ -19,6 +20,8 @@ export type TUser = TUserBase & {
   workspaceId: number;
   /** Роль пользователя в рабочем пространстве (один OWNER, остальные USER) **/
   workspaceRole: EUserWorkspaceRole;
+  /** Список разрешений пользователя. **/
+  permissions: TUserPermissions;
 };
 
 /** Данные, необходимые для создания пользователя. **/
@@ -32,3 +35,10 @@ export type TCreateUser = Pick<
 
 /** Ответ после обновления пользователя. Рабочее пространство при этом не меняется. **/
 export type TUpdateUserResponse = TSuccessResponse<TUserBase>;
+
+/** Тип набора разрешений конкретного пользователя. **/
+export type TUserPermissions = {
+  profile: TProfilePermission[];
+  board: TBoardPermission[];
+  boardsAccesses: TBoardAccess[];
+};

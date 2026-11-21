@@ -48,7 +48,7 @@ export default class WorkspaceService {
       },
     });
 
-    const userModels = this.userMapper.toModel(users, { base: false });
+    const userModels = this.userMapper.toModel(users, { base: true });
 
     const usersData: TWorkspaceUsers = {
       users: userModels,
