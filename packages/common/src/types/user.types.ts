@@ -20,8 +20,8 @@ export type TUser = TUserBase & {
   workspaceId: number;
   /** Роль пользователя в рабочем пространстве (один OWNER, остальные USER) **/
   workspaceRole: EUserWorkspaceRole;
-  /** Список разрешений пользователя. **/
-  permissions: TUserPermissions;
+  /** Список разрешений пользователя. У OWNER отсутствует - ему доступно все. **/
+  permissions?: TUserPermissions;
 };
 
 /** Данные, необходимые для создания пользователя. **/
