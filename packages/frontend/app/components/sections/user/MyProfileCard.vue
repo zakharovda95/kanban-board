@@ -1,5 +1,5 @@
 <template>
-  <TheProfile ref="profileRef" title="Мой профиль" :user="user">
+  <UserCard ref="profileRef" title="Мой профиль" :user="user">
     <div class="flex w-full flex-col gap-12">
       <UIForm
         full
@@ -17,8 +17,8 @@
     </div>
 
     <UIDivider variant="dashed" />
-    <ProfileBadges :user="user" />
-  </TheProfile>
+    <UserBadges :user="user" />
+  </UserCard>
 </template>
 
 <script setup lang="ts">
@@ -27,8 +27,8 @@ import { getErrorMessage, type TUpdateUserResponse, type TUser } from '@kanban-b
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import type { TUserProfileFormData } from '~/types/user.types.ts';
 
-import ProfileBadges from '~/components/sections/profile/ProfileBadges.vue';
-import TheProfile from '~/components/sections/profile/TheProfile.vue';
+import UserBadges from '~/components/sections/user/UserBadges.vue';
+import UserCard from '~/components/sections/user/UserCard.vue';
 import TheAvatar from '~/components/shared/TheAvatar.vue';
 import UserNameForm from '~/components/shared/UserNameForm.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
@@ -40,7 +40,7 @@ const user = defineModel<TUser>('user', { required: true });
 const { $api } = useNuxtApp();
 const toast = useToast();
 
-const profileRef = useTemplateRef<InstanceType<typeof TheProfile> | null>('profileRef');
+const profileRef = useTemplateRef<InstanceType<typeof UserCard> | null>('profileRef');
 
 const formData = reactive<TUserProfileFormData>({
   avatar: user.value.avatar ?? null,

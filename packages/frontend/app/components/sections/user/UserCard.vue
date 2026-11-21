@@ -4,7 +4,7 @@
     :class="{ 'hover:border-green cursor-pointer': !readonly }"
     @click.stop="openModal()"
   >
-    <ProfileInfo :user="user" />
+    <UserInfo :user="user" />
 
     <UIModal v-model:is-open="isModalOpen" :title="title" body-class="w-full laptop:w-320!">
       <div class="flex w-full flex-col gap-12" @click.stop>
@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import type { TUser } from '@kanban-board/common';
 
-import ProfileInfo from '~/components/sections/profile/ProfileInfo.vue';
+import UserInfo from '~/components/sections/user/UserInfo.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
 
 const props = withDefaults(

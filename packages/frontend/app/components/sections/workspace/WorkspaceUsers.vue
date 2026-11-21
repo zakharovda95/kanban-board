@@ -7,7 +7,7 @@
       </span>
     </span>
     <div v-if="users.users.length" class="flex flex-col gap-12">
-      <OtherProfile v-for="user in users.users" :key="user.id" :user="user" @refresh="emit('refresh')" />
+      <UserProfileCard v-for="user in users.users" :key="user.id" :user="user" @refresh="emit('refresh')" />
     </div>
     <div v-else class="flex items-center gap-8">
       <span class="text-14">Нет активных пользователей</span>
@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import type { TWorkspaceUsers } from '@kanban-board/common';
 
-import OtherProfile from '~/components/sections/profile/OtherProfile.vue';
+import UserProfileCard from '~/components/sections/user/UserProfileCard.vue';
 import UITooltip from '~/components/ui/UITooltip.vue';
 
 defineProps<{

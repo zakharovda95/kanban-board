@@ -1,6 +1,6 @@
 <template>
-  <TheProfile :user="user">
-    <ProfileInfo :user="user" />
+  <UserCard :user="user">
+    <UserInfo :user="user" />
     <UIButton
       full
       prepend-icon="mingcute:delete-2-line"
@@ -21,12 +21,12 @@
 
     <UIDivider variant="dashed" />
 
-    <ProfileBadges :user="user" />
+    <UserBadges :user="user" />
 
     <UIDivider variant="dashed" />
 
-    <ProfilePermissions />
-  </TheProfile>
+    <UserPermissions />
+  </UserCard>
 </template>
 
 <script setup lang="ts">
@@ -34,10 +34,10 @@ import { EColor, getErrorMessage, type TUser } from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 
-import ProfileBadges from '~/components/sections/profile/ProfileBadges.vue';
-import ProfileInfo from '~/components/sections/profile/ProfileInfo.vue';
-import ProfilePermissions from '~/components/sections/profile/ProfilePermissions.vue';
-import TheProfile from '~/components/sections/profile/TheProfile.vue';
+import UserBadges from '~/components/sections/user/UserBadges.vue';
+import UserCard from '~/components/sections/user/UserCard.vue';
+import UserInfo from '~/components/sections/user/UserInfo.vue';
+import UserPermissions from '~/components/sections/user/UserPermissions.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 

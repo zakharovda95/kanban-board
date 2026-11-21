@@ -9,7 +9,7 @@
     </UIWidget>
 
     <UIWidget v-if="userStore.me" title="Мой профиль" body-class="flex flex-col gap-8">
-      <MyProfile v-model:user="userStore.me" is-current-user />
+      <MyProfileCard v-model:user="userStore.me" is-current-user />
       <LogoutButton full />
     </UIWidget>
   </aside>
@@ -37,7 +37,7 @@ import { useUserStore } from '~/stores/user.store.ts';
 
 import LogoutButton from '~/components/layouts/shared/LogoutButton.vue';
 import BoardsList from '~/components/sections/board/BoardsList.vue';
-import MyProfile from '~/components/sections/profile/MyProfile.vue';
+import MyProfileCard from '~/components/sections/user/MyProfileCard.vue';
 import TheWorkspace from '~/components/sections/workspace/TheWorkspace.vue';
 import MobileSelectPanel from '~/components/shared/MobileSelectPanel.vue';
 import UIWidget from '~/components/ui/UIWidget.vue';
