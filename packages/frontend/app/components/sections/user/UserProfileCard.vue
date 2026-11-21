@@ -1,36 +1,46 @@
 <template>
-  <UserCard :user="user">
-    <UserInfo :user="user" />
-    <UIButton
-      full
-      prepend-icon="mingcute:delete-2-line"
-      :background-color="EColor.RED"
-      @click:button.stop="isModalOpen = true"
-    >
-      Удалить пользователя
-    </UIButton>
+  <UserCard :user="user" @card:click="openModal()" />
 
-    <UIConfirmationModal
-      v-model:is-open="isModalOpen"
-      title="Удалить пользователя?"
-      text="Все данные пользователя будут удалены. <br> Отменить это действие будет невозможно!"
-      :disabled="isLoading"
-      @click:confirm="deleteUser"
-      @click:reset="isModalOpen = false"
-    />
+  <UIModal v-model:is-open="isModalOpen" body-class="w-full laptop:w-320!" close-on-overlay>
+    <div class="flex w-full flex-col gap-12" @click.stop>
+      <UILoader v-if="isLoadingUser || !fullUser" full />
 
-    <UIDivider variant="dashed" />
+      <template v-else>
+        <UserInfo :user="fullUser" />
+        <UIButton
+          full
+          prepend-icon="mingcute:delete-2-line"
+          :background-color="EColor.RED"
+          @click:button.stop="isConfirmationOpen = true"
+        >
+          Удалить пользователя
+        </UIButton>
 
-    <UserBadges :user="user" />
+        <UIConfirmationModal
+          v-model:is-open="isConfirmationOpen"
+          title="Удалить пользователя?"
+          text="Все данные пользователя будут удалены. <br> Отменить это действие будет невозможно!"
+          :disabled="isDeleting"
+          @click:confirm="deleteUser"
+          @click:reset="isConfirmationOpen = false"
+        />
 
-    <UIDivider variant="dashed" />
+        <UIDivider variant="dashed" />
 
-    <UserPermissions />
-  </UserCard>
+        <UserBadges :user="fullUser" />
+
+        <template v-if="fullUser.permissions">
+          <UIDivider variant="dashed" />
+
+          <UserPermissions />
+        </template>
+      </template>
+    </div>
+  </UIModal>
 </template>
 
 <script setup lang="ts">
-import { EColor, getErrorMessage, type TUser } from '@kanban-board/common';
+import { EColor, getErrorMessage, type TUser, type TUserBase } from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 
@@ -39,10 +49,12 @@ import UserCard from '~/components/sections/user/UserCard.vue';
 import UserInfo from '~/components/sections/user/UserInfo.vue';
 import UserPermissions from '~/components/sections/user/UserPermissions.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
+import UILoader from '~/components/ui/loaders/UILoader.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
+import UIModal from '~/components/ui/modals/UIModal.vue';
 
 const props = defineProps<{
-  user: TUser;
+  user: TUserBase;
 }>();
 
 const emit = defineEmits<{
@@ -53,13 +65,39 @@ const { $api } = useNuxtApp();
 const toast = useToast();
 
 const isModalOpen = ref(false);
+const isConfirmationOpen = ref(false);
 
-const { call: deleteUser, isLoading } = useTryCatchFinally({
+const openModal = async () => {
+  isModalOpen.value = true;
+  await fetchUser();
+};
+
+const closeModals = () => {
+  isConfirmationOpen.value = false;
+  isModalOpen.value = false;
+};
+
+const {
+  call: fetchUser,
+  data: fullUser,
+  isLoading: isLoadingUser,
+} = useTryCatchFinally({
+  callback: async (_, signal?: AbortSignal) => {
+    return await $api<TUser>(`/api/users/${props.user.id}`, { method: 'GET', signal });
+  },
+  catchCallback: (error: unknown) => {
+    toast.error({ message: getErrorMessage(error) });
+    closeModals();
+  },
+  useAbort: true,
+});
+
+const { call: deleteUser, isLoading: isDeleting } = useTryCatchFinally({
   callback: async (_, signal?: AbortSignal) => {
     const result = await $api(`/api/users/${props.user.id}`, { method: 'DELETE', signal });
     if (result.isSuccess) {
       toast.success({ message: 'Пользователь удален!' });
-      isModalOpen.value = false;
+      closeModals();
       emit('refresh');
     }
   },

@@ -9,12 +9,12 @@
 </template>
 
 <script setup lang="ts">
-import type { TUser } from '@kanban-board/common';
+import type { TUserBase } from '@kanban-board/common';
 
 import TheAvatar from '~/components/shared/TheAvatar.vue';
 
 const props = defineProps<{
-  user: TUser;
+  user: TUserBase;
 }>();
 
 const fullName = computed(() => `${props.user.firstName} ${props.user.lastName}`);

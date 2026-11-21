@@ -1,6 +1,8 @@
 <template>
-  <UserCard ref="profileRef" title="Мой профиль" :user="user">
-    <div class="flex w-full flex-col gap-12">
+  <UserCard :user="user" @card:click="isModalOpen = true" />
+
+  <UIModal v-model:is-open="isModalOpen" title="Мой профиль" body-class="w-full laptop:w-320!" close-on-overlay>
+    <div class="flex w-full flex-col gap-12" @click.stop>
       <UIForm
         full
         :disabled="!hasChanges || isLoading"
@@ -9,16 +11,19 @@
         @submit:form="updateProfile()"
       >
         <TheAvatar v-model:avatar="formData.avatar" size="large" can-edit-avatar full />
+
         <UserNameForm :form-data="formData" size="medium" button-class="scale-90" />
+
         <UILabel text="Логин">
           <UIInput name="login-input" :model-value="user.login" full readonly />
         </UILabel>
       </UIForm>
-    </div>
 
-    <UIDivider variant="dashed" />
-    <UserBadges :user="user" />
-  </UserCard>
+      <UIDivider variant="dashed" />
+
+      <UserBadges :user="user" />
+    </div>
+  </UIModal>
 </template>
 
 <script setup lang="ts">
@@ -32,6 +37,7 @@ import UserCard from '~/components/sections/user/UserCard.vue';
 import TheAvatar from '~/components/shared/TheAvatar.vue';
 import UserNameForm from '~/components/shared/UserNameForm.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
+import UIModal from '~/components/ui/modals/UIModal.vue';
 import UIForm from '~/components/ui/UIForm.vue';
 import UILabel from '~/components/ui/UILabel.vue';
 
@@ -40,7 +46,11 @@ const user = defineModel<TUser>('user', { required: true });
 const { $api } = useNuxtApp();
 const toast = useToast();
 
-const profileRef = useTemplateRef<InstanceType<typeof UserCard> | null>('profileRef');
+const isModalOpen = ref(false);
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 
 const formData = reactive<TUserProfileFormData>({
   avatar: user.value.avatar ?? null,
@@ -63,7 +73,7 @@ const { call: updateProfile, isLoading } = useTryCatchFinally({
     if (result.isSuccess && result.data) {
       user.value = Object.assign(user.value, result.data);
       toast.success({ message: 'Профиль обновлен!' });
-      profileRef.value?.closeModal?.();
+      closeModal();
     }
   },
   catchCallback: (error: unknown) => {

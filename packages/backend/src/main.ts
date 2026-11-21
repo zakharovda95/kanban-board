@@ -8,6 +8,7 @@ import { TAppConfigSchema } from '@/config/app-config.schema';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     routeConflictPolicy: { duplicate: 'error', shadow: 'error' },
+    routeResolutionStrategy: 'specificity',
   });
 
   const configService = app.get(ConfigService<TAppConfigSchema, true>);

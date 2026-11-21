@@ -24,6 +24,14 @@ import UserService from '@/modules/user/user.service';
 export default class UserController {
   constructor(private userService: UserService) {}
 
+  @Can.Anyone()
+  @Get(':userId')
+  public async getUserById(
+    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
+  ): Promise<TUser> {
+    return await this.userService.getUserBy(userId);
+  }
+
   @Authenticate({ optional: true })
   @Can.Anyone()
   @Get('me')
@@ -39,13 +47,6 @@ export default class UserController {
   ): Promise<TUpdateUserResponse> {
     const updatedUser = await this.userService.updateUser(me.id, body);
     return getSuccessResponseWithData<TUserBase>(updatedUser);
-  }
-
-  @Can.Anyone()
-  public async getUserById(
-    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
-  ): Promise<TUser> {
-    return await this.userService.getUserBy(userId);
   }
 
   @Can.Anyone()
