@@ -3,14 +3,17 @@ import {
   type TPositiveIdSchema,
   type TSuccessResponse,
   type TUpdateUserBodySchema,
+  type TUpdateUserPermissionsBodySchema,
   type TUpdateUserResponse,
   type TUser,
   type TUserBase,
+  type TUserPermissions,
   updateUserBodySchema,
+  updateUserPermissionsBodySchema,
 } from '@kanban-board/common';
 import { Authenticate, CurrentUser } from '@nestjs/authentication';
 import { Can } from '@nestjs/authorization';
-import { Body, Controller, Delete, Get, Param, Patch, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Put, UsePipes } from '@nestjs/common';
 
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 import {
@@ -18,11 +21,15 @@ import {
   getSuccessResponseWithData,
 } from '@/libs/utilities/response.utilities';
 import UserService from '@/modules/user/user.service';
+import UserPermissionService from '@/modules/user/user-permission.service';
 
 @Controller('users')
 @UsePipes(CustomValidationPipe.httpStandardSchemaPipe)
 export default class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private userPermissionService: UserPermissionService,
+  ) {}
 
   @Can.Anyone()
   @Get(':userId')
@@ -30,6 +37,24 @@ export default class UserController {
     @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
   ): Promise<TUser> {
     return await this.userService.getUserBy(userId);
+  }
+
+  @Can.Anyone()
+  @Get(':userId/permissions')
+  public async getUserPermissions(
+    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
+  ): Promise<TUserPermissions> {
+    return await this.userPermissionService.getUserPermissions(userId);
+  }
+
+  @Can.Anyone()
+  @Put(':userId/permissions')
+  public async updateUserPermissions(
+    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
+    @Body({ schema: updateUserPermissionsBodySchema }) body: TUpdateUserPermissionsBodySchema,
+  ): Promise<TSuccessResponse> {
+    await this.userPermissionService.updateUserPermissions(userId, body);
+    return getSuccessResponse();
   }
 
   @Authenticate({ optional: true })

@@ -1,6 +1,7 @@
 export const VALIDATION_MESSAGES = {
   mustBeEnum: 'Значение должно быть одним из перечисленных',
   mustBeString: 'Значение должно быть строкой',
+  mustBeBoolean: 'Значение должно быть логическим',
   required: 'Поле обязательно для заполнения',
   maxLength: (max: number): string => `Длина не должна превышать ${max} символов`,
   minLength: (min: number): string => `Длина не должна быть меньше ${min} символов`,

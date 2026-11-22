@@ -1,14 +1,14 @@
-import { EBoardPermissionType } from '@kanban-board/common';
+import { EBoardUserPermissionType } from '@kanban-board/common';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
 import UserEntity from '@/modules/user/libs/entities/user.entity';
 
-@Entity('boardPermissions')
+@Entity('boardUserPermissions')
 @Index(['userId', 'type'], { unique: true })
-export default class BoardPermissionEntity extends BaseEntity {
-  @Column({ type: 'enum', enum: EBoardPermissionType })
-  type!: EBoardPermissionType;
+export default class BoardUserPermissionEntity extends BaseEntity {
+  @Column({ type: 'enum', enum: EBoardUserPermissionType })
+  type!: EBoardUserPermissionType;
 
   @Column({ type: 'int' })
   userId!: number;

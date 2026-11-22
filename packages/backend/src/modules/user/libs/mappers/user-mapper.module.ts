@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 
-import PermissionMapperModule from '@/modules/permission/libs/mappers/permission-mapper.module';
 import UserMapper from '@/modules/user/libs/mappers/user.mapper';
+import UserPermissionMapper from '@/modules/user/libs/mappers/user-permission.mapper';
 
 @Module({
-  imports: [PermissionMapperModule],
-  providers: [UserMapper],
-  exports: [UserMapper],
+  providers: [UserMapper, UserPermissionMapper],
+  exports: [UserMapper, UserPermissionMapper],
 })
 export default class UserMapperModule {}

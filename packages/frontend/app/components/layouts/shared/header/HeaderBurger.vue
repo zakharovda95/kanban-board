@@ -27,7 +27,7 @@
           </UIWidget>
 
           <UIWidget v-if="userStore.isAuth" title="Мой профиль" body-class="flex flex-col gap-8">
-            <MyProfileCard v-if="userStore.me" v-model:user="userStore.me" is-current-user />
+            <MyProfileCard v-if="userStore.me" v-model:user="userStore.me" />
             <LogoutButton v-if="!isAuthRoute && userStore.isAuth" full />
           </UIWidget>
         </div>

@@ -2,8 +2,8 @@ import { BOARD_TITLE_MAXLENGTH } from '@kanban-board/common';
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import ColumnEntity from '@/modules/column/libs/entities/column.entity';
-import BoardAccessPermissionEntity from '@/modules/permission/libs/entities/board-access-permission.entity';
 import MovableEntity from '@/modules/shared/move/libs/entities/movable.entity';
+import BoardAccessUserPermissionEntity from '@/modules/user/libs/entities/board-access-user-permission.entity';
 import WorkspaceEntity from '@/modules/workspace/libs/entities/workspace.entity';
 
 @Entity('boards')
@@ -25,6 +25,8 @@ export default class BoardEntity extends MovableEntity {
   @JoinColumn({ name: 'workspaceId' })
   workspace!: WorkspaceEntity;
 
-  @OneToMany(() => BoardAccessPermissionEntity, entity => entity.board, { cascade: ['insert'] })
-  permissions!: BoardAccessPermissionEntity[];
+  @OneToMany(() => BoardAccessUserPermissionEntity, entity => entity.board, {
+    cascade: ['insert'],
+  })
+  permissions!: BoardAccessUserPermissionEntity[];
 }

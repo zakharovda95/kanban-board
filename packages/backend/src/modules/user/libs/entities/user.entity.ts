@@ -9,9 +9,9 @@ import {
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
-import BoardAccessPermissionEntity from '@/modules/permission/libs/entities/board-access-permission.entity';
-import BoardPermissionEntity from '@/modules/permission/libs/entities/board-permission.entity';
-import ProfilePermissionEntity from '@/modules/permission/libs/entities/profile-permission.entity';
+import BoardAccessUserPermissionEntity from '@/modules/user/libs/entities/board-access-user-permission.entity';
+import BoardUserPermissionEntity from '@/modules/user/libs/entities/board-user-permission.entity';
+import ProfileUserPermissionEntity from '@/modules/user/libs/entities/profile-user-permission.entity';
 import WorkspaceEntity from '@/modules/workspace/libs/entities/workspace.entity';
 
 @Entity({ name: 'users' })
@@ -48,12 +48,12 @@ export default class UserEntity extends BaseEntity {
   @JoinColumn({ name: 'workspaceId' })
   workspace!: WorkspaceEntity;
 
-  @OneToMany(() => ProfilePermissionEntity, entity => entity.user)
-  profilePermissions!: ProfilePermissionEntity[];
+  @OneToMany(() => ProfileUserPermissionEntity, entity => entity.user)
+  profilePermissions!: ProfileUserPermissionEntity[];
 
-  @OneToMany(() => BoardPermissionEntity, entity => entity.user)
-  boardPermissions!: BoardPermissionEntity[];
+  @OneToMany(() => BoardUserPermissionEntity, entity => entity.user)
+  boardPermissions!: BoardUserPermissionEntity[];
 
-  @OneToMany(() => BoardAccessPermissionEntity, entity => entity.user)
-  boardAccessPermissions!: BoardAccessPermissionEntity[];
+  @OneToMany(() => BoardAccessUserPermissionEntity, entity => entity.user)
+  boardAccessPermissions!: BoardAccessUserPermissionEntity[];
 }

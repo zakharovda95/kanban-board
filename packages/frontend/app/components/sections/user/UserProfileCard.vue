@@ -1,46 +1,55 @@
 <template>
   <UserCard :user="user" @card:click="openModal()" />
 
-  <UIModal v-model:is-open="isModalOpen" body-class="w-full laptop:w-320!" close-on-overlay>
+  <UIModal
+    v-if="userDetails"
+    v-model:is-open="isModalOpen"
+    title="Профиль пользователя"
+    body-class="w-full laptop:w-320!"
+    close-on-overlay
+  >
     <div class="flex w-full flex-col gap-12" @click.stop>
-      <UILoader v-if="isLoadingUser || !fullUser" full />
+      <UserInfo :user="userDetails.user" />
+      <UIButton
+        full
+        prepend-icon="mingcute:delete-2-line"
+        :background-color="EColor.RED"
+        @click:button.stop="isConfirmationOpen = true"
+      >
+        Удалить пользователя
+      </UIButton>
 
-      <template v-else>
-        <UserInfo :user="fullUser" />
-        <UIButton
-          full
-          prepend-icon="mingcute:delete-2-line"
-          :background-color="EColor.RED"
-          @click:button.stop="isConfirmationOpen = true"
-        >
-          Удалить пользователя
-        </UIButton>
+      <UIConfirmationModal
+        v-model:is-open="isConfirmationOpen"
+        title="Удалить пользователя?"
+        text="Все данные пользователя будут удалены. <br> Отменить это действие будет невозможно!"
+        :disabled="isDeleting"
+        @click:confirm="deleteUser"
+        @click:reset="isConfirmationOpen = false"
+      />
 
-        <UIConfirmationModal
-          v-model:is-open="isConfirmationOpen"
-          title="Удалить пользователя?"
-          text="Все данные пользователя будут удалены. <br> Отменить это действие будет невозможно!"
-          :disabled="isDeleting"
-          @click:confirm="deleteUser"
-          @click:reset="isConfirmationOpen = false"
-        />
+      <UIDivider variant="dashed" />
 
+      <UserBadges :user="userDetails.user" />
+
+      <template v-if="userDetails.permissions">
         <UIDivider variant="dashed" />
 
-        <UserBadges :user="fullUser" />
-
-        <template v-if="fullUser.permissions">
-          <UIDivider variant="dashed" />
-
-          <UserPermissions />
-        </template>
+        <UserPermissions v-model:permissions="userDetails.permissions" :user-id="userDetails.user.id" />
       </template>
     </div>
   </UIModal>
 </template>
 
 <script setup lang="ts">
-import { EColor, getErrorMessage, type TUser, type TUserBase } from '@kanban-board/common';
+import {
+  EColor,
+  EUserWorkspaceRole,
+  getErrorMessage,
+  type TUser,
+  type TUserBase,
+  type TUserPermissions,
+} from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 
@@ -49,7 +58,6 @@ import UserCard from '~/components/sections/user/UserCard.vue';
 import UserInfo from '~/components/sections/user/UserInfo.vue';
 import UserPermissions from '~/components/sections/user/UserPermissions.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
-import UILoader from '~/components/ui/loaders/UILoader.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
 
@@ -69,7 +77,7 @@ const isConfirmationOpen = ref(false);
 
 const openModal = async () => {
   isModalOpen.value = true;
-  await fetchUser();
+  await fetchUserDetails();
 };
 
 const closeModals = () => {
@@ -77,13 +85,21 @@ const closeModals = () => {
   isModalOpen.value = false;
 };
 
-const {
-  call: fetchUser,
-  data: fullUser,
-  isLoading: isLoadingUser,
-} = useTryCatchFinally({
+const { call: fetchUserDetails, data: userDetails } = useTryCatchFinally<{
+  user: TUser;
+  permissions: TUserPermissions | null;
+}>({
   callback: async (_, signal?: AbortSignal) => {
-    return await $api<TUser>(`/api/users/${props.user.id}`, { method: 'GET', signal });
+    const user = await $api<TUser>(`/api/users/${props.user.id}`, { method: 'GET', signal });
+
+    if (user.workspaceRole === EUserWorkspaceRole.OWNER) return { user, permissions: null };
+
+    const permissions = await $api<TUserPermissions>(`/api/users/${props.user.id}/permissions`, {
+      method: 'GET',
+      signal,
+    });
+
+    return { user, permissions };
   },
   catchCallback: (error: unknown) => {
     toast.error({ message: getErrorMessage(error) });

@@ -9,7 +9,7 @@
     </UIWidget>
 
     <UIWidget v-if="userStore.me" title="Мой профиль" body-class="flex flex-col gap-8">
-      <MyProfileCard v-model:user="userStore.me" is-current-user />
+      <MyProfileCard v-model:user="userStore.me" />
       <LogoutButton full />
     </UIWidget>
   </aside>

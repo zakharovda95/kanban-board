@@ -1,6 +1,5 @@
 import {
   EUserRole,
-  EUserWorkspaceRole,
   EUserWorkspaceStatus,
   RandomUtility,
   type TAuthCredentials,
@@ -26,31 +25,6 @@ export default class UserService {
   ) {}
 
   /**
-   * Запрос пользователя со всеми разрешениями для полного маппинга.
-   * Через findOne с relations не получается получить все необходимые данные.
-   * У собственника пространства нет permissions тк у него полный доступ по роли OWNER.
-   * @param manager - менеджер (обычный или транзакционный).
-   * @returns query builder, к которому остается добавить условие поиска.
-   * **/
-  private getUserWithPermissionsQuery(manager: EntityManager) {
-    const isNotOwner = 'user.workspaceRole != :ownerRole';
-
-    return manager
-      .createQueryBuilder(UserEntity, 'user')
-      .leftJoinAndSelect('user.profilePermissions', 'profilePermission', isNotOwner)
-      .leftJoinAndSelect('user.boardPermissions', 'boardPermission', isNotOwner)
-      .leftJoinAndSelect('user.workspace', 'workspace', isNotOwner)
-      .leftJoinAndSelect('workspace.boards', 'board')
-      .leftJoinAndSelect(
-        'board.permissions',
-        'boardAccessPermission',
-        'boardAccessPermission.userId = user.id',
-      )
-      .setParameter('ownerRole', EUserWorkspaceRole.OWNER)
-      .orderBy('board.order', 'ASC');
-  }
-
-  /**
    * Получить текущего пользователя по его Id (для провайдера сессии).
    * @param userId - Id пользователя.
    * @returns объект пользователя.
@@ -58,9 +32,9 @@ export default class UserService {
   public async getMe(userId: TPositiveIdSchema): Promise<TUser | null> {
     const { manager } = this.dataSource;
 
-    const user = await this.getUserWithPermissionsQuery(manager)
-      .where('user.id = :userId', { userId })
-      .getOne();
+    const user = await manager.findOne(UserEntity, {
+      where: { id: userId },
+    });
     if (!user) return null;
 
     return this.userMapper.toModel(user, { base: false });
@@ -78,9 +52,9 @@ export default class UserService {
 
     const { manager } = this.dataSource;
 
-    const user = await this.getUserWithPermissionsQuery(manager)
-      .where(isLogin ? 'user.login = :loginOrId' : 'user.id = :loginOrId', { loginOrId })
-      .getOne();
+    const user = await manager.findOne(UserEntity, {
+      where: isLogin ? { login: loginOrId } : { id: loginOrId },
+    });
 
     if (!user) {
       throw new NotFoundException(
@@ -143,11 +117,7 @@ export default class UserService {
       status: EUserWorkspaceStatus.ACTIVE,
     });
 
-    const { id } = await transactionalManager.save(newUser);
-
-    const createdUser = await this.getUserWithPermissionsQuery(transactionalManager)
-      .where('user.id = :id', { id })
-      .getOneOrFail();
+    const createdUser = await transactionalManager.save(newUser);
 
     return this.userMapper.toModel(createdUser, { base: false });
   }
