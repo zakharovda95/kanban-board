@@ -18,6 +18,7 @@ import {
   getSuccessResponse,
   getSuccessResponseWithData,
 } from '@/libs/utilities/response.utilities';
+import WorkspacePolicy from '@/modules/workspace/libs/policies/workspace.policy';
 import WorkspaceService from '@/modules/workspace/workspace.service';
 import WorkspaceInviteService from '@/modules/workspace/workspace-invite.service';
 
@@ -29,20 +30,20 @@ export default class WorkspaceController {
     private workspaceInviteService: WorkspaceInviteService,
   ) {}
 
-  @Can.Anyone()
+  @Can(WorkspacePolicy, 'getWorkspace')
   @Get()
   public async getWorkspace(@CurrentUser() me: TUser): Promise<TWorkspace> {
     return await this.workspaceService.getWorkspace(me.workspaceId);
   }
 
-  @Can.Anyone()
+  @Can(WorkspacePolicy, 'deleteWorkspace')
   @Delete()
   public async deleteWorkspace(@CurrentUser() me: TUser): Promise<TSuccessResponse> {
     await this.workspaceService.deleteWorkspace(me.workspaceId);
     return getSuccessResponse();
   }
 
-  @Can.Anyone()
+  @Can(WorkspacePolicy, 'createInvite')
   @Post('invites')
   public async createInvite(
     @CurrentUser() me: TUser,
@@ -52,12 +53,13 @@ export default class WorkspaceController {
     return getSuccessResponseWithData<TCreateWorkspaceInviteToken>(result);
   }
 
-  @Can.Anyone()
+  @Can(WorkspacePolicy, 'deleteInvite')
   @Delete('invites/:inviteId')
   public async deleteInvite(
+    @CurrentUser() me: TUser,
     @Param('inviteId', { schema: positiveIdSchema }) inviteId: TPositiveIdSchema,
   ): Promise<TSuccessResponse> {
-    await this.workspaceInviteService.deleteWorkspaceInvite(inviteId);
+    await this.workspaceInviteService.deleteWorkspaceInvite(me.workspaceId, inviteId);
     return getSuccessResponse();
   }
 }

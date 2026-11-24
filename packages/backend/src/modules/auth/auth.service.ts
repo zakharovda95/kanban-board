@@ -104,7 +104,11 @@ export class AuthService {
       };
 
       await this.userService.createUser(transactionalManager, newUserBody);
-      await this.workspaceInviteService.deleteWorkspaceInvite(inviteId, transactionalManager);
+      await this.workspaceInviteService.deleteWorkspaceInvite(
+        workspaceId,
+        inviteId,
+        transactionalManager,
+      );
 
       return { login, password };
     });

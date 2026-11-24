@@ -94,17 +94,19 @@ export default class WorkspaceInviteService {
 
   /**
    * Удалить приглашения в пространство.
+   * @param workspaceId - Id пространства, из которого удаляется приглашение.
    * @param inviteId - ID приглашения.
    * @param transactionalManager - если передано: транзакционный менеджер, переданный клиентским кодом, для выполнения операции в одной транзакции.
    * @returns void.
    * **/
   public async deleteWorkspaceInvite(
+    workspaceId: TPositiveIdSchema,
     inviteId: number,
     transactionalManager: EntityManager | undefined = undefined,
   ): Promise<void> {
     const manager = transactionalManager || this.dataSource.manager;
 
-    const { affected } = await manager.delete(WorkspaceInviteEntity, { id: inviteId });
+    const { affected } = await manager.delete(WorkspaceInviteEntity, { id: inviteId, workspaceId });
     if (!affected || affected <= 0)
       throw new InternalServerErrorException(
         'Не удалось удалить приглашение в рабочее пространство',
