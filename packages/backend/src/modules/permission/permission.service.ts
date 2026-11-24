@@ -1,27 +1,27 @@
 import {
-  EBoardAccessUserPermissionType,
-  EBoardUserPermissionType,
-  EProfileUserPermissionType,
+  EBoardAccessPermissionType,
+  EBoardPermissionType,
+  EProfilePermissionType,
   EUserWorkspaceRole,
+  type TPermissions,
   type TPositiveIdSchema,
-  type TUpdateUserPermissionBodySchema,
-  type TUserPermissions,
+  type TUpdatePermissionBodySchema,
 } from '@kanban-board/common';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, type EntityTarget, type QueryDeepPartialEntity } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
-import BoardAccessUserPermissionEntity from '@/modules/user/libs/entities/board-access-user-permission.entity';
-import BoardUserPermissionEntity from '@/modules/user/libs/entities/board-user-permission.entity';
-import ProfileUserPermissionEntity from '@/modules/user/libs/entities/profile-user-permission.entity';
+import BoardAccessPermissionEntity from '@/modules/permission/libs/entities/board-access-permission.entity';
+import BoardPermissionEntity from '@/modules/permission/libs/entities/board-permission.entity';
+import ProfilePermissionEntity from '@/modules/permission/libs/entities/profile-permission.entity';
+import PermissionMapper from '@/modules/permission/libs/mappers/permission.mapper';
 import UserEntity from '@/modules/user/libs/entities/user.entity';
-import UserPermissionMapper from '@/modules/user/libs/mappers/user-permission.mapper';
 
 @Injectable()
-export default class UserPermissionService {
+export default class PermissionService {
   constructor(
     private dataSource: DataSource,
-    private userPermissionMapper: UserPermissionMapper,
+    private permissionMapper: PermissionMapper,
   ) {}
 
   /**
@@ -30,26 +30,26 @@ export default class UserPermissionService {
    * @param userId - Id пользователя.
    * @returns набор разрешений.
    * **/
-  public async getUserPermissions(userId: TPositiveIdSchema): Promise<TUserPermissions> {
+  public async getPermissions(userId: TPositiveIdSchema): Promise<TPermissions> {
     const { manager } = this.dataSource;
     const user = await this.getUserWithPermissions(manager, userId);
 
     const boards = [...user.workspace.boards].sort((a, b) => a.order - b.order);
 
     return {
-      profile: this.userPermissionMapper.toFields(
-        Object.values(EProfileUserPermissionType),
+      profile: this.permissionMapper.toFields(
+        Object.values(EProfilePermissionType),
         user.profilePermissions,
       ),
-      board: this.userPermissionMapper.toFields(
-        Object.values(EBoardUserPermissionType),
+      board: this.permissionMapper.toFields(
+        Object.values(EBoardPermissionType),
         user.boardPermissions,
       ),
       boardsAccesses: boards.map(board => ({
         id: board.id,
         title: board.title,
-        permissions: this.userPermissionMapper.toFields(
-          Object.values(EBoardAccessUserPermissionType),
+        permissions: this.permissionMapper.toFields(
+          Object.values(EBoardAccessPermissionType),
           user.boardAccessPermissions.filter(permission => permission.boardId === board.id),
         ),
       })),
@@ -63,9 +63,9 @@ export default class UserPermissionService {
    * @param body - разрешение и целевое значение.
    * @returns void.
    * **/
-  public async updateUserPermissions(
+  public async updatePermission(
     userId: TPositiveIdSchema,
-    body: TUpdateUserPermissionBodySchema,
+    body: TUpdatePermissionBodySchema,
   ): Promise<void> {
     const { manager } = this.dataSource;
 
@@ -74,17 +74,17 @@ export default class UserPermissionService {
 
       switch (body.type) {
         case 'profile':
-          await this.saveOrDeleteUserPermission(
+          await this.saveOrDeletePermission(
             transactionalManager,
-            ProfileUserPermissionEntity,
+            ProfilePermissionEntity,
             body.value,
             { type: body.field, userId },
           );
           break;
         case 'board':
-          await this.saveOrDeleteUserPermission(
+          await this.saveOrDeletePermission(
             transactionalManager,
-            BoardUserPermissionEntity,
+            BoardPermissionEntity,
             body.value,
             { type: body.field, userId },
           );
@@ -93,9 +93,9 @@ export default class UserPermissionService {
           const board = user.workspace.boards.find(item => item.id === body.boardId);
           if (!board) throw new NotFoundException('Доска не найдена');
 
-          await this.saveOrDeleteUserPermission(
+          await this.saveOrDeletePermission(
             transactionalManager,
-            BoardAccessUserPermissionEntity,
+            BoardAccessPermissionEntity,
             body.value,
             { type: body.field, userId, boardId: body.boardId },
           );
@@ -144,7 +144,7 @@ export default class UserPermissionService {
    * @param data - поля записи.
    * @returns void.
    * **/
-  private async saveOrDeleteUserPermission<Entity extends BaseEntity>(
+  private async saveOrDeletePermission<Entity extends BaseEntity>(
     manager: EntityManager,
     entity: EntityTarget<Entity>,
     value: boolean,

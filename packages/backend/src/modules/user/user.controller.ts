@@ -1,15 +1,15 @@
 import {
   positiveIdSchema,
+  type TPermissions,
   type TPositiveIdSchema,
   type TSuccessResponse,
+  type TUpdatePermissionBodySchema,
   type TUpdateUserBodySchema,
-  type TUpdateUserPermissionBodySchema,
   type TUpdateUserResponse,
   type TUser,
   type TUserBase,
-  type TUserPermissions,
+  updatePermissionBodySchema,
   updateUserBodySchema,
-  updateUserPermissionBodySchema,
 } from '@kanban-board/common';
 import { Authenticate, CurrentUser } from '@nestjs/authentication';
 import { Can } from '@nestjs/authorization';
@@ -20,40 +20,33 @@ import {
   getSuccessResponse,
   getSuccessResponseWithData,
 } from '@/libs/utilities/response.utilities';
+import PermissionPolicy from '@/modules/permission/libs/policies/permission.policy';
+import PermissionService from '@/modules/permission/permission.service';
+import UserPolicy from '@/modules/user/libs/policies/user.policy';
 import UserService from '@/modules/user/user.service';
-import UserPermissionService from '@/modules/user/user-permission.service';
 
 @Controller('users')
 @UsePipes(CustomValidationPipe.httpStandardSchemaPipe)
 export default class UserController {
   constructor(
     private userService: UserService,
-    private userPermissionService: UserPermissionService,
+    private permissionService: PermissionService,
   ) {}
 
-  @Can.Anyone()
+  @Can(UserPolicy, 'getUserById')
   @Get(':userId')
   public async getUserById(
     @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
   ): Promise<TUser> {
-    return await this.userService.getUserBy(userId);
+    return await this.userService.getUserById(userId);
   }
 
-  @Can.Anyone()
-  @Get(':userId/permissions')
-  public async getUserPermissions(
+  @Can(UserPolicy, 'deleteUser')
+  @Delete(':userId')
+  public async deleteUser(
     @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
-  ): Promise<TUserPermissions> {
-    return await this.userPermissionService.getUserPermissions(userId);
-  }
-
-  @Can.Anyone()
-  @Post(':userId/permissions')
-  public async updateUserPermissions(
-    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
-    @Body({ schema: updateUserPermissionBodySchema }) body: TUpdateUserPermissionBodySchema,
   ): Promise<TSuccessResponse> {
-    await this.userPermissionService.updateUserPermissions(userId, body);
+    await this.userService.deleteUser(userId);
     return getSuccessResponse();
   }
 
@@ -64,7 +57,7 @@ export default class UserController {
     return me;
   }
 
-  @Can.Anyone()
+  @Can(UserPolicy, 'updateMe')
   @Patch('me')
   public async updateMe(
     @CurrentUser() me: TUser,
@@ -74,12 +67,21 @@ export default class UserController {
     return getSuccessResponseWithData<TUserBase>(updatedUser);
   }
 
-  @Can.Anyone()
-  @Delete(':userId')
-  public async deleteUser(
+  @Can(PermissionPolicy, 'getPermissions')
+  @Get(':userId/permissions')
+  public async getPermissions(
     @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
+  ): Promise<TPermissions> {
+    return await this.permissionService.getPermissions(userId);
+  }
+
+  @Can(PermissionPolicy, 'updatePermission')
+  @Post(':userId/permissions')
+  public async updatePermission(
+    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
+    @Body({ schema: updatePermissionBodySchema }) body: TUpdatePermissionBodySchema,
   ): Promise<TSuccessResponse> {
-    await this.userService.deleteUser(userId);
+    await this.permissionService.updatePermission(userId, body);
     return getSuccessResponse();
   }
 }

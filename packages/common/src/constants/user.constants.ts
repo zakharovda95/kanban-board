@@ -1,10 +1,4 @@
-import {
-  EBoardAccessUserPermissionType,
-  EBoardUserPermissionType,
-  EProfileUserPermissionType,
-  EUserWorkspaceRole,
-  EUserWorkspaceStatus,
-} from '../enums/user.enums.js';
+import { EUserWorkspaceRole, EUserWorkspaceStatus } from '../enums/user.enums.js';
 
 export const USER_FIRST_NAME_MAXLENGTH = 64;
 export const USER_LAST_NAME_MAXLENGTH = 64;
@@ -19,35 +13,6 @@ export const USER_WORKSPACE_ROLE_MAP: Record<EUserWorkspaceRole, string> = {
   OWNER: 'Владелец',
   USER: 'Пользователь',
 } as const;
-
-/** Названия разрешений на действия с собственным профилем. **/
-export const PROFILE_USER_PERMISSION_LABELS: Record<EProfileUserPermissionType, string> = {
-  [EProfileUserPermissionType.PROFILE_EDIT]: 'Редактирование профиля',
-  [EProfileUserPermissionType.PROFILE_DELETE]: 'Удаление профиля',
-};
-
-/** Названия разрешений на действия с досками в целом. **/
-export const BOARD_USER_PERMISSION_LABELS: Record<EBoardUserPermissionType, string> = {
-  [EBoardUserPermissionType.BOARDS_CREATE]: 'Создание досок',
-  [EBoardUserPermissionType.BOARDS_MOVE]: 'Перемещение досок',
-};
-
-/** Названия разрешений на действия с конкретной доской. **/
-export const BOARD_ACCESS_USER_PERMISSION_LABELS: Record<EBoardAccessUserPermissionType, string> = {
-  [EBoardAccessUserPermissionType.BOARD_VIEW]: 'Просмотр доски',
-  [EBoardAccessUserPermissionType.BOARD_EDIT]: 'Редактирование доски',
-  [EBoardAccessUserPermissionType.BOARD_DELETE]: 'Удаление доски',
-
-  [EBoardAccessUserPermissionType.COLUMN_CREATE]: 'Создание колонок',
-  [EBoardAccessUserPermissionType.COLUMN_EDIT]: 'Редактирование колонок',
-  [EBoardAccessUserPermissionType.COLUMN_MOVE]: 'Перемещение колонок',
-  [EBoardAccessUserPermissionType.COLUMN_DELETE]: 'Удаление колонок',
-
-  [EBoardAccessUserPermissionType.ISSUE_CREATE]: 'Создание задач',
-  [EBoardAccessUserPermissionType.ISSUE_EDIT]: 'Редактирование задач',
-  [EBoardAccessUserPermissionType.ISSUE_MOVE]: 'Перемещение задач',
-  [EBoardAccessUserPermissionType.ISSUE_DELETE]: 'Удаление задач',
-};
 
 export const USER_AVATARS = [
   'knight',

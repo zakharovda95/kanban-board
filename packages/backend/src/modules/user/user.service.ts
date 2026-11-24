@@ -41,53 +41,35 @@ export default class UserService {
   }
 
   /**
-   * Получить пользователя по его Id или логину (перегрузка, общие случаи использования).
-   * @param login - логин или Id пользователя.
+   * Получить пользователя по его Id.
+   * @param userId - Id пользователя.
    * @returns объект пользователя.
    * **/
-  public async getUserBy(login: string): Promise<TUser>;
-  public async getUserBy(userId: TPositiveIdSchema): Promise<TUser>;
-  public async getUserBy(loginOrId: string | TPositiveIdSchema): Promise<TUser> {
-    const isLogin = typeof loginOrId === 'string';
-
+  public async getUserById(userId: TPositiveIdSchema): Promise<TUser> {
     const { manager } = this.dataSource;
 
     const user = await manager.findOne(UserEntity, {
-      where: isLogin ? { login: loginOrId } : { id: loginOrId },
+      where: { id: userId },
     });
 
-    if (!user) {
-      throw new NotFoundException(
-        `Пользователь по указанному ${isLogin ? 'логину' : 'идентификатору'} не найден`,
-      );
-    }
+    if (!user) throw new NotFoundException(`Пользователь по указанному идентификатору не найден`);
 
     return this.userMapper.toModel(user, { base: false });
   }
 
   /**
-   * Получить данные аутентификации пользователя по его Id или логину.
-   * @param login - логин или Id пользователя.
+   * Получить данные аутентификации пользователя по его логину.
+   * @param login - логин пользователя.
    * @returns объект с данными аутентификации.
    * **/
-  public async getUserCredentialsBy(login: string): Promise<TAuthCredentials>;
-  public async getUserCredentialsBy(userId: TPositiveIdSchema): Promise<TAuthCredentials>;
-  public async getUserCredentialsBy(
-    loginOrId: string | TPositiveIdSchema,
-  ): Promise<TAuthCredentials> {
-    const isLogin = typeof loginOrId === 'string';
-
+  public async getUserCredentialsByLogin(login: string): Promise<TAuthCredentials> {
     const { manager } = this.dataSource;
 
     const user = await manager.findOne(UserEntity, {
-      where: isLogin ? { login: loginOrId } : { id: loginOrId },
+      where: { login: login },
     });
 
-    if (!user) {
-      throw new NotFoundException(
-        `Пользователь по указанному ${isLogin ? 'логину' : 'идентификатору'} не найден`,
-      );
-    }
+    if (!user) throw new NotFoundException(`Пользователь по указанному логину не найден`);
 
     return {
       userId: user.id,

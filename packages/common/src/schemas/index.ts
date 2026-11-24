@@ -3,6 +3,7 @@ export * from './board.schemas.js';
 export * from './column.schemas.js';
 export * from './issue.schemas.js';
 export * from './move.schemas.js';
+export * from './permission.schemas.js';
 export * from './shared.schemas.js';
 export * from './user.schemas.js';
 export * from './workspace.schemas.js';

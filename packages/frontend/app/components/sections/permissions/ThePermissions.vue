@@ -6,7 +6,7 @@
         <UILabel
           v-for="(value, type) in permissions.profile"
           :key="type"
-          :text="PROFILE_USER_PERMISSION_LABELS[type]"
+          :text="PROFILE_PERMISSION_LABELS[type]"
           position="between"
           direction="row"
         >
@@ -25,7 +25,7 @@
         <UILabel
           v-for="(value, type) in permissions.board"
           :key="type"
-          :text="BOARD_USER_PERMISSION_LABELS[type]"
+          :text="BOARD_PERMISSION_LABELS[type]"
           position="between"
           direction="row"
         >
@@ -48,7 +48,7 @@
       <div class="flex flex-col gap-8">
         <template v-for="(value, type) in boardAccess.permissions" :key="type">
           <UIDivider v-if="DIVIDER_BEFORE.has(type)" variant="dashed" />
-          <UILabel :text="BOARD_ACCESS_USER_PERMISSION_LABELS[type]" position="between" direction="row">
+          <UILabel :text="BOARD_ACCESS_PERMISSION_LABELS[type]" position="between" direction="row">
             <UISwitcher
               :model-value="value"
               size="medium"
@@ -71,15 +71,15 @@
 
 <script setup lang="ts">
 import {
-  BOARD_ACCESS_USER_PERMISSION_LABELS,
-  BOARD_USER_PERMISSION_LABELS,
-  EBoardAccessUserPermissionType,
+  BOARD_ACCESS_PERMISSION_LABELS,
+  BOARD_PERMISSION_LABELS,
+  EBoardAccessPermissionType,
   EColor,
   getErrorMessage,
-  PROFILE_USER_PERMISSION_LABELS,
+  PROFILE_PERMISSION_LABELS,
+  type TPermissions,
   type TSuccessResponse,
-  type TUpdateUserPermissionBodySchema,
-  type TUserPermissions,
+  type TUpdatePermissionBodySchema,
 } from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
@@ -89,7 +89,7 @@ import UIDivider from '~/components/ui/UIDivider.vue';
 import UILabel from '~/components/ui/UILabel.vue';
 import UISwitcher from '~/components/ui/UISwitcher.vue';
 
-const permissions = defineModel<TUserPermissions>('permissions', { required: true });
+const permissions = defineModel<TPermissions>('permissions', { required: true });
 
 const props = defineProps<{
   userId: number;
@@ -99,12 +99,12 @@ const { $api } = useNuxtApp();
 const toast = useToast();
 
 // Для условия рендера UIDivider, чтобы визуально разделить разрешения доски, колонок и задач у конкретной доски
-const DIVIDER_BEFORE = new Set<EBoardAccessUserPermissionType>([
-  EBoardAccessUserPermissionType.COLUMN_CREATE,
-  EBoardAccessUserPermissionType.ISSUE_CREATE,
+const DIVIDER_BEFORE = new Set<EBoardAccessPermissionType>([
+  EBoardAccessPermissionType.COLUMN_CREATE,
+  EBoardAccessPermissionType.ISSUE_CREATE,
 ]);
 
-const setPermissionValue = (body: TUpdateUserPermissionBodySchema): void => {
+const setPermissionValue = (body: TUpdatePermissionBodySchema): void => {
   switch (body.type) {
     case 'profile': {
       permissions.value.profile[body.field] = body.value;
@@ -122,11 +122,8 @@ const setPermissionValue = (body: TUpdateUserPermissionBodySchema): void => {
   }
 };
 
-const { call: updatePermission, isLoading: isUpdating } = useTryCatchFinally<
-  undefined,
-  TUpdateUserPermissionBodySchema
->({
-  callback: async (body?: TUpdateUserPermissionBodySchema, signal?: AbortSignal) => {
+const { call: updatePermission, isLoading: isUpdating } = useTryCatchFinally<undefined, TUpdatePermissionBodySchema>({
+  callback: async (body?: TUpdatePermissionBodySchema, signal?: AbortSignal) => {
     if (!body) {
       toast.error({ message: 'Не передано разрешение' });
       return;

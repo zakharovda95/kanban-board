@@ -1,16 +1,16 @@
-import { EBoardAccessUserPermissionType } from '@kanban-board/common';
+import { EBoardAccessPermissionType } from '@kanban-board/common';
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
 import BaseEntity from '@/libs/entities/base.entity';
 import BoardEntity from '@/modules/board/libs/entities/board.entity';
 import UserEntity from '@/modules/user/libs/entities/user.entity';
 
-@Entity('boardAccessUserPermissions')
+@Entity('boardAccessPermissions')
 // составной индекс для быстрого поиска по userId, boardId и type
 @Index(['userId', 'boardId', 'type'], { unique: true })
-export default class BoardAccessUserPermissionEntity extends BaseEntity {
-  @Column({ type: 'enum', enum: EBoardAccessUserPermissionType })
-  type!: EBoardAccessUserPermissionType;
+export default class BoardAccessPermissionEntity extends BaseEntity {
+  @Column({ type: 'enum', enum: EBoardAccessPermissionType })
+  type!: EBoardAccessPermissionType;
 
   @Index()
   @Column({ type: 'int' })

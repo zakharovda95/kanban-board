@@ -34,7 +34,7 @@
       <template v-if="userDetails.permissions">
         <UIDivider variant="dashed" />
 
-        <UserPermissions v-model:permissions="userDetails.permissions" :user-id="userDetails.user.id" />
+        <ThePermissions v-model:permissions="userDetails.permissions" :user-id="userDetails.user.id" />
       </template>
     </div>
   </UIModal>
@@ -45,17 +45,17 @@ import {
   EColor,
   EUserWorkspaceRole,
   getErrorMessage,
+  type TPermissions,
   type TUser,
   type TUserBase,
-  type TUserPermissions,
 } from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 
+import ThePermissions from '~/components/sections/permissions/ThePermissions.vue';
 import UserBadges from '~/components/sections/user/UserBadges.vue';
 import UserCard from '~/components/sections/user/UserCard.vue';
 import UserInfo from '~/components/sections/user/UserInfo.vue';
-import UserPermissions from '~/components/sections/user/UserPermissions.vue';
 import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
@@ -86,14 +86,14 @@ const closeModals = () => {
 
 const { call: fetchUserDetails, data: userDetails } = useTryCatchFinally<{
   user: TUser;
-  permissions: TUserPermissions | null;
+  permissions: TPermissions | null;
 }>({
   callback: async (_, signal?: AbortSignal) => {
     const user = await $api<TUser>(`/api/users/${props.user.id}`, { method: 'GET', signal });
 
     if (user.workspaceRole === EUserWorkspaceRole.OWNER) return { user, permissions: null };
 
-    const permissions = await $api<TUserPermissions>(`/api/users/${props.user.id}/permissions`, {
+    const permissions = await $api<TPermissions>(`/api/users/${props.user.id}/permissions`, {
       method: 'GET',
       signal,
     });

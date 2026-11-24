@@ -1,4 +1,4 @@
-import type { TUserPermissions } from '@kanban-board/common';
+import type { TPermissions } from '@kanban-board/common';
 
 /** Получить набор разрешений пользователя по Id. **/
 export default defineEventHandler(async event => {
@@ -6,7 +6,7 @@ export default defineEventHandler(async event => {
   const baseUrl = runtimeConfig.public.BASE_URL || '';
   const userId = getRouterParam(event, 'userId');
 
-  return await $fetch<TUserPermissions>(`${baseUrl}/v1/users/${userId}/permissions`, {
+  return await $fetch<TPermissions>(`${baseUrl}/v1/users/${userId}/permissions`, {
     method: 'GET',
     headers: {
       cookie: getHeader(event, 'cookie') ?? '',

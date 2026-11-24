@@ -8,6 +8,7 @@ export * from './file.types.js';
 export * from './file.types.js';
 export * from './issue.types.js';
 export * from './move.types.js';
+export * from './permission.types.js';
 export * from './response.types.js';
 export * from './user.types.js';
 export * from './workspace.types.js';

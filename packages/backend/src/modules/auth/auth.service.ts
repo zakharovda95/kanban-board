@@ -122,7 +122,7 @@ export class AuthService {
   public async login(body: TAuthLoginBodySchema): Promise<void> {
     const { login, password } = body;
 
-    const { userId, passwordHash } = await this.userService.getUserCredentialsBy(login);
+    const { userId, passwordHash } = await this.userService.getUserCredentialsByLogin(login);
 
     const isValid = await this.verify(userId, passwordHash, password);
     if (!isValid) throw new UnauthorizedException('Не верный логин или пароль');
