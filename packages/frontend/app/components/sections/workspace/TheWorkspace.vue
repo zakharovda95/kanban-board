@@ -4,13 +4,7 @@
       Настроить пространство
     </UIButton>
 
-    <UIModal
-      v-if="workspace"
-      v-model:is-open="isModalOpen"
-      title="Мое пространство"
-      body-class="w-full laptop:w-320!"
-      close-on-overlay
-    >
+    <UIModal v-if="workspace" v-model:is-open="isModalOpen" title="Мое пространство" body-class="w-full laptop:w-320!">
       <div class="flex w-full flex-col gap-12">
         <div class="flex">
           <UIBadge :background-color="EColor.LIGHT_300" :color="EColor.LIGHT_800">

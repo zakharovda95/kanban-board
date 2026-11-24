@@ -3,17 +3,17 @@ import {
   type TPositiveIdSchema,
   type TSuccessResponse,
   type TUpdateUserBodySchema,
-  type TUpdateUserPermissionsBodySchema,
+  type TUpdateUserPermissionBodySchema,
   type TUpdateUserResponse,
   type TUser,
   type TUserBase,
   type TUserPermissions,
   updateUserBodySchema,
-  updateUserPermissionsBodySchema,
+  updateUserPermissionBodySchema,
 } from '@kanban-board/common';
 import { Authenticate, CurrentUser } from '@nestjs/authentication';
 import { Can } from '@nestjs/authorization';
-import { Body, Controller, Delete, Get, Param, Patch, Put, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UsePipes } from '@nestjs/common';
 
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
 import {
@@ -48,10 +48,10 @@ export default class UserController {
   }
 
   @Can.Anyone()
-  @Put(':userId/permissions')
+  @Post(':userId/permissions')
   public async updateUserPermissions(
     @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
-    @Body({ schema: updateUserPermissionsBodySchema }) body: TUpdateUserPermissionsBodySchema,
+    @Body({ schema: updateUserPermissionBodySchema }) body: TUpdateUserPermissionBodySchema,
   ): Promise<TSuccessResponse> {
     await this.userPermissionService.updateUserPermissions(userId, body);
     return getSuccessResponse();

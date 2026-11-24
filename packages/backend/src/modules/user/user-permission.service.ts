@@ -4,13 +4,13 @@ import {
   EProfileUserPermissionType,
   EUserWorkspaceRole,
   type TPositiveIdSchema,
-  type TUpdateUserPermissionsBodySchema,
+  type TUpdateUserPermissionBodySchema,
   type TUserPermissions,
 } from '@kanban-board/common';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager, type EntityTarget, type QueryDeepPartialEntity } from 'typeorm';
 
-import BoardEntity from '@/modules/board/libs/entities/board.entity';
+import BaseEntity from '@/libs/entities/base.entity';
 import BoardAccessUserPermissionEntity from '@/modules/user/libs/entities/board-access-user-permission.entity';
 import BoardUserPermissionEntity from '@/modules/user/libs/entities/board-user-permission.entity';
 import ProfileUserPermissionEntity from '@/modules/user/libs/entities/profile-user-permission.entity';
@@ -32,22 +32,7 @@ export default class UserPermissionService {
    * **/
   public async getUserPermissions(userId: TPositiveIdSchema): Promise<TUserPermissions> {
     const { manager } = this.dataSource;
-
-    const user = await manager.findOne(UserEntity, {
-      where: { id: userId },
-      relations: {
-        profilePermissions: true,
-        boardPermissions: true,
-        boardAccessPermissions: true,
-        workspace: { boards: true },
-      },
-      // изменил с дефолтной 'join' стратегии чтобы множество связей не сформировало огромную таблицу из разных комбинаций связей (декартовы строки)
-      relationLoadStrategy: 'query',
-    });
-    if (!user) throw new NotFoundException(`Пользователь по указанному идентификатору не найден`);
-
-    if (user.workspaceRole === EUserWorkspaceRole.OWNER)
-      throw new BadRequestException('У владельца пространства нет набора разрешений');
+    const user = await this.getUserWithPermissions(manager, userId);
 
     const boards = [...user.workspace.boards].sort((a, b) => a.order - b.order);
 
@@ -72,68 +57,104 @@ export default class UserPermissionService {
   }
 
   /**
-   * Заменить набор разрешений пользователя.
-   * Хранятся только включенные разрешения, и их немного, поэтому в одной транзакции
-   * старые записи удаляются и создаются заново по полям формы со значением true.
+   * Обновить разрешение пользователя. Если true - добавить запись, если false - удалить запись.
+   * Повторы идемпотентны.
    * @param userId - Id пользователя.
-   * @param body - форма разрешений.
+   * @param body - разрешение и целевое значение.
    * @returns void.
    * **/
   public async updateUserPermissions(
     userId: TPositiveIdSchema,
-    body: TUpdateUserPermissionsBodySchema,
+    body: TUpdateUserPermissionBodySchema,
   ): Promise<void> {
     const { manager } = this.dataSource;
 
     await manager.transaction(async transactionalManager => {
-      const user = await transactionalManager.findOne(UserEntity, { where: { id: userId } });
-      if (!user) throw new NotFoundException(`Пользователь по указанному идентификатору не найден`);
+      const user = await this.getUserWithPermissions(transactionalManager, userId);
 
-      if (user.workspaceRole === EUserWorkspaceRole.OWNER)
-        throw new BadRequestException('У владельца пространства нет набора разрешений');
+      switch (body.type) {
+        case 'profile':
+          await this.saveOrDeleteUserPermission(
+            transactionalManager,
+            ProfileUserPermissionEntity,
+            body.value,
+            { type: body.field, userId },
+          );
+          break;
+        case 'board':
+          await this.saveOrDeleteUserPermission(
+            transactionalManager,
+            BoardUserPermissionEntity,
+            body.value,
+            { type: body.field, userId },
+          );
+          break;
+        case 'boardsAccesses': {
+          const board = user.workspace.boards.find(item => item.id === body.boardId);
+          if (!board) throw new NotFoundException('Доска не найдена');
 
-      const boards = await transactionalManager.find(BoardEntity, {
-        where: { workspaceId: user.workspaceId },
-        select: { id: true },
-      });
-
-      const workspaceBoardIds = new Set(boards.map(board => board.id));
-      const payloadBoardIds = body.boardsAccesses.map(access => access.id);
-      const uniquePayloadBoardIds = new Set(payloadBoardIds);
-      const boardsMatch =
-        uniquePayloadBoardIds.size === payloadBoardIds.length &&
-        uniquePayloadBoardIds.size === workspaceBoardIds.size &&
-        payloadBoardIds.every(id => workspaceBoardIds.has(id));
-
-      if (!boardsMatch)
-        throw new BadRequestException('Набор досок не совпадает с досками рабочего пространства');
-
-      await transactionalManager.delete(ProfileUserPermissionEntity, { userId });
-      await transactionalManager.delete(BoardUserPermissionEntity, { userId });
-      await transactionalManager.delete(BoardAccessUserPermissionEntity, { userId });
-
-      const profileRows = Object.values(EProfileUserPermissionType)
-        .filter(type => body.profile[type])
-        .map(type => ({ userId, type }));
-      if (profileRows.length) {
-        await transactionalManager.insert(ProfileUserPermissionEntity, profileRows);
-      }
-
-      const boardRows = Object.values(EBoardUserPermissionType)
-        .filter(type => body.board[type])
-        .map(type => ({ userId, type }));
-      if (boardRows.length) {
-        await transactionalManager.insert(BoardUserPermissionEntity, boardRows);
-      }
-
-      const accessRows = body.boardsAccesses.flatMap(boardAccess =>
-        Object.values(EBoardAccessUserPermissionType)
-          .filter(type => boardAccess.permissions[type])
-          .map(type => ({ userId, boardId: boardAccess.id, type })),
-      );
-      if (accessRows.length) {
-        await transactionalManager.insert(BoardAccessUserPermissionEntity, accessRows);
+          await this.saveOrDeleteUserPermission(
+            transactionalManager,
+            BoardAccessUserPermissionEntity,
+            body.value,
+            { type: body.field, userId, boardId: body.boardId },
+          );
+          break;
+        }
       }
     });
+  }
+
+  /**
+   * Получить пользователя с разрешениями и досками его пространства.
+   * У OWNER разрешений нет, для него выбрасывается ошибка.
+   * @param manager - менеджер сущностей или транзакции.
+   * @param userId - Id пользователя.
+   * @returns пользователь с разрешениями.
+   * **/
+  private async getUserWithPermissions(
+    manager: EntityManager,
+    userId: TPositiveIdSchema,
+  ): Promise<UserEntity> {
+    const user = await manager.findOne(UserEntity, {
+      where: { id: userId },
+      relations: {
+        profilePermissions: true,
+        boardPermissions: true,
+        boardAccessPermissions: true,
+        workspace: { boards: true },
+      },
+      // изменил с дефолтной 'join' стратегии чтобы множество связей не сформировало огромную таблицу из разных комбинаций связей (декартовы строки)
+      relationLoadStrategy: 'query',
+    });
+    if (!user) throw new NotFoundException(`Пользователь по указанному идентификатору не найден`);
+
+    if (user.workspaceRole === EUserWorkspaceRole.OWNER)
+      throw new BadRequestException('У владельца пространства нет набора разрешений');
+
+    return user;
+  }
+
+  /**
+   * Привести запись разрешения к целевому значению.
+   * Повторная вставка гасится уникальным индексом, повторное удаление ничего не удаляет.
+   * @param manager - транзакционный менеджер.
+   * @param entity - класс сущности разрешения.
+   * @param value - true оставить запись, false удалить.
+   * @param data - поля записи.
+   * @returns void.
+   * **/
+  private async saveOrDeleteUserPermission<Entity extends BaseEntity>(
+    manager: EntityManager,
+    entity: EntityTarget<Entity>,
+    value: boolean,
+    data: QueryDeepPartialEntity<Entity>,
+  ): Promise<void> {
+    if (value) {
+      await manager.createQueryBuilder().insert().into(entity).values(data).orIgnore().execute();
+      return;
+    }
+
+    await manager.delete(entity, data);
   }
 }

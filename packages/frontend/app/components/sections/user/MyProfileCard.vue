@@ -1,7 +1,7 @@
 <template>
   <UserCard :user="user" @card:click="isModalOpen = true" />
 
-  <UIModal v-model:is-open="isModalOpen" title="Мой профиль" body-class="w-full laptop:w-320!" close-on-overlay>
+  <UIModal v-model:is-open="isModalOpen" title="Мой профиль" body-class="w-full laptop:w-320!">
     <div class="flex w-full flex-col gap-12" @click.stop>
       <UIForm
         full

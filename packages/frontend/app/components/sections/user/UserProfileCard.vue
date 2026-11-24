@@ -6,7 +6,6 @@
     v-model:is-open="isModalOpen"
     title="Профиль пользователя"
     body-class="w-full laptop:w-320!"
-    close-on-overlay
   >
     <div class="flex w-full flex-col gap-12" @click.stop>
       <UserInfo :user="userDetails.user" />

@@ -4,13 +4,18 @@
     <UIAccordion title="Профиль" :background-color="EColor.LIGHT_100">
       <div class="flex flex-col gap-8">
         <UILabel
-          v-for="(_, type) in formData.profile"
+          v-for="(value, type) in permissions.profile"
           :key="type"
           :text="PROFILE_USER_PERMISSION_LABELS[type]"
           position="between"
           direction="row"
         >
-          <UISwitcher v-model="formData.profile[type]" size="medium" />
+          <UISwitcher
+            :model-value="value"
+            size="medium"
+            :disabled="isUpdating"
+            @update:model-value="updatePermission({ type: 'profile', field: type, value: $event })"
+          />
         </UILabel>
       </div>
     </UIAccordion>
@@ -18,36 +23,49 @@
     <UIAccordion title="Доски" :background-color="EColor.LIGHT_100">
       <div class="flex flex-col gap-8">
         <UILabel
-          v-for="(_, type) in formData.board"
+          v-for="(value, type) in permissions.board"
           :key="type"
           :text="BOARD_USER_PERMISSION_LABELS[type]"
           position="between"
           direction="row"
         >
-          <UISwitcher v-model="formData.board[type]" size="medium" />
+          <UISwitcher
+            :model-value="value"
+            size="medium"
+            :disabled="isUpdating"
+            @update:model-value="updatePermission({ type: 'board', field: type, value: $event })"
+          />
         </UILabel>
       </div>
     </UIAccordion>
 
     <UIAccordion
-      v-for="boardAccess in formData.boardsAccesses"
+      v-for="boardAccess in permissions.boardsAccesses"
       :key="boardAccess.id"
       :title="boardAccess.title"
       :background-color="EColor.LIGHT_100"
     >
       <div class="flex flex-col gap-8">
-        <template v-for="(_, type) in boardAccess.permissions" :key="type">
+        <template v-for="(value, type) in boardAccess.permissions" :key="type">
           <UIDivider v-if="DIVIDER_BEFORE.has(type)" variant="dashed" />
           <UILabel :text="BOARD_ACCESS_USER_PERMISSION_LABELS[type]" position="between" direction="row">
-            <UISwitcher v-model="boardAccess.permissions[type]" size="medium" />
+            <UISwitcher
+              :model-value="value"
+              size="medium"
+              :disabled="isUpdating"
+              @update:model-value="
+                updatePermission({
+                  type: 'boardsAccesses',
+                  field: type,
+                  value: $event,
+                  boardId: boardAccess.id,
+                })
+              "
+            />
           </UILabel>
         </template>
       </div>
     </UIAccordion>
-
-    <UIButton :disabled="isUpdating || !isDirty" full @click:button="updatePermissions()">
-      Сохранить изменения
-    </UIButton>
   </div>
 </template>
 
@@ -60,13 +78,12 @@ import {
   getErrorMessage,
   PROFILE_USER_PERMISSION_LABELS,
   type TSuccessResponse,
+  type TUpdateUserPermissionBodySchema,
   type TUserPermissions,
 } from '@kanban-board/common';
 
-import { useForm } from '~/composables/use-form.composable.ts';
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 
-import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIAccordion from '~/components/ui/UIAccordion.vue';
 import UIDivider from '~/components/ui/UIDivider.vue';
 import UILabel from '~/components/ui/UILabel.vue';
@@ -87,23 +104,41 @@ const DIVIDER_BEFORE = new Set<EBoardAccessUserPermissionType>([
   EBoardAccessUserPermissionType.ISSUE_CREATE,
 ]);
 
-const { formData, isDirty, set } = useForm<TUserPermissions>(permissions.value);
+const setPermissionValue = (body: TUpdateUserPermissionBodySchema): void => {
+  switch (body.type) {
+    case 'profile': {
+      permissions.value.profile[body.field] = body.value;
+      break;
+    }
+    case 'board': {
+      permissions.value.board[body.field] = body.value;
+      break;
+    }
+    case 'boardsAccesses': {
+      const access = permissions.value.boardsAccesses.find(({ id }) => id === body.boardId);
+      if (access) access.permissions[body.field] = body.value;
+      break;
+    }
+  }
+};
 
-const { call: updatePermissions, isLoading: isUpdating } = useTryCatchFinally({
-  callback: async (_, signal?: AbortSignal) => {
+const { call: updatePermission, isLoading: isUpdating } = useTryCatchFinally<
+  undefined,
+  TUpdateUserPermissionBodySchema
+>({
+  callback: async (body?: TUpdateUserPermissionBodySchema, signal?: AbortSignal) => {
+    if (!body) {
+      toast.error({ message: 'Не передано разрешение' });
+      return;
+    }
+
     const result = await $api<TSuccessResponse>(`/api/users/${props.userId}/permissions`, {
-      method: 'PUT',
-      body: formData.value,
+      method: 'POST',
+      body: body,
       signal,
     });
 
-    if (result.isSuccess) {
-      // обновляем в родительском компоненте
-      permissions.value = formData.value;
-      // устанавливаем в форме как изначальное значение, чтобы сбросить isDirty
-      set(formData.value, { setAsInitial: true, clearErrors: true });
-      toast.success({ message: 'Разрешения обновлены' });
-    }
+    if (result.isSuccess) setPermissionValue(body);
   },
   catchCallback: (error: unknown) => {
     toast.error({ message: getErrorMessage(error) });
