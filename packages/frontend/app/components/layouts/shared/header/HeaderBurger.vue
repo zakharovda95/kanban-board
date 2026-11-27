@@ -27,7 +27,7 @@
           </UIWidget>
 
           <UIWidget v-if="userStore.isAuth" title="Мой профиль" body-class="flex flex-col gap-8">
-            <MyProfileCard v-if="userStore.me" v-model:user="userStore.me" />
+            <MyProfileCard v-if="userStore.me" v-model:user="userStore.me" @profile:deleted="onProfileDeleted" />
             <LogoutButton v-if="!isAuthRoute && userStore.isAuth" full />
           </UIWidget>
         </div>
@@ -66,4 +66,9 @@ const userStore = useUserStore();
 const isBurgerOpen = ref(false);
 
 const isAuthRoute = computed(() => AUTH_GUEST_ROUTE_NAMES.includes(String(route.name)));
+
+const onProfileDeleted = () => {
+  userStore.resetStore();
+  navigateTo('/auth/login');
+};
 </script>

@@ -50,6 +50,24 @@ export default class UserController {
     return getSuccessResponse();
   }
 
+  @Can(PermissionPolicy, 'getPermissions')
+  @Get(':userId/permissions')
+  public async getPermissions(
+    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
+  ): Promise<TPermissions> {
+    return await this.permissionService.getPermissions(userId);
+  }
+
+  @Can(PermissionPolicy, 'updatePermission')
+  @Post(':userId/permissions')
+  public async updatePermission(
+    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
+    @Body({ schema: updatePermissionBodySchema }) body: TUpdatePermissionBodySchema,
+  ): Promise<TSuccessResponse> {
+    await this.permissionService.updatePermission(userId, body);
+    return getSuccessResponse();
+  }
+
   @Authenticate({ optional: true })
   @Can.Anyone()
   @Get('me')
@@ -74,21 +92,9 @@ export default class UserController {
     return getSuccessResponse();
   }
 
-  @Can(PermissionPolicy, 'getPermissions')
-  @Get(':userId/permissions')
-  public async getPermissions(
-    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
-  ): Promise<TPermissions> {
-    return await this.permissionService.getPermissions(userId);
-  }
-
-  @Can(PermissionPolicy, 'updatePermission')
-  @Post(':userId/permissions')
-  public async updatePermission(
-    @Param('userId', { schema: positiveIdSchema }) userId: TPositiveIdSchema,
-    @Body({ schema: updatePermissionBodySchema }) body: TUpdatePermissionBodySchema,
-  ): Promise<TSuccessResponse> {
-    await this.permissionService.updatePermission(userId, body);
-    return getSuccessResponse();
+  @Can.Anyone()
+  @Get('me/permissions')
+  public async getMyPermissions(@CurrentUser() me: TUser): Promise<TPermissions> {
+    return await this.permissionService.getPermissions(me.id);
   }
 }

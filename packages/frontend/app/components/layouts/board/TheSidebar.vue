@@ -9,7 +9,7 @@
     </UIWidget>
 
     <UIWidget v-if="userStore.me" title="Мой профиль" body-class="flex flex-col gap-8">
-      <MyProfileCard v-model:user="userStore.me" />
+      <MyProfileCard v-model:user="userStore.me" @profile:deleted="onProfileDeleted" />
       <LogoutButton full />
     </UIWidget>
   </aside>
@@ -69,4 +69,9 @@ useIsLaptop({
 onBeforeUnmount(() => {
   closeBoardMenu();
 });
+
+const onProfileDeleted = () => {
+  userStore.resetStore();
+  navigateTo('/auth/login');
+};
 </script>

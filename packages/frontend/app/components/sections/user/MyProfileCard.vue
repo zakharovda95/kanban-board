@@ -22,12 +22,38 @@
       <UIDivider variant="dashed" />
 
       <UserBadges :user="user" />
+
+      <UIDivider variant="dashed" />
+
+      <UIButton
+        full
+        :background-color="EColor.RED"
+        prepend-icon="mingcute:delete-2-line"
+        @click:button.stop="isConfirmationOpen = true"
+      >
+        Удалить профиль
+      </UIButton>
+
+      <UIConfirmationModal
+        v-model:is-open="isConfirmationOpen"
+        title="Удалить профиль?"
+        text="Все ваши данные будут удалены. <br> Отменить это действие будет невозможно!"
+        :disabled="isDeleting"
+        @click:confirm="deleteProfile"
+        @click:reset="isConfirmationOpen = false"
+      />
     </div>
   </UIModal>
 </template>
 
 <script setup lang="ts">
-import { getErrorMessage, type TUpdateUserResponse, type TUser } from '@kanban-board/common';
+import {
+  EColor,
+  getErrorMessage,
+  type TSuccessResponse,
+  type TUpdateUserResponse,
+  type TUser,
+} from '@kanban-board/common';
 
 import { useTryCatchFinally } from '~/composables/use-try-catch-finally.composable.ts';
 import type { TUserProfileFormData } from '~/types/user.types.ts';
@@ -36,19 +62,27 @@ import UserBadges from '~/components/sections/user/UserBadges.vue';
 import UserCard from '~/components/sections/user/UserCard.vue';
 import TheAvatar from '~/components/shared/TheAvatar.vue';
 import UserNameForm from '~/components/shared/UserNameForm.vue';
+import UIButton from '~/components/ui/buttons/UIButton.vue';
 import UIInput from '~/components/ui/inputs/UIInput.vue';
+import UIConfirmationModal from '~/components/ui/modals/UIConfirmationModal.vue';
 import UIModal from '~/components/ui/modals/UIModal.vue';
 import UIForm from '~/components/ui/UIForm.vue';
 import UILabel from '~/components/ui/UILabel.vue';
 
 const user = defineModel<TUser>('user', { required: true });
 
+const emit = defineEmits<{
+  'profile:deleted': [];
+}>();
+
 const { $api } = useNuxtApp();
 const toast = useToast();
 
 const isModalOpen = ref(false);
+const isConfirmationOpen = ref(false);
 
 const closeModal = () => {
+  isConfirmationOpen.value = false;
   isModalOpen.value = false;
 };
 
@@ -74,6 +108,21 @@ const { call: updateProfile, isLoading } = useTryCatchFinally({
       user.value = Object.assign(user.value, result.data);
       toast.success({ message: 'Профиль обновлен!' });
       closeModal();
+    }
+  },
+  catchCallback: (error: unknown) => {
+    toast.error({ message: getErrorMessage(error) });
+  },
+});
+
+const { call: deleteProfile, isLoading: isDeleting } = useTryCatchFinally({
+  callback: async (_, signal?: AbortSignal) => {
+    const result = await $api<TSuccessResponse>('/api/users/me', { method: 'DELETE', signal });
+
+    if (result.isSuccess) {
+      toast.success({ message: 'Профиль удален!' });
+      closeModal();
+      emit('profile:deleted');
     }
   },
   catchCallback: (error: unknown) => {
