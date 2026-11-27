@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import { EColor } from '@kanban-board/common';
 
+import { AUTH_GUEST_ROUTE_NAMES } from '~/constants/auth.constants.ts';
 import { EIconSizeLarge } from '~/enums/global.enums.ts';
 import { useUserStore } from '~/stores/user.store.ts';
 
@@ -64,5 +65,5 @@ const userStore = useUserStore();
 
 const isBurgerOpen = ref(false);
 
-const isAuthRoute = computed(() => route.name === 'auth');
+const isAuthRoute = computed(() => AUTH_GUEST_ROUTE_NAMES.includes(String(route.name)));
 </script>

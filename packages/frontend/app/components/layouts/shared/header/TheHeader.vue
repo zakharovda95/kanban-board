@@ -14,6 +14,7 @@
 </template>
 
 <script setup lang="ts">
+import { AUTH_GUEST_ROUTE_NAMES } from '~/constants/auth.constants.ts';
 import { useUserStore } from '~/stores/user.store.ts';
 
 import HeaderBurger from '~/components/layouts/shared/header/HeaderBurger.vue';
@@ -26,5 +27,5 @@ import UIWidget from '~/components/ui/UIWidget.vue';
 const route = useRoute();
 const userStore = useUserStore();
 
-const isAuthRoute = computed(() => route.name === 'auth');
+const isAuthRoute = computed(() => AUTH_GUEST_ROUTE_NAMES.includes(String(route.name)));
 </script>
