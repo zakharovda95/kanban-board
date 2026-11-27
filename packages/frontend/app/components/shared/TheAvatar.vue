@@ -1,11 +1,11 @@
 <template>
-  <div :class="full || canEditAvatar ? 'w-full' : 'w-fit'">
+  <div :class="full || canUpdateAvatar ? 'w-full' : 'w-fit'">
     <div class="flex w-full flex-col items-center justify-center gap-4">
       <div class="flex shrink-0 items-center justify-center overflow-hidden" :class="computedSize.element">
         <img class="size-full" alt="Аватар пользователя" :src="`/images/${avatar ?? 'no-avatar'}.png`" >
       </div>
 
-      <div v-if="canEditAvatar" class="flex gap-8">
+      <div v-if="canUpdateAvatar" class="flex gap-8">
         <UIIconButton
           :icon="isAvatarMenuOpen ? 'mingcute:arrows-up-line' : 'mingcute:arrows-down-line'"
           size="small"
@@ -50,12 +50,12 @@ const model = defineModel<string | null>('avatar', { required: true });
 const props = withDefaults(
   defineProps<{
     size?: TSize;
-    canEditAvatar?: boolean;
+    canUpdateAvatar?: boolean;
     full?: boolean;
   }>(),
   {
     size: 'medium',
-    canEditAvatar: false,
+    canUpdateAvatar: false,
     full: false,
   },
 );
@@ -79,7 +79,7 @@ const computedSize = computed<TUIComputedSize>(() => {
 const isAvatarMenuOpen = ref(false);
 
 const toggleAvatarMenu = () => {
-  if (!props.canEditAvatar) return;
+  if (!props.canUpdateAvatar) return;
   isAvatarMenuOpen.value = !isAvatarMenuOpen.value;
 };
 </script>

@@ -4,9 +4,12 @@ import {
   EPermissionType,
   EProfilePermissionField,
   EUserWorkspaceRole,
+  isOwner,
+  type TPermissionField,
   type TPermissions,
   type TPositiveIdSchema,
   type TUpdatePermissionBodySchema,
+  type TUser,
 } from '@kanban-board/common';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, type EntityTarget, type QueryDeepPartialEntity } from 'typeorm';
@@ -104,6 +107,50 @@ export default class PermissionService {
         }
       }
     });
+  }
+
+  /**
+   * Проверить есть ли конкретное разрешение у пользователя.
+   * OWNER всегда получает true (доступ ко всему по роли).
+   * Для BOARD_ACCESSES обязателен boardId.
+   * @param user - текущий пользователь (из политики / auth).
+   * @param permissionType - Тип проверяемого разрешения.
+   * @param permissionField - Поле проверяемого разрешения.
+   * @param boardId - Id доски (только для BOARD_ACCESSES).
+   * @returns true если разрешение есть.
+   * **/
+  public async checkPermission(
+    user: TUser,
+    permissionType: EPermissionType,
+    permissionField: TPermissionField,
+    boardId?: TPositiveIdSchema,
+  ): Promise<boolean> {
+    if (isOwner(user)) return true;
+
+    const { manager } = this.dataSource;
+    const { id: userId } = user;
+
+    switch (permissionType) {
+      case EPermissionType.PROFILE:
+        return manager.exists(ProfilePermissionEntity, {
+          where: { userId, field: permissionField as EProfilePermissionField },
+        });
+      case EPermissionType.BOARD:
+        return manager.exists(BoardPermissionEntity, {
+          where: { userId, field: permissionField as EBoardPermissionField },
+        });
+      case EPermissionType.BOARD_ACCESSES: {
+        if (!boardId) throw new BadRequestException('Для проверки доступа к доске нужен boardId');
+
+        return manager.exists(BoardAccessPermissionEntity, {
+          where: {
+            userId,
+            boardId,
+            field: permissionField as EBoardAccessPermissionField,
+          },
+        });
+      }
+    }
   }
 
   /**

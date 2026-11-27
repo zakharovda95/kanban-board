@@ -67,6 +67,13 @@ export default class UserController {
     return getSuccessResponseWithData<TUserBase>(updatedUser);
   }
 
+  @Can(UserPolicy, 'deleteMe')
+  @Delete('me')
+  public async deleteMe(@CurrentUser() me: TUser): Promise<TSuccessResponse> {
+    await this.userService.deleteUser(me.id);
+    return getSuccessResponse();
+  }
+
   @Can(PermissionPolicy, 'getPermissions')
   @Get(':userId/permissions')
   public async getPermissions(

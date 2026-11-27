@@ -10,7 +10,7 @@
         action-button-label="Сохранить изменения"
         @submit:form="updateProfile()"
       >
-        <TheAvatar v-model:avatar="formData.avatar" size="large" can-edit-avatar full />
+        <TheAvatar v-model:avatar="formData.avatar" size="large" can-update-avatar full />
 
         <UserNameForm :form-data="formData" size="medium" button-class="scale-90" />
 
