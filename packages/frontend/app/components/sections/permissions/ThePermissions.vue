@@ -4,9 +4,9 @@
     <UIAccordion title="Профиль" :background-color="EColor.LIGHT_100">
       <div class="flex flex-col gap-8">
         <UILabel
-          v-for="(value, type) in permissions.profile"
-          :key="type"
-          :text="PROFILE_PERMISSION_LABELS[type]"
+          v-for="(value, field) in permissions.profile"
+          :key="field"
+          :text="PROFILE_PERMISSION_LABELS[field]"
           position="between"
           direction="row"
         >
@@ -14,7 +14,7 @@
             :model-value="value"
             size="medium"
             :disabled="isUpdating"
-            @update:model-value="updatePermission({ type: 'profile', field: type, value: $event })"
+            @update:model-value="updatePermission({ type: EPermissionType.PROFILE, field, value: $event })"
           />
         </UILabel>
       </div>
@@ -23,9 +23,9 @@
     <UIAccordion title="Доски" :background-color="EColor.LIGHT_100">
       <div class="flex flex-col gap-8">
         <UILabel
-          v-for="(value, type) in permissions.board"
-          :key="type"
-          :text="BOARD_PERMISSION_LABELS[type]"
+          v-for="(value, field) in permissions.board"
+          :key="field"
+          :text="BOARD_PERMISSION_LABELS[field]"
           position="between"
           direction="row"
         >
@@ -33,30 +33,30 @@
             :model-value="value"
             size="medium"
             :disabled="isUpdating"
-            @update:model-value="updatePermission({ type: 'board', field: type, value: $event })"
+            @update:model-value="updatePermission({ type: EPermissionType.BOARD, field, value: $event })"
           />
         </UILabel>
       </div>
     </UIAccordion>
 
     <UIAccordion
-      v-for="boardAccess in permissions.boardsAccesses"
+      v-for="boardAccess in permissions.boardAccesses"
       :key="boardAccess.id"
       :title="boardAccess.title"
       :background-color="EColor.LIGHT_100"
     >
       <div class="flex flex-col gap-8">
-        <template v-for="(value, type) in boardAccess.permissions" :key="type">
-          <UIDivider v-if="DIVIDER_BEFORE.has(type)" variant="dashed" />
-          <UILabel :text="BOARD_ACCESS_PERMISSION_LABELS[type]" position="between" direction="row">
+        <template v-for="(value, field) in boardAccess.permissions" :key="field">
+          <UIDivider v-if="DIVIDER_BEFORE.has(field)" variant="dashed" />
+          <UILabel :text="BOARD_ACCESS_PERMISSION_LABELS[field]" position="between" direction="row">
             <UISwitcher
               :model-value="value"
               size="medium"
               :disabled="isUpdating"
               @update:model-value="
                 updatePermission({
-                  type: 'boardsAccesses',
-                  field: type,
+                  type: EPermissionType.BOARD_ACCESSES,
+                  field,
                   value: $event,
                   boardId: boardAccess.id,
                 })
@@ -73,8 +73,9 @@
 import {
   BOARD_ACCESS_PERMISSION_LABELS,
   BOARD_PERMISSION_LABELS,
-  EBoardAccessPermissionType,
+  EBoardAccessPermissionField,
   EColor,
+  EPermissionType,
   getErrorMessage,
   PROFILE_PERMISSION_LABELS,
   type TPermissions,
@@ -99,23 +100,23 @@ const { $api } = useNuxtApp();
 const toast = useToast();
 
 // Для условия рендера UIDivider, чтобы визуально разделить разрешения доски, колонок и задач у конкретной доски
-const DIVIDER_BEFORE = new Set<EBoardAccessPermissionType>([
-  EBoardAccessPermissionType.COLUMN_CREATE,
-  EBoardAccessPermissionType.ISSUE_CREATE,
+const DIVIDER_BEFORE = new Set<EBoardAccessPermissionField>([
+  EBoardAccessPermissionField.COLUMN_CREATE,
+  EBoardAccessPermissionField.ISSUE_CREATE,
 ]);
 
 const setPermissionValue = (body: TUpdatePermissionBodySchema): void => {
   switch (body.type) {
-    case 'profile': {
-      permissions.value.profile[body.field] = body.value;
+    case EPermissionType.PROFILE: {
+      permissions.value[EPermissionType.PROFILE][body.field] = body.value;
       break;
     }
-    case 'board': {
-      permissions.value.board[body.field] = body.value;
+    case EPermissionType.BOARD: {
+      permissions.value[EPermissionType.BOARD][body.field] = body.value;
       break;
     }
-    case 'boardsAccesses': {
-      const access = permissions.value.boardsAccesses.find(({ id }) => id === body.boardId);
+    case EPermissionType.BOARD_ACCESSES: {
+      const access = permissions.value[EPermissionType.BOARD_ACCESSES].find(({ id }) => id === body.boardId);
       if (access) access.permissions[body.field] = body.value;
       break;
     }
@@ -131,7 +132,7 @@ const { call: updatePermission, isLoading: isUpdating } = useTryCatchFinally<und
 
     const result = await $api<TSuccessResponse>(`/api/users/${props.userId}/permissions`, {
       method: 'POST',
-      body: body,
+      body,
       signal,
     });
 

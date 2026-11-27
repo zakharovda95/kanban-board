@@ -1,7 +1,8 @@
 import {
-  EBoardAccessPermissionType,
-  EBoardPermissionType,
-  EProfilePermissionType,
+  EBoardAccessPermissionField,
+  EBoardPermissionField,
+  EPermissionType,
+  EProfilePermissionField,
   EUserWorkspaceRole,
   type TPermissions,
   type TPositiveIdSchema,
@@ -37,19 +38,19 @@ export default class PermissionService {
     const boards = [...user.workspace.boards].sort((a, b) => a.order - b.order);
 
     return {
-      profile: this.permissionMapper.toFields(
-        Object.values(EProfilePermissionType),
+      [EPermissionType.PROFILE]: this.permissionMapper.toFields(
+        Object.values(EProfilePermissionField),
         user.profilePermissions,
       ),
-      board: this.permissionMapper.toFields(
-        Object.values(EBoardPermissionType),
+      [EPermissionType.BOARD]: this.permissionMapper.toFields(
+        Object.values(EBoardPermissionField),
         user.boardPermissions,
       ),
-      boardsAccesses: boards.map(board => ({
+      [EPermissionType.BOARD_ACCESSES]: boards.map(board => ({
         id: board.id,
         title: board.title,
         permissions: this.permissionMapper.toFields(
-          Object.values(EBoardAccessPermissionType),
+          Object.values(EBoardAccessPermissionField),
           user.boardAccessPermissions.filter(permission => permission.boardId === board.id),
         ),
       })),
@@ -73,23 +74,23 @@ export default class PermissionService {
       const user = await this.getUserWithPermissions(transactionalManager, userId);
 
       switch (body.type) {
-        case 'profile':
+        case EPermissionType.PROFILE:
           await this.saveOrDeletePermission(
             transactionalManager,
             ProfilePermissionEntity,
             body.value,
-            { type: body.field, userId },
+            { field: body.field, userId },
           );
           break;
-        case 'board':
+        case EPermissionType.BOARD:
           await this.saveOrDeletePermission(
             transactionalManager,
             BoardPermissionEntity,
             body.value,
-            { type: body.field, userId },
+            { field: body.field, userId },
           );
           break;
-        case 'boardsAccesses': {
+        case EPermissionType.BOARD_ACCESSES: {
           const board = user.workspace.boards.find(item => item.id === body.boardId);
           if (!board) throw new NotFoundException('Доска не найдена');
 
@@ -97,7 +98,7 @@ export default class PermissionService {
             transactionalManager,
             BoardAccessPermissionEntity,
             body.value,
-            { type: body.field, userId, boardId: body.boardId },
+            { field: body.field, userId, boardId: body.boardId },
           );
           break;
         }
@@ -124,7 +125,7 @@ export default class PermissionService {
         boardAccessPermissions: true,
         workspace: { boards: true },
       },
-      // изменил с дефолтной 'join' стратегии чтобы множество связей не сформировало огромную таблицу из разных комбинаций связей (декартовы строки)
+      // изменил с дефолтной 'join' стратегии чтобы множество связей не формировало огромную таблицу (декартовы строки)
       relationLoadStrategy: 'query',
     });
     if (!user) throw new NotFoundException(`Пользователь по указанному идентификатору не найден`);

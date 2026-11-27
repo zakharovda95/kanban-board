@@ -1,14 +1,20 @@
-export enum EProfilePermissionType {
+export enum EPermissionType {
+  PROFILE = 'profile',
+  BOARD = 'board',
+  BOARD_ACCESSES = 'boardAccesses',
+}
+
+export enum EProfilePermissionField {
   PROFILE_EDIT = 'PROFILE_EDIT',
   PROFILE_DELETE = 'PROFILE_DELETE',
 }
 
-export enum EBoardPermissionType {
+export enum EBoardPermissionField {
   BOARDS_CREATE = 'BOARDS_CREATE',
   BOARDS_MOVE = 'BOARDS_MOVE',
 }
 
-export enum EBoardAccessPermissionType {
+export enum EBoardAccessPermissionField {
   BOARD_VIEW = 'BOARD_VIEW',
   BOARD_EDIT = 'BOARD_EDIT',
   BOARD_DELETE = 'BOARD_DELETE',

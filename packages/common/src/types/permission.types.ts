@@ -1,25 +1,26 @@
 import type {
-  EBoardAccessPermissionType,
-  EBoardPermissionType,
-  EProfilePermissionType,
+  EBoardAccessPermissionField,
+  EBoardPermissionField,
+  EPermissionType,
+  EProfilePermissionField,
 } from '../enums/permission.enums.js';
 import type { TBoardBase } from './board.types.js';
 
-/** Любой тип разрешения. **/
-export type TPermissionType =
-  EProfilePermissionType | EBoardPermissionType | EBoardAccessPermissionType;
+/** Поле конкретного типа разрешения. **/
+export type TPermissionField =
+  EProfilePermissionField | EBoardPermissionField | EBoardAccessPermissionField;
 
 /** Форма разрешений конкретного типа. **/
-export type TPermissionFields<T extends TPermissionType> = Record<T, boolean>;
+export type TPermissionForm<T extends TPermissionField> = Record<T, boolean>;
 
 /** Форма разрешений для конкретной доски. **/
-export type TBoardAccess = Pick<TBoardBase, 'id' | 'title'> & {
-  permissions: TPermissionFields<EBoardAccessPermissionType>;
+export type TBoardAccessPermission = Pick<TBoardBase, 'id' | 'title'> & {
+  permissions: TPermissionForm<EBoardAccessPermissionField>;
 };
 
 /** Полная форма разрешений. У OWNER отсутствует - ему доступно все. **/
 export type TPermissions = {
-  profile: TPermissionFields<EProfilePermissionType>;
-  board: TPermissionFields<EBoardPermissionType>;
-  boardsAccesses: TBoardAccess[];
+  [EPermissionType.PROFILE]: TPermissionForm<EProfilePermissionField>;
+  [EPermissionType.BOARD]: TPermissionForm<EBoardPermissionField>;
+  [EPermissionType.BOARD_ACCESSES]: TBoardAccessPermission[];
 };
