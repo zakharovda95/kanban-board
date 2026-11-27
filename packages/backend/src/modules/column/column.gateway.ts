@@ -31,8 +31,10 @@ import type { Socket } from 'socket.io';
 import { WS_CORS_OPTIONS } from '@/libs/constants/websocket.constants';
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
+import { data } from '@/libs/utilities/can.utilities';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import ColumnService from '@/modules/column/column.service';
+import ColumnPolicy from '@/modules/column/libs/policies/column.policy';
 
 @WebSocketGateway({ cors: WS_CORS_OPTIONS })
 @UseFilters(WsExceptionFilter)
@@ -40,7 +42,7 @@ import ColumnService from '@/modules/column/column.service';
 export default class ColumnGateway {
   constructor(private columnService: ColumnService) {}
 
-  @Can.Anyone()
+  @Can(ColumnPolicy, 'createColumn', data('boardId'))
   @SubscribeMessage(EColumnEvent.CREATE)
   public async createColumn(
     @MessageBody({ schema: createColumnBodySchema }) body: TCreateColumnBodySchema,
@@ -51,7 +53,7 @@ export default class ColumnGateway {
     return getSuccessResponseWithData<TColumn>(createdColumn);
   }
 
-  @Can.Anyone()
+  @Can(ColumnPolicy, 'updateColumn', data('id'))
   @SubscribeMessage(EColumnEvent.UPDATE)
   public async updateColumn(
     @MessageBody({ schema: updateColumnBodySchema })
@@ -63,7 +65,7 @@ export default class ColumnGateway {
     return getSuccessResponseWithData<TColumnBase>(updatedColumn);
   }
 
-  @Can.Anyone()
+  @Can(ColumnPolicy, 'deleteColumn', data())
   @SubscribeMessage(EColumnEvent.DELETE)
   public async deleteColumn(
     @MessageBody({ schema: positiveIdSchema }) columnId: TPositiveIdSchema,
@@ -74,7 +76,7 @@ export default class ColumnGateway {
     return getSuccessResponseWithData<TDeleteColumnEmitPayload>(payload);
   }
 
-  @Can.Anyone()
+  @Can(ColumnPolicy, 'moveColumn', data('boardId'))
   @SubscribeMessage(EColumnEvent.MOVE)
   public async moveColumn(
     @MessageBody({ schema: moveColumnBodySchema }) body: TMoveColumnBodySchema,

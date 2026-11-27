@@ -32,8 +32,10 @@ import type { Socket } from 'socket.io';
 import { WS_CORS_OPTIONS } from '@/libs/constants/websocket.constants';
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
+import { data } from '@/libs/utilities/can.utilities';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import BoardService from '@/modules/board/board.service';
+import BoardPolicy from '@/modules/board/libs/policies/board.policy';
 
 @WebSocketGateway({ cors: WS_CORS_OPTIONS })
 @UseFilters(WsExceptionFilter)
@@ -41,7 +43,7 @@ import BoardService from '@/modules/board/board.service';
 export default class BoardGateway {
   constructor(private boardService: BoardService) {}
 
-  @Can.Anyone()
+  @Can(BoardPolicy, 'joinRoom', data())
   @SubscribeMessage(EBoardEvent.JOIN)
   public async joinRoom(
     @MessageBody({ schema: positiveIdSchema }) boardId: TPositiveIdSchema,
@@ -59,7 +61,7 @@ export default class BoardGateway {
     await client.leave(getWsBoardRoomName(boardId));
   }
 
-  @Can.Anyone()
+  @Can(BoardPolicy, 'createBoard')
   @SubscribeMessage(EBoardEvent.CREATE)
   public async createBoard(
     @CurrentUser() me: TUser,
@@ -71,7 +73,7 @@ export default class BoardGateway {
     return getSuccessResponseWithData<TBoardBase>(newBoard);
   }
 
-  @Can.Anyone()
+  @Can(BoardPolicy, 'updateBoard', data('id'))
   @SubscribeMessage(EBoardEvent.UPDATE)
   public async updateBoard(
     @CurrentUser() me: TUser,
@@ -84,7 +86,7 @@ export default class BoardGateway {
     return getSuccessResponseWithData<TBoardBase>(updatedBoard);
   }
 
-  @Can.Anyone()
+  @Can(BoardPolicy, 'deleteBoard', data())
   @SubscribeMessage(EBoardEvent.DELETE)
   public async deleteBoard(
     @CurrentUser() me: TUser,
@@ -96,7 +98,7 @@ export default class BoardGateway {
     return getSuccessResponseWithData<TDeleteBoardEmitPayload>(payload);
   }
 
-  @Can.Anyone()
+  @Can(BoardPolicy, 'moveBoard')
   @SubscribeMessage(EBoardEvent.MOVE)
   public async moveBoard(
     @CurrentUser() me: TUser,

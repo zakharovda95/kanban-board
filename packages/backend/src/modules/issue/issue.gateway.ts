@@ -29,8 +29,10 @@ import type { Socket } from 'socket.io';
 import { WS_CORS_OPTIONS } from '@/libs/constants/websocket.constants';
 import WsExceptionFilter from '@/libs/filters/ws-exception.filter';
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
+import { data } from '@/libs/utilities/can.utilities';
 import { getSuccessResponseWithData } from '@/libs/utilities/response.utilities';
 import IssueService from '@/modules/issue/issue.service';
+import IssuePolicy from '@/modules/issue/libs/policies/issue.policy';
 
 @WebSocketGateway({ cors: WS_CORS_OPTIONS })
 @UseFilters(WsExceptionFilter)
@@ -38,7 +40,7 @@ import IssueService from '@/modules/issue/issue.service';
 export default class IssueGateway {
   constructor(private issueService: IssueService) {}
 
-  @Can.Anyone()
+  @Can(IssuePolicy, 'createIssue', data('boardId'))
   @SubscribeMessage(EIssueEvent.CREATE)
   public async createIssue(
     @MessageBody({ schema: createIssueBodySchema }) body: TCreateIssueBodySchema,
@@ -49,7 +51,7 @@ export default class IssueGateway {
     return getSuccessResponseWithData<TIssueBase>(createdIssue);
   }
 
-  @Can.Anyone()
+  @Can(IssuePolicy, 'updateIssue', data('id'))
   @SubscribeMessage(EIssueEvent.UPDATE)
   public async updateIssue(
     @MessageBody({ schema: updateIssueBodySchema })
@@ -61,7 +63,7 @@ export default class IssueGateway {
     return getSuccessResponseWithData<TIssueBase>(updatedIssue);
   }
 
-  @Can.Anyone()
+  @Can(IssuePolicy, 'deleteIssue', data())
   @SubscribeMessage(EIssueEvent.DELETE)
   public async deleteIssue(
     @MessageBody({ schema: positiveIdSchema }) issueId: TPositiveIdSchema,
@@ -72,7 +74,7 @@ export default class IssueGateway {
     return getSuccessResponseWithData<TDeleteIssueEmitPayload>(payload);
   }
 
-  @Can.Anyone()
+  @Can(IssuePolicy, 'moveIssue', data('boardId'))
   @SubscribeMessage(EIssueEvent.MOVE)
   public async moveIssue(
     @MessageBody({ schema: moveIssueBodySchema }) body: TMoveIssueBodySchema,

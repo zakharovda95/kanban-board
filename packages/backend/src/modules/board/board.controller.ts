@@ -10,7 +10,9 @@ import { Can } from '@nestjs/authorization';
 import { Controller, Get, Param, UsePipes } from '@nestjs/common';
 
 import CustomValidationPipe from '@/libs/pipes/custom-validation.pipe';
+import { param } from '@/libs/utilities/can.utilities';
 import BoardService from '@/modules/board/board.service';
+import BoardPolicy from '@/modules/board/libs/policies/board.policy';
 
 @Controller('boards')
 @UsePipes(CustomValidationPipe.httpStandardSchemaPipe)
@@ -23,7 +25,7 @@ export default class BoardController {
     return await this.boardService.getBoards(me.workspaceId);
   }
 
-  @Can.Anyone()
+  @Can(BoardPolicy, 'getBoardById', param('boardId'))
   @Get(':boardId')
   public async getBoardById(
     @Param('boardId', { schema: positiveIdSchema }) boardId: TPositiveIdSchema,

@@ -20,6 +20,8 @@ import { TMaxOrderResult } from '@/libs/utilities/order.utility';
 import BoardEntity from '@/modules/board/libs/entities/board.entity';
 import BoardMapper from '@/modules/board/libs/mappers/board.mapper';
 import { DEFAULT_COLUMNS } from '@/modules/column/libs/constants/column.constants';
+import ColumnEntity from '@/modules/column/libs/entities/column.entity';
+import IssueEntity from '@/modules/issue/libs/entities/issue.entity';
 import MoveService from '@/modules/shared/move/move.service';
 
 @Injectable()
@@ -176,5 +178,37 @@ export default class BoardService {
     if (!affected || affected <= 0) throw new WsException('Не удалось удалить доску');
 
     return { deletedBoardId: boardId };
+  }
+
+  /**
+   * Получить id доски по id колонки или задачи.
+   * @param params - параметры поиска.
+   * @returns id доски или null, если колонка или задача не найдена.
+   * **/
+  public async getBoardIdBy(params: {
+    columnId: TPositiveIdSchema;
+  }): Promise<TPositiveIdSchema | null>;
+  public async getBoardIdBy(params: {
+    issueId: TPositiveIdSchema;
+  }): Promise<TPositiveIdSchema | null>;
+
+  public async getBoardIdBy(
+    params: { columnId: TPositiveIdSchema } | { issueId: TPositiveIdSchema },
+  ): Promise<TPositiveIdSchema | null> {
+    const { manager } = this.dataSource;
+
+    if ('columnId' in params) {
+      const column = await manager.findOne(ColumnEntity, {
+        where: { id: params.columnId },
+        select: { id: true, boardId: true },
+      });
+      return column?.boardId ?? null;
+    }
+
+    const issue = await manager.findOne(IssueEntity, {
+      where: { id: params.issueId },
+      select: { id: true, boardId: true },
+    });
+    return issue?.boardId ?? null;
   }
 }
